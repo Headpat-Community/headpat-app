@@ -1,0 +1,1 @@
+﻿global using HeadpatCommunity.Mobile.HeadpatApp.Models;

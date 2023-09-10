@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using HeadpatCommunity.Mobile.HeadpatApp.Platforms.Android;
+using Microsoft.Extensions.Logging;
 
 namespace HeadpatCommunity.Mobile.HeadpatApp
 {
@@ -16,8 +17,16 @@ namespace HeadpatCommunity.Mobile.HeadpatApp
                 })
                 .UseMauiMaps();
 
+
+            builder.ConfigureMauiHandlers(handlers =>
+            {
+#if ANDROID || IOS
+                handlers.AddHandler<Microsoft.Maui.Controls.Maps.Map, CustomMapHandler>();
+#endif
+            });
+
 #if DEBUG
-		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
             return builder.Build();

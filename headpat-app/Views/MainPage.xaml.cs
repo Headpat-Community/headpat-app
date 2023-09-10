@@ -1,4 +1,4 @@
-﻿namespace HeadpatCommunity.Mobile.HeadpatApp
+﻿namespace HeadpatCommunity.Mobile.HeadpatApp.Views
 {
     public partial class MainPage : ContentPage
     {
