@@ -1,4 +1,6 @@
-﻿using HeadpatCommunity.Mobile.HeadpatApp.Platforms.Android;
+﻿#if ANDROID
+using HeadpatCommunity.Mobile.HeadpatApp.Platforms.Android;
+#endif
 using Microsoft.Extensions.Logging;
 
 namespace HeadpatCommunity.Mobile.HeadpatApp
@@ -20,7 +22,7 @@ namespace HeadpatCommunity.Mobile.HeadpatApp
 
             builder.ConfigureMauiHandlers(handlers =>
             {
-#if ANDROID || IOS
+#if ANDROID
                 handlers.AddHandler<Microsoft.Maui.Controls.Maps.Map, CustomMapHandler>();
 #endif
             });

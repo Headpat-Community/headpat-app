@@ -1,4 +1,3 @@
-using HeadpatCommunity.Mobile.HeadpatApp.Map;
 using Microsoft.Maui.Maps;
 
 namespace HeadpatCommunity.Mobile.HeadpatApp.Views;

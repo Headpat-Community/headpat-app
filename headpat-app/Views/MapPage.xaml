@@ -5,9 +5,21 @@
              xmlns:HeadpatApp="clr-namespace:HeadpatCommunity.Mobile.HeadpatApp"
              xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
              xmlns:models="clr-namespace:HeadpatCommunity.Mobile.HeadpatApp.Models"
-             Title="MapPage">
+             xmlns:viewModels="clr-namespace:HeadpatCommunity.Mobile.HeadpatApp.ViewModels"
+             x:DataType="viewModels:MapPageViewModel">
     <ScrollView>
-        <maps:Map x:Name="headpatMap" >
+        <maps:Map x:Name="headpatMap"
+                  ItemsSource="{Binding HeadpatItems}">
+            <maps:Map.ItemTemplate>
+                <DataTemplate x:DataType="{x:Type models:HeadpatItem}">
+                    <HeadpatApp:CustomPin
+                        Location="{Binding Location}"
+                        Address="{Binding Info}"
+                        Label="{Binding Name}"
+                        ImageSource="{Binding ImageSource}"
+                        Type="Place" />
+                </DataTemplate>
+            </maps:Map.ItemTemplate>
         </maps:Map>
     </ScrollView>
 </ContentPage>

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HeadpatCommunity.Mobile.HeadpatApp.Map
+namespace HeadpatCommunity.Mobile.HeadpatApp
 {
     public class CustomPin : Pin
     {
