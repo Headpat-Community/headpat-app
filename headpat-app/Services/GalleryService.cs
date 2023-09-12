@@ -27,8 +27,6 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.Services
 
             var response = await httpClient.GetAsync("https://backend.headpat.de/api/galleries?populate=*&randomsort=true");
 
-
-
             if (response.IsSuccessStatusCode)
             {
                 //TODO: Schöner machen
@@ -51,9 +49,9 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.Services
 
                     galleryItems.Add(item);
                 }
-
             }
-
+            else
+                throw new Exception($"Error while fetching gallery items: {response.StatusCode}");
 
             return galleryItems;
         }

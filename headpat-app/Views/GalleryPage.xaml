@@ -6,20 +6,27 @@
              x:DataType="viewmodels:GalleryViewModel"
              x:Class="HeadpatCommunity.Mobile.HeadpatApp.Views.GalleryPage"
              Title="{Binding Title}">
-    <VerticalStackLayout BackgroundColor="Black">
-        <CollectionView ItemsSource="{Binding GalleryItems}" ItemsLayout="VerticalList" >
+
+    <FlexLayout AbsoluteLayout.LayoutBounds="0,0,1,1"
+                    AbsoluteLayout.LayoutFlags="All"
+                    BackgroundColor="Red">
+        <CollectionView ItemsSource="{Binding GalleryItems}">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:GalleryItem">
-                    <Image Source="{Binding ImageUrl}" HorizontalOptions="Fill" Aspect="AspectFill"></Image>
+                    <Image Source="{Binding ImageUrl}"
+                               Aspect="AspectFit">
+                    </Image>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-        <ActivityIndicator IsVisible="{Binding IsBusy}"
-               IsRunning="{Binding IsBusy}"
-               HorizontalOptions="FillAndExpand"
-               VerticalOptions="CenterAndExpand"></ActivityIndicator>
         <Button Text="Test Load"
-    Command="{Binding GetGalleryItemsCommand}"
-    IsEnabled="{Binding IsNotBusy}"></Button>
-    </VerticalStackLayout>
+                    Command="{Binding GetGalleryItemsCommand}"
+                    IsEnabled="{Binding IsNotBusy}">
+        </Button>
+        <ActivityIndicator IsVisible="{Binding IsBusy}"
+                               IsRunning="{Binding IsBusy}" 
+                               HorizontalOptions="FillAndExpand"
+                               VerticalOptions="CenterAndExpand">
+        </ActivityIndicator>
+    </FlexLayout>
 </ContentPage>

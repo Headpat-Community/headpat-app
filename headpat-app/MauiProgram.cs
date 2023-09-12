@@ -1,9 +1,6 @@
-﻿#if ANDROID
-using HeadpatCommunity.Mobile.HeadpatApp.Platforms.Android;
-using HeadpatCommunity.Mobile.HeadpatApp.Services;
+﻿using HeadpatCommunity.Mobile.HeadpatApp.Services;
 using HeadpatCommunity.Mobile.HeadpatApp.ViewModels;
 using HeadpatCommunity.Mobile.HeadpatApp.Views;
-#endif
 using Microsoft.Extensions.Logging;
 
 namespace HeadpatCommunity.Mobile.HeadpatApp

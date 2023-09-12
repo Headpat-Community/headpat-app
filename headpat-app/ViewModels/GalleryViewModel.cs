@@ -42,7 +42,7 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
             catch (Exception ex)
             {
                 Debug.WriteLine(ex);
-                await Shell.Current.DisplayAlert("Error", $"Gallerie konnte nicht geladen werden! ＞﹏＜", "Ok");
+                await Shell.Current.DisplayAlert("Fehler", $"Gallerie konnte nicht geladen werden :c", "Ok");
             }
             finally
             {
