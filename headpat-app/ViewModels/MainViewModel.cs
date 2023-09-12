@@ -9,7 +9,6 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
 {
     public partial class MainViewModel : BaseViewModel
     {
-        [ObservableProperty]
-        string userName;
+
     }
 }

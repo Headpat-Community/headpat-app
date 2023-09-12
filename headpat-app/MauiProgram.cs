@@ -1,5 +1,8 @@
 ﻿#if ANDROID
 using HeadpatCommunity.Mobile.HeadpatApp.Platforms.Android;
+using HeadpatCommunity.Mobile.HeadpatApp.Services;
+using HeadpatCommunity.Mobile.HeadpatApp.ViewModels;
+using HeadpatCommunity.Mobile.HeadpatApp.Views;
 #endif
 using Microsoft.Extensions.Logging;
 
@@ -19,13 +22,9 @@ namespace HeadpatCommunity.Mobile.HeadpatApp
                 })
                 .UseMauiMaps();
 
-
-            builder.ConfigureMauiHandlers(handlers =>
-            {
-#if ANDROID
-                handlers.AddHandler<Microsoft.Maui.Controls.Maps.Map, CustomMapHandler>();
-#endif
-            });
+            builder.Services.AddSingleton<GalleryService>();
+            builder.Services.AddSingleton<GalleryViewModel>();
+            builder.Services.AddSingleton<GalleryPage>();
 
 #if DEBUG
             builder.Logging.AddDebug();

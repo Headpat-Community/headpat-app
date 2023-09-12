@@ -15,9 +15,11 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
         string title;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsNotBusy))]
         bool isBusy;
 
         public bool IsNotBusy => !IsBusy;
+
         public BaseViewModel()
         {
         }

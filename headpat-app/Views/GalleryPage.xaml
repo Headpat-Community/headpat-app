@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:HeadpatCommunity.Mobile.HeadpatApp.Models"
+             xmlns:viewmodels="clr-namespace:HeadpatCommunity.Mobile.HeadpatApp.ViewModels"
+             x:DataType="viewmodels:GalleryViewModel"
+             x:Class="HeadpatCommunity.Mobile.HeadpatApp.Views.GalleryPage"
+             Title="{Binding Title}">
+    <VerticalStackLayout BackgroundColor="Black">
+        <CollectionView ItemsSource="{Binding GalleryItems}" ItemsLayout="VerticalList" >
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:GalleryItem">
+                    <Image Source="{Binding ImageUrl}" HorizontalOptions="Fill" Aspect="AspectFill"></Image>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        <ActivityIndicator IsVisible="{Binding IsBusy}"
+               IsRunning="{Binding IsBusy}"
+               HorizontalOptions="FillAndExpand"
+               VerticalOptions="CenterAndExpand"></ActivityIndicator>
+        <Button Text="Test Load"
+    Command="{Binding GetGalleryItemsCommand}"
+    IsEnabled="{Binding IsNotBusy}"></Button>
+    </VerticalStackLayout>
+</ContentPage>

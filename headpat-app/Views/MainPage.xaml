@@ -2,10 +2,9 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="HeadpatCommunity.Mobile.HeadpatApp.Views.MainPage"
-             x:DataType=""
              Title="{Binding Title}">
 
     <VerticalStackLayout Spacing="20" Padding="20">
-        <Label Text="{Binding UserName}"></Label>
+        <Label Text=""></Label>
     </VerticalStackLayout>
 </ContentPage>
