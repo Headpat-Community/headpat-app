@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.Input;
+using HeadpatCommunity.Mobile.HeadpatApp.Views;
 
 namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
 {
@@ -48,6 +49,19 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
             {
                 IsBusy = false;
             }
+        }
+
+        [RelayCommand]
+        async Task GoToDetailsAsync(GalleryItem item)
+        {
+            if (item is null)
+                return;
+
+            await Shell.Current.GoToAsync($"{nameof(GalleryDetailsPage)}", true,
+                new Dictionary<string, object>
+                {
+                    {"GalleryItem", item }
+                });
         }
     }
 }

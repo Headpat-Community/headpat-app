@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="HeadpatCommunity.Mobile.HeadpatApp.Views.GalleryDetailsPage"
+             xmlns:viewmodels="clr-namespace:HeadpatCommunity.Mobile.HeadpatApp.ViewModels"
+             x:DataType="viewmodels:GalleryDetailsViewModel"
+             Title="{Binding GalleryItem.Name}">
+    <VerticalStackLayout Padding="20"
+                         BackgroundColor="Black">
+        <Frame CornerRadius="15"
+               BackgroundColor="Transparent"
+               BorderColor="Transparent"
+               Padding="0">
+            <Image Source="{Binding GalleryItem.ImageUrl}"
+                            IsAnimationPlaying="True"
+                            Aspect="AspectFit" />
+        </Frame>
+        <Label Text="{Binding GalleryItem.Description}"
+               TextColor="WhiteSmoke"/>
+    </VerticalStackLayout>
+</ContentPage>

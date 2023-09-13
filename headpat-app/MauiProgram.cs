@@ -20,8 +20,12 @@ namespace HeadpatCommunity.Mobile.HeadpatApp
                 .UseMauiMaps();
 
             builder.Services.AddSingleton<GalleryService>();
+
             builder.Services.AddSingleton<GalleryViewModel>();
             builder.Services.AddSingleton<GalleryPage>();
+
+            builder.Services.AddTransient<GalleryDetailsViewModel>();
+            builder.Services.AddTransient<GalleryDetailsPage>();
 
 #if DEBUG
             builder.Logging.AddDebug();

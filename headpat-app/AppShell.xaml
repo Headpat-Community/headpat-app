@@ -9,6 +9,6 @@
     <ShellContent
         Title="Home"
         ContentTemplate="{DataTemplate views:GalleryPage}"
-        Route="MapPage" />
+        Route="GalleryPage" />
 
 </Shell>

@@ -2,9 +2,9 @@ using HeadpatCommunity.Mobile.HeadpatApp.ViewModels;
 
 namespace HeadpatCommunity.Mobile.HeadpatApp.Views;
 
-public partial class GalleryPage : ContentPage
+public partial class GalleryDetailsPage : ContentPage
 {
-	public GalleryPage(GalleryViewModel viewModel)
+	public GalleryDetailsPage(GalleryDetailsViewModel viewModel)
 	{
 		InitializeComponent();
 		BindingContext = viewModel;
