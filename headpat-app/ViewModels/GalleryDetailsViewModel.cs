@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
 {
-    [QueryProperty("GalleryItem", "GalleryItem")]
+    [QueryProperty(nameof(GalleryItem), "GalleryItem")]
     public partial class GalleryDetailsViewModel : BaseViewModel
     {
         [ObservableProperty]

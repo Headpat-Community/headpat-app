@@ -39,7 +39,7 @@
                                        TextColor="WhiteSmoke">
                                     <Label.Text>
                                         <MultiBinding StringFormat="~{0}">
-                                            <Binding Path="Username"></Binding>
+                                            <Binding Path="User.UserName"></Binding>
                                         </MultiBinding>
                                     </Label.Text>
                                 </Label>
