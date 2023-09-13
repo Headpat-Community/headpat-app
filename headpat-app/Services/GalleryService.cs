@@ -25,15 +25,12 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.Services
             if (galleryItems?.Count > 0)
                 return galleryItems;
 
-            var response = await httpClient.GetAsync("https://backend.headpat.de/api/galleries?populate=*&randomsort=true");
+            var response = await httpClient.GetAsync("https://backend.headpat.de/api/galleries?populate=*&randomSort=true");
 
             if (response.IsSuccessStatusCode)
             {
-                //TODO: Schöner machen
-                var jsonString = await response.Content.ReadAsStringAsync();
-                var jObj = JObject.Parse(jsonString);
-
-                galleryItems = JsonConvert.DeserializeObject<List<GalleryItem>>(jObj["data"].ToString());
+                var json = JObject.Parse(await response.Content.ReadAsStringAsync());
+                galleryItems = JsonConvert.DeserializeObject<List<GalleryItem>>(json["data"].ToString());
             }
             else
                 throw new Exception($"Error while fetching gallery items: {response.StatusCode}");

@@ -1,6 +1,11 @@
-﻿using HeadpatCommunity.Mobile.HeadpatApp.Services;
-using HeadpatCommunity.Mobile.HeadpatApp.ViewModels;
-using HeadpatCommunity.Mobile.HeadpatApp.Views;
+﻿
+//██╗░░██╗███████╗░█████╗░██████╗░██████╗░░█████╗░████████╗  ░░██╗██████╗░
+//██║░░██║██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝  ░██╔╝╚════██╗
+//███████║█████╗░░███████║██║░░██║██████╔╝███████║░░░██║░░░  ██╔╝░░█████╔╝
+//██╔══██║██╔══╝░░██╔══██║██║░░██║██╔═══╝░██╔══██║░░░██║░░░  ╚██╗░░╚═══██╗
+//██║░░██║███████╗██║░░██║██████╔╝██║░░░░░██║░░██║░░░██║░░░  ░╚██╗██████╔╝
+//╚═╝░░╚═╝╚══════╝╚═╝░░╚═╝╚═════╝░╚═╝░░░░░╚═╝░░╚═╝░░░╚═╝░░░  ░░╚═╝╚═════╝░
+
 using Microsoft.Extensions.Logging;
 
 namespace HeadpatCommunity.Mobile.HeadpatApp
