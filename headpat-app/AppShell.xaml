@@ -6,9 +6,18 @@
     xmlns:views="clr-namespace:HeadpatCommunity.Mobile.HeadpatApp.Views"
     Shell.FlyoutBehavior="Disabled">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate views:GalleryPage}"
-        Route="GalleryPage" />
-
+    <TabBar Shell.TabBarBackgroundColor="Black">
+        <Tab Title="News"
+             Icon="announcements.png">
+            <ShellContent ContentTemplate="{DataTemplate views:AnnouncementsPage}"/>
+        </Tab>
+        <Tab Title="Gallerie"
+             Icon="gallery.png">
+            <ShellContent ContentTemplate="{DataTemplate views:GalleryPage}"/>
+        </Tab>
+        <Tab Title="Map"
+             Icon="map.png">
+            <ShellContent ContentTemplate="{DataTemplate views:MapPage}"/>
+        </Tab>
+    </TabBar>
 </Shell>
