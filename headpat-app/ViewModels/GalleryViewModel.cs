@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using HeadpatCommunity.Mobile.HeadpatApp.Services;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using CommunityToolkit.Mvvm.Input;
-using HeadpatCommunity.Mobile.HeadpatApp.Views;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
 {
@@ -15,6 +13,10 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
     {
         GalleryService _service;
         IConnectivity _connectivity;
+
+        [ObservableProperty]
+        bool isRefreshing;
+
         public ObservableCollection<GalleryItem> GalleryItems { get; } = new();
 
         public GalleryViewModel(GalleryService service, IConnectivity connectivity)
@@ -40,7 +42,7 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
 
                 IsBusy = true;
 
-                var items = await _service.GetGalleryItems();
+                var items = await _service.GetGalleryItemsAsync();
 
                 if (items?.Count > 0)
                     GalleryItems.Clear();
@@ -56,6 +58,7 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
             finally
             {
                 IsBusy = false;
+                IsRefreshing = false;
             }
         }
 

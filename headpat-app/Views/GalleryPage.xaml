@@ -7,10 +7,12 @@
              x:Class="HeadpatCommunity.Mobile.HeadpatApp.Views.GalleryPage"
              Title="{Binding Title}">
 
-    <AbsoluteLayout BackgroundColor="Black"
-                    Padding="20">
-        <FlexLayout AbsoluteLayout.LayoutBounds="0,0,1,1"
-                    AbsoluteLayout.LayoutFlags="All">
+    <Grid ColumnDefinitions="*"
+              RowDefinitions="*"
+              Padding="20"
+              BackgroundColor="Black">
+        <RefreshView Command="{Binding GetGalleryItemsCommand}"
+                         IsRefreshing="{Binding IsRefreshing}">
             <CollectionView ItemsSource="{Binding GalleryItems}"
                             SelectionMode="None">
                 <CollectionView.ItemTemplate>
@@ -42,16 +44,11 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-        </FlexLayout>
-        <StackLayout IsVisible="{Binding IsBusy}"
-                     AbsoluteLayout.LayoutBounds="0,0,1,1"
-                     AbsoluteLayout.LayoutFlags="All"
-                     BackgroundColor="Black"
-                     Opacity="0.3">
-            <ActivityIndicator IsVisible="{Binding IsBusy}"
-                               IsRunning="{Binding IsBusy}"
-                               HorizontalOptions="CenterAndExpand"
-                               VerticalOptions="CenterAndExpand" />
-        </StackLayout>
-    </AbsoluteLayout>
+        </RefreshView>
+
+        <ActivityIndicator IsVisible="{Binding IsBusy}"
+                           IsRunning="{Binding IsBusy}"
+                           HorizontalOptions="CenterAndExpand"
+                           VerticalOptions="CenterAndExpand" />
+    </Grid>
 </ContentPage>

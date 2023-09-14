@@ -31,7 +31,7 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.Services
                 announcements = JsonConvert.DeserializeObject<List<Announcement>>(json["data"].ToString());
             }
             else
-                throw new Exception($"Error while fetching gallery items: {response.StatusCode}");
+                throw new Exception($"Error while fetching announcements: {response.StatusCode}");
 
             return announcements;
         }

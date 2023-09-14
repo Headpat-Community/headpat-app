@@ -20,17 +20,18 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.Services
             httpClient = new HttpClient();
         }
 
-        public async Task<List<GalleryItem>> GetGalleryItems()
+        public async Task<List<GalleryItem>> GetGalleryItemsAsync()
         {
-            if (galleryItems?.Count > 0)
-                return galleryItems;
+            //if (galleryItems?.Count > 0)
+            //    return galleryItems;
 
-            var response = await httpClient.GetAsync("https://backend.headpat.de/api/galleries?populate=*&randomSort=true");
+            var response = await httpClient.GetAsync("https://backend.headpat.de/api/galleries?populate=*");
 
             if (response.IsSuccessStatusCode)
             {
                 var json = JObject.Parse(await response.Content.ReadAsStringAsync());
                 galleryItems = JsonConvert.DeserializeObject<List<GalleryItem>>(json["data"].ToString());
+                galleryItems.Shuffle();
             }
             else
                 throw new Exception($"Error while fetching gallery items: {response.StatusCode}");

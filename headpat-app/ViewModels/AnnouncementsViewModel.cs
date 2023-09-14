@@ -1,10 +1,8 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
@@ -33,7 +31,7 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
             {
                 if (_connectivity.NetworkAccess != NetworkAccess.Internet)
                 {
-                    await Shell.Current.DisplayAlert("Fehler", "Keine Internetverbindung :c", "Ok");
+                    await Shell.Current.DisplayAlert("≧ ﹏ ≦", "Keine Internetverbindung!", "Ok");
                     return;
                 }
 
