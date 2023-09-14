@@ -10,12 +10,39 @@
         <Frame CornerRadius="15"
                BackgroundColor="Transparent"
                BorderColor="Transparent"
-               Padding="0">
+               Padding="0"
+               Margin="0,0,0,15">
             <Image Source="{Binding GalleryItem.ImageUrl}"
                             IsAnimationPlaying="True"
                             Aspect="AspectFit" />
         </Frame>
-        <Label Text="{Binding GalleryItem.Description}"
-               TextColor="WhiteSmoke"/>
+        <Grid ColumnDefinitions="Auto,*"
+              ColumnSpacing="10"
+              RowSpacing="10"
+              RowDefinitions="Auto,Auto,Auto">
+            <Label Text="Beschreibung:"
+                   TextColor="WhiteSmoke"
+                   Grid.Row="0"/>
+            <Label Text="{Binding GalleryItem.Description}"
+                   TextColor="WhiteSmoke"
+                   Grid.Column="1"
+                   Grid.Row="0"/>
+            <Label Text="Hochgeladen:"
+                   TextColor="WhiteSmoke"
+                   Grid.Row="1"
+                   Grid.Column="0"/>
+            <Label Text="{Binding GalleryItem.Created}"
+                   TextColor="WhiteSmoke"
+                   Grid.Column="1"
+                   Grid.Row="1"/>
+            <Label Text="NSFW:"
+                   TextColor="WhiteSmoke"
+                   Grid.Row="2"
+                   Grid.Column="0"/>
+            <Label Text="{Binding GalleryItem.IsNsfw}"
+                   TextColor="WhiteSmoke"
+                   Grid.Column="1"
+                   Grid.Row="2"/>
+        </Grid>
     </VerticalStackLayout>
 </ContentPage>

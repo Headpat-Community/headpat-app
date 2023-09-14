@@ -1,5 +1,3 @@
-using AndroidX.Lifecycle;
-
 namespace HeadpatCommunity.Mobile.HeadpatApp.Views;
 
 public partial class AnnouncementsPage : ContentPage

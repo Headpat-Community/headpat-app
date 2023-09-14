@@ -34,15 +34,9 @@
                                        Padding="0,3,0,0"
                                        FlexLayout.Grow="1"
                                        TextColor="WhiteSmoke" />
-                                <Label  
+                                <Label Text="{Binding User.UserName, StringFormat='~{0}'}"
                                        Padding="0,3,0,0"
-                                       TextColor="WhiteSmoke">
-                                    <Label.Text>
-                                        <MultiBinding StringFormat="~{0}">
-                                            <Binding Path="User.UserName"></Binding>
-                                        </MultiBinding>
-                                    </Label.Text>
-                                </Label>
+                                       TextColor="WhiteSmoke" />
                             </FlexLayout>
                         </VerticalStackLayout>
                     </DataTemplate>
