@@ -14,12 +14,14 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
     public partial class GalleryViewModel : BaseViewModel
     {
         GalleryService _service;
+        IConnectivity _connectivity;
         public ObservableCollection<GalleryItem> GalleryItems { get; } = new();
 
-        public GalleryViewModel(GalleryService service)
+        public GalleryViewModel(GalleryService service, IConnectivity connectivity)
         {
             Title = "Gallery";
             _service = service;
+            _connectivity = connectivity;
         }
 
         [RelayCommand]
@@ -30,6 +32,12 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
 
             try
             {
+                if (_connectivity.NetworkAccess != NetworkAccess.Internet)
+                {
+                    await Shell.Current.DisplayAlert("Fehler", "Keine Internetverbindung :c", "Ok");
+                    return;
+                }
+
                 IsBusy = true;
 
                 var items = await _service.GetGalleryItems();

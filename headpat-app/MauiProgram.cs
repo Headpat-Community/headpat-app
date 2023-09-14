@@ -24,6 +24,8 @@ namespace HeadpatCommunity.Mobile.HeadpatApp
                 })
                 .UseMauiMaps();
 
+            builder.Services.AddSingleton<IConnectivity>(Connectivity.Current);
+
             builder.Services.AddSingleton<AnnouncementsService>();
             builder.Services.AddSingleton<AnnouncementsViewModel>();
             builder.Services.AddSingleton<AnnouncementsPage>();
