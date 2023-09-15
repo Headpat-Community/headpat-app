@@ -26,7 +26,7 @@ namespace HeadpatCommunity.Mobile.HeadpatApp
 
             builder.Services.AddSingleton<IConnectivity>(Connectivity.Current);
 
-            builder.Services.AddTransient<AuthenticationService>();
+            builder.Services.AddSingleton<AuthenticationService>();
             builder.Services.AddTransient<LoginPage>();
             builder.Services.AddTransient<LoginViewModel>();
 

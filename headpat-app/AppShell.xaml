@@ -6,7 +6,6 @@
     xmlns:views="clr-namespace:HeadpatCommunity.Mobile.HeadpatApp.Views"
     x:Name="MainShell"
     Shell.FlyoutBehavior="Disabled">
-
     <FlyoutItem x:Name="Login"
                 Route="Login">
         <ShellContent ContentTemplate="{DataTemplate views:LoginPage}" />

@@ -13,6 +13,8 @@ namespace HeadpatCommunity.Mobile.HeadpatApp
             
             var authToken = SecureStorage.GetAsync("AuthToken").Result;
 
+            //TODO: Prüfen ob Authentication gültig
+
             if (authToken is not null)
                 MainShell.CurrentItem = Dashboard;
             else
