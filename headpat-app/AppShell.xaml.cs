@@ -8,8 +8,9 @@ namespace HeadpatCommunity.Mobile.HeadpatApp
         {
             InitializeComponent();
 
+            Routing.RegisterRoute(nameof(AnnouncementDetailsPage), typeof(AnnouncementDetailsPage));
             Routing.RegisterRoute(nameof(GalleryDetailsPage), typeof(GalleryDetailsPage));
-
+            
             var authToken = SecureStorage.GetAsync("AuthToken").Result;
 
             if (authToken is not null)

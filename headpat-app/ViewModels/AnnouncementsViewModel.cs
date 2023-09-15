@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -12,6 +13,10 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
     {
         AnnouncementsService _service;
         IConnectivity _connectivity;
+
+        [ObservableProperty]
+        bool isRefreshing;
+
         public ObservableCollection<Announcement> Announcements { get; } = new();
 
         public AnnouncementsViewModel(AnnouncementsService service, IConnectivity connectivity)
@@ -37,7 +42,7 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
 
                 IsBusy = true;
 
-                var items = await _service.GetAnnouncements();
+                var items = await _service.GetAnnouncements(IsRefreshing);
 
                 if (items?.Count > 0)
                     Announcements.Clear();
@@ -53,7 +58,21 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
             finally
             {
                 IsBusy = false;
+                IsRefreshing = false;
             }
+        }
+
+        [RelayCommand]
+        async Task GoToDetailsAsync(Announcement item)
+        {
+            if (item is null)
+                return;
+
+            await Shell.Current.GoToAsync($"{nameof(AnnouncementDetailsPage)}", true,
+                new Dictionary<string, object>
+                {
+                    {"Announcement", item }
+                });
         }
     }
 }

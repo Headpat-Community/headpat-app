@@ -12,20 +12,20 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.Services
 {
     public class GalleryService
     {
-        HttpClient httpClient;
+        HttpClient _httpClient;
         List<GalleryItem> galleryItems = new();
 
         public GalleryService()
         {
-            httpClient = new HttpClient();
+            _httpClient = new();
         }
 
-        public async Task<List<GalleryItem>> GetGalleryItemsAsync()
+        public async Task<List<GalleryItem>> GetGalleryItemsAsync(bool isRefreshing = false)
         {
-            //if (galleryItems?.Count > 0)
-            //    return galleryItems;
+            if (galleryItems?.Count > 0 && !isRefreshing)
+                return galleryItems;
 
-            var response = await httpClient.GetAsync("https://backend.headpat.de/api/galleries?populate=*");
+            var response = await _httpClient.GetAsync(Endpoints.GET_GALLERY);
 
             if (response.IsSuccessStatusCode)
             {

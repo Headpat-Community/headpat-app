@@ -8,10 +8,10 @@
              Title="{Binding Title}">
 
     <Grid ColumnDefinitions="*"
-              RowDefinitions="*"
-              Padding="20">
+          RowDefinitions="*"
+          Padding="20">
         <RefreshView Command="{Binding GetGalleryItemsCommand}"
-                         IsRefreshing="{Binding IsRefreshing}">
+                     IsRefreshing="{Binding IsRefreshing}">
             <CollectionView ItemsSource="{Binding GalleryItems}"
                             SelectionMode="None">
                 <CollectionView.ItemTemplate>

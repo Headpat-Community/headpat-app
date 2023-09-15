@@ -42,7 +42,7 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
 
                 IsBusy = true;
 
-                var items = await _service.GetGalleryItemsAsync();
+                var items = await _service.GetGalleryItemsAsync(IsRefreshing);
 
                 if (items?.Count > 0)
                     GalleryItems.Clear();
@@ -53,7 +53,7 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
             catch (Exception ex)
             {
                 Debug.WriteLine(ex);
-                await Shell.Current.DisplayAlert("Fehler", $"Gallerie konnte nicht geladen werden :c", "Ok");
+                await Shell.Current.DisplayAlert("Fehler", "Gallerie konnte nicht geladen werden :c", "Ok");
             }
             finally
             {

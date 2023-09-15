@@ -30,7 +30,11 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.Models
 
         [JsonProperty("attributes.validuntil")]
         public DateTime ValidUntil { get; set; }
+
+        [JsonProperty("attributes.createdby")]
+        public int CreatedBy { get; set; }
+
         [JsonIgnore]
-        public User User { get; set; }
+        public User CreatedByUser { get; set; }
     }
 }

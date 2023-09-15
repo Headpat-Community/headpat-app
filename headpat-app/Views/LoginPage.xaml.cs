@@ -2,10 +2,10 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.Views;
 
 public partial class LoginPage : ContentPage
 {
-	public LoginPage()
+	public LoginPage(LoginViewModel viewModel)
 	{
 		InitializeComponent();
-        BindingContext = new LoginViewModel();
+        BindingContext = viewModel;
 	}
 
     //protected override async void OnAppearing()

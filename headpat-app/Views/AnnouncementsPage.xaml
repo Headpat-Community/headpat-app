@@ -6,18 +6,41 @@
              x:DataType="viewmodels:AnnouncementsViewModel"
              x:Class="HeadpatCommunity.Mobile.HeadpatApp.Views.AnnouncementsPage"
              Title="{Binding Title}">
-    <VerticalStackLayout Padding="20">
-        <CollectionView ItemsSource="{Binding Announcements}">
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:Announcement">
-                    <Frame Margin="0,0,0,20">
-                        <VerticalStackLayout>
-                            <Label Text="{Binding Title}" />
-                            <Label Text="{Binding SideText}" />
-                        </VerticalStackLayout>
-                    </Frame>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-    </VerticalStackLayout>
+    <Grid ColumnDefinitions="*"
+              RowDefinitions="*"
+              Padding="20">
+        <RefreshView Command="{Binding GetAnnouncementsCommand}"
+              IsRefreshing="{Binding IsRefreshing}">
+            <CollectionView ItemsSource="{Binding Announcements}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Announcement">
+                        <Border Style="{StaticResource Announcement}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer CommandParameter="{Binding .}"
+                                               Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AnnouncementsViewModel}}, Path=GoToDetailsCommand}"/>
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="*,Auto"
+                           RowDefinitions="Auto,Auto">
+                                <Label Text="{Binding Title}"
+                                Style="{StaticResource TitleLabel}"/>
+                                <Label Text="{Binding SideText}"
+                                Grid.Row="1"/>
+                                <Border Grid.Column="1"
+                                 Grid.RowSpan="2"
+                                 VerticalOptions="Center"
+                                 StrokeShape="RoundRectangle 50">
+                                    <Image Source="{Binding CreatedByUser.AvatarUrl}"
+                                    HeightRequest="50"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+        <ActivityIndicator IsVisible="{Binding IsBusy}"
+                           IsRunning="{Binding IsBusy}"
+                           HorizontalOptions="CenterAndExpand"
+                           VerticalOptions="CenterAndExpand" />
+    </Grid>
 </ContentPage>

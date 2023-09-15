@@ -12,19 +12,29 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.Models
     {
         [JsonProperty("id")]
         public int Id { get; set; }
+
         [JsonProperty("attributes.username")]
         public string UserName { get; set; }
+
         [JsonIgnore]
         public string Password { get; set; }
+
         [JsonProperty("attributes.email")]
         public string EMail { get; set; }
-        [JsonProperty("attributes.confirmed")]
+
+        [JsonProperty("attributes.confirmed")]    
         public bool IsConfirmed { get; set; }
+
         [JsonProperty("attributes.blocked")]
         public bool IsBlocked { get; set; }
-        [JsonProperty("attributes.createdAt")]
+
+        [JsonProperty("attributes.createdAt")]    
         public DateTime Created { get; set; }
+        
         [JsonProperty("attributes.updatedAt")]
         public DateTime Updated { get; set; }
+
+        [JsonIgnore]
+        public string AvatarUrl { get; set; }
     }
 }

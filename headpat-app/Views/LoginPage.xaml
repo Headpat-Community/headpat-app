@@ -8,9 +8,17 @@
              Shell.FlyoutBehavior="Disabled"
              Shell.NavBarIsVisible="False"
              Title="{Binding Title}">
-    <VerticalStackLayout VerticalOptions="CenterAndExpand">
-        <Entry VerticalOptions="Center" Placeholder="Benutzername" Text="{Binding User.UserName}" />
-        <Entry VerticalOptions="Center" Placeholder="Passwort" Text="{Binding User.Password}" IsPassword="True" />
-        <Button Text="Anmelden" Command="{Binding PerformLoginCommand}"/>
+    <VerticalStackLayout VerticalOptions="CenterAndExpand"
+                         Padding="40">
+        <Entry VerticalOptions="Center"
+               Placeholder="E-Mail"
+               Text="{Binding User.EMail}" />
+        <Entry VerticalOptions="Center"
+               Placeholder="Passwort"
+               Text="{Binding User.Password}"
+               IsPassword="True" />
+        <Button Text="Anmelden"
+                Command="{Binding PerformLoginCommand}"
+                Margin="0,20,0,0"/>
     </VerticalStackLayout>
 </ContentPage>

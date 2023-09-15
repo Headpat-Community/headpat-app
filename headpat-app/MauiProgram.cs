@@ -26,9 +26,16 @@ namespace HeadpatCommunity.Mobile.HeadpatApp
 
             builder.Services.AddSingleton<IConnectivity>(Connectivity.Current);
 
+            builder.Services.AddTransient<AuthenticationService>();
+            builder.Services.AddTransient<LoginPage>();
+            builder.Services.AddTransient<LoginViewModel>();
+
             builder.Services.AddSingleton<AnnouncementsService>();
             builder.Services.AddSingleton<AnnouncementsViewModel>();
             builder.Services.AddSingleton<AnnouncementsPage>();
+
+            builder.Services.AddTransient<AnnouncementDetailsViewModel>();
+            builder.Services.AddTransient<AnnouncementDetailsPage>();
 
             builder.Services.AddSingleton<GalleryService>();
             builder.Services.AddSingleton<GalleryViewModel>();
