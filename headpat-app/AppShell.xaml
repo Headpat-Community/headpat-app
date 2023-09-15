@@ -4,9 +4,15 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:HeadpatCommunity.Mobile.HeadpatApp.Views"
+    x:Name="MainShell"
     Shell.FlyoutBehavior="Disabled">
 
-    <TabBar Shell.TabBarBackgroundColor="Black">
+    <FlyoutItem x:Name="Login"
+                Route="Login">
+        <ShellContent ContentTemplate="{DataTemplate views:LoginPage}" />
+    </FlyoutItem>
+    <TabBar x:Name="Dashboard"
+            Route="Dashboard">
         <Tab Title="News"
              Icon="announcements.png">
             <ShellContent ContentTemplate="{DataTemplate views:AnnouncementsPage}"/>

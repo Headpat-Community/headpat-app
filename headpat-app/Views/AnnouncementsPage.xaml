@@ -6,13 +6,11 @@
              x:DataType="viewmodels:AnnouncementsViewModel"
              x:Class="HeadpatCommunity.Mobile.HeadpatApp.Views.AnnouncementsPage"
              Title="{Binding Title}">
-    <VerticalStackLayout BackgroundColor="Black"
-                         Padding="20">
+    <VerticalStackLayout Padding="20">
         <CollectionView ItemsSource="{Binding Announcements}">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:Announcement">
-                    <Frame Margin="0,0,0,20"
-                           BackgroundColor="WhiteSmoke">
+                    <Frame Margin="0,0,0,20">
                         <VerticalStackLayout>
                             <Label Text="{Binding Title}" />
                             <Label Text="{Binding SideText}" />

@@ -9,8 +9,7 @@
 
     <Grid ColumnDefinitions="*"
               RowDefinitions="*"
-              Padding="20"
-              BackgroundColor="Black">
+              Padding="20">
         <RefreshView Command="{Binding GetGalleryItemsCommand}"
                          IsRefreshing="{Binding IsRefreshing}">
             <CollectionView ItemsSource="{Binding GalleryItems}"
@@ -26,7 +25,7 @@
                                     <TapGestureRecognizer CommandParameter="{Binding .}"
                                                           Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:GalleryViewModel}}, Path=GoToDetailsCommand}" />
                                 </Frame.GestureRecognizers>
-                                <Image Source="{Binding SmallImageUrl}"
+                                <Image Source="{Binding FinalImageUrl}"
                                        IsAnimationPlaying="True"
                                        MaximumHeightRequest="400"
                                        Aspect="AspectFill" />
@@ -34,11 +33,9 @@
                             <FlexLayout>
                                 <Label Text="{Binding Name}"
                                        Padding="0,3,0,0"
-                                       FlexLayout.Grow="1"
-                                       TextColor="WhiteSmoke" />
+                                       FlexLayout.Grow="1"/>
                                 <Label Text="{Binding User.UserName, StringFormat='~{0}'}"
-                                       Padding="0,3,0,0"
-                                       TextColor="WhiteSmoke" />
+                                       Padding="0,3,0,0"/>
                             </FlexLayout>
                         </VerticalStackLayout>
                     </DataTemplate>

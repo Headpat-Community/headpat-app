@@ -14,6 +14,8 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.Models
         public int Id { get; set; }
         [JsonProperty("attributes.username")]
         public string UserName { get; set; }
+        [JsonIgnore]
+        public string Password { get; set; }
         [JsonProperty("attributes.email")]
         public string EMail { get; set; }
         [JsonProperty("attributes.confirmed")]

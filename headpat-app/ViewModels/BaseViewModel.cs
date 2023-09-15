@@ -23,5 +23,12 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
         public BaseViewModel()
         {
         }
+
+        [RelayCommand]
+        async Task PerformLogout()
+        {
+            SecureStorage.RemoveAll();
+            await Shell.Current.GoToAsync("//Login");
+        }
     }
 }

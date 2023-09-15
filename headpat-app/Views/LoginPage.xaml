@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="HeadpatCommunity.Mobile.HeadpatApp.Views.LoginPage"
+             xmlns:models="clr-namespace:HeadpatCommunity.Mobile.HeadpatApp.Models"
+             xmlns:viewmodels="clr-namespace:HeadpatCommunity.Mobile.HeadpatApp.ViewModels"
+             x:DataType="viewmodels:LoginViewModel"
+             Shell.FlyoutBehavior="Disabled"
+             Shell.NavBarIsVisible="False"
+             Title="{Binding Title}">
+    <VerticalStackLayout VerticalOptions="CenterAndExpand">
+        <Entry VerticalOptions="Center" Placeholder="Benutzername" Text="{Binding User.UserName}" />
+        <Entry VerticalOptions="Center" Placeholder="Passwort" Text="{Binding User.Password}" IsPassword="True" />
+        <Button Text="Anmelden" Command="{Binding PerformLoginCommand}"/>
+    </VerticalStackLayout>
+</ContentPage>

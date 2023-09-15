@@ -1,4 +1,6 @@
-﻿namespace HeadpatCommunity.Mobile.HeadpatApp
+﻿using System.ComponentModel.Design;
+
+namespace HeadpatCommunity.Mobile.HeadpatApp
 {
     public partial class AppShell : Shell
     {
@@ -7,6 +9,13 @@
             InitializeComponent();
 
             Routing.RegisterRoute(nameof(GalleryDetailsPage), typeof(GalleryDetailsPage));
+
+            var authToken = SecureStorage.GetAsync("AuthToken").Result;
+
+            if (authToken is not null)
+                MainShell.CurrentItem = Dashboard;
+            else
+                MainShell.CurrentItem = Login;
         }
     }
 }
