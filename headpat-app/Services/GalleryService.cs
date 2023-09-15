@@ -27,14 +27,12 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.Services
 
             var response = await _httpClient.GetAsync(Endpoints.GET_GALLERY);
 
-            if (response.IsSuccessStatusCode)
-            {
-                var json = JObject.Parse(await response.Content.ReadAsStringAsync());
-                galleryItems = JsonConvert.DeserializeObject<List<GalleryItem>>(json["data"].ToString());
-                galleryItems.Shuffle();
-            }
-            else
+            if (!response.IsSuccessStatusCode)
                 throw new Exception($"Error while fetching gallery items: {response.StatusCode}");
+
+            var json = JObject.Parse(await response.Content.ReadAsStringAsync());
+            galleryItems = JsonConvert.DeserializeObject<List<GalleryItem>>(json["data"].ToString());
+            galleryItems.Shuffle();
 
             return galleryItems;
         }

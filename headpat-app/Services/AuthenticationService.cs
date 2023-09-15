@@ -28,10 +28,10 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.Services
 
             var response = await _httpClient.PostAsync(Endpoints.LOGIN_USER, content);
 
-            if (response.IsSuccessStatusCode)
-                return await response.Content.ReadAsStringAsync();
-            else
+            if (!response.IsSuccessStatusCode)
                 throw new Exception($"Error while logging in: {response.StatusCode}");
+
+            return await response.Content.ReadAsStringAsync();
         }
     }
 }

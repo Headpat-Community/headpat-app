@@ -25,35 +25,34 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.Services
 
             var response = await _httpClient.GetAsync(Endpoints.GET_ANNOUNCEMENTS);
 
-            if (response.IsSuccessStatusCode)
-            {
-                var json = JObject.Parse(await response.Content.ReadAsStringAsync());
-                announcements = JsonConvert.DeserializeObject<List<Announcement>>(json["data"].ToString());
-
-                var cachedUsers = new Dictionary<int, User>();
-
-                foreach (var announcement in announcements)
-                {
-                    if (cachedUsers.ContainsKey(announcement.CreatedBy))
-                        announcement.CreatedByUser = cachedUsers[announcement.CreatedBy];
-                    else
-                    {
-                        var responseUser = await _httpClient.GetAsync(string.Format(Endpoints.GET_USER, announcement.CreatedBy));
-
-                        if (responseUser.IsSuccessStatusCode)
-                        {
-                            var jsonUser = JObject.Parse(await responseUser.Content.ReadAsStringAsync());
-
-                            announcement.CreatedByUser = JsonConvert.DeserializeObject<User>(jsonUser["data"]["attributes"]["users_permissions_user"].ToString());
-                            announcement.CreatedByUser.AvatarUrl = jsonUser["data"]["attributes"]["avatar"]["data"]["attributes"]["formats"]["small"]["url"].ToString();
-
-                            cachedUsers.Add(announcement.CreatedBy, announcement.CreatedByUser);
-                        }
-                    }
-                }
-            }
-            else
+            if (!response.IsSuccessStatusCode)
                 throw new Exception($"Error while fetching announcements: {response.StatusCode}");
+
+            var json = JObject.Parse(await response.Content.ReadAsStringAsync());
+            announcements = JsonConvert.DeserializeObject<List<Announcement>>(json["data"].ToString());
+
+            var cachedUsers = new Dictionary<int, User>();
+
+            foreach (var announcement in announcements)
+            {
+                if (cachedUsers.ContainsKey(announcement.CreatedBy))
+                {
+                    announcement.CreatedByUser = cachedUsers[announcement.CreatedBy];
+                    continue;
+                }
+
+                var responseUser = await _httpClient.GetAsync(string.Format(Endpoints.GET_USER, announcement.CreatedBy));
+
+                if (!responseUser.IsSuccessStatusCode)
+                    throw new Exception($"Error while fetching announcements: {response.StatusCode}");
+
+                var jsonUser = JObject.Parse(await responseUser.Content.ReadAsStringAsync());
+
+                announcement.CreatedByUser = JsonConvert.DeserializeObject<User>(jsonUser["data"]["attributes"]["users_permissions_user"].ToString());
+                announcement.CreatedByUser.AvatarUrl = jsonUser["data"]["attributes"]["avatar"]["data"]["attributes"]["formats"]["small"]["url"].ToString();
+
+                cachedUsers.Add(announcement.CreatedBy, announcement.CreatedByUser);
+            }
 
             return announcements;
         }

@@ -53,6 +53,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Remove="CustomPin.cs" />
 	  <Compile Remove="Platforms\Android\CustomMapHandler.cs" />
 	  <Compile Remove="Platforms\Android\MapCallbackHandler.cs" />
 	</ItemGroup>
