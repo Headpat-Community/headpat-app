@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,14 +14,13 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.Models
         [JsonProperty("id")]
         public int Id { get; set; }
 
-        [JsonIgnore]
-        public string Token { get; set; }
-
         [JsonProperty("attributes.username")]
         public string UserName { get; set; }
-
+      
+#nullable enable
         [JsonIgnore]
-        public string Password { get; set; }
+        public string? Password { get; set; }
+#nullable disable
 
         [JsonProperty("attributes.email")]
         public string EMail { get; set; }

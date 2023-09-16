@@ -11,43 +11,28 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
 {
     public partial class AppShellViewModel : BaseViewModel
     {
-        AuthenticationService _service;
+#nullable enable
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsAuthenticated))]
+        User? authenticatedUser;
 
+        public bool IsAuthenticated => authenticatedUser is not null;
+#nullable disable
 
-        public AppShellViewModel(AuthenticationService service)
+        public AppShellViewModel()
         {
-            _service = service;
         }
 
         [RelayCommand]
-        async Task GoToProfileAsync()
+        async Task SetAuthenticatedUserFromStorageAsync()
         {
-           var userData = await SecureStorage.GetAsync("AuthenticatedUser");
-
-            if (userData is null)
-            {
-                await Shell.Current.GoToAsync(nameof(LoginPage));
-                return;
-            }
-
-            var json = JObject.Parse(userData);
-            var tokenValid = await _service.ValidateTokenAsync(json["jwt"].ToString());
-
-            if (tokenValid)
-            {
-                
-                await Shell.Current.GoToAsync(nameof(LoginPage));
-                return;
-            }
-
-            await Shell.Current.GoToAsync(nameof(ProfilePage));
+            AuthenticatedUser = await BaseService.GetAuthenticatedUser();
         }
 
         [RelayCommand]
-        async Task PerformLogoutAsync()
+        async Task SetAuthenticatedUserAsync(User authenticatedUser)
         {
-            SecureStorage.RemoveAll();
-            await Shell.Current.GoToAsync("//Login");
+            AuthenticatedUser = authenticatedUser;
         }
     }
 }

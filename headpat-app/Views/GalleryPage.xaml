@@ -36,6 +36,7 @@
                                        FlexLayout.Grow="1"/>
                                 <Label Text="{Binding User.UserName, StringFormat='~{0}'}"
                                        Padding="0,3,0,0"/>
+                                <Label Text="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AppShellViewModel}}, Path=IsAuthenticatedTest}" />
                             </FlexLayout>
                         </VerticalStackLayout>
                     </DataTemplate>

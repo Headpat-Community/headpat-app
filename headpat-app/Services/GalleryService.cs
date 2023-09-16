@@ -10,15 +10,9 @@ using System.Threading.Tasks;
 
 namespace HeadpatCommunity.Mobile.HeadpatApp.Services
 {
-    public class GalleryService
+    public class GalleryService : BaseService
     {
-        HttpClient _httpClient;
         List<GalleryItem> galleryItems = new();
-
-        public GalleryService()
-        {
-            _httpClient = new();
-        }
 
         public async Task<List<GalleryItem>> GetGalleryItemsAsync(bool isRefreshing = false)
         {

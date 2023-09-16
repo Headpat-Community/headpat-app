@@ -1,19 +1,12 @@
+using Newtonsoft.Json.Linq;
+
 namespace HeadpatCommunity.Mobile.HeadpatApp.Views;
 
 public partial class ProfilePage : ContentPage
 {
-	public ProfilePage(ProfileViewModel viewModel)
-	{
-		InitializeComponent();
-		BindingContext = viewModel;
-
-		
-	}
-
-    protected override void OnAppearing()
+    public ProfilePage(ProfileViewModel viewModel)
     {
-        base.OnAppearing();
-
-		
+        InitializeComponent();
+        BindingContext = viewModel;
     }
 }

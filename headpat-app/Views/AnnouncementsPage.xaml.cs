@@ -6,11 +6,6 @@ public partial class AnnouncementsPage : ContentPage
 	{
 		InitializeComponent();
 		BindingContext = viewModel;
-    }
-
-	protected override void OnAppearing()
-	{
-        base.OnAppearing();
-		(BindingContext as AnnouncementsViewModel).GetAnnouncementsCommand.Execute(null);
+		viewModel.GetAnnouncementsCommand.Execute(null);
     }
 }

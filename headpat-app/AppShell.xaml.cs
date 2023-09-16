@@ -13,8 +13,6 @@ namespace HeadpatCommunity.Mobile.HeadpatApp
             Routing.RegisterRoute(nameof(ProfilePage), typeof(ProfilePage));
             Routing.RegisterRoute(nameof(AnnouncementDetailsPage), typeof(AnnouncementDetailsPage));
             Routing.RegisterRoute(nameof(GalleryDetailsPage), typeof(GalleryDetailsPage));
-            
-
         }
     }
 }

@@ -1,7 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,7 +21,7 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
 
         public LoginViewModel(AuthenticationService service, IConnectivity connectivity)
         {
-            Title = "Anmelden";
+            Title = "Login";
             _service = service;
             _connectivity = connectivity;
         }
@@ -45,10 +48,17 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
 
                 IsBusy = true;
 
-                var result = await _service.LoginUserAsync(User.EMail, User.Password);
+                var json = JObject.Parse(await _service.LoginUserAsync(User.EMail, User.Password));
+                
+                User = JsonConvert.DeserializeObject<User>(json["user"].ToString());
 
-                await SecureStorage.SetAsync("AuthenticatedUser", result);
-                await Shell.Current.GoToAsync("//Dashboard");
+                await SecureStorage.SetAsync("AuthenticatedUser", json.ToString());
+
+                await Shell.Current.GoToAsync("..", true,
+                    new Dictionary<string, object>
+                    {
+                        {"User", _service.GetProfileAsync(User.Id) }
+                    });
             }
             catch (Exception ex)
             {

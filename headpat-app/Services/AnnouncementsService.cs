@@ -8,20 +8,14 @@ using System.Threading.Tasks;
 
 namespace HeadpatCommunity.Mobile.HeadpatApp.Services
 {
-    public class AnnouncementsService
+    public class AnnouncementsService : BaseService
     {
-        HttpClient _httpClient;
-        List<Announcement> announcements = new();
-
-        public AnnouncementsService()
-        {
-            _httpClient = new();
-        }
+        List<Announcement> _announcements = new();
 
         public async Task<List<Announcement>> GetAnnouncementsAsync(bool isRefreshing = false)
         {
-            if (announcements?.Count > 0 && !isRefreshing)
-                return announcements;
+            if (_announcements?.Count > 0 && !isRefreshing)
+                return _announcements;
 
             var response = await _httpClient.GetAsync(Endpoints.GET_ANNOUNCEMENTS);
 
@@ -29,11 +23,11 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.Services
                 throw new Exception($"Error while fetching announcements: {response.StatusCode}");
 
             var json = JObject.Parse(await response.Content.ReadAsStringAsync());
-            announcements = JsonConvert.DeserializeObject<List<Announcement>>(json["data"].ToString());
+            _announcements = JsonConvert.DeserializeObject<List<Announcement>>(json["data"].ToString());
 
             var cachedUsers = new Dictionary<int, User>();
 
-            foreach (var announcement in announcements)
+            foreach (var announcement in _announcements)
             {
                 if (cachedUsers.ContainsKey(announcement.CreatedBy))
                 {
@@ -41,7 +35,7 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.Services
                     continue;
                 }
 
-                var responseUser = await _httpClient.GetAsync(string.Format(Endpoints.GET_USER, announcement.CreatedBy));
+                var responseUser = await _httpClient.GetAsync(string.Format(Endpoints.GET_USER_DATA, announcement.CreatedBy));
 
                 if (!responseUser.IsSuccessStatusCode)
                     throw new Exception($"Error while fetching announcements: {response.StatusCode}");
@@ -54,7 +48,7 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.Services
                 cachedUsers.Add(announcement.CreatedBy, announcement.CreatedByUser);
             }
 
-            return announcements;
+            return _announcements;
         }
     }
 }

@@ -1,21 +1,17 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace HeadpatCommunity.Mobile.HeadpatApp.Services
 {
-    public class AuthenticationService
+    public class AuthenticationService : BaseService
     {
-        HttpClient _httpClient;
-
-        public AuthenticationService()
-        {
-            _httpClient = new();
-        }
-
         public async Task<string> LoginUserAsync(string eMail, string password)
         {
             _httpClient.DefaultRequestHeaders.Authorization = null;
@@ -36,13 +32,20 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.Services
             return await response.Content.ReadAsStringAsync();
         }
 
-        public async Task<bool> ValidateTokenAsync(string token)
+        public async Task<Profile> GetProfileAsync(int id)
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new("Bearer", token);
+            Profile profile;
 
-            var response = await _httpClient.GetAsync(Endpoints.VALIDATE_USER);
+            var response = await _httpClient.GetAsync(string.Format(Endpoints.GET_USER_DATA, id));
 
-            return response.IsSuccessStatusCode;
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"Error while fetching profile: {response.StatusCode}");
+
+            var json = JObject.Parse(await response.Content.ReadAsStringAsync());
+            profile = JsonConvert.DeserializeObject<Profile>(json["data"].ToString());
+
+            profile.User.AvatarUrl = json["data"]["attributes"]["avatar"]["data"]["attributes"]["formats"]["small"]["url"].ToString();
+            return profile;
         }
     }
 }

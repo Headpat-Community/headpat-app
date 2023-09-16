@@ -5,10 +5,9 @@
              xmlns:models="clr-namespace:HeadpatCommunity.Mobile.HeadpatApp.Models"
              xmlns:viewmodels="clr-namespace:HeadpatCommunity.Mobile.HeadpatApp.ViewModels"
              x:DataType="viewmodels:LoginViewModel"
-            Shell.FlyoutBehavior="Disabled"
+             Shell.FlyoutBehavior="Disabled"
+             Shell.NavBarIsVisible="False"
              Title="{Binding Title}">
-    <!---->
-    <!--Shell.NavBarIsVisible="False"-->
     <VerticalStackLayout VerticalOptions="CenterAndExpand"
                          Padding="40">
         <Entry VerticalOptions="Center"
