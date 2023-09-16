@@ -6,7 +6,6 @@
              x:DataType="viewmodels:GalleryViewModel"
              x:Class="HeadpatCommunity.Mobile.HeadpatApp.Views.GalleryPage"
              Title="{Binding Title}">
-
     <Grid ColumnDefinitions="*"
           RowDefinitions="*"
           Padding="20">
@@ -36,7 +35,6 @@
                                        FlexLayout.Grow="1"/>
                                 <Label Text="{Binding User.UserName, StringFormat='~{0}'}"
                                        Padding="0,3,0,0"/>
-                                <Label Text="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AppShellViewModel}}, Path=IsAuthenticatedTest}" />
                             </FlexLayout>
                         </VerticalStackLayout>
                     </DataTemplate>

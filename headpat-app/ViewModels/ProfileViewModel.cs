@@ -26,21 +26,27 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
         }
 
         [RelayCommand]
-        async Task GetProfileDataAsync(int id)
+        async Task GetProfileAsync()
         {
             if (IsBusy)
                 return;
 
+            if (Profile is not null)
+                return;
+
+            IsBusy = true;
+
             try
             {
-                if (_connectivity.NetworkAccess != NetworkAccess.Internet)
+                var user = await _service.GetAuthenticatedUser();
+
+                if (user is null)
                 {
-                    await Shell.Current.DisplayAlert("Fehler", "Keine Internetverbindung :c", "Ok");
+                    await Shell.Current.GoToAsync(nameof(LoginPage));
                     return;
                 }
 
-                IsBusy = true;
-                Profile = await _service.GetProfileAsync(id);
+                Profile = await _service.GetProfileAsync(user.Id);
             }
             catch (Exception ex)
             {
@@ -54,10 +60,16 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
         }
 
         [RelayCommand]
-        async Task CheckProfileAsync(bool isAuthenticated)
+        async Task PerformLogout()
         {
-            if (Profile is null)
-                await Shell.Current.GoToAsync(nameof(LoginPage));
+            if (IsBusy)
+                return;
+
+            SecureStorage.RemoveAll();
+
+            Profile = null;
+
+            await Shell.Current.GoToAsync("//Announcements");
         }
     }
 }

@@ -10,7 +10,7 @@ namespace HeadpatCommunity.Mobile.HeadpatApp
     {
         public static MauiAppBuilder RegisterViewModels(this MauiAppBuilder mauiAppBuilder)
         {
-            mauiAppBuilder.Services.AddSingleton<AppShellViewModel>();
+           // mauiAppBuilder.Services.AddSingleton<AppShellViewModel>();
             mauiAppBuilder.Services.AddSingleton<ProfileViewModel>();
             mauiAppBuilder.Services.AddSingleton<AnnouncementsViewModel>();
             mauiAppBuilder.Services.AddSingleton<GalleryViewModel>();

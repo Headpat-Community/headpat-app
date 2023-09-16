@@ -11,7 +11,7 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
     public partial class AnnouncementDetailsViewModel : BaseViewModel
     {
         [ObservableProperty]
-        Announcement announcement;
+        Announcement _announcement;
 
         public AnnouncementDetailsViewModel()
         {

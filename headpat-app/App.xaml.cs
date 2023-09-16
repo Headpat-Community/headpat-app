@@ -4,25 +4,10 @@ namespace HeadpatCommunity.Mobile.HeadpatApp
 {
     public partial class App : Application
     {
-        AppShellViewModel _appShellViewModel;
-
-        public App(AppShellViewModel viewModel)
+        public App()
         {
             InitializeComponent();
-            _appShellViewModel = viewModel;
-            MainPage = new AppShell(_appShellViewModel);
-        }
-
-        protected override Window CreateWindow(IActivationState activationState)
-        {
-            var window = base.CreateWindow(activationState);
-
-            window.Activated += (s, e) =>
-            {
-                _appShellViewModel.SetAuthenticatedUserFromStorageCommand.Execute(null);
-            };
-
-            return window;
+            MainPage = new AppShell();
         }
     }
 }

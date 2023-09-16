@@ -17,7 +17,7 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
         IConnectivity _connectivity;
 
         [ObservableProperty]
-        User user = new();
+        User _user = new();
 
         public LoginViewModel(AuthenticationService service, IConnectivity connectivity)
         {
@@ -54,11 +54,7 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
 
                 await SecureStorage.SetAsync("AuthenticatedUser", json.ToString());
 
-                await Shell.Current.GoToAsync("..", true,
-                    new Dictionary<string, object>
-                    {
-                        {"User", _service.GetProfileAsync(User.Id) }
-                    });
+                await Shell.Current.GoToAsync("..");
             }
             catch (Exception ex)
             {

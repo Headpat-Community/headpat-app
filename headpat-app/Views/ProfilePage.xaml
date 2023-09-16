@@ -9,10 +9,11 @@
              Title="{Binding Title}">
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior EventName="Appearing"
-                                        Command="{Binding CheckProfileCommand}" />
+                                        Command="{Binding GetProfileCommand}" />
     </ContentPage.Behaviors>
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Logout" />
+        <ToolbarItem Text="Logout"
+                     Command="{Binding PerformLogoutCommand}" />
     </ContentPage.ToolbarItems>
     <ScrollView>
         <VerticalStackLayout>

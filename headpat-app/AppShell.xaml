@@ -5,13 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:HeadpatCommunity.Mobile.HeadpatApp.Views"
     xmlns:viewmodels="clr-namespace:HeadpatCommunity.Mobile.HeadpatApp.ViewModels"
-    x:DataType="viewmodels:AppShellViewModel"
     Shell.FlyoutBehavior="Disabled">
-    <!--<Shell.ToolbarItems>
-        <ToolbarItem Text="Profil"
-                     IconImageSource="dotnet_bot.svg"
-                     Command="{Binding GoToProfileCommand}" />
-    </Shell.ToolbarItems>-->
     <TabBar x:Name="Dashboard"
             Route="Dashboard">
         <Tab Title="News"

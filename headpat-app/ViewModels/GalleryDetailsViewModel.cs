@@ -11,7 +11,7 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
     public partial class GalleryDetailsViewModel : BaseViewModel
     {
         [ObservableProperty]
-        GalleryItem galleryItem;
+        GalleryItem _galleryItem;
 
         public GalleryDetailsViewModel()
         {

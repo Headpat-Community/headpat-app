@@ -15,7 +15,7 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
         IConnectivity _connectivity;
 
         [ObservableProperty]
-        bool isRefreshing;
+        bool _isRefreshing;
 
         public ObservableCollection<GalleryItem> GalleryItems { get; } = new();
 
