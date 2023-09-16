@@ -18,6 +18,8 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.Services
 
         public async Task<string> LoginUserAsync(string eMail, string password)
         {
+            _httpClient.DefaultRequestHeaders.Authorization = null;
+
             Dictionary<string, string> values = new()
             {
                 { "identifier", eMail },
@@ -32,6 +34,15 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.Services
                 throw new Exception($"Error while logging in: {response.StatusCode}");
 
             return await response.Content.ReadAsStringAsync();
+        }
+
+        public async Task<bool> ValidateTokenAsync(string token)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new("Bearer", token);
+
+            var response = await _httpClient.GetAsync(Endpoints.VALIDATE_USER);
+
+            return response.IsSuccessStatusCode;
         }
     }
 }

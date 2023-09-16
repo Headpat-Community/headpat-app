@@ -18,7 +18,7 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.Services
             _httpClient = new();
         }
 
-        public async Task<List<Announcement>> GetAnnouncements(bool isRefreshing = false)
+        public async Task<List<Announcement>> GetAnnouncementsAsync(bool isRefreshing = false)
         {
             if (announcements?.Count > 0 && !isRefreshing)
                 return announcements;

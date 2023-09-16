@@ -36,13 +36,13 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
             {
                 if (_connectivity.NetworkAccess != NetworkAccess.Internet)
                 {
-                    await Shell.Current.DisplayAlert("≧ ﹏ ≦", "Keine Internetverbindung!", "Ok");
+                    await Shell.Current.DisplayAlert("Fehler", "Keine Internetverbindung!", "Ok");
                     return;
                 }
 
                 IsBusy = true;
 
-                var items = await _service.GetAnnouncements(IsRefreshing);
+                var items = await _service.GetAnnouncementsAsync(IsRefreshing);
 
                 if (items?.Count > 0)
                     Announcements.Clear();

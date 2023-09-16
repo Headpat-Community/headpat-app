@@ -39,7 +39,7 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
 
                 if (string.IsNullOrWhiteSpace(User.EMail) || string.IsNullOrWhiteSpace(User.Password))
                 {
-                    await Shell.Current.DisplayAlert("≧ ﹏ ≦", "Bitte gib deine E-Mail und dein Passwort ein!", "Ok");
+                    await Shell.Current.DisplayAlert("Fehler", "Bitte gib deine E-Mail und dein Passwort ein!", "Ok");
                     return;
                 }
 

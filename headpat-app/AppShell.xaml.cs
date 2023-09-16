@@ -4,21 +4,17 @@ namespace HeadpatCommunity.Mobile.HeadpatApp
 {
     public partial class AppShell : Shell
     {
-        public AppShell()
+        public AppShell(AppShellViewModel viewModel)
         {
             InitializeComponent();
+            BindingContext = viewModel;
 
+            Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
+            Routing.RegisterRoute(nameof(ProfilePage), typeof(ProfilePage));
             Routing.RegisterRoute(nameof(AnnouncementDetailsPage), typeof(AnnouncementDetailsPage));
             Routing.RegisterRoute(nameof(GalleryDetailsPage), typeof(GalleryDetailsPage));
             
-            var authToken = SecureStorage.GetAsync("AuthToken").Result;
 
-            //TODO: Prüfen ob Authentication gültig
-
-            if (authToken is not null)
-                MainShell.CurrentItem = Dashboard;
-            else
-                MainShell.CurrentItem = Login;
         }
     }
 }

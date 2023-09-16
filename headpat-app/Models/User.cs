@@ -13,6 +13,9 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.Models
         [JsonProperty("id")]
         public int Id { get; set; }
 
+        [JsonIgnore]
+        public string Token { get; set; }
+
         [JsonProperty("attributes.username")]
         public string UserName { get; set; }
 
