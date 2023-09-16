@@ -15,15 +15,17 @@
         <ToolbarItem Text="Logout"
                      Command="{Binding PerformLogoutCommand}" />
     </ContentPage.ToolbarItems>
-    <ScrollView>
-        <VerticalStackLayout>
-            <Grid ColumnDefinitions="*,Auto,*"
+    <Grid ColumnDefinitions="*"
+          RowDefinitions="*">
+        <ScrollView>
+            <VerticalStackLayout>
+                <Grid ColumnDefinitions="*,Auto,*"
                   RowDefinitions="160,Auto">
-                <Image BackgroundColor="{StaticResource Darker}"
+                    <Image BackgroundColor="{StaticResource Darker}"
                          Grid.ColumnSpan="3"
                          HeightRequest="160"
                          HorizontalOptions="FillAndExpand" />
-                <Border Grid.RowSpan="2"
+                    <Border Grid.RowSpan="2"
                         Grid.Column="1"
                         HeightRequest="160"
                         WidthRequest="160"
@@ -31,20 +33,26 @@
                         HorizontalOptions="Center"
                         Padding="0"
                         Margin="0,80,0,0">
-                    <Image Aspect="AspectFill"
+                        <Image Aspect="AspectFill"
                            HeightRequest="160"
                            WidthRequest="160"
                            HorizontalOptions="Center"
                            VerticalOptions="Center"
+                           IsAnimationPlaying="True"
                            Source="{Binding Profile.User.AvatarUrl}" />
-                </Border>
-            </Grid>
-            <VerticalStackLayout>
-                <Label Text="{Binding Profile.DisplayName}"
+                    </Border>
+                </Grid>
+                <VerticalStackLayout>
+                    <Label Text="{Binding Profile.DisplayName}"
                        Style="{StaticResource TitleLabel}"
                        Padding="0,10,0,0"
                        HorizontalOptions="Center"/>
+                </VerticalStackLayout>
             </VerticalStackLayout>
-        </VerticalStackLayout>
-    </ScrollView>
+        </ScrollView>
+        <ActivityIndicator IsVisible="{Binding IsBusy}"
+                           IsRunning="{Binding IsBusy}"
+                           HorizontalOptions="CenterAndExpand"
+                           VerticalOptions="CenterAndExpand" />
+    </Grid>
 </ContentPage>

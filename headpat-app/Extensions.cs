@@ -14,7 +14,6 @@ namespace HeadpatCommunity.Mobile.HeadpatApp
             mauiAppBuilder.Services.AddSingleton<ProfileViewModel>();
             mauiAppBuilder.Services.AddSingleton<AnnouncementsViewModel>();
             mauiAppBuilder.Services.AddSingleton<GalleryViewModel>();
-            mauiAppBuilder.Services.AddSingleton<ProfileViewModel>();
 
             mauiAppBuilder.Services.AddTransient<LoginViewModel>();           
             mauiAppBuilder.Services.AddTransient<AnnouncementDetailsViewModel>();

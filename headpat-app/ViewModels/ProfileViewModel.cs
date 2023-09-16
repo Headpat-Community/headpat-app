@@ -31,8 +31,10 @@ namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
             if (IsBusy)
                 return;
 
-            if (Profile is not null)
+            if (Profile is not null) {
+                OnPropertyChanged(nameof(Profile)); //Bugfix: https://github.com/dotnet/maui/issues/14205
                 return;
+            }
 
             IsBusy = true;
 
