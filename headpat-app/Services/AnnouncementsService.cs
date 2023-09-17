@@ -15,6 +15,7 @@ namespace HeadpatCommunity.HeadpatApp.Services
     public class AnnouncementsService : BaseService
     {
         List<Announcement> _announcements = new();
+        Dictionary<int, UserData> _cachedUserData = new();
 
         public async Task<List<Announcement>> GetAnnouncementsAsync(bool isRefreshing = false)
         {
@@ -28,20 +29,18 @@ namespace HeadpatCommunity.HeadpatApp.Services
 
             _announcements = response.Data;
 
-            var cachedUserData = new Dictionary<int, UserData>();
-
             foreach (var announcement in _announcements)
             {
-                if (cachedUserData.ContainsKey(announcement.Attributes.CreatedBy.Data.Id))
+                if (_cachedUserData.ContainsKey(announcement.Attributes.CreatedBy.Data.Id))
                 {
-                    announcement.Attributes.CreatedBy_UserData = cachedUserData[announcement.Attributes.CreatedBy.Data.Id];
+                    announcement.Attributes.CreatedBy_UserData = _cachedUserData[announcement.Attributes.CreatedBy.Data.Id];
                     continue;
                 }
 
                 var userData = await base.GetUserData(announcement.Attributes.CreatedBy.Data.Id);
 
                 announcement.Attributes.CreatedBy_UserData = userData;
-                cachedUserData.Add(announcement.Attributes.CreatedBy.Data.Id, userData);
+                _cachedUserData.Add(announcement.Attributes.CreatedBy.Data.Id, userData);
             }
 
             return _announcements;

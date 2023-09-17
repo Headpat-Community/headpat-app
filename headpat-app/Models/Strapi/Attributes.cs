@@ -157,7 +157,7 @@ namespace HeadpatCommunity.HeadpatApp.Models.Strapi
         public UsersPermissionsUser UsersPermissionsUser { get; set; }
 
         [JsonPropertyName("avatar")]
-        public Avatar Avatar { get; set; }
+        public Response<Avatar> Avatar { get; set; }
     }
 
     public class UsersPermissionsUserAttributes : Attributes

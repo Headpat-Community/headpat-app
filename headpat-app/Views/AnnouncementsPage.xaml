@@ -29,7 +29,7 @@
                                         Grid.RowSpan="2"
                                         VerticalOptions="Center"
                                         StrokeShape="RoundRectangle 50">
-                                    <Image Source="{Binding Attributes.CreatedBy_UserData.Attributes.Avatar.Attributes.Formats.SmallImage}"
+                                    <Image Source="{Binding Attributes.CreatedBy_UserData.Attributes.Avatar.Data.Attributes.FinalImageUrl}"
                                            HeightRequest="50"/>
                                 </Border>
                             </Grid>

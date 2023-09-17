@@ -39,7 +39,7 @@
                            HorizontalOptions="Center"
                            VerticalOptions="Center"
                            IsAnimationPlaying="True"
-                           Source="{Binding UserData.Attributes.Avatar.Attributes.FinalImageUrl}" />
+                           Source="{Binding UserData.Attributes.Avatar.Data.Attributes.FinalImageUrl}" />
                     </Border>
                 </Grid>
                 <VerticalStackLayout>
