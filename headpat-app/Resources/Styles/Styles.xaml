@@ -13,8 +13,8 @@
         <Setter Property="Padding" Value="10"/>
         <Setter Property="Margin" Value="0,0,0,10"/>
     </Style>
-    
-    
+
+
     <Style TargetType="ActivityIndicator">
         <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
     </Style>

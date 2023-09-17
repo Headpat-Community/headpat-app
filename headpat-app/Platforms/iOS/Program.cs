@@ -1,7 +1,7 @@
 ﻿using ObjCRuntime;
 using UIKit;
 
-namespace HeadpatCommunity.Mobile.HeadpatApp
+namespace HeadpatCommunity.HeadpatApp
 {
     public class Program
     {

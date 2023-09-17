@@ -1,6 +1,6 @@
 using Microsoft.Maui.Maps;
 
-namespace HeadpatCommunity.Mobile.HeadpatApp.Views;
+namespace HeadpatCommunity.HeadpatApp.Views;
 
 public partial class MapPage : ContentPage
 {
@@ -18,6 +18,6 @@ public partial class MapPage : ContentPage
 
         //headpatMap.Pins.Add(pin);
         
-        headpatMap.MoveToRegion(new MapSpan(new Location(0, 0), 10, 15));
+        //headpatMap.MoveToRegion(new MapSpan(new Location(0, 0), 10, 15));
     }
 }

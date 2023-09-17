@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HeadpatCommunity.Mobile.HeadpatApp
+namespace HeadpatCommunity.HeadpatApp
 {
     class JsonPathConverter : JsonConverter
     {
@@ -24,7 +24,7 @@ namespace HeadpatCommunity.Mobile.HeadpatApp
                                                 .OfType<JsonPropertyAttribute>()
                                                 .FirstOrDefault();
 
-                string jsonPath = (att != null ? att.PropertyName : prop.Name);
+                string jsonPath = att != null ? att.PropertyName : prop.Name;
                 JToken token = jo.SelectToken(jsonPath);
 
                 if (token != null && token.Type != JTokenType.Null)

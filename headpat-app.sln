@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.7.34024.191
+VisualStudioVersion = 17.8.34112.27
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "headpat-app", "headpat-app\headpat-app.csproj", "{E905EE9F-DDA5-47A5-818E-36EF7EBA473D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "headpat-app", "headpat-app\headpat-app.csproj", "{090AA5D3-0B57-4BD4-A3BB-E4F466F8257D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,17 +11,17 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E905EE9F-DDA5-47A5-818E-36EF7EBA473D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E905EE9F-DDA5-47A5-818E-36EF7EBA473D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E905EE9F-DDA5-47A5-818E-36EF7EBA473D}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{E905EE9F-DDA5-47A5-818E-36EF7EBA473D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E905EE9F-DDA5-47A5-818E-36EF7EBA473D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E905EE9F-DDA5-47A5-818E-36EF7EBA473D}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{090AA5D3-0B57-4BD4-A3BB-E4F466F8257D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{090AA5D3-0B57-4BD4-A3BB-E4F466F8257D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{090AA5D3-0B57-4BD4-A3BB-E4F466F8257D}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{090AA5D3-0B57-4BD4-A3BB-E4F466F8257D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{090AA5D3-0B57-4BD4-A3BB-E4F466F8257D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{090AA5D3-0B57-4BD4-A3BB-E4F466F8257D}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {810CC1B3-F669-4DCC-993E-793EDD279C3E}
+		SolutionGuid = {9779C2DF-C215-42E1-A7B3-A8309E471475}
 	EndGlobalSection
 EndGlobal

@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace HeadpatCommunity.Mobile.HeadpatApp.Services
+namespace HeadpatCommunity.HeadpatApp.Services
 {
     public class GalleryService : BaseService
     {

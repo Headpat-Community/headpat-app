@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
+namespace HeadpatCommunity.HeadpatApp.ViewModels
 {
     public partial class BaseViewModel : ObservableObject
     {

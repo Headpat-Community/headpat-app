@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
+namespace HeadpatCommunity.HeadpatApp.ViewModels
 {
     [QueryProperty(nameof(Profile), "Profile")]
     public partial class ProfileViewModel : BaseViewModel

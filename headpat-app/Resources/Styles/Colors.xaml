@@ -6,7 +6,7 @@
 
     <Color x:Key="Dark">#00111C</Color>
     <Color x:Key="Darker">#000000</Color>
-    
+
     <Color x:Key="Primary">#4f46e5</Color>
     <Color x:Key="Secondary">#6c67c5</Color>
     <Color x:Key="Tertiary">#2B0B98</Color>

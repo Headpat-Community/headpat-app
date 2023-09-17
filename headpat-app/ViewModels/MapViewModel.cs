@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
+namespace HeadpatCommunity.HeadpatApp.ViewModels
 {
     public partial class MapPageViewModel : BaseViewModel
     {

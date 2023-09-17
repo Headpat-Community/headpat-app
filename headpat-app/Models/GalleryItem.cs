@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace HeadpatCommunity.Mobile.HeadpatApp.Models
+namespace HeadpatCommunity.HeadpatApp.Models
 {
     [JsonConverter(typeof(JsonPathConverter))]
     public class GalleryItem

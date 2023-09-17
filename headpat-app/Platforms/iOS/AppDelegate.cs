@@ -1,6 +1,6 @@
 ﻿using Foundation;
 
-namespace HeadpatCommunity.Mobile.HeadpatApp
+namespace HeadpatCommunity.HeadpatApp
 {
     [Register("AppDelegate")]
     public class AppDelegate : MauiUIApplicationDelegate

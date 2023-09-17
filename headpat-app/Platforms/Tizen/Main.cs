@@ -2,7 +2,7 @@ using Microsoft.Maui;
 using Microsoft.Maui.Hosting;
 using System;
 
-namespace HeadpatCommunity.Mobile.HeadpatApp
+namespace HeadpatCommunity.HeadpatApp
 {
     internal class Program : MauiApplication
     {

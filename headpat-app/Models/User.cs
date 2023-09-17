@@ -1,12 +1,11 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HeadpatCommunity.Mobile.HeadpatApp.Models
+namespace HeadpatCommunity.HeadpatApp.Models
 {
     [JsonConverter(typeof(JsonPathConverter))]
     public class User

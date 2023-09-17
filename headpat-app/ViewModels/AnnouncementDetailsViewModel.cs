@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HeadpatCommunity.Mobile.HeadpatApp.ViewModels
+namespace HeadpatCommunity.HeadpatApp.ViewModels
 {
     [QueryProperty(nameof(Announcement), "Announcement")]
     public partial class AnnouncementDetailsViewModel : BaseViewModel

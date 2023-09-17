@@ -1,4 +1,4 @@
-namespace HeadpatCommunity.Mobile.HeadpatApp.Views;
+namespace HeadpatCommunity.HeadpatApp.Views;
 
 public partial class LoginPage : ContentPage
 {

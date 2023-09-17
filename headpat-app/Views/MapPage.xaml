@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="HeadpatCommunity.Mobile.HeadpatApp.Views.MapPage"   
-             xmlns:HeadpatApp="clr-namespace:HeadpatCommunity.Mobile.HeadpatApp"
+             x:Class="HeadpatCommunity.HeadpatApp.Views.MapPage"   
+             xmlns:HeadpatApp="clr-namespace:HeadpatCommunity.HeadpatApp"
              xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
-             xmlns:models="clr-namespace:HeadpatCommunity.Mobile.HeadpatApp.Models"
-             xmlns:viewModels="clr-namespace:HeadpatCommunity.Mobile.HeadpatApp.ViewModels"
+             xmlns:models="clr-namespace:HeadpatCommunity.HeadpatApp.Models"
+             xmlns:viewModels="clr-namespace:HeadpatCommunity.HeadpatApp.ViewModels"
              x:DataType="viewModels:MapPageViewModel">
     <ScrollView BackgroundColor="Black">
-        <maps:Map x:Name="headpatMap" />
+        <!--<maps:Map x:Name="headpatMap" />-->
     </ScrollView>
 </ContentPage>

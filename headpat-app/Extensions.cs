@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HeadpatCommunity.Mobile.HeadpatApp
+namespace HeadpatCommunity.HeadpatApp
 {
     public static class Extensions
     {
@@ -28,6 +28,13 @@ namespace HeadpatCommunity.Mobile.HeadpatApp
             mauiAppBuilder.Services.AddSingleton<ProfileService>();
             mauiAppBuilder.Services.AddSingleton<AnnouncementsService>();
             mauiAppBuilder.Services.AddSingleton<GalleryService>();
+
+            return mauiAppBuilder;
+        }
+
+        public static MauiAppBuilder RegisterPlatformServices(this MauiAppBuilder mauiAppBuilder)
+        {
+            mauiAppBuilder.Services.AddSingleton<IConnectivity>(Connectivity.Current);
 
             return mauiAppBuilder;
         }

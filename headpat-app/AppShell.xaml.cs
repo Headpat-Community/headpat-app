@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.Design;
-
-namespace HeadpatCommunity.Mobile.HeadpatApp
+﻿namespace HeadpatCommunity.HeadpatApp
 {
     public partial class AppShell : Shell
     {

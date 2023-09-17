@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HeadpatCommunity.Mobile.HeadpatApp.Services
+namespace HeadpatCommunity.HeadpatApp.Services
 {
     public class ProfileService : BaseService
     {

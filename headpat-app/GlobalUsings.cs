@@ -1,5 +1,5 @@
-﻿global using HeadpatCommunity.Mobile.HeadpatApp.Models;
-global using HeadpatCommunity.Mobile.HeadpatApp.Views;
-global using HeadpatCommunity.Mobile.HeadpatApp.ViewModels;
-global using HeadpatCommunity.Mobile.HeadpatApp.Services;
+﻿global using HeadpatCommunity.HeadpatApp.Models;
+global using HeadpatCommunity.HeadpatApp.Views;
+global using HeadpatCommunity.HeadpatApp.ViewModels;
+global using HeadpatCommunity.HeadpatApp.Services;
 global using CommunityToolkit.Mvvm.Input;
