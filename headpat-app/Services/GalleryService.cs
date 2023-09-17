@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Json;
@@ -12,23 +10,22 @@ namespace HeadpatCommunity.HeadpatApp.Services
 {
     public class GalleryService : BaseService
     {
-        List<GalleryItem> galleryItems = new();
+        List<GalleryItem> _galleryItems = new();
 
         public async Task<List<GalleryItem>> GetGalleryItemsAsync(bool isRefreshing = false)
         {
-            if (galleryItems?.Count > 0 && !isRefreshing)
-                return galleryItems;
+            if (_galleryItems?.Count > 0 && !isRefreshing)
+                return _galleryItems;
 
-            var response = await _httpClient.GetAsync(Endpoints.GET_GALLERY);
+            var response = await _client.GetFromJsonAsync<ResponseList<GalleryItem>>(Endpoints.GET_GALLERY);
 
-            if (!response.IsSuccessStatusCode)
-                throw new Exception($"Error while fetching gallery items: {response.StatusCode}");
+            if (response?.Data is null || response.Error is not null)
+                throw new Exception($"Error while fetching gallery items.");
 
-            var json = JObject.Parse(await response.Content.ReadAsStringAsync());
-            galleryItems = JsonConvert.DeserializeObject<List<GalleryItem>>(json["data"].ToString());
-            galleryItems.Shuffle();
+            _galleryItems = response.Data;
+            _galleryItems.Shuffle();
 
-            return galleryItems;
+            return _galleryItems;
         }
     }
 }

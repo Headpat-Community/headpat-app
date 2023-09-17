@@ -1,10 +1,9 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace HeadpatCommunity.HeadpatApp.Services
@@ -13,8 +12,6 @@ namespace HeadpatCommunity.HeadpatApp.Services
     {
         public async Task<string> LoginUserAsync(string eMail, string password)
         {
-            _httpClient.DefaultRequestHeaders.Authorization = null;
-
             Dictionary<string, string> values = new()
             {
                 { "identifier", eMail },
@@ -23,7 +20,7 @@ namespace HeadpatCommunity.HeadpatApp.Services
 
             FormUrlEncodedContent content = new(values);
 
-            var response = await _httpClient.PostAsync(Endpoints.LOGIN_USER, content);
+            var response = await _client.PostAsync(Endpoints.LOGIN_USER, content);
 
             if (!response.IsSuccessStatusCode)
                 throw new Exception($"Error while logging in: {response.StatusCode}");

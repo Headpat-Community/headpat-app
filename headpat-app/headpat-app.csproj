@@ -56,14 +56,21 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Models\Announcement.cs" />
+	  <Compile Remove="Models\GalleryItem.cs" />
+	  <Compile Remove="Models\Profile.cs" />
+	  <Compile Remove="Models\User.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui" Version="5.3.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0-rc.1.23419.4" />
 		<PackageReference Include="Microsoft.Maui.Controls.Maps" Version="8.0.0-rc.1.9171" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.0" />
+		<PackageReference Include="System.Text.Json" Version="8.0.0-rc.1.23419.4" />
 	</ItemGroup>
 
 	<ItemGroup>

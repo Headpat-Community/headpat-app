@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:models="clr-namespace:HeadpatCommunity.HeadpatApp.Models"
+             xmlns:models="clr-namespace:HeadpatCommunity.HeadpatApp.Models.Strapi.Custom"
              xmlns:viewmodels="clr-namespace:HeadpatCommunity.HeadpatApp.ViewModels"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:DataType="viewmodels:ProfileViewModel"
@@ -39,11 +39,11 @@
                            HorizontalOptions="Center"
                            VerticalOptions="Center"
                            IsAnimationPlaying="True"
-                           Source="{Binding Profile.User.AvatarUrl}" />
+                           Source="{Binding UserData.Attributes.Avatar.Attributes.FinalImageUrl}" />
                     </Border>
                 </Grid>
                 <VerticalStackLayout>
-                    <Label Text="{Binding Profile.DisplayName}"
+                    <Label Text="{Binding UserData.Attributes.DisplayName}"
                        Style="{StaticResource TitleLabel}"
                        Padding="0,10,0,0"
                        HorizontalOptions="Center"/>

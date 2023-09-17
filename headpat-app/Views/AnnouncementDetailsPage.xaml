@@ -4,11 +4,12 @@
              x:Class="HeadpatCommunity.HeadpatApp.Views.AnnouncementDetailsPage"
              xmlns:viewmodels="clr-namespace:HeadpatCommunity.HeadpatApp.ViewModels"
              x:DataType="viewmodels:AnnouncementDetailsViewModel"
-             Title="{Binding Announcement.Title}">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="{Binding Title}">
+    <ScrollView>
+        <VerticalStackLayout>
+            <Label Text="{Binding Announcement.Attributes.Title}"
+                   Style="{StaticResource TitleLabel}" />
+            <Label Text="{Binding Announcement.Attributes.Description}" />
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

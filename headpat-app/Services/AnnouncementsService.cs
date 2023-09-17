@@ -1,10 +1,14 @@
-﻿using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HeadpatCommunity.HeadpatApp.Models;
+using System.Text.Json.Serialization;
+using System.Text.Json;
+using System.Net.Http.Json;
+using Microsoft.IdentityModel.Tokens;
+
 
 namespace HeadpatCommunity.HeadpatApp.Services
 {
@@ -17,35 +21,27 @@ namespace HeadpatCommunity.HeadpatApp.Services
             if (_announcements?.Count > 0 && !isRefreshing)
                 return _announcements;
 
-            var response = await _httpClient.GetAsync(Endpoints.GET_ANNOUNCEMENTS);
+            var response = await _client.GetFromJsonAsync<ResponseList<Announcement>>(Endpoints.GET_ANNOUNCEMENTS);
 
-            if (!response.IsSuccessStatusCode)
-                throw new Exception($"Error while fetching announcements: {response.StatusCode}");
+            if (response?.Data is null || response.Error is not null)
+                throw new Exception($"Error while fetching announcements.");
 
-            var json = JObject.Parse(await response.Content.ReadAsStringAsync());
-            _announcements = JsonConvert.DeserializeObject<List<Announcement>>(json["data"].ToString());
+            _announcements = response.Data;
 
-            var cachedUsers = new Dictionary<int, User>();
+            var cachedUserData = new Dictionary<int, UserData>();
 
             foreach (var announcement in _announcements)
             {
-                if (cachedUsers.ContainsKey(announcement.CreatedBy))
+                if (cachedUserData.ContainsKey(announcement.Attributes.CreatedBy.Data.Id))
                 {
-                    announcement.CreatedByUser = cachedUsers[announcement.CreatedBy];
+                    announcement.Attributes.CreatedBy_UserData = cachedUserData[announcement.Attributes.CreatedBy.Data.Id];
                     continue;
                 }
 
-                var responseUser = await _httpClient.GetAsync(string.Format(Endpoints.GET_USER_DATA, announcement.CreatedBy));
+                var userData = await base.GetUserData(announcement.Attributes.CreatedBy.Data.Id);
 
-                if (!responseUser.IsSuccessStatusCode)
-                    throw new Exception($"Error while fetching announcements: {response.StatusCode}");
-
-                var jsonUser = JObject.Parse(await responseUser.Content.ReadAsStringAsync());
-
-                announcement.CreatedByUser = JsonConvert.DeserializeObject<User>(jsonUser["data"]["attributes"]["users_permissions_user"].ToString());
-                announcement.CreatedByUser.AvatarUrl = jsonUser["data"]["attributes"]["avatar"]["data"]["attributes"]["formats"]["small"]["url"].ToString();
-
-                cachedUsers.Add(announcement.CreatedBy, announcement.CreatedByUser);
+                announcement.Attributes.CreatedBy_UserData = userData;
+                cachedUserData.Add(announcement.Attributes.CreatedBy.Data.Id, userData);
             }
 
             return _announcements;

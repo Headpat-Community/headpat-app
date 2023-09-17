@@ -4,7 +4,7 @@
              x:Class="HeadpatCommunity.HeadpatApp.Views.GalleryDetailsPage"
              xmlns:viewmodels="clr-namespace:HeadpatCommunity.HeadpatApp.ViewModels"
              x:DataType="viewmodels:GalleryDetailsViewModel"
-             Title="{Binding GalleryItem.Name}">
+             Title="{Binding GalleryItem.Attributes.Name}">
     <VerticalStackLayout Padding="20"
                          BackgroundColor="Black">
         <Frame CornerRadius="15"
@@ -12,7 +12,7 @@
                BorderColor="Transparent"
                Padding="0"
                Margin="0,0,0,15">
-            <Image Source="{Binding GalleryItem.ImageUrl}"
+            <Image Source="{Binding GalleryItem.Attributes.Img.Attributes.FinalImageUrl}"
                             IsAnimationPlaying="True"
                             Aspect="AspectFit" />
         </Frame>
@@ -23,7 +23,7 @@
             <Label Text="Beschreibung:"
                    TextColor="WhiteSmoke"
                    Grid.Row="0"/>
-            <Label Text="{Binding GalleryItem.Description}"
+            <Label Text="{Binding GalleryItem.Attributes.LongText}"
                    TextColor="WhiteSmoke"
                    Grid.Column="1"
                    Grid.Row="0"/>
@@ -31,7 +31,7 @@
                    TextColor="WhiteSmoke"
                    Grid.Row="1"
                    Grid.Column="0"/>
-            <Label Text="{Binding GalleryItem.Created}"
+            <Label Text="{Binding GalleryItem.Attributes.Created}"
                    TextColor="WhiteSmoke"
                    Grid.Column="1"
                    Grid.Row="1"/>
@@ -39,7 +39,7 @@
                    TextColor="WhiteSmoke"
                    Grid.Row="2"
                    Grid.Column="0"/>
-            <Label Text="{Binding GalleryItem.IsNsfw}"
+            <Label Text="{Binding GalleryItem.Attributes.IsNsfw}"
                    TextColor="WhiteSmoke"
                    Grid.Column="1"
                    Grid.Row="2"/>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:models="clr-namespace:HeadpatCommunity.HeadpatApp.Models"
+             xmlns:models="clr-namespace:HeadpatCommunity.HeadpatApp.Models.Strapi.Custom"
              xmlns:viewmodels="clr-namespace:HeadpatCommunity.HeadpatApp.ViewModels"
              x:DataType="viewmodels:GalleryViewModel"
              x:Class="HeadpatCommunity.HeadpatApp.Views.GalleryPage"
@@ -24,16 +24,16 @@
                                     <TapGestureRecognizer CommandParameter="{Binding .}"
                                                           Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:GalleryViewModel}}, Path=GoToDetailsCommand}" />
                                 </Frame.GestureRecognizers>
-                                <Image Source="{Binding FinalImageUrl}"
+                                <Image Source="{Binding Attributes.Img.Attributes.FinalImageUrl}"
                                        IsAnimationPlaying="True"
                                        MaximumHeightRequest="400"
                                        Aspect="AspectFill" />
                             </Frame>
                             <FlexLayout>
-                                <Label Text="{Binding Name}"
+                                <Label Text="{Binding Attributes.Img.Attributes.Name}"
                                        Padding="0,3,0,0"
                                        FlexLayout.Grow="1"/>
-                                <Label Text="{Binding User.UserName, StringFormat='~{0}'}"
+                                <Label Text="{Binding Attributes.UsersPermissionsUser.Attributes.Username, StringFormat='~{0}'}"
                                        Padding="0,3,0,0"/>
                             </FlexLayout>
                         </VerticalStackLayout>

@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:models="clr-namespace:HeadpatCommunity.HeadpatApp.Models"
+             xmlns:models="clr-namespace:HeadpatCommunity.HeadpatApp.Models.Strapi.Custom"
              xmlns:viewmodels="clr-namespace:HeadpatCommunity.HeadpatApp.ViewModels"
              x:DataType="viewmodels:AnnouncementsViewModel"
              x:Class="HeadpatCommunity.HeadpatApp.Views.AnnouncementsPage"
              Title="{Binding Title}">
     <Grid ColumnDefinitions="*"
-              RowDefinitions="*"
-              Padding="20">
+          RowDefinitions="*"
+          Padding="20">
         <RefreshView Command="{Binding GetAnnouncementsCommand}"
-              IsRefreshing="{Binding IsRefreshing}">
+                     IsRefreshing="{Binding IsRefreshing}">
             <CollectionView ItemsSource="{Binding Announcements}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:Announcement">
                         <Border Style="{StaticResource Announcement}">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer CommandParameter="{Binding .}"
-                                               Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AnnouncementsViewModel}}, Path=GoToDetailsCommand}"/>
+                                                      Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AnnouncementsViewModel}}, Path=GoToDetailsCommand}"/>
                             </Border.GestureRecognizers>
                             <Grid ColumnDefinitions="*,Auto"
-                           RowDefinitions="Auto,Auto">
-                                <Label Text="{Binding Title}"
-                                Style="{StaticResource TitleLabel}"/>
-                                <Label Text="{Binding SideText}"
-                                Grid.Row="1"/>
+                                  RowDefinitions="Auto,Auto">
+                                <Label Text="{Binding Attributes.Title}"
+                                       Style="{StaticResource TitleLabel}"/>
+                                <Label Text="{Binding Attributes.SideText}"
+                                       Grid.Row="1"/>
                                 <Border Grid.Column="1"
-                                 Grid.RowSpan="2"
-                                 VerticalOptions="Center"
-                                 StrokeShape="RoundRectangle 50">
-                                    <Image Source="{Binding CreatedByUser.AvatarUrl}"
-                                    HeightRequest="50"/>
+                                        Grid.RowSpan="2"
+                                        VerticalOptions="Center"
+                                        StrokeShape="RoundRectangle 50">
+                                    <Image Source="{Binding Attributes.CreatedBy_UserData.Attributes.Avatar.Attributes.Formats.SmallImage}"
+                                           HeightRequest="50"/>
                                 </Border>
                             </Grid>
                         </Border>

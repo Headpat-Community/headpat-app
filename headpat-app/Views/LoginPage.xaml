@@ -12,10 +12,10 @@
                          Padding="40">
         <Entry VerticalOptions="Center"
                Placeholder="E-Mail"
-               Text="{Binding User.EMail}" />
+               Text="{Binding User.Attributes.EMail}" />
         <Entry VerticalOptions="Center"
                Placeholder="Passwort"
-               Text="{Binding User.Password}"
+               Text="{Binding User.Attributes.Password}"
                IsPassword="True" />
         <Button Text="Anmelden"
                 Command="{Binding PerformLoginCommand}"

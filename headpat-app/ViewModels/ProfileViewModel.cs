@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace HeadpatCommunity.HeadpatApp.ViewModels
 {
-    [QueryProperty(nameof(Profile), "Profile")]
+    [QueryProperty(nameof(UserData), "UserData")]
     public partial class ProfileViewModel : BaseViewModel
     {
         ProfileService _service;
         IConnectivity _connectivity;
 
         [ObservableProperty]
-        Profile profile;
+        UserData? _userData;
 
         public ProfileViewModel(ProfileService service, IConnectivity connectivity)
         {
@@ -31,8 +30,8 @@ namespace HeadpatCommunity.HeadpatApp.ViewModels
             if (IsBusy)
                 return;
 
-            if (Profile is not null) {
-                OnPropertyChanged(nameof(Profile)); //Bugfix: https://github.com/dotnet/maui/issues/14205
+            if (UserData is not null) {
+                OnPropertyChanged(nameof(UserData)); //Bugfix: https://github.com/dotnet/maui/issues/14205
                 return;
             }
 
@@ -40,15 +39,10 @@ namespace HeadpatCommunity.HeadpatApp.ViewModels
 
             try
             {
-                var user = await _service.GetAuthenticatedUser();
+                UserData = await _service.GetAuthenticatedUserData();
 
-                if (user is null)
-                {
+                if (UserData is null)
                     await Shell.Current.GoToAsync(nameof(LoginPage));
-                    return;
-                }
-
-                Profile = await _service.GetProfileAsync(user.Id);
             }
             catch (Exception ex)
             {
@@ -69,7 +63,7 @@ namespace HeadpatCommunity.HeadpatApp.ViewModels
 
             SecureStorage.RemoveAll();
 
-            Profile = null;
+            UserData = null;
 
             await Shell.Current.GoToAsync("//Announcements");
         }

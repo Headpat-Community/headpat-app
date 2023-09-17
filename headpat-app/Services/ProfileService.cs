@@ -1,60 +1,47 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace HeadpatCommunity.HeadpatApp.Services
 {
     public class ProfileService : BaseService
     {
-        Profile _profile = new();
+        UserData _userData = new();
 
-        public async Task<Profile> GetProfileAsync(int id)
+        public async Task<UserData> GetProfileAsync(int id)
         {
-            if (_profile?.Id != null && _profile.Id == id)
-                return _profile;
+            if (_userData?.Id != null && _userData.Id == id)
+                return _userData;
 
-            var response = await _httpClient.GetAsync(string.Format(Endpoints.GET_USER_DATA, id));
+            _userData = await base.GetUserData(id);
 
-            if (!response.IsSuccessStatusCode)
-                throw new Exception($"Error while fetching profile: {response.StatusCode}");
-
-            var json = JObject.Parse(await response.Content.ReadAsStringAsync());
-            _profile = JsonConvert.DeserializeObject<Profile>(json["data"].ToString());
-
-            _profile.User.AvatarUrl = json["data"]["attributes"]["avatar"]["data"]["attributes"]["formats"]["small"]["url"].ToString();
-            return _profile;
+            return _userData;
         }
 
 #nullable enable
-        public async Task<User?> GetAuthenticatedUser()
+        public async Task<UserData?> GetAuthenticatedUserData()
         {
+            var authJson = await SecureStorage.GetAsync("AuthenticatedUser");
 
-            var userData = await SecureStorage.GetAsync("AuthenticatedUser");
-
-            if (userData is null)
+            if (authJson is null)
                 return null;
 
-            try
-            {
-                var json = JObject.Parse(userData);
-                var token = new JwtSecurityTokenHandler().ReadJwtToken(json["jwt"].ToString());
+            var authUser = JsonSerializer.Deserialize<UserAuthentication>(authJson);
 
-                if (token.ValidTo < DateTime.UtcNow)
-                    return null;
-
-                return JsonConvert.DeserializeObject<User>(json["user"].ToString());
-            }
-            catch (Exception ex)
-            {
-                Debug.Write(ex);
+            if (authUser is null)
                 return null;
-            }
+
+            var jwt = new JwtSecurityTokenHandler().ReadJwtToken(authUser.Jwt);
+
+            if (jwt.ValidTo < DateTime.UtcNow)
+                return null;
+
+            return await base.GetUserData(authUser.UserAttributes.Id);
         }
 #nullable disable
     }
