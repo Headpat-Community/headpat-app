@@ -30,11 +30,10 @@ namespace HeadpatCommunity.HeadpatApp.Services
 
             _announcements = response.Data;
 
-            foreach (var announcement in _announcements)
-            {
-                announcement.Attributes.CreatedBy_UserData = await _userService.GetUserData(announcement.Attributes.CreatedBy.Data.Id);
-                announcement.Attributes.CreatedBy = null;
-            }
+            await _userService.AddToCache(_announcements.Select(x => x.Attributes.CreatedBy.Data.Id).Distinct().ToArray());
+
+            _announcements.ToList()
+                .ForEach(x => x.Attributes.CreatedBy_UserData = _userService.CachedUserData[x.Attributes.CreatedBy.Data.Id]);
 
             return _announcements;
         }

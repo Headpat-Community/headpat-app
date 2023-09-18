@@ -26,11 +26,10 @@ namespace HeadpatCommunity.HeadpatApp.Services
 
             _galleryItems = response.Data;
 
-            foreach (var galleryItem in _galleryItems)
-            {
-                galleryItem.Attributes.CreatedBy_UserData = await _userService.GetUserData(galleryItem.Attributes.CreatedBy.Data.Id);
-                galleryItem.Attributes.CreatedBy = null;
-            }
+            await _userService.AddToCache(_galleryItems.Select(x => x.Attributes.CreatedBy.Data.Id).Distinct().ToArray());
+
+            _galleryItems.ToList()
+                .ForEach(x => x.Attributes.CreatedBy_UserData = _userService.CachedUserData[x.Attributes.CreatedBy.Data.Id]);
 
             _galleryItems.Shuffle();
 

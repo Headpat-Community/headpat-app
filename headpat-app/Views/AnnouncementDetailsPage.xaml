@@ -46,7 +46,7 @@
                       ColumnDefinitions="*,Auto"
                       RowDefinitions="Auto,Auto">
                     <Label Text="{Binding Announcement.Attributes.CreatedBy_UserData.Attributes.DisplayName}"/>
-                    <Label Text="{Binding Announcement.Attributes.CreatedBy_UserData.Attributes.UsersPermissionsUser.Data.Attributes.Username, StringFormat='@{0}'}"
+                    <Label Text="{Binding Announcement.Attributes.CreatedBy.Data.Attributes.Username, StringFormat='@{0}'}"
                            Grid.Row="1" />
                     <Grid Grid.RowSpan="2"
                           Grid.Column="1"

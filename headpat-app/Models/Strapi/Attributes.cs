@@ -162,9 +162,6 @@ namespace HeadpatCommunity.HeadpatApp.Models.Strapi
         [JsonPropertyName("location")]
         public string Location { get; set; }
 
-        [JsonPropertyName("users_permissions_user")]
-        public Response<UsersPermissionsUser> UsersPermissionsUser { get; set; }
-
         [JsonPropertyName("avatar")]
         public Response<Avatar> Avatar { get; set; }
     }

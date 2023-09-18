@@ -14,8 +14,10 @@ namespace HeadpatCommunity.HeadpatApp.ViewModels
         ProfileService _service;
         IConnectivity _connectivity;
 
+#nullable enable
         [ObservableProperty]
         UserData? _userData;
+#nullable disable
 
         public ProfileViewModel(ProfileService service, IConnectivity connectivity)
         {

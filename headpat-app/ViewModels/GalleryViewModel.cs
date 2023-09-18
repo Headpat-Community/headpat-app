@@ -21,7 +21,7 @@ namespace HeadpatCommunity.HeadpatApp.ViewModels
 
         public GalleryViewModel(GalleryService service, IConnectivity connectivity)
         {
-            Title = "Gallery";
+            Title = "Gallerie";
             _service = service;
             _connectivity = connectivity;
         }

@@ -13,7 +13,7 @@
                Padding="0"
                Margin="0,0,0,15">
             <Image Source="{Binding GalleryItem.Attributes.Img.Data.Attributes.FinalImageUrl}"
-                            IsAnimationPlaying="True"
+                            IsAnimationPlaying="True" 
                             Aspect="AspectFit" />
         </Frame>
         <Grid ColumnDefinitions="Auto,*"
