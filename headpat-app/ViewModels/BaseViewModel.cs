@@ -23,5 +23,18 @@ namespace HeadpatCommunity.HeadpatApp.ViewModels
         public BaseViewModel()
         {
         }
+
+        [RelayCommand]
+        async Task GoToProfileAsync(UserData userData)
+        {
+            if (userData is null)
+                return;
+
+            await Shell.Current.GoToAsync($"{nameof(ProfilePage)}", true,
+                new Dictionary<string, object>
+                {
+                    {"UserData", userData }
+                });
+        }
     }
 }

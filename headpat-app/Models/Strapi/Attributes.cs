@@ -28,7 +28,13 @@ namespace HeadpatCommunity.HeadpatApp.Models.Strapi
         public string SideText { get; set; }
 
         [JsonPropertyName("validuntil")]
-        public string ValidUntil { get; set; }
+        public DateTime ValidUntil { get; set; }
+
+        [JsonIgnore]
+        public bool IsValid => ValidUntil >= DateTime.Now;
+
+        [JsonIgnore]
+        public bool IsNotValid => !IsValid;
 
         [JsonPropertyName("users_permissions_user")]
         public Response<UsersPermissionsUser> CreatedBy { get; set; }
@@ -124,7 +130,7 @@ namespace HeadpatCommunity.HeadpatApp.Models.Strapi
         public string Status { get; set; }
 
         [JsonPropertyName("birthday")]
-        public string DateOfBirth { get; set; }
+        public DateTime DateOfBirth { get; set; }
 
         [JsonPropertyName("displayname")]
         public string DisplayName { get; set; }
@@ -157,7 +163,7 @@ namespace HeadpatCommunity.HeadpatApp.Models.Strapi
         public string Location { get; set; }
 
         [JsonPropertyName("users_permissions_user")]
-        public UsersPermissionsUser UsersPermissionsUser { get; set; }
+        public Response<UsersPermissionsUser> UsersPermissionsUser { get; set; }
 
         [JsonPropertyName("avatar")]
         public Response<Avatar> Avatar { get; set; }

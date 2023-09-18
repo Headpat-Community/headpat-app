@@ -28,21 +28,13 @@ namespace HeadpatCommunity.HeadpatApp.Services
             if (response?.Data is null || response.Error is not null)
                 throw new Exception($"Error while fetching announcements.");
 
-            foreach (var announcement in response.Data)
-            {
-                if (_userService.CachedUserData.ContainsKey(announcement.Attributes.CreatedBy.Data.Id))
-                {
-                    announcement.Attributes.CreatedBy_UserData = _userService.CachedUserData[announcement.Attributes.CreatedBy.Data.Id];
-                    continue;
-                }
-
-                var userData = await _userService.GetUserData(announcement.Attributes.CreatedBy.Data.Id);
-
-                announcement.Attributes.CreatedBy_UserData = userData;
-                _userService.CachedUserData.Add(announcement.Attributes.CreatedBy.Data.Id, userData);
-            }
-
             _announcements = response.Data;
+
+            foreach (var announcement in _announcements)
+            {
+                announcement.Attributes.CreatedBy_UserData = await _userService.GetUserData(announcement.Attributes.CreatedBy.Data.Id);
+                announcement.Attributes.CreatedBy = null;
+            }
 
             return _announcements;
         }

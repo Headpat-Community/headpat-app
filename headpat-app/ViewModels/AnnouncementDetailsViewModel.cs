@@ -15,6 +15,7 @@ namespace HeadpatCommunity.HeadpatApp.ViewModels
 
         public AnnouncementDetailsViewModel()
         {
+            Title = "Ankündigung";
         }
     }
 }

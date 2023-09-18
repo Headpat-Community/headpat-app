@@ -8,6 +8,6 @@
              xmlns:viewModels="clr-namespace:HeadpatCommunity.HeadpatApp.ViewModels"
              x:DataType="viewModels:MapPageViewModel">
     <ScrollView BackgroundColor="Black">
-        <!--<maps:Map x:Name="headpatMap" />-->
+        <maps:Map x:Name="headpatMap" />
     </ScrollView>
 </ContentPage>

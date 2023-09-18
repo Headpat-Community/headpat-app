@@ -24,23 +24,14 @@ namespace HeadpatCommunity.HeadpatApp.Services
             if (response?.Data is null || response.Error is not null)
                 throw new Exception($"Error while fetching gallery items.");
 
-            foreach (var galleryItem in response.Data)
+            _galleryItems = response.Data;
+
+            foreach (var galleryItem in _galleryItems)
             {
-                if (_userService.CachedUserData.ContainsKey(galleryItem.Attributes.CreatedBy.Data.Id))
-                {
-                    galleryItem.Attributes.CreatedBy_UserData = _userService.CachedUserData[galleryItem.Attributes.CreatedBy.Data.Id];
-                    continue;
-                }
-
-                var userData = await _userService.GetUserData(galleryItem.Attributes.CreatedBy.Data.Id);
-
+                galleryItem.Attributes.CreatedBy_UserData = await _userService.GetUserData(galleryItem.Attributes.CreatedBy.Data.Id);
                 galleryItem.Attributes.CreatedBy = null;
-                galleryItem.Attributes.CreatedBy_UserData = userData;
-
-                _userService.CachedUserData.Add(galleryItem.Attributes.CreatedBy_UserData.Id, userData);
             }
 
-            _galleryItems = response.Data;
             _galleryItems.Shuffle();
 
             return _galleryItems;

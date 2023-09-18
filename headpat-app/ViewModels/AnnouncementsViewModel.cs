@@ -21,7 +21,7 @@ namespace HeadpatCommunity.HeadpatApp.ViewModels
 
         public AnnouncementsViewModel(AnnouncementsService service, IConnectivity connectivity)
         {
-            Title = "Announcements";
+            Title = "Ankündigungen";
             _service = service;
             _connectivity = connectivity;
         }

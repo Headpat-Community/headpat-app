@@ -9,5 +9,7 @@ namespace HeadpatCommunity.HeadpatApp.Models.Strapi.Custom
 {
     public class UserData : Data<UserDataAttributes>
     {
+        [JsonIgnore]
+        public DateTime Updated { get; set; } = new();
     }
 }
