@@ -11,13 +11,13 @@ namespace HeadpatCommunity.HeadpatApp.Models.Strapi
     {
 #nullable enable
         [JsonPropertyName("thumbnail")]
-        public ImageData? ThumbnailImage { get; set; }
+        public FormatImage? ThumbnailImage { get; set; }
 
         [JsonPropertyName("small")]
-        public ImageData? SmallImage { get; set; }
+        public FormatImage? SmallImage { get; set; }
 
         [JsonPropertyName("medium")]
-        public ImageData? MediumImage { get; set; }
+        public FormatImage? MediumImage { get; set; }
 #nullable disable
     }
 }

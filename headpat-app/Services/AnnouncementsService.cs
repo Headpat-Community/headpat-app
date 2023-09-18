@@ -15,7 +15,8 @@ namespace HeadpatCommunity.HeadpatApp.Services
     public class AnnouncementsService : BaseService
     {
         List<Announcement> _announcements = new();
-        Dictionary<int, UserData> _cachedUserData = new();
+
+        public AnnouncementsService(GlobalUserService userService) : base(userService) { }
 
         public async Task<List<Announcement>> GetAnnouncementsAsync(bool isRefreshing = false)
         {
@@ -27,21 +28,21 @@ namespace HeadpatCommunity.HeadpatApp.Services
             if (response?.Data is null || response.Error is not null)
                 throw new Exception($"Error while fetching announcements.");
 
-            _announcements = response.Data;
-
-            foreach (var announcement in _announcements)
+            foreach (var announcement in response.Data)
             {
-                if (_cachedUserData.ContainsKey(announcement.Attributes.CreatedBy.Data.Id))
+                if (_userService.CachedUserData.ContainsKey(announcement.Attributes.CreatedBy.Data.Id))
                 {
-                    announcement.Attributes.CreatedBy_UserData = _cachedUserData[announcement.Attributes.CreatedBy.Data.Id];
+                    announcement.Attributes.CreatedBy_UserData = _userService.CachedUserData[announcement.Attributes.CreatedBy.Data.Id];
                     continue;
                 }
 
-                var userData = await base.GetUserData(announcement.Attributes.CreatedBy.Data.Id);
+                var userData = await _userService.GetUserData(announcement.Attributes.CreatedBy.Data.Id);
 
                 announcement.Attributes.CreatedBy_UserData = userData;
-                _cachedUserData.Add(announcement.Attributes.CreatedBy.Data.Id, userData);
+                _userService.CachedUserData.Add(announcement.Attributes.CreatedBy.Data.Id, userData);
             }
+
+            _announcements = response.Data;
 
             return _announcements;
         }

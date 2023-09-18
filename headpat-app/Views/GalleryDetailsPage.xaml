@@ -12,7 +12,7 @@
                BorderColor="Transparent"
                Padding="0"
                Margin="0,0,0,15">
-            <Image Source="{Binding GalleryItem.Attributes.Img.Attributes.FinalImageUrl}"
+            <Image Source="{Binding GalleryItem.Attributes.Img.Data.Attributes.FinalImageUrl}"
                             IsAnimationPlaying="True"
                             Aspect="AspectFit" />
         </Frame>
@@ -23,7 +23,7 @@
             <Label Text="Beschreibung:"
                    TextColor="WhiteSmoke"
                    Grid.Row="0"/>
-            <Label Text="{Binding GalleryItem.Attributes.LongText}"
+            <Label Text="{Binding GalleryItem.Attributes.Description}"
                    TextColor="WhiteSmoke"
                    Grid.Column="1"
                    Grid.Row="0"/>

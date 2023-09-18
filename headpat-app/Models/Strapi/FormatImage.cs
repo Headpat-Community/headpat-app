@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace HeadpatCommunity.HeadpatApp.Models.Strapi
 {
-    public class ImageData
+    public class FormatImage
     {
         [JsonPropertyName("name")]
         public string Name { get; set; }

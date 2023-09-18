@@ -97,7 +97,7 @@ namespace HeadpatCommunity.HeadpatApp.Models.Strapi
         public bool IsNsfw { get; set; }
 #nullable enable
         [JsonPropertyName("longtext")]
-        public string? LongText { get; set; }
+        public string? Description { get; set; }
 #nullable disable
         [JsonPropertyName("pats")]
         public long? Pats { get; set; }
@@ -106,10 +106,13 @@ namespace HeadpatCommunity.HeadpatApp.Models.Strapi
         public long? Votes { get; set; }
 
         [JsonPropertyName("img")]
-        public Data<ImageAttributes> Img { get; set; }
+        public Response<ImageData> Img { get; set; }
 
         [JsonPropertyName("users_permissions_user")]
-        public UsersPermissionsUser UsersPermissionsUser { get; set; }
+        public Response<UsersPermissionsUser> CreatedBy { get; set; }
+
+        [JsonIgnore]
+        public UserData CreatedBy_UserData { get; set; }
     }
 
     public class UserDataAttributes : Attributes

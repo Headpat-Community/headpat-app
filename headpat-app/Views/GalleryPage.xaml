@@ -24,16 +24,16 @@
                                     <TapGestureRecognizer CommandParameter="{Binding .}"
                                                           Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:GalleryViewModel}}, Path=GoToDetailsCommand}" />
                                 </Frame.GestureRecognizers>
-                                <Image Source="{Binding Attributes.Img.Attributes.FinalImageUrl}"
+                                <Image Source="{Binding Attributes.Img.Data.Attributes.FinalImageUrl}"
                                        IsAnimationPlaying="True"
                                        MaximumHeightRequest="400"
                                        Aspect="AspectFill" />
                             </Frame>
                             <FlexLayout>
-                                <Label Text="{Binding Attributes.Img.Attributes.Name}"
+                                <Label Text="{Binding Attributes.Name}"
                                        Padding="0,3,0,0"
                                        FlexLayout.Grow="1"/>
-                                <Label Text="{Binding Attributes.UsersPermissionsUser.Attributes.Username, StringFormat='~{0}'}"
+                                <Label Text="{Binding Attributes.CreatedBy_UserData.Attributes.DisplayName, StringFormat='~{0}'}"
                                        Padding="0,3,0,0"/>
                             </FlexLayout>
                         </VerticalStackLayout>

@@ -13,12 +13,16 @@ namespace HeadpatCommunity.HeadpatApp.Services
     {
         UserData _userData = new();
 
+        public ProfileService(GlobalUserService userService) : base(userService)
+        {
+        }
+
         public async Task<UserData> GetProfileAsync(int id)
         {
             if (_userData?.Id != null && _userData.Id == id)
                 return _userData;
 
-            _userData = await base.GetUserData(id);
+            _userData = await _userService.GetUserData(id);
 
             return _userData;
         }
@@ -41,7 +45,7 @@ namespace HeadpatCommunity.HeadpatApp.Services
             if (jwt.ValidTo < DateTime.UtcNow)
                 return null;
 
-            return await base.GetUserData(authUser.UserAttributes.Id);
+            return await _userService.GetUserData(authUser.UserAttributes.Id);
         }
 #nullable disable
     }

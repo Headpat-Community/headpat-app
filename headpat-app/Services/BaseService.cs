@@ -10,21 +10,14 @@ namespace HeadpatCommunity.HeadpatApp.Services
 {
     public abstract class BaseService
     {
-        protected HttpClient _client;
+        protected HttpClient _client = new();
+        protected GlobalUserService _userService;
 
-        public BaseService()
+        public BaseService(GlobalUserService userService)
         {
-            _client = new();
+            _userService = userService;
         }
 
-        public async Task<UserData> GetUserData(int id)
-        {
-            var userDataResponse = await _client.GetFromJsonAsync<Response<UserData>>(string.Format(Endpoints.GET_USER_DATA, id));
-
-            if (userDataResponse?.Data is null || userDataResponse.Error is not null)
-                throw new Exception($"Error while fetching announcements.");
-
-            return userDataResponse.Data;
-        }
+        public BaseService() { }
     }
 }
