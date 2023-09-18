@@ -72,6 +72,9 @@ namespace HeadpatCommunity.HeadpatApp.Models.Strapi
         [JsonPropertyName("mime")]
         public string MimeType { get; set; }
 
+        [JsonIgnore]
+        public bool IsAnimation => MimeType == "image/gif";
+
         [JsonPropertyName("size")]
         public double Size { get; set; }
 

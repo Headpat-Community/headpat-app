@@ -38,7 +38,7 @@
                            WidthRequest="160"
                            HorizontalOptions="Center"
                            VerticalOptions="Center"
-                           IsAnimationPlaying="True"
+                           IsAnimationPlaying="{Binding UserData.Attributes.Avatar.Data.Attributes.IsAnimation}"
                            Source="{Binding UserData.Attributes.Avatar.Data.Attributes.FinalImageUrl}" />
                     </Border>
                 </Grid>

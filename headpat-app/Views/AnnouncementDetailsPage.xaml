@@ -39,7 +39,8 @@
                                               Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AnnouncementDetailsViewModel}}, Path=GoToProfileCommand}" />
                     </Border.GestureRecognizers>
                     <Image Source="{Binding Announcement.Attributes.CreatedBy_UserData.Attributes.Avatar.Data.Attributes.FinalImageUrl}" 
-                       HeightRequest="50" />
+                           IsAnimationPlaying="{Binding Announcement.Attributes.CreatedBy_UserData.Attributes.Avatar.Data.Attributes.IsAnimation}"
+                           HeightRequest="50" />
                 </Border>
                 <Grid Padding="10,0,0,0" 
                       FlexLayout.Grow="1"

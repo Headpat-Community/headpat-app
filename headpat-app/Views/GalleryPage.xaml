@@ -25,7 +25,7 @@
                                                           Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:GalleryViewModel}}, Path=GoToDetailsCommand}" />
                                 </Frame.GestureRecognizers>
                                 <Image Source="{Binding Attributes.Img.Data.Attributes.FinalImageUrl}"
-                                       IsAnimationPlaying="True"
+                                       IsAnimationPlaying="{Binding Attributes.Img.Data.Attributes.IsAnimation}"
                                        MaximumHeightRequest="400"
                                        Aspect="AspectFill" />
                             </Frame>
