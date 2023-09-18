@@ -7,7 +7,8 @@
              xmlns:models="clr-namespace:HeadpatCommunity.HeadpatApp.Models"
              xmlns:viewModels="clr-namespace:HeadpatCommunity.HeadpatApp.ViewModels"
              x:DataType="viewModels:MapPageViewModel">
-    <ScrollView BackgroundColor="Black">
+    <Grid ColumnDefinitions="*"
+          RowDefinitions="*">
         <maps:Map x:Name="headpatMap" />
-    </ScrollView>
+    </Grid>
 </ContentPage>

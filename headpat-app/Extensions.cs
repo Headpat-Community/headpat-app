@@ -10,11 +10,10 @@ namespace HeadpatCommunity.HeadpatApp
     {
         public static MauiAppBuilder RegisterViewModels(this MauiAppBuilder mauiAppBuilder)
         {
-           // mauiAppBuilder.Services.AddSingleton<AppShellViewModel>();
             mauiAppBuilder.Services.AddSingleton<ProfileViewModel>();
             mauiAppBuilder.Services.AddSingleton<AnnouncementsViewModel>();
             mauiAppBuilder.Services.AddSingleton<GalleryViewModel>();
-
+            mauiAppBuilder.Services.AddSingleton<MapViewModel>();
             mauiAppBuilder.Services.AddTransient<LoginViewModel>();           
             mauiAppBuilder.Services.AddTransient<AnnouncementDetailsViewModel>();
             mauiAppBuilder.Services.AddTransient<GalleryDetailsViewModel>();
@@ -29,6 +28,7 @@ namespace HeadpatCommunity.HeadpatApp
             mauiAppBuilder.Services.AddSingleton<ProfileService>();
             mauiAppBuilder.Services.AddSingleton<AnnouncementsService>();
             mauiAppBuilder.Services.AddSingleton<GalleryService>();
+            mauiAppBuilder.Services.AddSingleton<MapService>();
  
             return mauiAppBuilder;
         }

@@ -195,4 +195,25 @@ namespace HeadpatCommunity.HeadpatApp.Models.Strapi
         [JsonPropertyName("blocked")]
         public bool Blocked { get; set; }
     }
+
+    public class LocationAttributes : Attributes
+    {
+        [JsonPropertyName("latitude")]
+        public double Latitude { get; set; }
+
+        [JsonPropertyName("longitude")]
+        public double Longitude { get; set; }
+    }
+
+    public class PointsOfInterestAttributes : LocationAttributes
+    {
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+
+        [JsonPropertyName("image")]
+        public ImageData Image { get; set; }
+
+        [JsonPropertyName("public_map_locations")]
+        public ResponseList<PointsOfInterestLocation> LocationPoints { get; set; }
+    }
 }

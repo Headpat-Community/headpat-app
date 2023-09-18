@@ -1,23 +1,30 @@
+using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
 
 namespace HeadpatCommunity.HeadpatApp.Views;
 
 public partial class MapPage : ContentPage
 {
-	public MapPage()
-	{
-		InitializeComponent();
+    public MapPage(MapViewModel viewModel)
+    {
+        InitializeComponent();
+        BindingContext = viewModel;
+        viewModel.GetPointsOfInterestCommand.Execute(null);
 
-        //var pin = new CustomPin()
-        //{
-        //    Label = "veve",
-        //    Location = new Location(0, 0),
-        //    Address = "waawawawawa",
-        //    ImageSource = ImageSource.FromUri(new Uri("https://cdn.discordapp.com/attachments/729429053941219480/1150123457141542982/1583572093.veve_alhpblsr-modified.png"))
-        //};
+        foreach (var poi in viewModel.PointsOfInterest)
+        {
+            var polygon = new Polygon
+            {
+                StrokeWidth = 6,
+                FillColor = Color.FromHex("#FF0000"),
+            };
 
-        //headpatMap.Pins.Add(pin);
-        
-        //headpatMap.MoveToRegion(new MapSpan(new Location(0, 0), 10, 15));
+            foreach (var loc in poi.Attributes.LocationPoints.Data)
+                polygon.Geopath.Add(new Location(poi.Attributes.Longitude, poi.Attributes.Longitude));
+
+            headpatMap.MapElements.Add(polygon);
+        }
+
+        //headpatMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Location(viewModel.PointsOfInterest[0].Attributes.Latitude, viewModel.PointsOfInterest[0].Attributes.Longitude), Distance.FromMiles(1)));
     }
 }
