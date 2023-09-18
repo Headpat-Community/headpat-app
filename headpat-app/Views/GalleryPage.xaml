@@ -41,7 +41,6 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
         </RefreshView>
-
         <ActivityIndicator IsVisible="{Binding IsBusy}"
                            IsRunning="{Binding IsBusy}"
                            HorizontalOptions="CenterAndExpand"
