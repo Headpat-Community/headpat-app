@@ -104,6 +104,9 @@ namespace HeadpatCommunity.HeadpatApp.Models.Strapi
 
         [JsonPropertyName("nsfw")]
         public bool IsNsfw { get; set; }
+
+        [JsonIgnore]
+        public string IsNsfwStr => IsNsfw.ToString().Replace(bool.TrueString, "Ja").Replace(bool.FalseString, "Nein");
 #nullable enable
         [JsonPropertyName("longtext")]
         public string? Description { get; set; }

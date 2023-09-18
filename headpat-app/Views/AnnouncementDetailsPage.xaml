@@ -5,7 +5,7 @@
              xmlns:viewmodels="clr-namespace:HeadpatCommunity.HeadpatApp.ViewModels"
              x:DataType="viewmodels:AnnouncementDetailsViewModel"
              Title="{Binding Title}">
-    <ScrollView Margin="20">
+    <ScrollView Padding="20">
         <VerticalStackLayout>
             <FlexLayout Wrap="Wrap" AlignItems="Center">
                 <Label Text="{Binding Announcement.Attributes.Title}"
