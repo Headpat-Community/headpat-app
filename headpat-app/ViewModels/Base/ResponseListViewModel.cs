@@ -21,7 +21,7 @@ namespace HeadpatCommunity.HeadpatApp.ViewModels.Base
 
         public ObservableCollection<T> Items { get; } = new();
 
-        int _itemLimit = 200;
+        int _itemLimit = 2000;
         int _totalItems = -1;
 
         public ResponseListViewModel(ResponseListService<T> service, IConnectivity connectivity, string endpoint, bool enablePaging)

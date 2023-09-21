@@ -23,6 +23,8 @@
                          IsRefreshing="{Binding IsRefreshing}">
             <CollectionView x:Name="cvGallery"
                             ItemsSource="{Binding Items}"
+                            RemainingItemsThreshold="0"
+                            RemainingItemsThresholdReachedCommand="{Binding GetItemsCommand}"
                             SelectionMode="None">
                 <CollectionView.ItemsLayout>
                     <GridItemsLayout Span="{Binding ColumnCount}"

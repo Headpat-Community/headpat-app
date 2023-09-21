@@ -13,7 +13,6 @@ namespace HeadpatCommunity.HeadpatApp.ViewModels
     {
         [ObservableProperty]
         int _columnCount = 1;
-
         int _minImageWidth = 500;
 
         public GalleryViewModel(ResponseListService<GalleryItem> service, IConnectivity connectivity) :
