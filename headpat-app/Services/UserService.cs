@@ -1,4 +1,5 @@
 ﻿using HeadpatCommunity.HeadpatApp.Models.Strapi.Custom;
+using HeadpatCommunity.HeadpatApp.Services.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace HeadpatCommunity.HeadpatApp.Services
 {
-    public class GlobalUserService : BaseService
+    public class UserService : HttpService
     {
         public Dictionary<int, UserData> CachedUserData { get; set; } = new();
         const int CACHE_EXPIRATION_MINUTES = 15;
@@ -34,7 +35,7 @@ namespace HeadpatCommunity.HeadpatApp.Services
             for (var i = 0; i < idsToFetch.Count; i++)
                 sb.AppendFormat(Endpoints.USER_DATA_USER_FILTER, i, idsToFetch[i]);
 
-            var response = await _client.GetFromJsonAsync<ResponseList<UserData>>($"{Endpoints.GET_USER_DATA}{sb}");
+            var response = await Client.GetFromJsonAsync<ResponseList<UserData>>($"{Endpoints.GET_USER_DATA}{sb}");
 
             if (response?.Data is null || response.Error is not null)
                 throw new Exception($"Error while fetching announcements.");
@@ -49,7 +50,7 @@ namespace HeadpatCommunity.HeadpatApp.Services
                 (DateTime.Now - CachedUserData[id].Updated).TotalMinutes < CACHE_EXPIRATION_MINUTES)
                 return CachedUserData[id];
 
-            var userDataResponse = await _client.GetFromJsonAsync<Response<UserData>>(string.Format(Endpoints.GET_USER_DATA, id));
+            var userDataResponse = await Client.GetFromJsonAsync<Response<UserData>>(string.Format(Endpoints.GET_USER_DATA, id));
 
             if (userDataResponse?.Data is null || userDataResponse.Error is not null)
                 throw new Exception($"Error while fetching announcements.");
@@ -60,6 +61,24 @@ namespace HeadpatCommunity.HeadpatApp.Services
                 CachedUserData.Add(id, userDataResponse.Data);
 
             return userDataResponse.Data;
+        }
+
+        public async Task<string> LoginUserAsync(string eMail, string password)
+        {
+            Dictionary<string, string> values = new()
+            {
+                { "identifier", eMail },
+                { "password", password }
+            };
+
+            FormUrlEncodedContent content = new(values);
+
+            var response = await Client.PostAsync(Endpoints.LOGIN_USER, content);
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"Error while logging in: {response.StatusCode}");
+
+            return await response.Content.ReadAsStringAsync();
         }
     }
 }

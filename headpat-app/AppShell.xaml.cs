@@ -11,5 +11,19 @@
             Routing.RegisterRoute(nameof(AnnouncementDetailsPage), typeof(AnnouncementDetailsPage));
             Routing.RegisterRoute(nameof(GalleryDetailsPage), typeof(GalleryDetailsPage));
         }
+
+        //protected override void OnNavigating(ShellNavigatingEventArgs args)
+        //{
+        //    base.OnNavigating(args);
+
+        //    if (args.Source != ShellNavigationSource.ShellSectionChanged)
+        //        return;
+
+        //    var navigation = Shell.Current.Navigation;
+        //    var pages = navigation.NavigationStack;
+
+        //    for (var i = pages.Count - 1; i >= 1; i--)
+        //        navigation.RemovePage(pages[i]);
+        //}
     }
 }

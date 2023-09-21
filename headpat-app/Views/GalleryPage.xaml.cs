@@ -6,6 +6,6 @@ public partial class GalleryPage : ContentPage
 	{
 		InitializeComponent();
 		BindingContext = viewModel;
-		viewModel.GetGalleryItemsCommand.Execute(null);
+		viewModel.GetItemsCommand.Execute(null);
 	}
 }

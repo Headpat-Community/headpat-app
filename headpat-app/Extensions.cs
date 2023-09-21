@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HeadpatCommunity.HeadpatApp.Services.Base;
 
 namespace HeadpatCommunity.HeadpatApp
 {
@@ -23,11 +24,12 @@ namespace HeadpatCommunity.HeadpatApp
 
         public static MauiAppBuilder RegisterAppServices(this MauiAppBuilder mauiAppBuilder)
         {
-            mauiAppBuilder.Services.AddSingleton<GlobalUserService>();
-            mauiAppBuilder.Services.AddSingleton<AuthenticationService>();
+            mauiAppBuilder.Services.AddSingleton<UserService>();
+
+            mauiAppBuilder.Services.AddSingleton<ResponseListService<GalleryItem>>();
+            mauiAppBuilder.Services.AddSingleton<ResponseListService<Announcement>>();
+
             mauiAppBuilder.Services.AddSingleton<ProfileService>();
-            mauiAppBuilder.Services.AddSingleton<AnnouncementsService>();
-            mauiAppBuilder.Services.AddSingleton<GalleryService>();
             mauiAppBuilder.Services.AddSingleton<MapService>();
  
             return mauiAppBuilder;

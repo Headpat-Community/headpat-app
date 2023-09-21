@@ -18,5 +18,7 @@ namespace HeadpatCommunity.HeadpatApp
         public const string VALIDATE_USER = "https://backend.headpat.de/api/users/me";
         public const string RESET_PASSWORD = "https://backend.headpat.de/api/auth/reset-password";
         public const string GET_POINTS_OF_INTEREST = "https://backend.headpat.de/api/publicmaps?populate=*";
+
+        public const string PAGINATION = "&pagination[start]={0}&pagination[limit]={1}";
     }
 }

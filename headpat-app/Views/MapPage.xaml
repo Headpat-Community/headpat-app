@@ -4,11 +4,13 @@
              x:Class="HeadpatCommunity.HeadpatApp.Views.MapPage"   
              xmlns:HeadpatApp="clr-namespace:HeadpatCommunity.HeadpatApp"
              xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
+             xmlns:sensors="clr-namespace:Microsoft.Maui.Devices.Sensors;assembly=Microsoft.Maui.Essentials"
              xmlns:models="clr-namespace:HeadpatCommunity.HeadpatApp.Models"
-             xmlns:viewModels="clr-namespace:HeadpatCommunity.HeadpatApp.ViewModels"
-             x:DataType="viewModels:MapPageViewModel">
+             xmlns:viewmodels="clr-namespace:HeadpatCommunity.HeadpatApp.ViewModels"
+             x:DataType="viewmodels:MapViewModel">
     <Grid ColumnDefinitions="*"
-          RowDefinitions="*">
-        <maps:Map x:Name="headpatMap" />
+          RowDefinitions="*,Auto">
+        <maps:Map x:Name="headpatMap">
+        </maps:Map>
     </Grid>
 </ContentPage>

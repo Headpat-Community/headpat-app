@@ -170,6 +170,12 @@ namespace HeadpatCommunity.HeadpatApp.Models.Strapi
 
         [JsonPropertyName("avatar")]
         public Response<Avatar> Avatar { get; set; }
+
+        [JsonPropertyName("latitude")]
+        public double Latitude { get; set; }
+
+        [JsonPropertyName("longitude")]
+        public double Longitude { get; set; }
     }
 
     public class UsersPermissionsUserAttributes : Attributes

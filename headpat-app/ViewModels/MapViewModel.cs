@@ -1,4 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using HeadpatCommunity.HeadpatApp.Services.Base;
+using Microsoft.Maui.Controls.Maps;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,44 +12,41 @@ using System.Threading.Tasks;
 
 namespace HeadpatCommunity.HeadpatApp.ViewModels
 {
-
-
-    public partial class MapViewModel : BaseViewModel
+    public partial class MapViewModel : ResponseListViewModel<PointsOfInterest>
     {
-        MapService _service;
-        IConnectivity _connectivity;
-
-        public ObservableCollection<PointsOfInterest> PointsOfInterest { get; } = new();
-
-        public MapViewModel(MapService service, IConnectivity connectivity)
+        public MapViewModel(ResponseListService<PointsOfInterest> service, IConnectivity connectivity) :
+            base(service, connectivity, Endpoints.GET_POINTS_OF_INTEREST, false)
         {
-            Title = "Headpat Map";
-            _service = service;
-            _connectivity = connectivity;
+            Title = "Map";
         }
 
-        [RelayCommand]
-        async Task GetPointsOfInterest()
+        public async Task<List<MapElement>> GetPointsOfInterest()
         {
-            IsBusy = false;
+            List<MapElement> mapElements = new();
 
             try
             {
-                if (_connectivity.NetworkAccess != NetworkAccess.Internet)
-                {
+                if (Connectivity.NetworkAccess != NetworkAccess.Internet)
                     await Shell.Current.DisplayAlert("Fehler", "Keine Internetverbindung :c", "Ok");
-                    return;
+                else
+                {
+                    IsBusy = true;
+                    var pointsOfInterest = await Service.GetResponseListAsync();
+
+                    foreach (var poi in pointsOfInterest.Data)
+                    {
+                        var polyline = new Polyline
+                        {
+                            StrokeColor = Color.FromArgb("#ff0000"),
+                            StrokeWidth = 5,
+                        };
+
+                        foreach (var point in poi.Attributes.LocationPoints.Data)
+                            polyline.Geopath.Add(new Location(point.Attributes.Latitude, point.Attributes.Longitude));
+
+                        mapElements.Add(polyline);
+                    }
                 }
-
-                IsBusy = true;
-
-                var pointsOfInterests = await _service.GetPointsOfInterestAsync();
-
-                if (pointsOfInterests?.Count > 0)
-                    PointsOfInterest.Clear();
-
-                foreach (var pointsOfInterest in pointsOfInterests)
-                    PointsOfInterest.Add(pointsOfInterest);
             }
             catch (Exception ex)
             {
@@ -56,8 +55,9 @@ namespace HeadpatCommunity.HeadpatApp.ViewModels
             }
             finally
             {
-                IsBusy = false;
-            }   
+            }
+
+            return mapElements;
         }
     }
 }

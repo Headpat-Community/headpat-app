@@ -16,7 +16,7 @@ namespace HeadpatCommunity.HeadpatApp.Services
     {
         List<Announcement> _announcements = new();
 
-        public AnnouncementsService(GlobalUserService userService) : base(userService) { }
+        public AnnouncementsService(UserService userService) : base(userService) { }
 
         public async Task<List<Announcement>> GetAnnouncementsAsync(bool isRefreshing = false)
         {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Android.SE.Omapi;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -11,9 +12,9 @@ namespace HeadpatCommunity.HeadpatApp.Services
     public abstract class BaseService
     {
         protected HttpClient _client = new();
-        protected GlobalUserService _userService;
+        protected UserService _userService;
 
-        public BaseService(GlobalUserService userService)
+        public BaseService(UserService userService)
         {
             _userService = userService;
         }

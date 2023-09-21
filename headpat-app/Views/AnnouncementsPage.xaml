@@ -9,9 +9,9 @@
     <Grid ColumnDefinitions="*"
           RowDefinitions="*"
           Padding="20">
-        <RefreshView Command="{Binding GetAnnouncementsCommand}"
+        <RefreshView Command="{Binding GetItemsCommand}"
                      IsRefreshing="{Binding IsRefreshing}">
-            <CollectionView ItemsSource="{Binding Announcements}">
+            <CollectionView ItemsSource="{Binding Items}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:Announcement">
                         <Border Style="{StaticResource Announcement}">

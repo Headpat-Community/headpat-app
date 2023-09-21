@@ -6,6 +6,6 @@ public partial class AnnouncementsPage : ContentPage
 	{
 		InitializeComponent();
 		BindingContext = viewModel;
-		viewModel.GetAnnouncementsCommand.Execute(null);
+		viewModel.GetItemsCommand.Execute(null);
     }
 }

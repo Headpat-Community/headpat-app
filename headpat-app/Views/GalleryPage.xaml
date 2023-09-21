@@ -1,42 +1,61 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:models="clr-namespace:HeadpatCommunity.HeadpatApp.Models.Strapi.Custom"
              xmlns:viewmodels="clr-namespace:HeadpatCommunity.HeadpatApp.ViewModels"
              x:DataType="viewmodels:GalleryViewModel"
              x:Class="HeadpatCommunity.HeadpatApp.Views.GalleryPage"
+             xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Compat.Maui"
+             xmlns:fftransformations="clr-namespace:FFImageLoading.Transformations;assembly=FFImageLoading.Compat.Transformations"
+             x:Name="cpGallery"
              Title="{Binding Title}">
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior EventName="SizeChanged"
+                                        Command="{Binding SetDisplayColumnsCommand}"
+                                        CommandParameter="{Binding Width, Source={x:Reference cpGallery}}" />
+    </ContentPage.Behaviors>
     <Grid ColumnDefinitions="*"
           RowDefinitions="*"
-          Padding="20">
-        <RefreshView Command="{Binding GetGalleryItemsCommand}"
-                     IsRefreshing="{Binding IsRefreshing}">
-            <CollectionView ItemsSource="{Binding GalleryItems}"
+          Padding="20,20,0,20">
+        <RefreshView Command="{Binding GetItemsCommand}"
+                         CommandParameter="{Binding IsRefreshing}"
+                         IsRefreshing="{Binding IsRefreshing}">
+            <CollectionView x:Name="cvGallery"
+                            ItemsSource="{Binding Items}"
                             SelectionMode="None">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Span="{Binding ColumnCount}"
+                                     Orientation="Vertical" />
+                </CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:GalleryItem">
-                        <VerticalStackLayout Margin="0,0,0,20">
-                            <Frame CornerRadius="15"
-                                   BackgroundColor="Transparent"
-                                   BorderColor="Transparent"
-                                   Padding="0">
-                                <Frame.GestureRecognizers>
-                                    <TapGestureRecognizer CommandParameter="{Binding .}"
-                                                          Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:GalleryViewModel}}, Path=GoToDetailsCommand}" />
-                                </Frame.GestureRecognizers>
-                                <Image Source="{Binding Attributes.Img.Data.Attributes.FinalImageUrl}"
+                        <Grid ColumnDefinitions="*,Auto"
+                              RowDefinitions="Auto,Auto"
+                              RowSpacing="3"
+                              Padding="0,0,20,20">
+                            <Border StrokeShape="RoundRectangle 10"
+                                    StrokeThickness="0"
+                                    Grid.ColumnSpan="2">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:GalleryViewModel}}, Path=GoToDetailsCommand}"
+                                                          CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                                <ffimageloading:CachedImage Source="{Binding Attributes.Img.Data.Attributes.FinalImageUrl}"
+                                                            Aspect="AspectFill"
+                                                            DownsampleToViewSize="True"
+                                                            HeightRequest="400" />
+                                <!--<Image Source="{Binding Attributes.Img.Data.Attributes.FinalImageUrl}"
                                        IsAnimationPlaying="{Binding Attributes.Img.Data.Attributes.IsAnimation}"
                                        MaximumHeightRequest="400"
-                                       Aspect="AspectFill" />
-                            </Frame>
-                            <FlexLayout>
-                                <Label Text="{Binding Attributes.Name}"
-                                       Padding="0,3,0,0"
-                                       FlexLayout.Grow="1"/>
-                                <Label Text="{Binding Attributes.CreatedBy_UserData.Attributes.DisplayName, StringFormat='~{0}'}"
-                                       Padding="0,3,0,0"/>
-                            </FlexLayout>
-                        </VerticalStackLayout>
+                                       Aspect="AspectFill"/>-->
+                            </Border>
+                            <Label Text="{Binding Attributes.Name}"
+                                   Grid.Row="1" />
+                            <Label Text="{Binding Attributes.CreatedBy.Data.Attributes.Username, StringFormat='~{0}'}"
+                                   Grid.Row="1"
+                                   Grid.Column="1" />
+                        </Grid>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>

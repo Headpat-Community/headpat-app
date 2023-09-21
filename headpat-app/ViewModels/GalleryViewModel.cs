@@ -1,65 +1,25 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using HeadpatCommunity.HeadpatApp.Services.Base;
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Diagnostics;
-using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace HeadpatCommunity.HeadpatApp.ViewModels
 {
-    public partial class GalleryViewModel : BaseViewModel
+    public partial class GalleryViewModel : ResponseListViewModel<GalleryItem>
     {
-        GalleryService _service;
-        IConnectivity _connectivity;
-
         [ObservableProperty]
-        bool _isRefreshing;
+        int _columnCount = 1;
 
-        public ObservableCollection<GalleryItem> GalleryItems { get; } = new();
+        int _minImageWidth = 500;
 
-        public GalleryViewModel(GalleryService service, IConnectivity connectivity)
+        public GalleryViewModel(ResponseListService<GalleryItem> service, IConnectivity connectivity) :
+            base(service, connectivity, Endpoints.GET_GALLERY, true)
         {
-            Title = "Gallerie";
-            _service = service;
-            _connectivity = connectivity;
-        }
-
-        [RelayCommand]
-        async Task GetGalleryItemsAsync()
-        {
-            if (IsBusy)
-                return;
-
-            try
-            {
-                if (_connectivity.NetworkAccess != NetworkAccess.Internet)
-                {
-                    await Shell.Current.DisplayAlert("Fehler", "Keine Internetverbindung :c", "Ok");
-                    return;
-                }
-
-                IsBusy = true;
-
-                var items = await _service.GetGalleryItemsAsync(IsRefreshing);
-
-                if (items?.Count > 0)
-                    GalleryItems.Clear();
-
-                foreach (var item in items)
-                    GalleryItems.Add(item);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex);
-                await Shell.Current.DisplayAlert("Fehler", "Gallerie konnte nicht geladen werden :c", "Ok");
-            }
-            finally
-            {
-                IsBusy = false;
-                IsRefreshing = false;
-            }
+            Title = "Galerie";
         }
 
         [RelayCommand]
@@ -73,6 +33,18 @@ namespace HeadpatCommunity.HeadpatApp.ViewModels
                 {
                     {"GalleryItem", item }
                 });
+        }
+
+        [RelayCommand]
+        void SetDisplayColumns(double width)
+        {
+            ColumnCount = (int)Math.Ceiling(width / _minImageWidth);
+        }
+
+        [RelayCommand]
+        void SetMaxImageHeight(double height)
+        {
+
         }
     }
 }

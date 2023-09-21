@@ -60,11 +60,15 @@
 	  <Compile Remove="Models\GalleryItem.cs" />
 	  <Compile Remove="Models\Profile.cs" />
 	  <Compile Remove="Models\User.cs" />
+	  <Compile Remove="Services\AnnouncementsService.cs" />
+	  <Compile Remove="Services\BaseService.cs" />
+	  <Compile Remove="Services\GalleryService.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui" Version="5.3.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
+		<PackageReference Include="FFImageLoadingCompat.Maui" Version="0.1.1" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0-rc.1.23419.4" />

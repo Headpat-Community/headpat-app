@@ -11,13 +11,13 @@ namespace HeadpatCommunity.HeadpatApp.ViewModels
 {
     public partial class LoginViewModel : BaseViewModel
     {
-        AuthenticationService _service;
+        UserService _service;
         IConnectivity _connectivity;
 
         [ObservableProperty]
         UsersPermissionsUser _user = new();
 
-        public LoginViewModel(AuthenticationService service, IConnectivity connectivity)
+        public LoginViewModel(UserService service, IConnectivity connectivity)
         {
             Title = "Login";
             _service = service;

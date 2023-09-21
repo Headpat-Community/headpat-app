@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HeadpatCommunity.HeadpatApp.Services.Base;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
@@ -9,12 +10,15 @@ using System.Threading.Tasks;
 
 namespace HeadpatCommunity.HeadpatApp.Services
 {
-    public class ProfileService : BaseService
+    public class ProfileService : HttpService
     {
+        UserService _userService;
         UserData _userData = new();
 
-        public ProfileService(GlobalUserService userService) : base(userService)
+
+        public ProfileService(UserService userService)
         {
+            _userService = userService;
         }
 
         public async Task<UserData> GetProfileAsync(int id)

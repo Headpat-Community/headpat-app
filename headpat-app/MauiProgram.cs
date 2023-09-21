@@ -6,8 +6,11 @@
 //██║░░██║███████╗██║░░██║██████╔╝██║░░░░░██║░░██║░░░██║░░░  ░╚██╗██████╔╝
 //╚═╝░░╚═╝╚══════╝╚═╝░░╚═╝╚═════╝░╚═╝░░░░░╚═╝░░╚═╝░░░╚═╝░░░  ░░╚═╝╚═════╝░
 
+using Microsoft.Maui.Handlers;
+using Microsoft.Maui.Platform;
 using Microsoft.Extensions.Logging;
 using CommunityToolkit.Maui;
+using FFImageLoading.Maui;
 
 namespace HeadpatCommunity.HeadpatApp
 {
@@ -19,6 +22,7 @@ namespace HeadpatCommunity.HeadpatApp
             builder.UseMauiApp<App>()
                 .UseMauiCommunityToolkit()
                 .UseMauiMaps()
+                .UseFFImageLoading()
                 .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -33,7 +37,20 @@ namespace HeadpatCommunity.HeadpatApp
             builder.Logging.AddDebug();
 #endif
 
+
+#if __ANDROID__
+            ImageHandler.Mapper.PrependToMapping(nameof(Microsoft.Maui.IImage.Source), (handler, view) => PrependToMappingImageSource(handler, view));
+#endif
+
             return builder.Build();
         }
+
+
+#if __ANDROID__
+        public static void PrependToMappingImageSource(IImageHandler handler, Microsoft.Maui.IImage image)
+        {
+            handler.PlatformView?.Clear();
+        }
+#endif
     }
 }
