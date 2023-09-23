@@ -12,7 +12,7 @@ namespace HeadpatCommunity.HeadpatApp.Services.Base
 
         public HttpService()
         {
-            Client = new HttpClient();
+            Client = new();
         }
     }
 }

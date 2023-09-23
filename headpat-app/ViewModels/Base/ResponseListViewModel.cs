@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace HeadpatCommunity.HeadpatApp.ViewModels.Base
 {
-    public partial class ResponseListViewModel<T> : BaseViewModel
+    public abstract partial class ResponseListViewModel<T> : BaseViewModel
     {
         public ResponseListService<T> Service { get; set; }
         public IConnectivity Connectivity { get; set; }
@@ -61,6 +61,8 @@ namespace HeadpatCommunity.HeadpatApp.ViewModels.Base
                 ////////////////////////////////////////////////////// Daten laden
                 var response = await Service.GetResponseListAsync(Items.Count, _itemLimit);
 
+                response = await ModifyResponse(response);
+
                 _totalItems = response.Meta.Pagination.Total;
                 
                 foreach (var item in response.Data)
@@ -78,5 +80,7 @@ namespace HeadpatCommunity.HeadpatApp.ViewModels.Base
                 IsRefreshing = false;
             }
         }
+
+        protected abstract Task<ResponseList<T>> ModifyResponse(ResponseList<T> responseList);
     }
 }

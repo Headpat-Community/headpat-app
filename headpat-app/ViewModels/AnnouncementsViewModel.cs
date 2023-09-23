@@ -11,10 +11,20 @@ namespace HeadpatCommunity.HeadpatApp.ViewModels
 {
     public partial class AnnouncementsViewModel : ResponseListViewModel<Announcement>
     {
-        public AnnouncementsViewModel(ResponseListService<Announcement> service, IConnectivity connectivity) :
+        UserService _userService;
+
+        public AnnouncementsViewModel(ResponseListService<Announcement> service, IConnectivity connectivity, UserService userService) :
             base(service, connectivity, Endpoints.GET_ANNOUNCEMENTS, true)
         {
             Title = "Ankündigungen";
+            _userService = userService;
+        }
+
+        protected override async Task<ResponseList<Announcement>> ModifyResponse(ResponseList<Announcement> responseList)
+        {
+            await _userService.AddToCache(responseList.Data.Select(x => x.Attributes.CreatedBy.Data.Id).Distinct().ToArray());
+            responseList.Data.ForEach(x => x.Attributes.CreatedBy_UserData = _userService.CachedUserData[x.Attributes.CreatedBy.Data.Id]);
+            return responseList;
         }
 
         [RelayCommand]

@@ -20,6 +20,11 @@ namespace HeadpatCommunity.HeadpatApp.ViewModels
             Title = "Map";
         }
 
+        protected override Task<ResponseList<PointsOfInterest>> ModifyResponse(ResponseList<PointsOfInterest> responseList)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<List<MapElement>> GetPointsOfInterest()
         {
             List<MapElement> mapElements = new();

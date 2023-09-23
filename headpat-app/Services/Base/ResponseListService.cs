@@ -10,8 +10,8 @@ namespace HeadpatCommunity.HeadpatApp.Services.Base
     public class ResponseListService<T> : HttpService
     {
         public string Endpoint { get; set; }
-
         ResponseList<T> _responseList;
+
 
         public ResponseListService()
         {
@@ -28,7 +28,9 @@ namespace HeadpatCommunity.HeadpatApp.Services.Base
                 startIndex >= _responseList.Meta.Pagination.Total)
                 return _responseList;
 
-            return await GetResponseListAsync($"{Endpoint}{string.Format(Endpoints.PAGINATION, startIndex, itemLimit)}");
+            await GetResponseListAsync($"{Endpoint}{string.Format(Endpoints.PAGINATION, startIndex, itemLimit)}");
+
+            return _responseList;
         }
 
         async Task<ResponseList<T>> GetResponseListAsync(string endpoint)
