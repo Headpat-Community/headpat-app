@@ -11,7 +11,7 @@ namespace HeadpatCommunity.HeadpatApp
     {
         public static MauiAppBuilder RegisterViewModels(this MauiAppBuilder mauiAppBuilder)
         {
-            mauiAppBuilder.Services.AddSingleton<ProfileViewModel>();
+            mauiAppBuilder.Services.AddTransient<ProfileViewModel>();
             mauiAppBuilder.Services.AddSingleton<AnnouncementsViewModel>();
             mauiAppBuilder.Services.AddSingleton<GalleryViewModel>();
             mauiAppBuilder.Services.AddSingleton<MapViewModel>();
@@ -29,7 +29,7 @@ namespace HeadpatCommunity.HeadpatApp
             mauiAppBuilder.Services.AddSingleton<ResponseListService<GalleryItem>>();
             mauiAppBuilder.Services.AddSingleton<ResponseListService<Announcement>>();
 
-            mauiAppBuilder.Services.AddSingleton<ProfileService>();
+            mauiAppBuilder.Services.AddTransient<ProfileService>();
             mauiAppBuilder.Services.AddSingleton<MapService>();
  
             return mauiAppBuilder;
@@ -47,7 +47,7 @@ namespace HeadpatCommunity.HeadpatApp
             mauiAppBuilder.Services.AddSingleton<AnnouncementsPage>();
             mauiAppBuilder.Services.AddSingleton<GalleryPage>();
             mauiAppBuilder.Services.AddSingleton<MapPage>();
-            mauiAppBuilder.Services.AddSingleton<ProfilePage>();
+            mauiAppBuilder.Services.AddTransient<ProfilePage>();
 
             mauiAppBuilder.Services.AddTransient<LoginPage>();
             mauiAppBuilder.Services.AddTransient<AnnouncementDetailsPage>();

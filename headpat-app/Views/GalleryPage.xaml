@@ -4,23 +4,36 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:models="clr-namespace:HeadpatCommunity.HeadpatApp.Models.Strapi.Custom"
              xmlns:viewmodels="clr-namespace:HeadpatCommunity.HeadpatApp.ViewModels"
+             xmlns:converters="clr-namespace:HeadpatCommunity.HeadpatApp.Converters"
              x:DataType="viewmodels:GalleryViewModel"
              x:Class="HeadpatCommunity.HeadpatApp.Views.GalleryPage"
              xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Compat.Maui"
              xmlns:fftransformations="clr-namespace:FFImageLoading.Transformations;assembly=FFImageLoading.Compat.Transformations"
              x:Name="cpGallery"
              Title="{Binding Title}">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:SizeConverter x:Key="mySizeConverter" />
+            <fftransformations:BlurredTransformation Radius="10" x:Key="BlurTransform" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior EventName="SizeChanged"
-                                        Command="{Binding SetDisplayColumnsCommand}"
-                                        CommandParameter="{Binding Width, Source={x:Reference cpGallery}}" />
+                                        Command="{Binding SetLayoutCommand}">
+            <toolkit:EventToCommandBehavior.CommandParameter>
+                <MultiBinding Converter="{StaticResource mySizeConverter}">
+                    <Binding Path="Width" Source="{x:Reference cpGallery}" />
+                    <Binding Path="Height" Source="{x:Reference cpGallery}" />
+                </MultiBinding>
+            </toolkit:EventToCommandBehavior.CommandParameter>
+        </toolkit:EventToCommandBehavior>
     </ContentPage.Behaviors>
     <Grid ColumnDefinitions="*"
           RowDefinitions="*"
           Padding="20,20,0,20">
         <RefreshView Command="{Binding GetItemsCommand}"
-                         CommandParameter="{Binding IsRefreshing}"
-                         IsRefreshing="{Binding IsRefreshing}">
+                     CommandParameter="{Binding IsRefreshing}"
+                     IsRefreshing="{Binding IsRefreshing}">
             <CollectionView x:Name="cvGallery"
                             ItemsSource="{Binding Items}"
                             RemainingItemsThreshold="0"
@@ -46,11 +59,14 @@
                                 <ffimageloading:CachedImage Source="{Binding Attributes.Img.Data.Attributes.FinalImageUrl}"
                                                             Aspect="AspectFill"
                                                             DownsampleToViewSize="True"
-                                                            HeightRequest="400" />
-                                <!--<Image Source="{Binding Attributes.Img.Data.Attributes.FinalImageUrl}"
-                                       IsAnimationPlaying="{Binding Attributes.Img.Data.Attributes.IsAnimation}"
-                                       MaximumHeightRequest="400"
-                                       Aspect="AspectFill"/>-->
+                                                            HeightRequest="400">
+                                    <!--<ffimageloading:CachedImage.Transformations>
+                                        <MultiBinding Converter="{StaticResource BooleanToTransformConverter}">
+                                            <Binding Path="Attributes.IsNsfw" />
+                                            <StatucResource />
+                                        </MultiBinding>
+                                    </ffimageloading:CachedImage.Transformations>-->
+                                </ffimageloading:CachedImage>
                             </Border>
                             <Label Text="{Binding Attributes.Name}"
                                    Grid.Row="1" />

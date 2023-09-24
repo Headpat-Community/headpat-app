@@ -11,10 +11,12 @@ namespace HeadpatCommunity.HeadpatApp.ViewModels
 {
     public partial class GalleryViewModel : ResponseListViewModel<GalleryItem>
     {
+        int minImageWidth = 500;
+        int maxImageHeight = 400;
+
         [ObservableProperty]
         int _columnCount = 1;
 
-        int _minImageWidth = 500;
         UserService _userService;
 
         public GalleryViewModel(ResponseListService<GalleryItem> service, IConnectivity connectivity, UserService userService) :
@@ -45,15 +47,9 @@ namespace HeadpatCommunity.HeadpatApp.ViewModels
         }
 
         [RelayCommand]
-        void SetDisplayColumns(double width)
+        void SetLayout(Size size) //width, height
         {
-            ColumnCount = (int)Math.Ceiling(width / _minImageWidth);
-        }
-
-        [RelayCommand]
-        void SetMaxImageHeight(double height)
-        {
-
+            ColumnCount = (int)Math.Ceiling(size.Width / minImageWidth);
         }
     }
 }
