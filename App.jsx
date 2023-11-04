@@ -35,6 +35,8 @@ function App() {
               labelName = focused ? "Home" : "Home";
             } else if (route.name === "Test") {
               labelName = focused ? "Test" : "Test";
+            } else if (route.name === "Account") {
+              labelName = focused ? "Account" : "Account";
             }
 
             // You can return any component that you like here!
