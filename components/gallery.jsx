@@ -7,7 +7,7 @@ export default function Gallery() {
 
   useEffect(() => {
     // Make the API request when the component is mounted
-    fetch("https://cors.fayevr.dev/headpat-api.fayevr.workers.dev/getGallery", {
+    fetch("https://headpat-api.fayevr.workers.dev/getGallery", {
       headers: {
         "Content-Type": "application/json",
         "X-Requested-With": "XMLHttpRequest",
