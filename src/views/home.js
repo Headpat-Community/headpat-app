@@ -1,26 +1,26 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { View, ScrollView, StyleSheet, Image, Dimensions } from 'react-native';
 //import { Header } from '../components/header';
 import { Skeleton, Text } from '@rneui/themed';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const Homepage = () => {
+  const windowWidth = Dimensions.get('window').width;
+
   return (
     <>
       {/*<Header title='Skeleton' view='skeleton' />*/}
       <ScrollView>
         <View style={styles.container}>
-          <View style={styles.rowCenter}>
-            <Skeleton circle width={40} />
-            <View style={[{ marginLeft: 8, flexGrow: 1 }]}>
-              <Skeleton style={{ marginBottom: 5 }} />
-              <View
-                style={[styles.rowCenter, { justifyContent: 'space-between' }]}
-              >
-                <Skeleton height={8} width={90} />
-                <Skeleton height={8} width={90} />
-              </View>
-            </View>
+          <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+            <Image
+              source={require('../images/Headpat_3_Years_celebration.png')}
+              style={{
+                width: windowWidth * 0.9, // 90% of screen width
+                height: windowWidth * 0.9 * (448 / 1280), // maintain aspect ratio
+              }}
+              resizeMode='contain'
+            />
           </View>
           <Text>Wave (With Linear Gradient)</Text>
           <View style={{ marginVertical: 8 }}>

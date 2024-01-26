@@ -1,11 +1,6 @@
-import * as React from "react";
-import { View, Text } from "react-native";
-import TabNavigator from "./components/TabNavigator";
+import * as React from 'react';
+import RootNavigator from './src/components/rootNavigation';
 
-function App() {
-  return (
-    <TabNavigator />
-  );
+export default function App() {
+  return <RootNavigator />;
 }
-
-export default App;
