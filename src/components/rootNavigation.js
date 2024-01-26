@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import DrawerNavigator from './drawerNavigator';
 import Homepage from '../views/home';
+import Gallery from '../views/gallery';
 import Skeleton from '../views/skeleton';
 
 const Drawer = createDrawerNavigator();
@@ -12,6 +13,7 @@ function RootNavigator() {
     <NavigationContainer>
       <Drawer.Navigator>
         <Drawer.Screen name='Home' component={Homepage} />
+        <Drawer.Screen name='Gallery' component={Gallery} />
         <Drawer.Screen name='Skeleton' component={Skeleton} />
       </Drawer.Navigator>
     </NavigationContainer>
