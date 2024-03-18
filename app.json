@@ -1,31 +1,52 @@
 {
   "expo": {
-    "name": "headpat-app",
-    "slug": "headpat-app",
-    "version": "1.0.0",
+    "name": "React Native Reusables Showcase",
+    "slug": "react-native-reusables-showcase",
+    "version": "0.0.1",
     "orientation": "portrait",
-    "icon": "./assets/headpat_logo.png",
-    "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+    "icon": "./assets/images/icon.png",
+    "scheme": "example",
+    "userInterfaceStyle": "dark",
+    "runtimeVersion": {
+      "policy": "appVersion"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "updates": {
+      "fallbackToCacheTimeout": 0,
+      "url": ""
+    },
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#18181B"
+    },
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.mtlapps.treed"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "package": "com.headpat.app"
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#18181B"
+      }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
-    }
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": ""
+      }
+    },
+    "owner": "*"
   }
 }
