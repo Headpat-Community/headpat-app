@@ -1,7 +1,12 @@
-import { Link } from 'expo-router';
-import * as React from 'react';
-import { Platform, View } from 'react-native';
-import { CalendarDays, ChevronDown, ChevronRight, Info } from '~/components/Icons';
+import { Link } from 'expo-router'
+import * as React from 'react'
+import { Platform, View } from 'react-native'
+import {
+  CalendarDays,
+  ChevronDown,
+  ChevronRight,
+  Info,
+} from '~/components/Icons'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,16 +17,22 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '~/components/ui/alert-dialog';
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
-import { Button } from '~/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
+} from '~/components/ui/alert-dialog'
+import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
+import { Button } from '~/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '~/components/ui/card'
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
-} from '~/components/ui/context-menu';
+} from '~/components/ui/context-menu'
 import {
   Dialog,
   DialogClose,
@@ -31,7 +42,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '~/components/ui/dialog';
+} from '~/components/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,108 +51,145 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu';
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '~/components/ui/hover-card';
-import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip';
-import { Text } from '~/components/ui/text';
-import { Muted } from '~/components/ui/typography';
-import { cn } from '~/lib/utils';
+} from '~/components/ui/dropdown-menu'
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from '~/components/ui/hover-card'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '~/components/ui/tooltip'
+import { Text } from '~/components/ui/text'
+import { Muted } from '~/components/ui/typography'
+import { cn } from '~/lib/utils'
 
-export default function ExampleScreen() {
-  const [isTooltipOpen, setIsTooltipOpen] = React.useState(false);
+export default function TabsScreen() {
+  const [isTooltipOpen, setIsTooltipOpen] = React.useState(false)
   return (
-    <View className='flex-1 p-6 justify-center gap-6'>
-      <Card className='w-full max-w-lg mx-auto'>
+    <View className="flex-1 p-6 justify-center gap-6">
+      <Card className="w-full max-w-lg mx-auto">
         <CardHeader>
-          <View className='flex-row gap-3'>
-            <CardTitle className='pt-1'>Team Members</CardTitle>
-            <Tooltip open={isTooltipOpen} onOpenChange={setIsTooltipOpen} delayDuration={150}>
-              <TooltipTrigger className='web:focus:outline-none'>
-                <Info size={Platform.OS == 'web' ? 14 : 16} className='text-foreground' />
+          <View className="flex-row gap-3">
+            <CardTitle className="pt-1">Team Members</CardTitle>
+            <Tooltip
+              open={isTooltipOpen}
+              onOpenChange={setIsTooltipOpen}
+              delayDuration={150}
+            >
+              <TooltipTrigger className="web:focus:outline-none">
+                <Info
+                  size={Platform.OS == 'web' ? 14 : 16}
+                  className="text-foreground"
+                />
               </TooltipTrigger>
-              <TooltipContent side='bottom' insets={contentInsets} className='gap-1 py-3 px-5'>
-                <Text className='native:text-lg font-bold'>Things to try:</Text>
-                <Text className='native:text-lg text-muted-foreground'>
-                  · {Platform.OS === 'web' ? 'Hover' : 'Press'} the team member's name
+              <TooltipContent
+                side="bottom"
+                insets={contentInsets}
+                className="gap-1 py-3 px-5"
+              >
+                <Text className="native:text-lg font-bold">Things to try:</Text>
+                <Text className="native:text-lg text-muted-foreground">
+                  · {Platform.OS === 'web' ? 'Hover' : 'Press'} the team
+                  member's name
                 </Text>
-                <Text className='native:text-lg text-muted-foreground'>
-                  · {Platform.OS === 'web' ? 'Right click' : 'Press and hold'} the avatar
+                <Text className="native:text-lg text-muted-foreground">
+                  · {Platform.OS === 'web' ? 'Right click' : 'Press and hold'}{' '}
+                  the avatar
                 </Text>
               </TooltipContent>
             </Tooltip>
           </View>
-          <CardDescription>Invite your team members to collaborate.</CardDescription>
+          <CardDescription>
+            Invite your team members to collaborate.
+          </CardDescription>
         </CardHeader>
-        <CardContent className='gap-8'>
-          <View className='flex-row gap-3'>
-            <View className='flex-1 flex-row gap-3'>
+        <CardContent className="gap-8">
+          <View className="flex-row gap-3">
+            <View className="flex-1 flex-row gap-3">
               <TeamMemberAvatar
-                initials='ZN'
-                name='Zach Nugent'
-                uri='https://github.com/mrzachnugent.png'
+                initials="ZN"
+                name="Zach Nugent"
+                uri="https://github.com/mrzachnugent.png"
               />
-              <View className='flex-1'>
-                <TeamMemberHoverCard name='Zach Nugent' />
-                <Text numberOfLines={1} className='text-muted-foreground'>
+              <View className="flex-1">
+                <TeamMemberHoverCard name="Zach Nugent" />
+                <Text numberOfLines={1} className="text-muted-foreground">
                   zachnugent@example.com
                 </Text>
               </View>
             </View>
-            <RoleDropdownSelect defaultValue='Billing' />
+            <RoleDropdownSelect defaultValue="Billing" />
           </View>
-          <View className='flex-row gap-3'>
-            <View className='flex-1 flex-row gap-3'>
-              <TeamMemberAvatar initials='JD' name='Jane Doe' uri='invalid link' />
-              <View className='flex-1'>
-                <TeamMemberHoverCard name='Jane Doe' />
-                <Text numberOfLines={1} className='text-muted-foreground'>
+          <View className="flex-row gap-3">
+            <View className="flex-1 flex-row gap-3">
+              <TeamMemberAvatar
+                initials="JD"
+                name="Jane Doe"
+                uri="invalid link"
+              />
+              <View className="flex-1">
+                <TeamMemberHoverCard name="Jane Doe" />
+                <Text numberOfLines={1} className="text-muted-foreground">
                   jane@example.com
                 </Text>
               </View>
             </View>
-            <RoleDropdownSelect defaultValue='Owner' />
+            <RoleDropdownSelect defaultValue="Owner" />
           </View>
         </CardContent>
       </Card>
-      <View className='items-center'>
-        <Link href='/form' asChild>
-          <Button variant='link' className='flex-row'>
+      <View className="items-center">
+        <Link href="/form" asChild>
+          <Button variant="link" className="flex-row">
             <Text>Go To Form</Text>
-            <ChevronRight className='text-foreground' size={18} />
+            <ChevronRight className="text-foreground" size={18} />
+          </Button>
+        </Link>
+        <Link href={'/material-top-tabs'} asChild>
+          <Button variant="link" className="flex-row">
+            <Text>Go To Material Top Tabs</Text>
+            <ChevronRight className="text-foreground" size={18} />
           </Button>
         </Link>
       </View>
     </View>
-  );
+  )
 }
 
 const contentInsets = {
   left: 12,
   right: 12,
-};
+}
 
 function RoleDropdownSelect({ defaultValue }: { defaultValue: string }) {
-  const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState(defaultValue);
+  const [open, setOpen] = React.useState(false)
+  const [value, setValue] = React.useState(defaultValue)
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <Button
-          variant='outline'
+          variant="outline"
           size={Platform.OS === 'web' ? 'sm' : 'default'}
-          className='flex-row gap-2 native:pr-3'
+          className="flex-row gap-2 native:pr-3"
         >
           <Text>{value}</Text>
-          <ChevronDown size={18} className='text-foreground' />
+          <ChevronDown size={18} className="text-foreground" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align='end' insets={contentInsets} className='w-64 native:w-72'>
+      <DropdownMenuContent
+        align="end"
+        insets={contentInsets}
+        className="w-64 native:w-72"
+      >
         <DropdownMenuLabel>Select new role</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuGroup className='gap-1'>
+        <DropdownMenuGroup className="gap-1">
           <DropdownMenuItem
             onPress={() => {
-              setValue('Viewer');
+              setValue('Viewer')
             }}
             className={cn(
               'flex-col items-start gap-1',
@@ -153,7 +201,7 @@ function RoleDropdownSelect({ defaultValue }: { defaultValue: string }) {
           </DropdownMenuItem>
           <DropdownMenuItem
             onPress={() => {
-              setValue('Billing');
+              setValue('Billing')
             }}
             className={cn(
               'flex-col items-start gap-1',
@@ -165,9 +213,12 @@ function RoleDropdownSelect({ defaultValue }: { defaultValue: string }) {
           </DropdownMenuItem>
           <DropdownMenuItem
             onPress={() => {
-              setValue('Owner');
+              setValue('Owner')
             }}
-            className={cn('flex-col items-start gap-1', value === 'Owner' ? 'bg-secondary/70' : '')}
+            className={cn(
+              'flex-col items-start gap-1',
+              value === 'Owner' ? 'bg-secondary/70' : ''
+            )}
           >
             <Text>Owner</Text>
             <Muted>Admin-level access to all resources</Muted>
@@ -175,33 +226,38 @@ function RoleDropdownSelect({ defaultValue }: { defaultValue: string }) {
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }
 
 function TeamMemberHoverCard({ name }: { name: string }) {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
 
   return (
     <HoverCard openDelay={0} closeDelay={0} open={open} onOpenChange={setOpen}>
-      <HoverCardTrigger className='group web:focus:outline-none'>
-        <Text numberOfLines={1} className='group-active:underline web:group-hover:underline'>
+      <HoverCardTrigger className="group web:focus:outline-none">
+        <Text
+          numberOfLines={1}
+          className="group-active:underline web:group-hover:underline"
+        >
           {name}
         </Text>
       </HoverCardTrigger>
-      <HoverCardContent insets={contentInsets} className='w-80 native:w-96'>
-        <View className='flex flex-row justify-between gap-4'>
-          <Avatar alt='Vercel avatar'>
+      <HoverCardContent insets={contentInsets} className="w-80 native:w-96">
+        <View className="flex flex-row justify-between gap-4">
+          <Avatar alt="Vercel avatar">
             <AvatarImage source={{ uri: 'https://github.com/vercel.png' }} />
             <AvatarFallback>VC</AvatarFallback>
           </Avatar>
-          <View className='gap-1 flex-1'>
-            <Text className='text-sm native:text-base font-semibold'>{name}</Text>
-            <Text className='text-sm native:text-base'>
+          <View className="gap-1 flex-1">
+            <Text className="text-sm native:text-base font-semibold">
+              {name}
+            </Text>
+            <Text className="text-sm native:text-base">
               Wishes they were part of the triangle company.
             </Text>
-            <View className='flex flex-row items-center pt-2 gap-2'>
-              <CalendarDays size={14} className='text-foreground opacity-70' />
-              <Text className='text-xs native:text-sm text-muted-foreground'>
+            <View className="flex flex-row items-center pt-2 gap-2">
+              <CalendarDays size={14} className="text-foreground opacity-70" />
+              <Text className="text-xs native:text-sm text-muted-foreground">
                 Fingers crossed since December 2021
               </Text>
             </View>
@@ -209,7 +265,7 @@ function TeamMemberHoverCard({ name }: { name: string }) {
         </View>
       </HoverCardContent>
     </HoverCard>
-  );
+  )
 }
 
 function TeamMemberAvatar({
@@ -217,32 +273,39 @@ function TeamMemberAvatar({
   initials,
   uri,
 }: {
-  name: string;
-  initials: string;
-  uri: string;
+  name: string
+  initials: string
+  uri: string
 }) {
-  const [open, setOpen] = React.useState(false);
-  const [isDialogOpen, setDialogOpen] = React.useState(false);
-  const [isAlertDialogOpen, setAlertDialogOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
+  const [isDialogOpen, setDialogOpen] = React.useState(false)
+  const [isAlertDialogOpen, setAlertDialogOpen] = React.useState(false)
   return (
     <ContextMenu
       open={open}
       onOpenChange={(newVal) => {
-        setOpen(newVal);
+        setOpen(newVal)
       }}
-      relativeTo='trigger'
+      relativeTo="trigger"
     >
       {/* @ts-expect-error tabIndex is only available on the web */}
-      <ContextMenuTrigger tabIndex={-1} className='web:cursor-default web:focus:outline-none'>
+      <ContextMenuTrigger
+        tabIndex={-1}
+        className="web:cursor-default web:focus:outline-none"
+      >
         <Avatar alt={`${name}'s avatar`}>
           <AvatarImage source={{ uri }} />
           <AvatarFallback>
-            <Text className='web:select-none'>{initials}</Text>
+            <Text className="web:select-none">{initials}</Text>
           </AvatarFallback>
         </Avatar>
       </ContextMenuTrigger>
 
-      <ContextMenuContent align='start' insets={contentInsets} className='w-64 native:w-72'>
+      <ContextMenuContent
+        align="start"
+        insets={contentInsets}
+        className="w-64 native:w-72"
+      >
         <ContextMenuItem>
           <Text>View</Text>
         </ContextMenuItem>
@@ -250,10 +313,10 @@ function TeamMemberAvatar({
         <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <ContextMenuItem closeOnPress={false}>
-              <Text className='font-semibold'>Edit</Text>
+              <Text className="font-semibold">Edit</Text>
             </ContextMenuItem>
           </DialogTrigger>
-          <DialogContent className='sm:max-w-[425px] native:w-[385px]'>
+          <DialogContent className="sm:max-w-[425px] native:w-[385px]">
             <DialogHeader>
               <DialogTitle>Edit profile</DialogTitle>
               <DialogDescription>
@@ -273,15 +336,15 @@ function TeamMemberAvatar({
         <AlertDialog open={isAlertDialogOpen} onOpenChange={setAlertDialogOpen}>
           <AlertDialogTrigger asChild>
             <ContextMenuItem closeOnPress={false}>
-              <Text className='text-destructive font-semibold'>Delete</Text>
+              <Text className="text-destructive font-semibold">Delete</Text>
             </ContextMenuItem>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
               <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete your account and remove
-                your data from our servers.
+                This action cannot be undone. This will permanently delete your
+                account and remove your data from our servers.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -296,5 +359,5 @@ function TeamMemberAvatar({
         </AlertDialog>
       </ContextMenuContent>
     </ContextMenu>
-  );
+  )
 }
