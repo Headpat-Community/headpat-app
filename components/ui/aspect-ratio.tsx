@@ -1,5 +1,5 @@
-import * as AspectRatioPrimitive from '@rnr/aspect-ratio';
-const AspectRatio = AspectRatioPrimitive.Root;
-export { AspectRatio };
+import * as AspectRatioPrimitive from '~/components/primitives/aspect-ratio';
 
-// See file: [[packages/aspect-ratio/src/aspect-ratio-native.tsx]]
+const AspectRatio = AspectRatioPrimitive.Root;
+
+export { AspectRatio };
