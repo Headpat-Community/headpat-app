@@ -1,29 +1,29 @@
 import type {
   MaterialTopTabNavigationEventMap,
   MaterialTopTabNavigationOptions,
-} from '@react-navigation/material-top-tabs';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+} from '@react-navigation/material-top-tabs'
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import {
   useTheme,
   type ParamListBase,
   type TabNavigationState,
-} from '@react-navigation/native';
-import { withLayoutContext } from 'expo-router';
+} from '@react-navigation/native'
+import { withLayoutContext } from 'expo-router'
 
-const { Navigator } = createMaterialTopTabNavigator();
+const { Navigator } = createMaterialTopTabNavigator()
 
 const MaterialTopTabs = withLayoutContext<
   MaterialTopTabNavigationOptions,
   typeof Navigator,
   TabNavigationState<ParamListBase>,
   MaterialTopTabNavigationEventMap
->(Navigator);
+>(Navigator)
 
 export default function MaterialTopTabsLayout() {
-  const { colors } = useTheme();
+  const { colors } = useTheme()
   return (
     <MaterialTopTabs
-      initialRouteName='index'
+      initialRouteName="index"
       screenOptions={{
         tabBarActiveTintColor: colors.text,
         tabBarInactiveTintColor: 'grey',
@@ -40,29 +40,29 @@ export default function MaterialTopTabsLayout() {
       }}
     >
       <MaterialTopTabs.Screen
-        name='index'
+        name="index"
         options={{
           title: 'Blue',
         }}
       />
       <MaterialTopTabs.Screen
-        name='red'
+        name="red"
         options={{
           title: 'Red',
         }}
       />
       <MaterialTopTabs.Screen
-        name='green'
+        name="green"
         options={{
           title: 'Green',
         }}
       />
       <MaterialTopTabs.Screen
-        name='purple'
+        name="purple"
         options={{
           title: 'Purple',
         }}
       />
     </MaterialTopTabs>
-  );
+  )
 }

@@ -15,4 +15,4 @@ export const NAV_THEME = {
     primary: 'hsl(0 0% 98%)', // primary
     text: 'hsl(0 0% 98%)', // foreground
   },
-};
+}

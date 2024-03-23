@@ -288,11 +288,7 @@ function TeamMemberAvatar({
       }}
       relativeTo="trigger"
     >
-      {/* @ts-expect-error tabIndex is only available on the web */}
-      <ContextMenuTrigger
-        tabIndex={-1}
-        className="web:cursor-default web:focus:outline-none"
-      >
+      <ContextMenuTrigger className="web:cursor-default web:focus:outline-none">
         <Avatar alt={`${name}'s avatar`}>
           <AvatarImage source={{ uri }} />
           <AvatarFallback>
