@@ -84,6 +84,14 @@ export default function RootLayout() {
             }}
           />
           <Drawer.Screen
+              name="gallery/index"
+              options={{
+                drawerLabel: 'Gallery',
+                title: 'Gallery',
+                headerRight: () => <ThemeToggle />,
+              }}
+          />
+          <Drawer.Screen
             name="login/index" // This is the name of the page and must match the url from root
             options={{
               drawerLabel: 'Login',
@@ -107,6 +115,23 @@ export default function RootLayout() {
               headerRight: () => <ThemeToggle />,
               drawerItemStyle: { display: 'none' },
             }}
+          />
+          <Drawer.Screen
+              name="material-top-tabs"
+              options={{
+                drawerLabel: 'Material Top Tabs',
+                title: 'Material Top Tabs',
+                headerRight: () => <ThemeToggle />,
+              }}
+          />
+          <Drawer.Screen
+              name="+not-found"
+              options={{
+                drawerLabel: 'Not Found',
+                title: 'Not Found',
+                headerRight: () => <ThemeToggle />,
+                drawerItemStyle: { display: 'none' },
+              }}
           />
         </Drawer>
       </GestureHandlerRootView>
