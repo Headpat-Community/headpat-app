@@ -5,6 +5,7 @@ import { database } from '~/lib/appwrite'
 import Gallery from 'react-native-awesome-gallery';
 import { NavigationProp, NavigatorScreenParams, useNavigation } from '@react-navigation/native';
 import { ScrollView } from 'react-native-gesture-handler';
+import { useColorScheme } from '~/lib/useColorScheme';
 
 // export default function HomeView() {
 //   const products = [
@@ -70,53 +71,42 @@ const getRandomSize = function () {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-// const images = new Array(10)
-//   .fill(0)
-//   .map(() => `https://picsum.photos/${getRandomSize()}/${getRandomSize()}`);
 
-const images = new Array(10)
-  .fill(0)
-  .map(() => `https://picsum.photos/${getRandomSize()}/${getRandomSize()}`);
 
 function HeadpatGallery() {
+
+  const images = new Array(10)
+    .fill(0)
+    .map(() => `https://picsum.photos/${getRandomSize()}/${getRandomSize()}`);
+
+  const { isDarkColorScheme } = useColorScheme();
 
   return (
     <Gallery
       data={images}
-      style={{ flex: 1, backgroundColor: 'white' }}
+      style={{ flex: 1, backgroundColor: isDarkColorScheme ? 'black' : 'white', justifyContent: 'center', height: "100%" }}
       onIndexChange={(newIndex) => {
         console.log(newIndex);
       }}
+      // initialIndex={route.params[0]}
     />
   );
 }
 
-export default function HomeView(props) {
+export default function HomeView() {
 
-  // console.log('gallery props', props)
+  //console.log(props);
+  //const { index, images } = route.params;
 
-  const { navigate } = useNavigation();
+  // const index = 'aaaaa';
+  const { navigate } = useNavigation<NavigationProp<NavigatorScreenParams>>();
 
   return (
-    <ScrollView>
+    <View style={{flex:1}}>
       <View style={{padding: 20}}>
-        <Text>This is the Gallery!</Text>
+        <Text>This is the Gallery Viewer!</Text>
       </View>
-      <View style={{
-        flex: 1,
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-      }}>
-        {images.map((uri, index) => (
-          <TouchableWithoutFeedback
-            key={uri}
-            onPress={() => navigate('gallery/viewer', { params: { index, images }})}
-          >
-            <Image source={uri} style={{width: '50%', height: 200}} />
-          </TouchableWithoutFeedback>
-        ))}
-      </View>
-
-    </ScrollView>
+      <HeadpatGallery />
+    </View>
   )
 }

@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Theme, ThemeProvider, useNavigation } from '@react-navigation/native'
 import { PortalHost } from '~/components/primitives/portal'
 import { ToastProvider } from '~/components/primitives/deprecated-ui/toast'
-import { SplashScreen } from 'expo-router'
+import { SplashScreen, Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import * as React from 'react'
 import { Platform, ScrollView, Text, View } from 'react-native'
@@ -15,7 +15,7 @@ import { Drawer } from 'expo-router/drawer'
 import { DrawerItem } from '@react-navigation/drawer'
 import { TouchableOpacity } from '@gorhom/bottom-sheet'
 import { Image } from 'expo-image'
-import { GalleryHorizontalIcon, HomeIcon, LogInIcon, MenuIcon } from 'lucide-react-native'
+import { GalleryHorizontalIcon, HomeIcon, LayoutPanelLeftIcon, LogInIcon, MenuIcon } from 'lucide-react-native'
 
 const LIGHT_THEME: Theme = {
   dark: false,
@@ -109,7 +109,7 @@ function CustomDrawerContent({ drawerPosition, props, navigation }) {
 
       <DrawerItem label={() => {
         return <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 10 }}>
-          <GalleryHorizontalIcon size={20} color={icon_color} style={{ marginRight: 20 }} />
+          <LayoutPanelLeftIcon size={20} color={icon_color} style={{ marginRight: 20 }} />
           <Text style={{ color: icon_color }}>Gallery</Text>
         </View>
       }} onPress={() => navigation.navigate('gallery/index')} />
@@ -216,6 +216,13 @@ export default function RootLayout() {
             options={{
               drawerLabel: 'Gallery',
               title: 'Gallery',
+              headerRight: () => <ThemeToggle />,
+            }}
+          />
+          <Stack.Screen
+            name="gallery/viewer"
+            options={{
+              title: 'Gallery Viewer',
               headerRight: () => <ThemeToggle />,
             }}
           />
