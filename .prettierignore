@@ -4,3 +4,4 @@ components/ui
 .next
 .idea
 node_modules
+.expo
