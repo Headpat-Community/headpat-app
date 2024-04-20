@@ -1,16 +1,29 @@
-# Starter base
+# Headpat app
 
-A starting point to help you set up your project quickly and use the common components provided by `react-native-reusables`. The idea is to make it easier for you to get started.
+How to get started:
 
-## Features
+First of all, you need to install the dependencies. You can do this by running the following command:
 
-- NativeWind v4
-- Dark and light mode
-  - Android Navigation Bar matches mode
-  - Persistant mode
-- Common components
-  - Icons, ThemeToggle, Avatar, Button, Card, Progress, Text, Tooltip
+```bash
+npm install
+```
 
-<img src="https://github.com/mrzachnugent/react-native-reusables/assets/63797719/42c94108-38a7-498b-9c70-18640420f1bc"
-     alt="starter-base-template"
-     style="width:270px;" />
+Make sure to have an android emulator installed on your machine, like Android Studio or have the Expo Go app installed on your phone.
+
+After that, you can start the app, this will run the app in development mode using an android emulator:
+
+```bash
+npm run dev
+```
+
+If you want to use iOS (this will only work on macOS), you can run the following command:
+
+```bash
+npm run ios
+```
+
+If you want to run the app on a physical device, you can run one of the following commands:
+
+`npm run dev` or `npm run ios`
+
+This will start the app in development mode, and you can scan the QR code using the Expo Go app on your phone.
