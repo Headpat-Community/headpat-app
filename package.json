@@ -50,7 +50,7 @@
     "react-hook-form": "^7.51.1",
     "react-i18next": "^14.1.0",
     "react-native": "0.73.6",
-    "react-native-appwrite": "^0.2.2",
+    "react-native-appwrite": "^0.3.0",
     "react-native-awesome-gallery": "^0.3.8",
     "react-native-calendars": "^1.1304.1",
     "react-native-fs": "^2.20.0",
