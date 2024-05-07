@@ -13,12 +13,26 @@ export default function ModalScreen() {
   })
 
   const handleSession = async () => {
-    console.log(data)
+    // Validate email and password fields
+    if (!data.email || !data.password) {
+      alert('Please fill in both email and password fields.')
+      return
+    }
+    try {
+      await account.createEmailPasswordSession(data.email, data.password)
+      alert('Login successful')
+    } catch (error) {
+      alert('Login failed. Please check your credentials.')
+    }
   }
 
   const handleOAuth2Login = async (provider: string) => {
-    console.log(provider)
-    //account.createEmailSession(data.email, data.password);
+    try {
+      // Redirect to OAuth2 login page for the provider
+      await account.createOAuth2Session(provider)
+    } catch (error) {
+      alert(`Login with ${provider} failed.`)
+    }
   }
 
   return (
