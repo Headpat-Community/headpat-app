@@ -4,7 +4,7 @@ import { Input } from '~/components/ui/input'
 import { Text } from '~/components/ui/text'
 import { H1, Muted } from '~/components/ui/typography'
 import { useState } from 'react'
-import { account } from '~/lib/appwrite'
+import { account } from '~/lib/appwrite-client'
 
 export default function ModalScreen() {
   const [data, setData] = useState({
@@ -18,7 +18,7 @@ export default function ModalScreen() {
 
   const handleOAuth2Login = async (provider: string) => {
     console.log(provider)
-    //account.createEmailSession(data.email, data.password);
+    account.createEmailSession(data.email, data.password)
   }
 
   return (

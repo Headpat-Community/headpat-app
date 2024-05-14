@@ -1,10 +1,19 @@
-import { Dimensions, FlatList, TouchableWithoutFeedback, View } from 'react-native'
+import {
+  Dimensions,
+  FlatList,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native'
 import { Text } from '~/components/ui/text'
 import { Image } from 'expo-image'
-import { database } from '~/lib/appwrite'
-import Gallery from 'react-native-awesome-gallery';
-import { NavigationProp, NavigatorScreenParams, useNavigation } from '@react-navigation/native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { database } from '~/lib/appwrite-client'
+import Gallery from 'react-native-awesome-gallery'
+import {
+  NavigationProp,
+  NavigatorScreenParams,
+  useNavigation,
+} from '@react-navigation/native'
+import { ScrollView } from 'react-native-gesture-handler'
 
 // export default function HomeView() {
 //   const products = [
@@ -62,13 +71,13 @@ import { ScrollView } from 'react-native-gesture-handler';
 //   )
 // }
 
-const { height } = Dimensions.get('window');
+const { height } = Dimensions.get('window')
 
 const getRandomSize = function () {
-  const min = 400;
-  const max = 800;
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-};
+  const min = 400
+  const max = 800
+  return Math.floor(Math.random() * (max - min + 1)) + min
+}
 
 // const images = new Array(10)
 //   .fill(0)
@@ -76,47 +85,48 @@ const getRandomSize = function () {
 
 const images = new Array(10)
   .fill(0)
-  .map(() => `https://picsum.photos/${getRandomSize()}/${getRandomSize()}`);
+  .map(() => `https://picsum.photos/${getRandomSize()}/${getRandomSize()}`)
 
 function HeadpatGallery() {
-
   return (
     <Gallery
       data={images}
       style={{ flex: 1, backgroundColor: 'white' }}
       onIndexChange={(newIndex) => {
-        console.log(newIndex);
+        console.log(newIndex)
       }}
     />
-  );
+  )
 }
 
 export default function HomeView(props) {
-
   // console.log('gallery props', props)
 
-  const { navigate } = useNavigation();
+  const { navigate } = useNavigation()
 
   return (
     <ScrollView>
-      <View style={{padding: 20}}>
+      <View style={{ padding: 20 }}>
         <Text>This is the Gallery!</Text>
       </View>
-      <View style={{
-        flex: 1,
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-      }}>
+      <View
+        style={{
+          flex: 1,
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+        }}
+      >
         {images.map((uri, index) => (
           <TouchableWithoutFeedback
             key={uri}
-            onPress={() => navigate('gallery/viewer', { params: { index, images }})}
+            onPress={() =>
+              navigate('gallery/viewer', { params: { index, images } })
+            }
           >
-            <Image source={uri} style={{width: '50%', height: 200}} />
+            <Image source={uri} style={{ width: '50%', height: 200 }} />
           </TouchableWithoutFeedback>
         ))}
       </View>
-
     </ScrollView>
   )
 }
