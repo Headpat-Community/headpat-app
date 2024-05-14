@@ -16,6 +16,7 @@ import { DrawerItem } from '@react-navigation/drawer'
 import { TouchableOpacity } from '@gorhom/bottom-sheet'
 import { Image } from 'expo-image'
 import {
+  CalendarIcon,
   HomeIcon,
   LayoutPanelLeftIcon,
   LogInIcon,
@@ -135,6 +136,18 @@ function CustomDrawerContent({
           )
         }}
         onPress={() => navigation.navigate('gallery/index')}
+      />
+
+      <DrawerItem
+        label={() => {
+          return (
+            <View className="flex-row items-center gap-3 pl-3">
+              <CalendarIcon size={20} color={icon_color} />
+              <Text style={{ color: icon_color }}>Events</Text>
+            </View>
+          )
+        }}
+        onPress={() => navigation.navigate('events/index')}
       />
 
       <View style={{ borderBottomColor: '#f4f4f4', borderBottomWidth: 1 }} />
@@ -277,6 +290,14 @@ export default function RootLayout() {
               name="gallery/viewer"
               options={{
                 title: 'Gallery Viewer',
+                headerRight: () => <ThemeToggle />,
+              }}
+            />
+            <Drawer.Screen
+              name="events/index"
+              options={{
+                drawerLabel: 'Events',
+                title: 'Events',
                 headerRight: () => <ThemeToggle />,
               }}
             />

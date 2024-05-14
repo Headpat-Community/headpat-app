@@ -12,7 +12,7 @@ export default function ModalScreen() {
     email: '',
     password: '',
   })
-  const { login, current } = useUser()
+  const { login, current }: any = useUser()
 
   const handleSession = async () => {
     try {
