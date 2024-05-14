@@ -27,6 +27,7 @@
     "@react-navigation/native": "^6.0.2",
     "@shopify/flash-list": "1.6.3",
     "@tanstack/react-table": "^8.13.2",
+    "appwrite": "^14.0.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "expo": "~50.0.17",

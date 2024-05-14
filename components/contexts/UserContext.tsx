@@ -3,22 +3,24 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { account } from '~/lib/appwrite-client'
 import { toast } from '~/lib/toast'
 
+// TODO: Check this out, proper typing.
+// @ts-ignore
 const UserContext = createContext()
 
 export function useUser() {
   return useContext(UserContext)
 }
 
-export function UserProvider(props) {
+export function UserProvider(props: any) {
   const [user, setUser] = useState(null)
 
-  async function login(email, password) {
+  async function login(email: string, password: string) {
     const loggedIn = await account.createEmailPasswordSession(email, password)
     setUser(loggedIn)
     toast('Welcome back. You are logged in!')
   }
 
-  async function loginOAuth(provider) {
+  async function loginOAuth(provider: string) {
     const loggedIn = await account.createOAuth2Session(provider)
     setUser(loggedIn)
     toast('Welcome back. You are logged in!')
@@ -30,7 +32,7 @@ export function UserProvider(props) {
     toast('Logged out.')
   }
 
-  async function register(email, password) {
+  async function register(email: string, password: string) {
     await account.create(ID.unique(), email, password)
     await login(email, password)
     toast('Account created!')
@@ -40,7 +42,7 @@ export function UserProvider(props) {
     try {
       const loggedIn = await account.get()
       setUser(loggedIn)
-      toast('Welcome back. You are logged in!')
+      //toast('Welcome back. You are logged in!')
     } catch (err) {
       setUser(null)
     }

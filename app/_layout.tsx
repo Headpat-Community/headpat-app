@@ -16,13 +16,12 @@ import { DrawerItem } from '@react-navigation/drawer'
 import { TouchableOpacity } from '@gorhom/bottom-sheet'
 import { Image } from 'expo-image'
 import {
-  GalleryHorizontalIcon,
   HomeIcon,
   LayoutPanelLeftIcon,
   LogInIcon,
   MenuIcon,
 } from 'lucide-react-native'
-import { UserProvider } from '~/app/contexts/UserContext'
+import { UserProvider } from '~/components/contexts/UserContext'
 
 const LIGHT_THEME: Theme = {
   dark: false,
@@ -65,7 +64,16 @@ function HeaderLeft() {
   )
 }
 
-function CustomDrawerContent({ drawerPosition, props, navigation }) {
+// TODO: Proper TS types
+function CustomDrawerContent({
+  drawerPosition,
+  props,
+  navigation,
+}: {
+  drawerPosition: any
+  props: any
+  navigation: any
+}) {
   // const insets = useSafeAreaInsets();
   // const router = useRouter();
 
@@ -108,18 +116,8 @@ function CustomDrawerContent({ drawerPosition, props, navigation }) {
       <DrawerItem
         label={() => {
           return (
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                paddingHorizontal: 10,
-              }}
-            >
-              <HomeIcon
-                size={20}
-                color={icon_color}
-                style={{ marginRight: 20 }}
-              />
+            <View className="flex-row items-center gap-3 pl-3">
+              <HomeIcon size={20} color={icon_color} />
               <Text style={{ color: icon_color }}>Home</Text>
             </View>
           )
@@ -130,18 +128,8 @@ function CustomDrawerContent({ drawerPosition, props, navigation }) {
       <DrawerItem
         label={() => {
           return (
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                paddingHorizontal: 10,
-              }}
-            >
-              <LayoutPanelLeftIcon
-                size={20}
-                color={icon_color}
-                style={{ marginRight: 20 }}
-              />
+            <View className="flex-row items-center gap-3 pl-3">
+              <LayoutPanelLeftIcon size={20} color={icon_color} />
               <Text style={{ color: icon_color }}>Gallery</Text>
             </View>
           )
@@ -154,18 +142,8 @@ function CustomDrawerContent({ drawerPosition, props, navigation }) {
       <DrawerItem
         label={() => {
           return (
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                paddingHorizontal: 10,
-              }}
-            >
-              <LogInIcon
-                size={20}
-                color={icon_color}
-                style={{ marginRight: 20 }}
-              />
+            <View className="flex-row items-center gap-3 pl-3">
+              <LogInIcon size={20} color={icon_color} />
               <Text style={{ color: icon_color }}>Login</Text>
             </View>
           )
@@ -223,13 +201,13 @@ export default function RootLayout() {
         document.documentElement.classList.add('bg-background')
       }
       if (!theme) {
-        setAndroidNavigationBar(colorScheme)
-        AsyncStorage.setItem('theme', colorScheme)
+        await setAndroidNavigationBar(colorScheme)
+        await AsyncStorage.setItem('theme', colorScheme)
         setIsColorSchemeLoaded(true)
         return
       }
       const colorTheme = theme === 'dark' ? 'dark' : 'light'
-      setAndroidNavigationBar(colorTheme)
+      await setAndroidNavigationBar(colorTheme)
       if (colorTheme !== colorScheme) {
         setColorScheme(colorTheme)
 
@@ -254,7 +232,11 @@ export default function RootLayout() {
           <Drawer
             drawerContent={(props) => {
               return (
-                <CustomDrawerContent drawerPosition={undefined} {...props} />
+                <CustomDrawerContent
+                  props={undefined}
+                  drawerPosition={undefined}
+                  {...props}
+                />
               )
             }}
             initialRouteName={'Home'}

@@ -5,14 +5,14 @@ import { Text } from '~/components/ui/text'
 import { H1, Muted } from '~/components/ui/typography'
 import { useState } from 'react'
 import { account } from '~/lib/appwrite-client'
-import { UserProvider, useUser } from 'app/contexts/UserContext'
+import { useUser } from '~/components/contexts/UserContext'
 
 export default function ModalScreen() {
   const [data, setData] = useState({
     email: '',
     password: '',
   })
-  const { login } = useUser()
+  const { login, current } = useUser()
 
   const handleSession = async () => {
     try {
