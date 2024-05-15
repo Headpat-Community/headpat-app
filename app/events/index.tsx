@@ -9,18 +9,32 @@ import {
 import { ClockIcon, MapPinIcon } from 'lucide-react-native'
 import { useColorScheme } from '~/lib/useColorScheme'
 import { useEffect, useState } from 'react'
+import { useUser } from '~/components/contexts/UserContext'
+import { functions } from '~/lib/appwrite-client'
+import { ExecutionMethod } from 'react-native-appwrite'
 import { EventsType } from '~/lib/types/collections'
+import { H1, Muted } from '~/components/ui/typography'
 
 export default function EventsPage() {
   const { isDarkColorScheme } = useColorScheme()
   const icon_color = isDarkColorScheme ? 'white' : 'black'
   const [events, setEvents] = useState<EventsType>()
   const [refreshing, setRefreshing] = useState(false)
+  const { current }: any = useUser()
 
-  const fetchEvents = () => {
-    fetch('https://headpat.de/api/events')
-      .then((response) => response.json())
-      .then((data) => setEvents(data))
+  const fetchEvents = async () => {
+    try {
+      const data = await functions.createExecution(
+        '65e2126d9e431eb3c473',
+        '',
+        false,
+        '/getEvents',
+        ExecutionMethod.GET
+      )
+      setEvents(JSON.parse(data.responseBody))
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   const onRefresh = () => {
@@ -33,6 +47,20 @@ export default function EventsPage() {
     fetchEvents()
   }, [])
 
+  if (!events)
+    return (
+      <View className={'flex-1 justify-center items-center'}>
+        <View className={'p-4 native:pb-24 max-w-md gap-6'}>
+          <View className={'gap-1'}>
+            <H1 className={'text-foreground text-center'}>Events</H1>
+            <Muted className={'text-base text-center'}>
+              No events available
+            </Muted>
+          </View>
+        </View>
+      </View>
+    )
+
   return (
     <ScrollView
       refreshControl={
@@ -42,7 +70,7 @@ export default function EventsPage() {
     >
       <View className={'gap-4 mx-2'}>
         {events &&
-          events.documents.map((event, index) => {
+          events?.documents?.map((event, index) => {
             const formatDate = (date: Date) => {
               const day = date.getDate().toString().padStart(2, '0')
               const month = (date.getMonth() + 1).toString().padStart(2, '0') // Months are 0-based in JavaScript
