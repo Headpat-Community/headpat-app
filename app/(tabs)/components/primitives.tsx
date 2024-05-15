@@ -1,10 +1,7 @@
 import { useScrollToTop } from '@react-navigation/native'
 import * as React from 'react'
 import { View } from 'react-native'
-import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
-import { Text } from '~/components/ui/text'
-import { cn } from '~/lib/utils'
 
 export default function PrimitivesScreen() {
   const [search, setSearch] = React.useState('')

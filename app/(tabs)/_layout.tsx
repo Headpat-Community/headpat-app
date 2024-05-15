@@ -1,7 +1,6 @@
 import { Tabs } from 'expo-router'
 import { LayoutPanelLeft, MenuSquare } from '~/components/Icons'
 import { LoginView } from '~/components/views/LoginView'
-import { ThemeToggle } from '~/components/ThemeToggle'
 
 export default function TabsLayout() {
   return (

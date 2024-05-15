@@ -24,7 +24,7 @@ export default function ModalScreen() {
 
   const handleOAuth2Login = async (provider: string) => {
     console.log(provider)
-    account.createEmailPasswordSession(data.email, data.password)
+    await account.createEmailPasswordSession(data.email, data.password)
   }
 
   return (
