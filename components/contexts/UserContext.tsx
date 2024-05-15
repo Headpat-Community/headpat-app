@@ -1,4 +1,4 @@
-import { ID } from 'react-native-appwrite'
+import { ID, Models } from 'react-native-appwrite'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { account } from '~/lib/appwrite-client'
 import { toast } from '~/lib/toast'
@@ -12,7 +12,7 @@ export function useUser() {
 }
 
 export function UserProvider(props: any) {
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState<any>()
 
   async function login(email: string, password: string) {
     const loggedIn = await account.createEmailPasswordSession(email, password)
@@ -20,8 +20,8 @@ export function UserProvider(props: any) {
     toast('Welcome back. You are logged in!')
   }
 
-  async function loginOAuth(provider: string) {
-    const loggedIn = await account.createOAuth2Session(provider)
+  async function loginOAuth(provider: any) {
+    const loggedIn = account.createOAuth2Session(provider)
     setUser(loggedIn)
     toast('Welcome back. You are logged in!')
   }
