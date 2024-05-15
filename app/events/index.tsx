@@ -40,16 +40,22 @@ export default function EventsPage() {
 
   if (events?.total === 0 || !events)
     return (
-      <View className={'flex-1 justify-center items-center'}>
-        <View className={'p-4 native:pb-24 max-w-md gap-6'}>
-          <View className={'gap-1'}>
-            <H1 className={'text-foreground text-center'}>Events</H1>
-            <Muted className={'text-base text-center'}>
-              No events available
-            </Muted>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <View className={'flex-1 justify-center items-center'}>
+          <View className={'p-4 native:pb-24 max-w-md gap-6'}>
+            <View className={'gap-1'}>
+              <H1 className={'text-foreground text-center'}>Events</H1>
+              <Muted className={'text-base text-center'}>
+                No events available
+              </Muted>
+            </View>
           </View>
         </View>
-      </View>
+      </ScrollView>
     )
 
   return (
