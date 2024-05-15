@@ -60,12 +60,6 @@ export default function EventsPage() {
                   </CardTitle>
                   <CardDescription className={'mt-1'}>
                     {event.description}
-                    {event.description}
-                    {event.description}
-                    {event.description}
-                    {event.description}
-                    {event.description}
-                    {event.description}
                   </CardDescription>
                   <CardFooter
                     className={'p-0 mt-4 justify-between flex flex-wrap'}
