@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Headpat app",
+    "name": "Headpat",
     "slug": "headpat-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -16,7 +16,11 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.headpat.app",
+      "config": {
+        "usesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {

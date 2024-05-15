@@ -37,3 +37,6 @@ yarn-error.*
 
 # IntelliJ
 .idea
+
+# Build tests
+test/
