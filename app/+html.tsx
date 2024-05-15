@@ -15,6 +15,7 @@ export default function Root({ children }: PropsWithChildren) {
           name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no"
         />
+        <title>Headpat</title>
 
         {/*
           Disable body scrolling on web. This makes ScrollView components work closer to how they do on native.

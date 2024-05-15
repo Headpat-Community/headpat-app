@@ -9,9 +9,7 @@ import {
 import { ClockIcon, MapPinIcon } from 'lucide-react-native'
 import { useColorScheme } from '~/lib/useColorScheme'
 import { useEffect, useState } from 'react'
-import { useUser } from '~/components/contexts/UserContext'
-import { functions } from '~/lib/appwrite-client'
-import { ExecutionMethod } from 'react-native-appwrite'
+import { database } from '~/lib/appwrite-client'
 import { EventsType } from '~/lib/types/collections'
 import { H1, Muted } from '~/components/ui/typography'
 
@@ -19,19 +17,12 @@ export default function EventsPage() {
   const { isDarkColorScheme } = useColorScheme()
   const icon_color = isDarkColorScheme ? 'white' : 'black'
   const [events, setEvents] = useState<EventsType>()
-  const [refreshing, setRefreshing] = useState(false)
-  const { current }: any = useUser()
+  const [refreshing, setRefreshing] = useState<boolean>(false)
 
   const fetchEvents = async () => {
     try {
-      const data = await functions.createExecution(
-        '65e2126d9e431eb3c473',
-        '',
-        false,
-        '/getEvents',
-        ExecutionMethod.GET
-      )
-      setEvents(JSON.parse(data.responseBody))
+      const data: EventsType = await database.listDocuments('hp_db', 'events')
+      setEvents(data)
     } catch (error) {
       console.error(error)
     }
@@ -39,15 +30,15 @@ export default function EventsPage() {
 
   const onRefresh = () => {
     setRefreshing(true)
-    fetchEvents()
+    fetchEvents().then()
     setRefreshing(false)
   }
 
   useEffect(() => {
-    fetchEvents()
+    fetchEvents().then()
   }, [])
 
-  if (!events)
+  if (events?.total === 0 || !events)
     return (
       <View className={'flex-1 justify-center items-center'}>
         <View className={'p-4 native:pb-24 max-w-md gap-6'}>

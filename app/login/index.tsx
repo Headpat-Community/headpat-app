@@ -3,9 +3,10 @@ import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Text } from '~/components/ui/text'
 import { H1, Muted } from '~/components/ui/typography'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { account } from '~/lib/appwrite-client'
 import { useUser } from '~/components/contexts/UserContext'
+import { router } from 'expo-router'
 
 export default function ModalScreen() {
   const [data, setData] = useState({
@@ -13,6 +14,10 @@ export default function ModalScreen() {
     password: '',
   })
   const { login, current }: any = useUser()
+
+  useEffect(() => {
+    if (current) router.push('/account')
+  }, [current])
 
   const handleSession = async () => {
     try {

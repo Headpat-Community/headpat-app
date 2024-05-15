@@ -343,6 +343,14 @@ export default function RootLayout() {
                 headerRight: () => <ThemeToggle />,
               }}
             />
+            <Drawer.Screen
+              name="account/index" // This is the name of the page and must match the url from root
+              options={{
+                drawerLabel: 'Account',
+                title: 'Account',
+                headerRight: () => <ThemeToggle />,
+              }}
+            />
           </Drawer>
         </GestureHandlerRootView>
         <PortalHost />
