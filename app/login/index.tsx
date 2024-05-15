@@ -4,21 +4,27 @@ import { Input } from '~/components/ui/input'
 import { Text } from '~/components/ui/text'
 import { H1, Muted } from '~/components/ui/typography'
 import { useState } from 'react'
-import { account } from '~/lib/appwrite'
+import { account } from '~/lib/appwrite-client'
+import { useUser } from '~/components/contexts/UserContext'
 
 export default function ModalScreen() {
   const [data, setData] = useState({
     email: '',
     password: '',
   })
+  const { login, current }: any = useUser()
 
   const handleSession = async () => {
-    console.log(data)
+    try {
+      await login(data.email, data.password)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   const handleOAuth2Login = async (provider: string) => {
     console.log(provider)
-    //account.createEmailSession(data.email, data.password);
+    await account.createEmailPasswordSession(data.email, data.password)
   }
 
   return (

@@ -1,11 +1,20 @@
-import { Dimensions, FlatList, TouchableWithoutFeedback, View } from 'react-native'
+import {
+  Dimensions,
+  FlatList,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native'
 import { Text } from '~/components/ui/text'
 import { Image } from 'expo-image'
-import { database } from '~/lib/appwrite'
-import Gallery from 'react-native-awesome-gallery';
-import { NavigationProp, NavigatorScreenParams, useNavigation } from '@react-navigation/native';
-import { ScrollView } from 'react-native-gesture-handler';
-import { useColorScheme } from '~/lib/useColorScheme';
+import { database } from '~/lib/appwrite-client'
+import Gallery from 'react-native-awesome-gallery'
+import {
+  NavigationProp,
+  NavigatorScreenParams,
+  useNavigation,
+} from '@react-navigation/native'
+import { ScrollView } from 'react-native-gesture-handler'
+import { useColorScheme } from '~/lib/useColorScheme'
 
 // export default function HomeView() {
 //   const products = [
@@ -63,47 +72,48 @@ import { useColorScheme } from '~/lib/useColorScheme';
 //   )
 // }
 
-const { height } = Dimensions.get('window');
+const { height } = Dimensions.get('window')
 
 const getRandomSize = function () {
-  const min = 400;
-  const max = 800;
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-};
-
-
+  const min = 400
+  const max = 800
+  return Math.floor(Math.random() * (max - min + 1)) + min
+}
 
 function HeadpatGallery() {
-
   const images = new Array(10)
     .fill(0)
-    .map(() => `https://picsum.photos/${getRandomSize()}/${getRandomSize()}`);
+    .map(() => `https://picsum.photos/${getRandomSize()}/${getRandomSize()}`)
 
-  const { isDarkColorScheme } = useColorScheme();
+  const { isDarkColorScheme } = useColorScheme()
 
   return (
     <Gallery
       data={images}
-      style={{ flex: 1, backgroundColor: isDarkColorScheme ? 'black' : 'white', justifyContent: 'center', height: "100%" }}
+      style={{
+        flex: 1,
+        backgroundColor: isDarkColorScheme ? 'black' : 'white',
+        justifyContent: 'center',
+        height: '100%',
+      }}
       onIndexChange={(newIndex) => {
-        console.log(newIndex);
+        console.log(newIndex)
       }}
       // initialIndex={route.params[0]}
     />
-  );
+  )
 }
 
 export default function HomeView() {
-
   //console.log(props);
   //const { index, images } = route.params;
 
   // const index = 'aaaaa';
-  const { navigate } = useNavigation<NavigationProp<NavigatorScreenParams>>();
+  const { navigate } = useNavigation<NavigationProp<NavigatorScreenParams>>()
 
   return (
-    <View style={{flex:1}}>
-      <View style={{padding: 20}}>
+    <View style={{ flex: 1 }}>
+      <View style={{ padding: 20 }}>
         <Text>This is the Gallery Viewer!</Text>
       </View>
       <HeadpatGallery />

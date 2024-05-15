@@ -1,7 +1,6 @@
 import { View } from 'react-native'
 import { Button } from '~/components/ui/button'
 import { Text } from '~/components/ui/text'
-import Sidebar from '~/components/Sidebar'
 
 export default function ButtonScreen() {
   return (

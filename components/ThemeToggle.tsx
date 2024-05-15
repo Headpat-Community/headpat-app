@@ -36,8 +36,8 @@ export function ThemeToggle() {
         onPress={() => {
           const newTheme = isDarkColorScheme ? 'light' : 'dark'
           setColorScheme(newTheme)
-          setAndroidNavigationBar(newTheme)
-          AsyncStorage.setItem('theme', newTheme)
+          setAndroidNavigationBar(newTheme).then()
+          AsyncStorage.setItem('theme', newTheme).then()
         }}
         className="pl-4"
       >
