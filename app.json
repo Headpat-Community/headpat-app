@@ -2,7 +2,7 @@
   "expo": {
     "name": "Headpat",
     "slug": "headpat-app",
-    "version": "1.0.0",
+    "version": "0.1.1",
     "orientation": "portrait",
     "icon": "./assets/images/headpat_logo.png",
     "scheme": "headpatapp",
@@ -20,14 +20,16 @@
       "bundleIdentifier": "com.headpat.app",
       "config": {
         "usesNonExemptEncryption": false
-      }
+      },
+      "buildNumber": "3"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/headpat_logo.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.headpat.app"
+      "package": "com.headpat.app",
+      "versionCode": 2
     },
     "web": {
       "bundler": "metro",
@@ -41,6 +43,7 @@
       "eas": {
         "projectId": "904378a3-321c-4abe-9c08-48274d5f6267"
       }
-    }
+    },
+    "owner": "expo-headpat"
   }
 }

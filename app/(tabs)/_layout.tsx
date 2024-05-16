@@ -1,6 +1,5 @@
 import { Tabs } from 'expo-router'
 import { LayoutPanelLeft, MenuSquare } from '~/components/Icons'
-import { LoginView } from '~/components/views/LoginView'
 
 export default function TabsLayout() {
   return (
@@ -12,7 +11,6 @@ export default function TabsLayout() {
           tabBarIcon({ color, size }) {
             return <LayoutPanelLeft color={color} size={size} />
           },
-          headerLeft: () => <LoginView />,
         }}
       />
       <Tabs.Screen

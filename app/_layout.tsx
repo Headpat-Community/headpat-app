@@ -7,7 +7,7 @@ import { StatusBar } from 'expo-status-bar'
 import * as React from 'react'
 import { Platform, ScrollView, Text, View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import { ThemeToggle } from '~/components/ThemeToggle'
+import { ProfileThemeToggle } from '~/components/ThemeToggle'
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar'
 import { NAV_THEME } from '~/lib/constants'
 import { useColorScheme } from '~/lib/useColorScheme'
@@ -22,7 +22,7 @@ import {
   LogInIcon,
   MenuIcon,
 } from 'lucide-react-native'
-import { UserProvider } from '~/components/contexts/UserContext'
+import { UserProvider, useUser } from '~/components/contexts/UserContext'
 
 const LIGHT_THEME: Theme = {
   dark: false,
@@ -80,6 +80,7 @@ function CustomDrawerContent({
 
   const { isDarkColorScheme, setColorScheme } = useColorScheme()
   const icon_color = isDarkColorScheme ? 'white' : 'black'
+  const { current }: any = useUser()
 
   return (
     <ScrollView
@@ -157,11 +158,17 @@ function CustomDrawerContent({
           return (
             <View className="flex-row items-center gap-3 pl-3">
               <LogInIcon size={20} color={icon_color} />
-              <Text style={{ color: icon_color }}>Login</Text>
+              <Text style={{ color: icon_color }}>
+                {current ? 'Account' : 'Login'}
+              </Text>
             </View>
           )
         }}
-        onPress={() => navigation.navigate('login/index')}
+        onPress={() => {
+          current
+            ? navigation.navigate('account/index')
+            : navigation.navigate('login/index')
+        }}
       />
 
       <View
@@ -275,7 +282,7 @@ export default function RootLayout() {
               options={{
                 drawerLabel: 'Home',
                 title: 'Home',
-                headerRight: () => <ThemeToggle />,
+                headerRight: () => <ProfileThemeToggle />,
               }}
             />
             <Drawer.Screen
@@ -283,14 +290,14 @@ export default function RootLayout() {
               options={{
                 drawerLabel: 'Gallery',
                 title: 'Gallery',
-                headerRight: () => <ThemeToggle />,
+                headerRight: () => <ProfileThemeToggle />,
               }}
             />
             <Stack.Screen
               name="gallery/viewer"
               options={{
                 title: 'Gallery Viewer',
-                headerRight: () => <ThemeToggle />,
+                headerRight: () => <ProfileThemeToggle />,
               }}
             />
             <Drawer.Screen
@@ -298,7 +305,7 @@ export default function RootLayout() {
               options={{
                 drawerLabel: 'Events',
                 title: 'Events',
-                headerRight: () => <ThemeToggle />,
+                headerRight: () => <ProfileThemeToggle />,
               }}
             />
             <Drawer.Screen
@@ -306,7 +313,7 @@ export default function RootLayout() {
               options={{
                 drawerLabel: 'Tabs',
                 title: 'Tabs',
-                headerRight: () => <ThemeToggle />,
+                headerRight: () => <ProfileThemeToggle />,
               }}
             />
             {/* <Drawer.Screen
@@ -314,7 +321,7 @@ export default function RootLayout() {
         options={{
           drawerLabel: 'Button',
           title: 'Button',
-          headerRight: () => <ThemeToggle />,
+          headerRight: () => <ProfileThemeToggle />,
           drawerItemStyle: { display: 'none' },
         }}
       /> */}
@@ -323,7 +330,7 @@ export default function RootLayout() {
               options={{
                 drawerLabel: 'Material Top Tabs',
                 title: 'Material Top Tabs',
-                headerRight: () => <ThemeToggle />,
+                headerRight: () => <ProfileThemeToggle />,
               }}
             />
             <Drawer.Screen
@@ -331,7 +338,7 @@ export default function RootLayout() {
               options={{
                 drawerLabel: 'Not Found',
                 title: 'Not Found',
-                headerRight: () => <ThemeToggle />,
+                headerRight: () => <ProfileThemeToggle />,
                 drawerItemStyle: { display: 'none' },
               }}
             />
@@ -340,7 +347,7 @@ export default function RootLayout() {
               options={{
                 drawerLabel: 'Login',
                 title: 'Login',
-                headerRight: () => <ThemeToggle />,
+                headerRight: () => <ProfileThemeToggle />,
               }}
             />
             <Drawer.Screen
@@ -348,7 +355,7 @@ export default function RootLayout() {
               options={{
                 drawerLabel: 'Account',
                 title: 'Account',
-                headerRight: () => <ThemeToggle />,
+                headerRight: () => <ProfileThemeToggle />,
               }}
             />
           </Drawer>

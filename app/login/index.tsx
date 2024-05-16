@@ -7,23 +7,33 @@ import { useEffect, useState } from 'react'
 import { account } from '~/lib/appwrite-client'
 import { useUser } from '~/components/contexts/UserContext'
 import { router } from 'expo-router'
+import { Models } from 'react-native-appwrite'
+import { toast } from '~/lib/toast'
 
 export default function ModalScreen() {
+  const { login, current }: any = useUser()
+
   const [data, setData] = useState({
     email: '',
     password: '',
   })
-  const { login, current }: any = useUser()
+  const [currentData, setCurrentData] =
+    useState<Models.User<Models.Preferences> | null>(current)
 
   useEffect(() => {
-    if (current) router.push('/account')
+    setCurrentData(current)
   }, [current])
+
+  useEffect(() => {
+    if (currentData) router.push('/account')
+  }, [])
 
   const handleSession = async () => {
     try {
       await login(data.email, data.password)
+      router.push('/account')
     } catch (error) {
-      console.error(error)
+      toast('Invalid email or password.')
     }
   }
 

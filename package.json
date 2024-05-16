@@ -1,16 +1,22 @@
 {
-  "name": "@rnr/starter-base",
+  "name": "headpat-app",
   "main": "index.js",
   "version": "1.0.0",
   "scripts": {
-    "dev": "expo start -c --android",
+    "dev": "expo start",
     "dev:ios": "expo start -c --ios",
     "dev:web": "expo start -c --web",
     "android": "expo start -c --android",
     "ios": "expo start -c --ios",
     "web": "expo start -c --web",
     "format": "prettier --write .",
-    "doctor": "npx expo-doctor@latest"
+    "doctor": "npx expo-doctor@latest",
+    "build:ios": "eas build --platform ios",
+    "build:ios:submit": "eas build --platform ios --auto-submit",
+    "build:android": "eas build --platform android",
+    "build:all": "eas build --platform all",
+    "submit:ios": "eas submit -p ios",
+    "submit:android": "eas submit -p android"
   },
   "prettier": {
     "trailingComma": "es5",

@@ -1,4 +1,4 @@
-import { ID, Models } from 'react-native-appwrite'
+import { ID } from 'react-native-appwrite'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { account } from '~/lib/appwrite-client'
 import { toast } from '~/lib/toast'
