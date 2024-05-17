@@ -1,4 +1,4 @@
-import { View } from 'react-native'
+import { Linking, View } from 'react-native'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Text } from '~/components/ui/text'
@@ -7,8 +7,9 @@ import { useEffect, useState } from 'react'
 import { account } from '~/lib/appwrite-client'
 import { useUser } from '~/components/contexts/UserContext'
 import { router } from 'expo-router'
-import { Models } from 'react-native-appwrite'
+import { Models, OAuthProvider } from 'react-native-appwrite'
 import { toast } from '~/lib/toast'
+import WebView from 'react-native-webview'
 
 export default function ModalScreen() {
   const { login, current }: any = useUser()
@@ -47,9 +48,22 @@ export default function ModalScreen() {
     }
   }
 
-  const handleOAuth2Login = async (provider: string) => {
-    console.log(provider)
-    //await account.createEmailPasswordSession(data.email, data.password)
+  const MyWebComponent = () => {
+    return (
+      <WebView
+        source={{ uri: 'https://reactnative.dev/' }}
+        style={{ flex: 1 }}
+      />
+    )
+  }
+
+  const handleOAuth2Login = (provider: OAuthProvider) => {
+    try {
+      const data = account.createOAuth2Session(provider)
+      return Linking.openURL(`${data}`)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
@@ -88,31 +102,31 @@ export default function ModalScreen() {
         >
           <Button
             className={'w-32 bg-[#5865F2] border dark:border-white'}
-            onPress={() => handleOAuth2Login('discord')}
+            onPress={() => handleOAuth2Login(OAuthProvider.Discord)}
           >
             <Text className={'text-white'}>Discord</Text>
           </Button>
           <Button
             className={'w-32 bg-[#000000] border dark:border-white'}
-            onPress={() => handleOAuth2Login('apple')}
+            onPress={() => handleOAuth2Login(OAuthProvider.Apple)}
           >
             <Text className={'text-white'}>Apple</Text>
           </Button>
           <Button
             className={'w-32 bg-[#24292F] border dark:border-white'}
-            onPress={() => handleOAuth2Login('github')}
+            onPress={() => handleOAuth2Login(OAuthProvider.Github)}
           >
             <Text className={'text-white'}>Github</Text>
           </Button>
           <Button
             className={'w-32 bg-[#131314] border dark:border-white'}
-            onPress={() => handleOAuth2Login('google')}
+            onPress={() => handleOAuth2Login(OAuthProvider.Google)}
           >
             <Text className={'text-white'}>Google</Text>
           </Button>
           <Button
             className={'w-32 bg-[#1DB954] border dark:border-white'}
-            onPress={() => handleOAuth2Login('spotify')}
+            onPress={() => handleOAuth2Login(OAuthProvider.Spotify)}
           >
             <Text className={'text-white'}>Spotify</Text>
           </Button>
