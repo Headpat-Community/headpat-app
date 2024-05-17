@@ -1,4 +1,4 @@
-import { Linking, View } from 'react-native'
+import { View } from 'react-native'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Text } from '~/components/ui/text'
@@ -7,15 +7,18 @@ import { useEffect, useState } from 'react'
 import { account } from '~/lib/appwrite-client'
 import { useUser } from '~/components/contexts/UserContext'
 import { router } from 'expo-router'
-import { Models, OAuthProvider } from 'react-native-appwrite'
+import { Models } from 'react-native-appwrite'
 import { toast } from '~/lib/toast'
 
 export default function ModalScreen() {
-  const { login, current }: any = useUser()
+  const { register, current }: any = useUser()
+  const [acceptedTerms, setAcceptedTerms] = useState(false)
+  const [isRegistering, setIsRegistering] = useState(false)
 
   const [data, setData] = useState({
     email: '',
     password: '',
+    username: '',
   })
   const [currentData, setCurrentData] =
     useState<Models.User<Models.Preferences> | null>(current)
@@ -30,7 +33,7 @@ export default function ModalScreen() {
 
   const handleEmailLogin = async () => {
     try {
-      await login(data.email, data.password)
+      await register(data.email, data.password, data.username)
       router.push('/account')
     } catch (error) {
       console.log(error.type, error.message)
@@ -44,28 +47,33 @@ export default function ModalScreen() {
     }
   }
 
-  const handleOAuth2Login = (provider: OAuthProvider) => {
-    try {
-      const data = account.createOAuth2Session(provider)
-      return Linking.openURL(`${data}`)
-    } catch (error) {
-      console.log(error)
-    }
+  const handleOAuth2Login = async (provider: string) => {
+    console.log(provider)
+    //await account.createEmailPasswordSession(data.email, data.password)
   }
 
   return (
     <View className="flex-1 justify-center items-center">
       <View className="p-4 native:pb-24 max-w-md gap-6">
         <View className="gap-1">
-          <H1 className="text-foreground text-center">Login</H1>
+          <H1 className="text-foreground text-center">Register</H1>
           <Muted className="text-base text-center">
-            Enter you data below to register your account
+            Enter you email below to login your account
           </Muted>
-          <Muted className="text-base text-center">No account yet?</Muted>
-          <Button variant={'ghost'} onPress={() => router.push('/register')}>
-            <Text>Register</Text>
+          <Muted className="text-base text-center">
+            Already have an account?
+          </Muted>
+          <Button variant={'ghost'} onPress={() => router.push('/login')}>
+            <Text>Login</Text>
           </Button>
         </View>
+        <Input
+          textContentType={'username'}
+          placeholder={'Username'}
+          onChangeText={(newUsername) =>
+            setData({ ...data, username: newUsername })
+          }
+        />
         <Input
           textContentType={'emailAddress'}
           placeholder={'Email'}
@@ -81,7 +89,7 @@ export default function ModalScreen() {
         />
 
         <Button onPress={handleEmailLogin}>
-          <Text>Login</Text>
+          <Text>Register</Text>
         </Button>
         <View className="flex-row items-center gap-3">
           <View className="flex-1 h-px bg-muted" />
@@ -93,31 +101,31 @@ export default function ModalScreen() {
         >
           <Button
             className={'w-32 bg-[#5865F2] border dark:border-white'}
-            onPress={() => handleOAuth2Login(OAuthProvider.Discord)}
+            onPress={() => handleOAuth2Login('discord')}
           >
             <Text className={'text-white'}>Discord</Text>
           </Button>
           <Button
             className={'w-32 bg-[#000000] border dark:border-white'}
-            onPress={() => handleOAuth2Login(OAuthProvider.Apple)}
+            onPress={() => handleOAuth2Login('apple')}
           >
             <Text className={'text-white'}>Apple</Text>
           </Button>
           <Button
             className={'w-32 bg-[#24292F] border dark:border-white'}
-            onPress={() => handleOAuth2Login(OAuthProvider.Github)}
+            onPress={() => handleOAuth2Login('github')}
           >
             <Text className={'text-white'}>Github</Text>
           </Button>
           <Button
             className={'w-32 bg-[#131314] border dark:border-white'}
-            onPress={() => handleOAuth2Login(OAuthProvider.Google)}
+            onPress={() => handleOAuth2Login('google')}
           >
             <Text className={'text-white'}>Google</Text>
           </Button>
           <Button
             className={'w-32 bg-[#1DB954] border dark:border-white'}
-            onPress={() => handleOAuth2Login(OAuthProvider.Spotify)}
+            onPress={() => handleOAuth2Login('spotify')}
           >
             <Text className={'text-white'}>Spotify</Text>
           </Button>

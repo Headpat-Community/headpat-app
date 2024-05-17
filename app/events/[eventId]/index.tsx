@@ -1,9 +1,10 @@
 import { View } from 'react-native'
+import { H1 } from '~/components/ui/typography'
 
 export default function EventPage() {
   return (
     <View>
-      <Text>Event Page</Text>
+      <H1>Event Page</H1>
     </View>
   )
 }

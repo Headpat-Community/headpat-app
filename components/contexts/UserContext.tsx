@@ -32,8 +32,8 @@ export function UserProvider(props: any) {
     toast('Logged out.')
   }
 
-  async function register(email: string, password: string) {
-    await account.create(ID.unique(), email, password)
+  async function register(email: string, password: string, username: string) {
+    await account.create(ID.unique(), email, password, username)
     await login(email, password)
     toast('Account created!')
   }

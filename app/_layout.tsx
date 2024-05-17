@@ -1,5 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Theme, ThemeProvider, useNavigation } from '@react-navigation/native'
+import {
+  DrawerActions,
+  Theme,
+  ThemeProvider,
+  useNavigation,
+} from '@react-navigation/native'
 import { PortalHost } from '~/components/primitives/portal'
 import { ToastProvider } from '~/components/primitives/deprecated-ui/toast'
 import { SplashScreen, Stack } from 'expo-router'
@@ -23,6 +28,7 @@ import {
   MenuIcon,
 } from 'lucide-react-native'
 import { UserProvider, useUser } from '~/components/contexts/UserContext'
+import { DrawerScreensData } from '~/components/data/DrawerScreensData'
 
 const LIGHT_THEME: Theme = {
   dark: false,
@@ -53,7 +59,7 @@ function HeaderLeft() {
   const icon_color = isDarkColorScheme ? 'white' : 'black'
 
   const openMenu = () => {
-    navigation.toggleDrawer()
+    navigation.dispatch(DrawerActions.openDrawer())
   }
 
   return (
@@ -259,7 +265,7 @@ export default function RootLayout() {
                 />
               )
             }}
-            initialRouteName={'Home'}
+            initialRouteName={'home/index'}
             screenOptions={{
               drawerType: 'slide',
               drawerStyle: {},
@@ -277,45 +283,18 @@ export default function RootLayout() {
             style={{ width: 200, height: 200, marginTop: 20 }}
           /> */}
 
-            <Drawer.Screen
-              name="home/index" // This is the name of the page and must match the url from root
-              options={{
-                drawerLabel: 'Home',
-                title: 'Home',
-                headerRight: () => <ProfileThemeToggle />,
-              }}
-            />
-            <Drawer.Screen
-              name="gallery/index"
-              options={{
-                drawerLabel: 'Gallery',
-                title: 'Gallery',
-                headerRight: () => <ProfileThemeToggle />,
-              }}
-            />
-            <Stack.Screen
-              name="gallery/viewer"
-              options={{
-                title: 'Gallery Viewer',
-                headerRight: () => <ProfileThemeToggle />,
-              }}
-            />
-            <Drawer.Screen
-              name="events/index"
-              options={{
-                drawerLabel: 'Events',
-                title: 'Events',
-                headerRight: () => <ProfileThemeToggle />,
-              }}
-            />
-            <Drawer.Screen
-              name="(tabs)"
-              options={{
-                drawerLabel: 'Tabs',
-                title: 'Tabs',
-                headerRight: () => <ProfileThemeToggle />,
-              }}
-            />
+            {DrawerScreensData.map((screen) => (
+              <Drawer.Screen
+                key={screen.location}
+                name={screen.location}
+                options={{
+                  drawerLabel: screen.title,
+                  title: screen.title,
+                  headerRight: () => <ProfileThemeToggle />,
+                }}
+              />
+            ))}
+
             {/* <Drawer.Screen
         name="button"
         options={{
@@ -325,44 +304,32 @@ export default function RootLayout() {
           drawerItemStyle: { display: 'none' },
         }}
       /> */}
-            <Drawer.Screen
-              name="material-top-tabs"
-              options={{
-                drawerLabel: 'Material Top Tabs',
-                title: 'Material Top Tabs',
-                headerRight: () => <ProfileThemeToggle />,
-              }}
-            />
-            <Drawer.Screen
-              name="+not-found"
-              options={{
-                drawerLabel: 'Not Found',
-                title: 'Not Found',
-                headerRight: () => <ProfileThemeToggle />,
-                drawerItemStyle: { display: 'none' },
-              }}
-            />
-            <Drawer.Screen
-              name="login/index" // This is the name of the page and must match the url from root
-              options={{
-                drawerLabel: 'Login',
-                title: 'Login',
-                headerRight: () => <ProfileThemeToggle />,
-              }}
-            />
-            <Drawer.Screen
-              name="account/index" // This is the name of the page and must match the url from root
-              options={{
-                drawerLabel: 'Account',
-                title: 'Account',
-                headerRight: () => <ProfileThemeToggle />,
-              }}
-            />
           </Drawer>
         </GestureHandlerRootView>
         <PortalHost />
         <ToastProvider />
       </UserProvider>
     </ThemeProvider>
+  )
+}
+
+const DrawerScreenComponent = ({
+  location,
+  drawerLabel,
+  title,
+}: {
+  location: string
+  drawerLabel: string
+  title: string
+}) => {
+  return (
+    <Drawer.Screen
+      name={location}
+      options={{
+        drawerLabel: drawerLabel,
+        title: title,
+        headerRight: () => <ProfileThemeToggle />,
+      }}
+    />
   )
 }
