@@ -2,7 +2,7 @@
   "expo": {
     "name": "Headpat",
     "slug": "headpat-app",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "orientation": "portrait",
     "icon": "./assets/images/headpat_logo.png",
     "scheme": "headpatapp",
@@ -29,7 +29,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.headpat.app",
-      "versionCode": 3
+      "versionCode": 4
     },
     "web": {
       "bundler": "metro",
