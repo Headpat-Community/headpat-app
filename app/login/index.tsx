@@ -12,10 +12,13 @@ import { toast } from '~/lib/toast'
 
 export default function ModalScreen() {
   const { login, current }: any = useUser()
+  const [acceptedTerms, setAcceptedTerms] = useState(false)
+  const [isRegistering, setIsRegistering] = useState(false)
 
   const [data, setData] = useState({
     email: '',
     password: '',
+    username: '',
   })
   const [currentData, setCurrentData] =
     useState<Models.User<Models.Preferences> | null>(current)
@@ -33,7 +36,14 @@ export default function ModalScreen() {
       await login(data.email, data.password)
       router.push('/account')
     } catch (error) {
-      toast('Invalid email or password.')
+      console.log(error.type, error.message)
+      if (error.type == 'user_invalid_credentials') {
+        toast('E-Mail or Password incorrect.')
+      } else if (error.type == 'user_blocked') {
+        toast('User is blocked.')
+      } else {
+        toast('E-Mail or Password incorrect.')
+      }
     }
   }
 
