@@ -1,4 +1,4 @@
-import { Linking, View } from 'react-native'
+import { View } from 'react-native'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Text } from '~/components/ui/text'
@@ -15,6 +15,10 @@ import GithubIcon from '~/components/icons/GithubIcon'
 import GoogleIcon from '~/components/icons/GoogleIcon'
 import SpotifyIcon from '~/components/icons/SpotifyIcon'
 import SocialLoginButton from '~/components/SocialLoginButton'
+import * as Linking from 'expo-linking'
+import { getQueryParams } from 'expo-auth-session/build/QueryParams'
+import { makeRedirectUri } from 'expo-auth-session'
+import * as WebBrowser from 'expo-web-browser'
 
 export default function ModalScreen() {
   const { login, current }: any = useUser()
@@ -50,18 +54,42 @@ export default function ModalScreen() {
     }
   }
 
-  const handleOAuth2Login = (provider: OAuthProvider) => {
+  const redirectTo = makeRedirectUri()
+  console.log(redirectTo)
+
+  const createSessionFromUrl = async (url: string) => {
+    const params = getQueryParams(url)
+
+    if (params.errorCode) throw new Error(params.errorCode)
+    const { access_token, refresh_token } = params.params
+    console.log(access_token, refresh_token)
+    if (!access_token) return
+  }
+
+  const handleOAuth2Login = async (provider: OAuthProvider) => {
     try {
       const data = account.createOAuth2Session(
         provider,
-        'headpatapp://localhost',
-        'headpatapp://localhost'
+        'http://65e2126e0f1d5cc19391.functions.fayevr.dev/createOAuthSession'
       )
-      return Linking.openURL(`${data}`)
+      //const dataResponse = Linking.openURL(`${data}`)
+      //console.log(dataResponse)
+      const res = await WebBrowser.openAuthSessionAsync(`${data}`, redirectTo)
+
+      console.log(res)
+      if (res.type === 'success') {
+        const { url } = res
+        console.log(url)
+        await createSessionFromUrl(url)
+      }
     } catch (error) {
       console.log(error)
     }
   }
+
+  const url = Linking.useURL()
+  console.log({ url })
+  if (url) createSessionFromUrl(url).then()
 
   return (
     <View className="flex-1 justify-center items-center">

@@ -294,42 +294,11 @@ export default function RootLayout() {
                 }}
               />
             ))}
-
-            {/* <Drawer.Screen
-        name="button"
-        options={{
-          drawerLabel: 'Button',
-          title: 'Button',
-          headerRight: () => <ProfileThemeToggle />,
-          drawerItemStyle: { display: 'none' },
-        }}
-      /> */}
           </Drawer>
         </GestureHandlerRootView>
         <PortalHost />
         <ToastProvider />
       </UserProvider>
     </ThemeProvider>
-  )
-}
-
-const DrawerScreenComponent = ({
-  location,
-  drawerLabel,
-  title,
-}: {
-  location: string
-  drawerLabel: string
-  title: string
-}) => {
-  return (
-    <Drawer.Screen
-      name={location}
-      options={{
-        drawerLabel: drawerLabel,
-        title: title,
-        headerRight: () => <ProfileThemeToggle />,
-      }}
-    />
   )
 }

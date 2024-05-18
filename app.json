@@ -27,7 +27,7 @@
         "applinks:appwrite-callback-6557c1a8b6c2739b3ecf",
         "applinks:api.headpat.de"
       ],
-      "buildNumber": "5"
+      "buildNumber": "8"
     },
     "android": {
       "adaptiveIcon": {
@@ -35,7 +35,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.headpat.app",
-      "versionCode": 5
+      "versionCode": 8
     },
     "web": {
       "bundler": "metro",

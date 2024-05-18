@@ -5,7 +5,6 @@ import {
   CardContent,
   CardDescription,
   CardFooter,
-  CardTitle,
 } from '~/components/ui/card'
 import {
   CalendarClockIcon,
@@ -30,7 +29,7 @@ import { Separator } from '~/components/ui/separator'
 import { Query } from 'react-native-appwrite'
 import { calculateTimeLeft } from '~/components/events/calculateTimeLeft'
 import { Image } from 'expo-image'
-import { Link, router } from 'expo-router'
+import { router } from 'expo-router'
 import { TouchableOpacity } from '@gorhom/bottom-sheet'
 
 export default function HomeView() {
@@ -141,9 +140,9 @@ export default function HomeView() {
           <H4 className={'mt-10'}>Welcome to Headpat!</H4>
         )}
 
-        <Card className={'w-96 mt-8'}>
-          <CardContent>
-            <CardTitle className={'mt-2 text-xl justify-center align-middle'}>
+        <Card className={'w-3/4 mt-8'}>
+          <CardContent className={'p-0'}>
+            <CardFooter className={'mt-2 text-xl flex pb-4'}>
               <LayoutDashboardIcon
                 size={20}
                 color={theme}
@@ -151,10 +150,10 @@ export default function HomeView() {
                   marginRight: 4,
                 }}
               />
-              Gallery
-            </CardTitle>
+              <Text>Gallery</Text>
+            </CardFooter>
             <CardFooter
-              className={'p-0 mt-2 justify-between flex flex-wrap ml-7'}
+              className={'p-0 pb-2 justify-between flex flex-wrap ml-7'}
             >
               <CardDescription>
                 <Text>The place for all the pictures.</Text>
@@ -163,9 +162,9 @@ export default function HomeView() {
           </CardContent>
         </Card>
 
-        <Card className={'w-96 mt-4'}>
-          <CardContent>
-            <CardTitle className={'mt-2 text-xl justify-center align-middle'}>
+        <Card className={'w-3/4 mt-4'}>
+          <CardContent className={'p-0'}>
+            <CardFooter className={'mt-2 text-xl flex pb-4'}>
               <MapPinnedIcon
                 size={20}
                 color={theme}
@@ -173,10 +172,10 @@ export default function HomeView() {
                   marginRight: 4,
                 }}
               />
-              Friend locations
-            </CardTitle>
+              <Text>Friend locations</Text>
+            </CardFooter>
             <CardFooter
-              className={'p-0 mt-2 justify-between flex flex-wrap ml-7'}
+              className={'p-0 pb-2 justify-between flex flex-wrap mx-7'}
             >
               <CardDescription>
                 <Text>Find your friends!</Text>
@@ -188,10 +187,10 @@ export default function HomeView() {
           </CardContent>
         </Card>
 
-        <Card className={'w-96 mt-4'}>
+        <Card className={'w-3/4 mt-4'}>
           <TouchableOpacity onPress={() => router.push('/announcements')}>
-            <CardContent>
-              <CardTitle className={'mt-2 text-xl justify-center align-middle'}>
+            <CardContent className={'p-0'}>
+              <CardFooter className={'mt-2 text-xl flex pb-4'}>
                 <MegaphoneIcon
                   size={20}
                   color={theme}
@@ -199,10 +198,10 @@ export default function HomeView() {
                     marginRight: 4,
                   }}
                 />
-                Announcements
-              </CardTitle>
+                <Text>Announcements</Text>
+              </CardFooter>
               <CardFooter
-                className={'p-0 mt-2 justify-between flex flex-wrap ml-7'}
+                className={'p-0 pb-2 justify-between flex flex-wrap ml-7'}
               >
                 <CardDescription>
                   <Text>Stay updated with our news</Text>
@@ -212,10 +211,10 @@ export default function HomeView() {
           </TouchableOpacity>
         </Card>
 
-        <Card className={'w-96 mt-4'}>
+        <Card className={'w-3/4 mt-4'}>
           <TouchableOpacity onPress={() => router.push('/events')}>
-            <CardContent>
-              <CardTitle className={'mt-2 text-xl justify-center align-middle'}>
+            <CardContent className={'p-0'}>
+              <CardFooter className={'mt-2 text-xl flex pb-4'}>
                 <CalendarClockIcon
                   size={20}
                   color={theme}
@@ -223,9 +222,9 @@ export default function HomeView() {
                     marginRight: 4,
                   }}
                 />
-                Events
-              </CardTitle>
-              <CardFooter className={'p-0 mt-2 flex flex-wrap ml-7'}>
+                <Text>Events</Text>
+              </CardFooter>
+              <CardFooter className={'p-0 justify-between flex flex-wrap ml-7'}>
                 <CardDescription>
                   <Text>Looking for fun?</Text>
                 </CardDescription>
@@ -241,7 +240,7 @@ export default function HomeView() {
                       {calculateTimeLeft(nextEvent?.date, nextEvent?.dateUntil)}
                     </CardDescription>
                   </CardFooter>
-                  <CardFooter className={'p-0 flex flex-wrap ml-7 mt-1'}>
+                  <CardFooter className={'p-0 flex flex-wrap ml-7 mt-1 pb-2'}>
                     <CardDescription>
                       <MapPinIcon size={12} color={theme} />{' '}
                       {nextEvent?.location}
