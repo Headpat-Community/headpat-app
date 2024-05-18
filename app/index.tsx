@@ -138,10 +138,10 @@ export default function HomeView() {
             )}
           </>
         ) : (
-          <H4 className={'mt-8'}>Welcome to Headpat!</H4>
+          <H4 className={'mt-10'}>Welcome to Headpat!</H4>
         )}
 
-        <Card className={'w-3/4 mt-8'}>
+        <Card className={'w-96 mt-8'}>
           <CardContent>
             <CardTitle className={'mt-2 text-xl justify-center align-middle'}>
               <LayoutDashboardIcon
@@ -163,7 +163,7 @@ export default function HomeView() {
           </CardContent>
         </Card>
 
-        <Card className={'w-3/4 mt-4'}>
+        <Card className={'w-96 mt-4'}>
           <CardContent>
             <CardTitle className={'mt-2 text-xl justify-center align-middle'}>
               <MapPinnedIcon
@@ -188,7 +188,7 @@ export default function HomeView() {
           </CardContent>
         </Card>
 
-        <Card className={'w-3/4 mt-4'}>
+        <Card className={'w-96 mt-4'}>
           <TouchableOpacity onPress={() => router.push('/announcements')}>
             <CardContent>
               <CardTitle className={'mt-2 text-xl justify-center align-middle'}>
@@ -212,7 +212,7 @@ export default function HomeView() {
           </TouchableOpacity>
         </Card>
 
-        <Card className={'w-3/4 mt-4'}>
+        <Card className={'w-96 mt-4'}>
           <TouchableOpacity onPress={() => router.push('/events')}>
             <CardContent>
               <CardTitle className={'mt-2 text-xl justify-center align-middle'}>
