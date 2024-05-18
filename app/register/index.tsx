@@ -1,4 +1,4 @@
-import { View } from 'react-native'
+import { Linking, View } from 'react-native'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Text } from '~/components/ui/text'
@@ -7,8 +7,14 @@ import { useEffect, useState } from 'react'
 import { account } from '~/lib/appwrite-client'
 import { useUser } from '~/components/contexts/UserContext'
 import { router } from 'expo-router'
-import { Models } from 'react-native-appwrite'
+import { Models, OAuthProvider } from 'react-native-appwrite'
 import { toast } from '~/lib/toast'
+import SocialLoginButton from '~/components/SocialLoginButton'
+import DiscordIcon from '~/components/icons/DiscordIcon'
+import AppleIcon from '~/components/icons/AppleIcon'
+import GithubIcon from '~/components/icons/GithubIcon'
+import GoogleIcon from '~/components/icons/GoogleIcon'
+import SpotifyIcon from '~/components/icons/SpotifyIcon'
 
 export default function ModalScreen() {
   const { register, current }: any = useUser()
@@ -97,44 +103,64 @@ export default function ModalScreen() {
           <View className="flex-1 h-px bg-muted" />
         </View>
         <View
-          className={'flex flex-row flex-wrap p-2 gap-2 mx-auto justify-center'}
+          className={'flex flex-row flex-wrap gap-2 mx-auto justify-center'}
         >
-          <Button
-            className={'w-32 bg-[#5865F2] border dark:border-white'}
-            onPress={() => handleOAuth2Login('discord')}
-          >
-            <Text className={'text-white'}>Discord</Text>
-          </Button>
-          <Button
-            className={'w-32 bg-[#000000] border dark:border-white'}
-            onPress={() => handleOAuth2Login('apple')}
-          >
-            <Text className={'text-white'}>Apple</Text>
-          </Button>
-          <Button
-            className={'w-32 bg-[#24292F] border dark:border-white'}
-            onPress={() => handleOAuth2Login('github')}
-          >
-            <Text className={'text-white'}>Github</Text>
-          </Button>
-          <Button
-            className={'w-32 bg-[#131314] border dark:border-white'}
-            onPress={() => handleOAuth2Login('google')}
-          >
-            <Text className={'text-white'}>Google</Text>
-          </Button>
-          <Button
-            className={'w-32 bg-[#1DB954] border dark:border-white'}
-            onPress={() => handleOAuth2Login('spotify')}
-          >
-            <Text className={'text-white'}>Spotify</Text>
-          </Button>
+          <SocialLoginButton
+            provider={OAuthProvider.Discord}
+            color="#5865F2"
+            onPress={() => handleOAuth2Login(OAuthProvider.Discord)}
+            Icon={DiscordIcon}
+            title="Discord"
+          />
+          <SocialLoginButton
+            provider={OAuthProvider.Apple}
+            color="#000000"
+            onPress={() => handleOAuth2Login(OAuthProvider.Apple)}
+            Icon={AppleIcon}
+            title="Apple"
+          />
+          <SocialLoginButton
+            provider={OAuthProvider.Github}
+            color="#24292F"
+            onPress={() => handleOAuth2Login(OAuthProvider.Github)}
+            Icon={GithubIcon}
+            title="GitHub"
+          />
+          <SocialLoginButton
+            provider={OAuthProvider.Google}
+            color="#131314"
+            onPress={() => handleOAuth2Login(OAuthProvider.Google)}
+            Icon={GoogleIcon}
+            title="Google"
+          />
+          <SocialLoginButton
+            provider={OAuthProvider.Spotify}
+            color="#1DB954"
+            onPress={() => handleOAuth2Login(OAuthProvider.Spotify)}
+            Icon={SpotifyIcon}
+            title="Spotify"
+          />
         </View>
         <View>
           <Muted className="text-center">
             By creating an account, you agree to our{' '}
-            <Muted className="underline">Terms of Service</Muted> and{' '}
-            <Muted className="underline">Privacy Policy</Muted>
+            <Muted
+              className="underline"
+              onPress={() =>
+                Linking.openURL('https://headpat.de/legal/termsofservice.pdf')
+              }
+            >
+              Terms of Service
+            </Muted>{' '}
+            and{' '}
+            <Muted
+              className="underline"
+              onPress={() =>
+                Linking.openURL('https://headpat.de/legal/privacypolicy.pdf')
+              }
+            >
+              Privacy Policy
+            </Muted>
           </Muted>
         </View>
       </View>

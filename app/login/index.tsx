@@ -9,6 +9,12 @@ import { useUser } from '~/components/contexts/UserContext'
 import { router } from 'expo-router'
 import { Models, OAuthProvider } from 'react-native-appwrite'
 import { toast } from '~/lib/toast'
+import AppleIcon from '~/components/icons/AppleIcon'
+import DiscordIcon from '~/components/icons/DiscordIcon'
+import GithubIcon from '~/components/icons/GithubIcon'
+import GoogleIcon from '~/components/icons/GoogleIcon'
+import SpotifyIcon from '~/components/icons/SpotifyIcon'
+import SocialLoginButton from '~/components/SocialLoginButton'
 
 export default function ModalScreen() {
   const { login, current }: any = useUser()
@@ -46,7 +52,11 @@ export default function ModalScreen() {
 
   const handleOAuth2Login = (provider: OAuthProvider) => {
     try {
-      const data = account.createOAuth2Session(provider)
+      const data = account.createOAuth2Session(
+        provider,
+        'headpatapp://localhost',
+        'headpatapp://localhost'
+      )
       return Linking.openURL(`${data}`)
     } catch (error) {
       console.log(error)
@@ -89,45 +99,43 @@ export default function ModalScreen() {
           <View className="flex-1 h-px bg-muted" />
         </View>
         <View
-          className={'flex flex-row flex-wrap p-2 gap-2 mx-auto justify-center'}
+          className={'flex flex-row flex-wrap gap-2 mx-auto justify-center'}
         >
-          <Button
-            className={'w-32 bg-[#5865F2] border dark:border-white'}
+          <SocialLoginButton
+            provider={OAuthProvider.Discord}
+            color="#5865F2"
             onPress={() => handleOAuth2Login(OAuthProvider.Discord)}
-          >
-            <Text className={'text-white'}>Discord</Text>
-          </Button>
-          <Button
-            className={'w-32 bg-[#000000] border dark:border-white'}
+            Icon={DiscordIcon}
+            title="Discord"
+          />
+          <SocialLoginButton
+            provider={OAuthProvider.Apple}
+            color="#000000"
             onPress={() => handleOAuth2Login(OAuthProvider.Apple)}
-          >
-            <Text className={'text-white'}>Apple</Text>
-          </Button>
-          <Button
-            className={'w-32 bg-[#24292F] border dark:border-white'}
+            Icon={AppleIcon}
+            title="Apple"
+          />
+          <SocialLoginButton
+            provider={OAuthProvider.Github}
+            color="#24292F"
             onPress={() => handleOAuth2Login(OAuthProvider.Github)}
-          >
-            <Text className={'text-white'}>Github</Text>
-          </Button>
-          <Button
-            className={'w-32 bg-[#131314] border dark:border-white'}
+            Icon={GithubIcon}
+            title="GitHub"
+          />
+          <SocialLoginButton
+            provider={OAuthProvider.Google}
+            color="#131314"
             onPress={() => handleOAuth2Login(OAuthProvider.Google)}
-          >
-            <Text className={'text-white'}>Google</Text>
-          </Button>
-          <Button
-            className={'w-32 bg-[#1DB954] border dark:border-white'}
+            Icon={GoogleIcon}
+            title="Google"
+          />
+          <SocialLoginButton
+            provider={OAuthProvider.Spotify}
+            color="#1DB954"
             onPress={() => handleOAuth2Login(OAuthProvider.Spotify)}
-          >
-            <Text className={'text-white'}>Spotify</Text>
-          </Button>
-        </View>
-        <View>
-          <Muted className="text-center">
-            By creating an account, you agree to our{' '}
-            <Muted className="underline">Terms of Service</Muted> and{' '}
-            <Muted className="underline">Privacy Policy</Muted>
-          </Muted>
+            Icon={SpotifyIcon}
+            title="Spotify"
+          />
         </View>
       </View>
     </View>

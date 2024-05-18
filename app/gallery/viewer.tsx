@@ -109,7 +109,8 @@ export default function HomeView() {
   //const { index, images } = route.params;
 
   // const index = 'aaaaa';
-  const { navigate } = useNavigation<NavigationProp<NavigatorScreenParams>>()
+  const { navigate } =
+    useNavigation<NavigationProp<NavigatorScreenParams<View>>>()
 
   return (
     <View style={{ flex: 1 }}>

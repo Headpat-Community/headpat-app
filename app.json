@@ -2,7 +2,7 @@
   "expo": {
     "name": "Headpat",
     "slug": "headpat-app",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "orientation": "portrait",
     "icon": "./assets/images/headpat_logo.png",
     "scheme": "headpatapp",
@@ -21,6 +21,12 @@
       "config": {
         "usesNonExemptEncryption": false
       },
+      "associatedDomains": [
+        "applinks:headpat.app",
+        "applinks:headpat.de",
+        "applinks:appwrite-callback-6557c1a8b6c2739b3ecf",
+        "applinks:api.headpat.de"
+      ],
       "buildNumber": "5"
     },
     "android": {

@@ -1,4 +1,10 @@
-import { Client, Account, Databases, Functions } from 'react-native-appwrite'
+import {
+  Client,
+  Account,
+  Databases,
+  Functions,
+  Storage,
+} from 'react-native-appwrite'
 // Init your Web SDK
 const client = new Client()
 
@@ -10,3 +16,4 @@ client
 export const account = new Account(client)
 export const database = new Databases(client)
 export const functions = new Functions(client)
+export const storage = new Storage(client)

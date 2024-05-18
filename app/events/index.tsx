@@ -13,19 +13,26 @@ import { database } from '~/lib/appwrite-client'
 import { EventsDocumentsType, EventsType } from '~/lib/types/collections'
 import { H1, H3, Muted } from '~/components/ui/typography'
 import { Query } from 'react-native-appwrite'
+import {
+  calculateTimeLeft,
+  formatDate,
+} from '~/components/events/calculateTimeLeft'
+import { toast } from '~/lib/toast'
 
 export default function EventsPage() {
   const { isDarkColorScheme } = useColorScheme()
-  const icon_color = isDarkColorScheme ? 'white' : 'black'
-  const [events, setEvents] = useState<EventsDocumentsType[]>()
+  const theme = isDarkColorScheme ? 'white' : 'black'
+  const [events, setEvents] = useState<EventsDocumentsType[]>([])
   const [refreshing, setRefreshing] = useState<boolean>(false)
 
   const fetchEvents = async () => {
     try {
+      const currentDate = new Date()
+
       const data: EventsType = await database.listDocuments('hp_db', 'events', [
         Query.orderAsc('date'),
+        Query.greaterThanEqual('dateUntil', currentDate.toISOString()),
       ])
-      const currentDate = new Date()
 
       setEvents(
         data.documents.filter((event) => {
@@ -34,7 +41,7 @@ export default function EventsPage() {
         })
       )
     } catch (error) {
-      console.error(error)
+      toast('Failed to fetch events. Please try again later.')
     }
   }
 
@@ -80,41 +87,6 @@ export default function EventsPage() {
 
         {events &&
           events?.map((event, index) => {
-            const formatDate = (date: Date) => {
-              const day = date.getDate().toString().padStart(2, '0')
-              const month = (date.getMonth() + 1).toString().padStart(2, '0') // Months are 0-based in JavaScript
-              const year = date.getFullYear()
-              const hours = date.getHours().toString().padStart(2, '0')
-              const minutes = date.getMinutes().toString().padStart(2, '0')
-              return `${day}/${month}/${year} @ ${hours}:${minutes}`
-            }
-
-            const calculateTimeLeft = (eventDate: string) => {
-              const now = new Date()
-              const event = new Date(eventDate)
-              const differenceInTime = event.getTime() - now.getTime()
-
-              const differenceInDays = Math.ceil(
-                differenceInTime / (1000 * 3600 * 24)
-              )
-              const differenceInHours = Math.ceil(
-                differenceInTime / (1000 * 3600)
-              )
-              const differenceInMinutes = Math.ceil(
-                differenceInTime / (1000 * 60)
-              )
-
-              if (differenceInMinutes < 0) {
-                return 'Event has ended'
-              } else if (differenceInDays > 1) {
-                return `${differenceInDays} days left`
-              } else if (differenceInHours > 1) {
-                return `${differenceInHours} hours left`
-              } else {
-                return `${differenceInMinutes} minutes left`
-              }
-            }
-
             return (
               <Card key={index}>
                 <CardContent>
@@ -125,18 +97,17 @@ export default function EventsPage() {
                     className={'p-0 mt-2 justify-between flex flex-wrap'}
                   >
                     <CardDescription>
-                      <ClockIcon size={12} color={icon_color} />{' '}
+                      <ClockIcon size={12} color={theme} />{' '}
                       {formatDate(new Date(event.date))}
                     </CardDescription>
                     <CardDescription>
-                      {calculateTimeLeft(event.dateUntil)}
+                      {calculateTimeLeft(event.date, event.dateUntil)}
                     </CardDescription>
                   </CardFooter>
 
                   <CardFooter className={'p-0 mt-2 flex flex-wrap'}>
                     <CardDescription>
-                      <MapPinIcon size={12} color={icon_color} />{' '}
-                      {event.location}
+                      <MapPinIcon size={12} color={theme} /> {event.location}
                     </CardDescription>
                   </CardFooter>
                 </CardContent>

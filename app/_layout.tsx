@@ -46,7 +46,7 @@ export {
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
+  initialRouteName: 'index',
 }
 
 // Prevent the splash screen from auto-hiding before getting the color scheme.
@@ -56,7 +56,7 @@ function HeaderLeft() {
   const navigation = useNavigation()
 
   const { isDarkColorScheme } = useColorScheme()
-  const icon_color = isDarkColorScheme ? 'white' : 'black'
+  const theme = isDarkColorScheme ? 'white' : 'black'
 
   const openMenu = () => {
     navigation.dispatch(DrawerActions.openDrawer())
@@ -65,7 +65,7 @@ function HeaderLeft() {
   return (
     <View style={{ paddingLeft: 16 }}>
       <TouchableOpacity onPress={openMenu}>
-        <MenuIcon size={20} color={icon_color} onPress={() => openMenu} />
+        <MenuIcon size={20} color={theme} onPress={() => openMenu} />
       </TouchableOpacity>
     </View>
   )
@@ -84,8 +84,8 @@ function CustomDrawerContent({
   // const insets = useSafeAreaInsets();
   // const router = useRouter();
 
-  const { isDarkColorScheme, setColorScheme } = useColorScheme()
-  const icon_color = isDarkColorScheme ? 'white' : 'black'
+  const { isDarkColorScheme } = useColorScheme()
+  const theme = isDarkColorScheme ? 'white' : 'black'
   const { current }: any = useUser()
 
   return (
@@ -116,7 +116,7 @@ function CustomDrawerContent({
             marginBottom: 10,
           }}
         />
-        <Text style={{ color: icon_color }}>Headpat Community</Text>
+        <Text style={{ color: theme }}>Headpat Community</Text>
       </View>
 
       {/* Horizontal Row with Icon and Text */}
@@ -125,20 +125,20 @@ function CustomDrawerContent({
         label={() => {
           return (
             <View className="flex-row items-center gap-3 pl-3">
-              <HomeIcon size={20} color={icon_color} />
-              <Text style={{ color: icon_color }}>Home</Text>
+              <HomeIcon size={20} color={theme} />
+              <Text style={{ color: theme }}>Home</Text>
             </View>
           )
         }}
-        onPress={() => navigation.navigate('home/index')}
+        onPress={() => navigation.navigate('index')}
       />
 
       <DrawerItem
         label={() => {
           return (
             <View className="flex-row items-center gap-3 pl-3">
-              <LayoutPanelLeftIcon size={20} color={icon_color} />
-              <Text style={{ color: icon_color }}>Gallery</Text>
+              <LayoutPanelLeftIcon size={20} color={theme} />
+              <Text style={{ color: theme }}>Gallery</Text>
             </View>
           )
         }}
@@ -149,8 +149,8 @@ function CustomDrawerContent({
         label={() => {
           return (
             <View className="flex-row items-center gap-3 pl-3">
-              <CalendarIcon size={20} color={icon_color} />
-              <Text style={{ color: icon_color }}>Events</Text>
+              <CalendarIcon size={20} color={theme} />
+              <Text style={{ color: theme }}>Events</Text>
             </View>
           )
         }}
@@ -163,8 +163,8 @@ function CustomDrawerContent({
         label={() => {
           return (
             <View className="flex-row items-center gap-3 pl-3">
-              <LogInIcon size={20} color={icon_color} />
-              <Text style={{ color: icon_color }}>
+              <LogInIcon size={20} color={theme} />
+              <Text style={{ color: theme }}>
                 {current ? 'Account' : 'Login'}
               </Text>
             </View>
@@ -208,8 +208,8 @@ function CustomDrawerContent({
 
       <View style={{ flex: 1, flexGrow: 1 }}></View>
       <View style={{ borderBottomColor: '#f4f4f4', borderBottomWidth: 1 }} />
-      <Text style={{ color: icon_color, padding: 10, textAlign: 'center' }}>
-        Headpat App v1.2.3
+      <Text style={{ color: theme, padding: 10, textAlign: 'center' }}>
+        Headpat App v0.1.3
       </Text>
     </ScrollView>
   )
@@ -265,7 +265,7 @@ export default function RootLayout() {
                 />
               )
             }}
-            initialRouteName={'home/index'}
+            initialRouteName={'index'}
             screenOptions={{
               drawerType: 'slide',
               drawerStyle: {},

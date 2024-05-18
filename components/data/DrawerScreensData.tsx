@@ -4,8 +4,12 @@ export const DrawerScreensData = [
     title: 'Not Found',
   },
   {
-    location: 'home/index',
+    location: 'index',
     title: 'Home',
+  },
+  {
+    location: 'announcements/index',
+    title: 'Announcements',
   },
   {
     location: 'gallery/index',
