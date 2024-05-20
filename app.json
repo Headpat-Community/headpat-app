@@ -23,7 +23,7 @@
         "applinks:headpat.de",
         "applinks:api.headpat.de"
       ],
-      "buildNumber": "9"
+      "buildNumber": "10"
     },
     "android": {
       "adaptiveIcon": {
@@ -31,7 +31,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.headpat.app",
-      "versionCode": 9
+      "versionCode": 10
     },
     "web": {
       "bundler": "metro",
