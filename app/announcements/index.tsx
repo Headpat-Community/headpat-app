@@ -19,10 +19,7 @@ import {
   CardTitle,
 } from '~/components/ui/card'
 import { ClockIcon, MapPinIcon } from 'lucide-react-native'
-import {
-  calculateTimeLeft,
-  formatDate,
-} from '~/components/events/calculateTimeLeft'
+import { formatDate } from '~/components/calculateTimeLeft'
 import { useColorScheme } from '~/lib/useColorScheme'
 
 export default function AnnouncementsPage() {

@@ -41,13 +41,26 @@ export default function ModalScreen() {
   }, [])
 
   const handleEmailLogin = async () => {
+    if (data.username.length < 3) {
+      toast('Username should be at least 3 characters')
+      return
+    }
+    if (data.email.length < 1) {
+      toast('E-Mail is required')
+      return
+    }
+    if (data.password.length < 8) {
+      toast('Password should be at least 8 characters')
+      return
+    }
+
     try {
       await register(data.email, data.password, data.username)
       router.push('/account')
     } catch (error) {
-      //console.log(error.type, error.message)
-      if (error.type == 'user_invalid_credentials') {
-        toast('E-Mail or Password incorrect.')
+      console.log(error.type, error.message, error.code)
+      if (error.type == 'general_argument_invalid') {
+        toast('Invalid E-Mail or password.')
       } else if (error.type == 'user_blocked') {
         toast('User is blocked.')
       } else {
@@ -58,11 +71,17 @@ export default function ModalScreen() {
 
   WebBrowser.maybeCompleteAuthSession()
   const redirectTo = makeRedirectUri()
+  const redirect = redirectTo.includes('exp://')
+    ? redirectTo
+    : `${redirectTo}headpatapp`
 
   const handleOAuth2Login = async (provider: OAuthProvider) => {
     try {
-      const data = account.createOAuth2Token(provider, redirectTo)
-      const res = await WebBrowser.openAuthSessionAsync(`${data}`, redirectTo)
+      const data = account.createOAuth2Token(provider, `${redirect}`)
+      const res = await WebBrowser.openAuthSessionAsync(
+        `${data}`,
+        `${redirect}`
+      )
 
       if (res.type === 'success') {
         const { url } = res
@@ -115,6 +134,7 @@ export default function ModalScreen() {
           onChangeText={(newPassword) =>
             setData({ ...data, password: newPassword })
           }
+          maxLength={256}
         />
 
         <Button onPress={handleEmailLogin}>

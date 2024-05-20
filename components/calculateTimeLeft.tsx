@@ -49,3 +49,23 @@ export const formatDate = (date: Date) => {
   const minutes = date.getMinutes().toString().padStart(2, '0')
   return `${day}/${month}/${year} @ ${hours}:${minutes}`
 }
+
+export const timeSince = (date: string) => {
+  const now = new Date()
+  const past = new Date(date)
+  const secondsPast = Math.floor((now.getTime() - past.getTime()) / 1000)
+
+  if (secondsPast < 60) {
+    return `${secondsPast} seconds ago`
+  }
+  if (secondsPast < 3600) {
+    return `${Math.floor(secondsPast / 60)} minutes ago`
+  }
+  if (secondsPast <= 86400) {
+    return `${Math.floor(secondsPast / 3600)} hours ago`
+  }
+  if (secondsPast <= 604800) {
+    return `${Math.floor(secondsPast / 86400)} days ago`
+  }
+  return formatDate(past)
+}

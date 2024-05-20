@@ -27,7 +27,7 @@ import { database, storage } from '~/lib/appwrite-client'
 import { H4 } from '~/components/ui/typography'
 import { Separator } from '~/components/ui/separator'
 import { Query } from 'react-native-appwrite'
-import { calculateTimeLeft } from '~/components/events/calculateTimeLeft'
+import { calculateTimeLeft } from '~/components/calculateTimeLeft'
 import { Image } from 'expo-image'
 import { router } from 'expo-router'
 import { TouchableOpacity } from '@gorhom/bottom-sheet'
@@ -148,25 +148,27 @@ export default function HomeView() {
         )}
 
         <Card className={'w-3/4 mt-8'}>
-          <CardContent className={'p-0'}>
-            <CardFooter className={'mt-2 text-xl flex pb-4'}>
-              <LayoutDashboardIcon
-                size={20}
-                color={theme}
-                style={{
-                  marginRight: 4,
-                }}
-              />
-              <Text>Gallery</Text>
-            </CardFooter>
-            <CardFooter
-              className={'p-0 pb-2 justify-between flex flex-wrap ml-7'}
-            >
-              <CardDescription>
-                <Text>The place for all the pictures.</Text>
-              </CardDescription>
-            </CardFooter>
-          </CardContent>
+          <TouchableOpacity onPress={() => router.push('/gallery')}>
+            <CardContent className={'p-0'}>
+              <CardFooter className={'mt-2 text-xl flex pb-4'}>
+                <LayoutDashboardIcon
+                  size={20}
+                  color={theme}
+                  style={{
+                    marginRight: 4,
+                  }}
+                />
+                <Text>Gallery</Text>
+              </CardFooter>
+              <CardFooter
+                className={'p-0 pb-2 justify-between flex flex-wrap ml-7'}
+              >
+                <CardDescription>
+                  <Text>The place for all the pictures.</Text>
+                </CardDescription>
+              </CardFooter>
+            </CardContent>
+          </TouchableOpacity>
         </Card>
 
         <Card className={'w-3/4 mt-4'}>
@@ -247,7 +249,7 @@ export default function HomeView() {
                       {calculateTimeLeft(nextEvent?.date, nextEvent?.dateUntil)}
                     </CardDescription>
                   </CardFooter>
-                  <CardFooter className={'p-0 flex flex-wrap ml-7 mt-1 pb-2'}>
+                  <CardFooter className={'p-0 flex flex-wrap ml-7 mt-1 pb-3'}>
                     <CardDescription>
                       <MapPinIcon size={12} color={theme} />{' '}
                       {nextEvent?.location}

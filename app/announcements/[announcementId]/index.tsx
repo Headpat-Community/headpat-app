@@ -6,7 +6,7 @@ import { database } from '~/lib/appwrite-client'
 import { useEffect, useState } from 'react'
 import { Card, CardContent } from '~/components/ui/card'
 import { Text } from '~/components/ui/text'
-import { formatDate } from '~/components/events/calculateTimeLeft'
+import { formatDate } from '~/components/calculateTimeLeft'
 import { Separator } from '~/components/ui/separator'
 import { Badge } from '~/components/ui/badge'
 

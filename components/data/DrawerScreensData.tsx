@@ -20,8 +20,8 @@ export const DrawerScreensData = [
     title: 'Gallery',
   },
   {
-    location: 'gallery/viewer',
-    title: 'Gallery Viewer',
+    location: 'gallery/[galleryId]/index',
+    title: 'Gallery',
   },
   {
     location: 'events/(tabs)',

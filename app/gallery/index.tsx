@@ -1,130 +1,74 @@
-import {
-  Dimensions,
-  FlatList,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native'
-import { Text } from '~/components/ui/text'
+import { RefreshControl, TouchableWithoutFeedback, View } from 'react-native'
 import { Image } from 'expo-image'
 import { database } from '~/lib/appwrite-client'
-import Gallery from 'react-native-awesome-gallery'
-import {
-  NavigationProp,
-  NavigatorScreenParams,
-  useNavigation,
-} from '@react-navigation/native'
 import { ScrollView } from 'react-native-gesture-handler'
+import { Link } from 'expo-router'
+import { useColorScheme } from '~/lib/useColorScheme'
+import { useEffect, useState } from 'react'
+import { toast } from '~/lib/toast'
+import * as Sentry from '@sentry/react-native'
+import {
+  GalleryImagesDocumentsType,
+  GalleryImagesType,
+} from '~/lib/types/collections'
 
-// export default function HomeView() {
-//   const products = [
-//     {
-//       image_url:
-//         'https://blog.logrocket.com/wp-content/uploads/2024/03/getting-started-nativewind-tailwind-react-native.png',
-//     },
-//     {
-//       image_url:
-//         'https://cdn.discordapp.com/attachments/1046970799539617802/1221486753651757056/image.png?ex=6612c130&is=66004c30&hm=c562699ed94e561db08f0b16959c291330dc943d0ec3e4f23356ecfa8fdabbc8&',
-//     },
-//   ]
+export default function GalleryPage() {
+  const [images, setImages] = useState<GalleryImagesDocumentsType[]>([])
+  const [refreshing, setRefreshing] = useState<boolean>(false)
 
-//   async function fetchGallery() {
-//     const response = await database.listDocuments('hp_web', 'gallery')
-//     console.log(response)
-//   }
+  const fetchGallery = async () => {
+    try {
+      const data: GalleryImagesType = await database.listDocuments(
+        'hp_db',
+        'gallery-images'
+      )
 
-//   const blurhash =
-//     '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj['
+      setImages(data.documents)
+    } catch (error) {
+      toast('Failed to fetch gallery. Please try again later.')
+      Sentry.captureException(error)
+    }
+  }
 
-//   return (
-//     <View className="flex-1 justify-center items-center">
-//       <Text>Gallery!</Text>
-//       <Image
-//         className=""
-//         source={'./assets/images/headpat_logo.png'}
-//         placeholder={blurhash}
-//         contentFit="cover"
-//         transition={1000}
-//         allowDownscaling={true}
-//       />
-//       <FlatList
-//         data={products}
-//         numColumns={1}
-//         renderItem={(product_data) => {
-//           return (
-//             <View className="justify-center p-3">
-//               <Image
-//                 className="m-5 h-56 w-full mx-auto object-cover bg-slate-500 rounded-lg"
-//                 source={'~/assets/images/headpat_logo.png'}
-//                 placeholder={blurhash}
-//                 contentFit="cover"
-//                 transition={1000}
-//                 allowDownscaling={true}
-//               />
-//             </View>
-//           )
-//         }}
-//         keyExtractor={(item) => {
-//           return item.image_url
-//         }}
-//       />
-//     </View>
-//   )
-// }
+  const getGalleryUrl = (galleryId: string) => {
+    if (!galleryId) return
+    return `https://api.headpat.de/v1/storage/buckets/gallery/files/${galleryId}/preview?project=6557c1a8b6c2739b3ecf&width=400&height=400`
+  }
 
-const { height } = Dimensions.get('window')
+  const onRefresh = () => {
+    setRefreshing(true)
+    fetchGallery().then()
+    setRefreshing(false)
+  }
 
-const getRandomSize = function () {
-  const min = 400
-  const max = 800
-  return Math.floor(Math.random() * (max - min + 1)) + min
-}
-
-// const images = new Array(10)
-//   .fill(0)
-//   .map(() => `https://picsum.photos/${getRandomSize()}/${getRandomSize()}`);
-
-const images = new Array(10)
-  .fill(0)
-  .map(() => `https://picsum.photos/${getRandomSize()}/${getRandomSize()}`)
-
-function HeadpatGallery() {
-  return (
-    <Gallery
-      data={images}
-      style={{ flex: 1, backgroundColor: 'white' }}
-      onIndexChange={(newIndex) => {
-        console.log(newIndex)
-      }}
-    />
-  )
-}
-
-export default function HomeView(props) {
-  // console.log('gallery props', props)
-
-  const { navigate } = useNavigation()
+  useEffect(() => {
+    fetchGallery().then()
+  }, [])
 
   return (
-    <ScrollView>
-      <View style={{ padding: 20 }}>
-        <Text>This is the Gallery!</Text>
-      </View>
-      <View
-        style={{
-          flex: 1,
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-        }}
-      >
-        {images.map((uri, index) => (
-          <TouchableWithoutFeedback
-            key={uri}
-            onPress={() =>
-              navigate('gallery/viewer', { params: { index, images } })
-            }
+    <ScrollView
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
+      <View className={'flex-1 flex-row flex-wrap mt-4 gap-4'}>
+        {images.map((image, index) => (
+          <Link
+            href={{
+              pathname: '/gallery/[galleryId]',
+              params: { galleryId: image.$id },
+            }}
+            key={index}
+            asChild
           >
-            <Image source={uri} style={{ width: '50%', height: 200 }} />
-          </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback>
+              <Image
+                source={getGalleryUrl(image.galleryId)}
+                style={{ width: '48%', height: 200, borderRadius: 4 }}
+                contentFit={'contain'}
+              />
+            </TouchableWithoutFeedback>
+          </Link>
         ))}
       </View>
     </ScrollView>

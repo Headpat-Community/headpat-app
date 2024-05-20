@@ -18,10 +18,7 @@ import { database } from '~/lib/appwrite-client'
 import { EventsDocumentsType, EventsType } from '~/lib/types/collections'
 import { H1, H3, Muted } from '~/components/ui/typography'
 import { Query } from 'react-native-appwrite'
-import {
-  calculateTimeLeft,
-  formatDate,
-} from '~/components/events/calculateTimeLeft'
+import { calculateTimeLeft, formatDate } from '~/components/calculateTimeLeft'
 import { toast } from '~/lib/toast'
 import { Link } from 'expo-router'
 
