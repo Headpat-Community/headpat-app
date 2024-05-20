@@ -22,6 +22,8 @@ import * as Sentry from '@sentry/react-native'
 export default function ModalScreen() {
   const { current, login, loginOAuth }: any = useUser()
 
+  const [debug, setDebug] = useState('')
+
   const [data, setData] = useState({
     email: '',
     password: '',
@@ -54,11 +56,19 @@ export default function ModalScreen() {
 
   WebBrowser.maybeCompleteAuthSession()
   const redirectTo = makeRedirectUri()
+  const redirect = redirectTo.includes('exp://')
+    ? redirectTo
+    : `${redirectTo}headpatapp`
 
   const handleOAuth2Login = async (provider: OAuthProvider) => {
     try {
-      const data = account.createOAuth2Token(provider, redirectTo)
-      const res = await WebBrowser.openAuthSessionAsync(`${data}`, redirectTo)
+      setDebug(redirect)
+
+      const data = account.createOAuth2Token(provider, `${redirect}`)
+      const res = await WebBrowser.openAuthSessionAsync(
+        `${data}`,
+        `${redirect}`
+      )
 
       if (res.type === 'success') {
         const { url } = res
@@ -81,6 +91,7 @@ export default function ModalScreen() {
     <View className="flex-1 justify-center items-center">
       <View className="p-4 native:pb-24 max-w-md gap-6">
         <View className="gap-1">
+          <Muted>Debug: {debug}</Muted>
           <H1 className="text-foreground text-center">Login</H1>
           <Muted className="text-base text-center">
             Enter you data below to register your account

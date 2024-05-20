@@ -76,3 +76,26 @@ export interface UserDataDocumentsType extends Models.Document {
   hideBirthday: boolean
   hidePats: boolean
 }
+
+/**
+ * This data is returned from the API by calling the gallery-images endpoint.
+ * @see GalleryImagesType
+ */
+export interface GalleryImagesType {
+  total: number
+  documents: GalleryImagesDocumentsType[]
+}
+
+/**
+ * This data is returned from the API within the GalleryImagesType `documents` array.
+ * @see GalleryImagesType
+ */
+export interface GalleryImagesDocumentsType extends Models.Document {
+  galleryId: string
+  name: string
+  userId: string
+  imgAlt: string
+  longText: string
+  nsfw: boolean
+  tags: string[]
+}
