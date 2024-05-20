@@ -4,13 +4,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import { H1, H3, Muted } from '~/components/ui/typography'
-import { useEffect, useState } from 'react'
-import { AnnouncementsType } from '~/lib/types/collections'
-import { database } from '~/lib/appwrite-client'
-import { Query } from 'react-native-appwrite'
-import { toast } from '~/lib/toast'
-import { Link } from 'expo-router'
 import {
   Card,
   CardContent,
@@ -19,32 +12,40 @@ import {
   CardTitle,
 } from '~/components/ui/card'
 import { ClockIcon, MapPinIcon } from 'lucide-react-native'
+import { useColorScheme } from '~/lib/useColorScheme'
+import { useEffect, useState } from 'react'
+import { database } from '~/lib/appwrite-client'
+import { EventsDocumentsType, EventsType } from '~/lib/types/collections'
+import { H1, H3, Muted } from '~/components/ui/typography'
+import { Query } from 'react-native-appwrite'
 import {
   calculateTimeLeft,
   formatDate,
 } from '~/components/events/calculateTimeLeft'
-import { useColorScheme } from '~/lib/useColorScheme'
+import { toast } from '~/lib/toast'
+import { Link } from 'expo-router'
 
-export default function AnnouncementsPage() {
+export default function EventsPage() {
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
-  const [announcements, setAnnouncements] = useState<AnnouncementsType>(null)
+  const [events, setEvents] = useState<EventsDocumentsType[]>([])
   const [refreshing, setRefreshing] = useState<boolean>(false)
 
-  const fetchAnnouncements = async () => {
+  const fetchEvents = async () => {
     try {
       const currentDate = new Date()
 
-      const data: AnnouncementsType = await database.listDocuments(
-        'hp_db',
-        'announcements',
-        [
-          Query.orderAsc('validUntil'),
-          Query.greaterThanEqual('validUntil', currentDate.toISOString()),
-        ]
-      )
+      const data: EventsType = await database.listDocuments('hp_db', 'events', [
+        Query.orderAsc('date'),
+        Query.greaterThanEqual('date', currentDate.toISOString()),
+      ])
 
-      setAnnouncements(data)
+      setEvents(
+        data.documents.filter((event) => {
+          const eventDateUntil = new Date(event.dateUntil)
+          return eventDateUntil > currentDate
+        })
+      )
     } catch (error) {
       toast('Failed to fetch events. Please try again later.')
     }
@@ -52,15 +53,15 @@ export default function AnnouncementsPage() {
 
   const onRefresh = () => {
     setRefreshing(true)
-    fetchAnnouncements().then()
+    fetchEvents().then()
     setRefreshing(false)
   }
 
   useEffect(() => {
-    fetchAnnouncements().then()
+    fetchEvents().then()
   }, [])
 
-  if (announcements?.total === 0 || !announcements)
+  if (events?.length === 0 || !events)
     return (
       <ScrollView
         refreshControl={
@@ -70,9 +71,9 @@ export default function AnnouncementsPage() {
         <View className={'flex-1 justify-center items-center'}>
           <View className={'p-4 native:pb-24 max-w-md gap-6'}>
             <View className={'gap-1'}>
-              <H1 className={'text-foreground text-center'}>Anouncements</H1>
+              <H1 className={'text-foreground text-center'}>Events</H1>
               <Muted className={'text-base text-center'}>
-                Currently there are no announcements, check back later!
+                No upcoming events
               </Muted>
             </View>
           </View>
@@ -88,15 +89,15 @@ export default function AnnouncementsPage() {
       className={'mt-2'}
     >
       <View className={'gap-4 mx-2'}>
-        <H3 className={'text-foreground text-center'}>Currently active</H3>
+        <H3 className={'text-foreground text-center'}>Upcoming Events</H3>
 
-        {announcements &&
-          announcements?.documents?.map((announcement, index) => {
+        {events &&
+          events?.map((event, index) => {
             return (
               <Link
                 href={{
-                  pathname: '/announcements/[announcementId]',
-                  params: { announcementId: announcement.$id },
+                  pathname: '/events/[eventId]',
+                  params: { eventId: event.$id },
                 }}
                 asChild
                 key={index}
@@ -105,17 +106,24 @@ export default function AnnouncementsPage() {
                   <Card>
                     <CardContent>
                       <CardTitle className={'justify-between mt-2 text-xl'}>
-                        {announcement.title}
+                        {event.title}
                       </CardTitle>
-                      <CardDescription>
-                        <Muted>{announcement?.sideText}</Muted>
-                      </CardDescription>
                       <CardFooter
                         className={'p-0 mt-2 justify-between flex flex-wrap'}
                       >
                         <CardDescription>
                           <ClockIcon size={12} color={theme} />{' '}
-                          {formatDate(new Date(announcement.validUntil))}
+                          {formatDate(new Date(event.date))}
+                        </CardDescription>
+                        <CardDescription>
+                          {calculateTimeLeft(event.date, event.dateUntil)}
+                        </CardDescription>
+                      </CardFooter>
+
+                      <CardFooter className={'p-0 mt-2 flex flex-wrap'}>
+                        <CardDescription>
+                          <MapPinIcon size={12} color={theme} />{' '}
+                          {event.location}
                         </CardDescription>
                       </CardFooter>
                     </CardContent>

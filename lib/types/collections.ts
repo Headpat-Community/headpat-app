@@ -10,7 +10,7 @@ export interface EventsType {
 }
 
 /**
- * This data is returned from the API within the `documents` array.
+ * This data is returned from the API within the EventsType `documents` array.
  * @see EventsType
  */
 export interface EventsDocumentsType extends Models.Document {
@@ -23,6 +23,27 @@ export interface EventsDocumentsType extends Models.Document {
 }
 
 /**
+ * This data is returned from the API by calling the announcements endpoint.
+ * @see AnnouncementsDocumentsType
+ */
+export interface AnnouncementsType {
+  total: number
+  documents: AnnouncementsDocumentsType[]
+}
+
+/**
+ * This data is returned from the API within the AnnouncementsType `documents` array.
+ * @see AnnouncementsType
+ */
+export interface AnnouncementsDocumentsType extends Models.Document {
+  title: string
+  sideText: string
+  description: string
+  validUntil: string
+  userData: UserDataDocumentsType
+}
+
+/**
  * This data is returned from the API by calling the userdata endpoint.
  * @see UserDataDocumentsType
  */
@@ -32,7 +53,7 @@ export interface UserDataType {
 }
 
 /**
- * This data is returned from the API by calling the userData function.
+ * This data is returned from the API within the UserDataType `documents` array.
  * @see UserDataType
  */
 export interface UserDataDocumentsType extends Models.Document {

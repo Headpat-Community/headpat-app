@@ -1,4 +1,9 @@
-import { RefreshControl, ScrollView, View } from 'react-native'
+import {
+  RefreshControl,
+  ScrollView,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import {
   Card,
   CardContent,
@@ -18,6 +23,7 @@ import {
   formatDate,
 } from '~/components/events/calculateTimeLeft'
 import { toast } from '~/lib/toast'
+import { Link } from 'expo-router'
 
 export default function EventsPage() {
   const { isDarkColorScheme } = useColorScheme()
@@ -32,6 +38,7 @@ export default function EventsPage() {
       const data: EventsType = await database.listDocuments('hp_db', 'events', [
         Query.orderAsc('date'),
         Query.greaterThanEqual('dateUntil', currentDate.toISOString()),
+        Query.lessThanEqual('date', currentDate.toISOString()),
       ])
 
       setEvents(
@@ -83,35 +90,47 @@ export default function EventsPage() {
       className={'mt-2'}
     >
       <View className={'gap-4 mx-2'}>
-        <H3 className={'text-foreground text-center'}>Upcoming Events</H3>
+        <H3 className={'text-foreground text-center'}>Active Events</H3>
 
         {events &&
           events?.map((event, index) => {
             return (
-              <Card key={index}>
-                <CardContent>
-                  <CardTitle className={'justify-between mt-2 text-xl'}>
-                    {event.title}
-                  </CardTitle>
-                  <CardFooter
-                    className={'p-0 mt-2 justify-between flex flex-wrap'}
-                  >
-                    <CardDescription>
-                      <ClockIcon size={12} color={theme} />{' '}
-                      {formatDate(new Date(event.date))}
-                    </CardDescription>
-                    <CardDescription>
-                      {calculateTimeLeft(event.date, event.dateUntil)}
-                    </CardDescription>
-                  </CardFooter>
+              <Link
+                href={{
+                  pathname: '/events/[eventId]',
+                  params: { eventId: event.$id },
+                }}
+                asChild
+                key={index}
+              >
+                <TouchableOpacity>
+                  <Card>
+                    <CardContent>
+                      <CardTitle className={'justify-between mt-2 text-xl'}>
+                        {event.title}
+                      </CardTitle>
+                      <CardFooter
+                        className={'p-0 mt-2 justify-between flex flex-wrap'}
+                      >
+                        <CardDescription>
+                          <ClockIcon size={12} color={theme} />{' '}
+                          {formatDate(new Date(event.date))}
+                        </CardDescription>
+                        <CardDescription>
+                          {calculateTimeLeft(event.date, event.dateUntil)}
+                        </CardDescription>
+                      </CardFooter>
 
-                  <CardFooter className={'p-0 mt-2 flex flex-wrap'}>
-                    <CardDescription>
-                      <MapPinIcon size={12} color={theme} /> {event.location}
-                    </CardDescription>
-                  </CardFooter>
-                </CardContent>
-              </Card>
+                      <CardFooter className={'p-0 mt-2 flex flex-wrap'}>
+                        <CardDescription>
+                          <MapPinIcon size={12} color={theme} />{' '}
+                          {event.location}
+                        </CardDescription>
+                      </CardFooter>
+                    </CardContent>
+                  </Card>
+                </TouchableOpacity>
+              </Link>
             )
           })}
       </View>

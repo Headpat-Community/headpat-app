@@ -12,6 +12,10 @@ export const DrawerScreensData = [
     title: 'Announcements',
   },
   {
+    location: 'announcements/[announcementId]/index',
+    title: 'Announcement',
+  },
+  {
     location: 'gallery/index',
     title: 'Gallery',
   },
@@ -20,7 +24,7 @@ export const DrawerScreensData = [
     title: 'Gallery Viewer',
   },
   {
-    location: 'events/index',
+    location: 'events/(tabs)',
     title: 'Events',
   },
   {
@@ -29,7 +33,7 @@ export const DrawerScreensData = [
   },
   {
     location: 'events/[eventId]/index',
-    title: 'Events ID',
+    title: 'Event',
   },
   {
     location: 'login/index',

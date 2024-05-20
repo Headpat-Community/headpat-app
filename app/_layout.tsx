@@ -154,7 +154,7 @@ function CustomDrawerContent({
             </View>
           )
         }}
-        onPress={() => navigation.navigate('events/index')}
+        onPress={() => navigation.navigate('events/(tabs)')}
       />
 
       <View style={{ borderBottomColor: '#f4f4f4', borderBottomWidth: 1 }} />
@@ -208,8 +208,15 @@ function CustomDrawerContent({
 
       <View style={{ flex: 1, flexGrow: 1 }}></View>
       <View style={{ borderBottomColor: '#f4f4f4', borderBottomWidth: 1 }} />
-      <Text style={{ color: theme, padding: 10, textAlign: 'center' }}>
-        Headpat App v0.1.3
+      <Text
+        style={{
+          color: theme,
+          padding: 10,
+          paddingBottom: 16,
+          textAlign: 'center',
+        }}
+      >
+        Headpat App v0.2.0
       </Text>
     </ScrollView>
   )

@@ -1,4 +1,4 @@
-import { RefreshControl, ScrollView, View } from 'react-native'
+import { Button, RefreshControl, ScrollView, View } from 'react-native'
 import { Text } from '~/components/ui/text'
 import {
   Card,
@@ -17,7 +17,7 @@ import {
 import { useColorScheme } from '~/lib/useColorScheme'
 import { useUser } from '~/components/contexts/UserContext'
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   EventsDocumentsType,
   EventsType,
@@ -31,6 +31,8 @@ import { calculateTimeLeft } from '~/components/events/calculateTimeLeft'
 import { Image } from 'expo-image'
 import { router } from 'expo-router'
 import { TouchableOpacity } from '@gorhom/bottom-sheet'
+import { useFocusEffect } from '@react-navigation/core'
+import * as Sentry from '@sentry/react-native'
 
 export default function HomeView() {
   const [userData, setUserData] = useState<UserDataDocumentsType>(null)
@@ -43,7 +45,6 @@ export default function HomeView() {
 
   const onRefresh = () => {
     setRefreshing(true)
-    fetchUserData().then()
     fetchNextEvent().then()
     setRefreshing(false)
   }
@@ -53,7 +54,7 @@ export default function HomeView() {
     //return `https://api.headpat.de/v1/storage/buckets/avatars/files/${avatarId}/view?project=6557c1a8b6c2739b3ecf`
 
     /*
-    // getFilePreview doesn't seem to work?
+    // TODO: getFilePreview doesn't seem to work?
     //const data = await storage.getFile('avatars', avatarId)
 
     if (data.mimeType === 'image/gif') {
@@ -66,19 +67,6 @@ export default function HomeView() {
     return storage.getFileView('avatars', `${avatarId}`).toString()
   }
 
-  const fetchUserData = async () => {
-    try {
-      const data: UserDataDocumentsType = await database.getDocument(
-        'hp_db',
-        'userdata',
-        `${current?.$id}`
-      )
-      setUserData(data)
-    } catch (error) {
-      return
-    }
-  }
-
   const fetchNextEvent = async () => {
     try {
       const data: EventsType = await database.listDocuments('hp_db', 'events', [
@@ -89,27 +77,46 @@ export default function HomeView() {
 
       setNextEvent(data.documents[0])
     } catch (error) {
-      console.error(error)
+      //console.error(error)
+      Sentry.captureException(error)
     }
   }
 
-  useEffect(() => {
-    if (current) {
-      fetchUserData().then()
-    }
-    fetchNextEvent().then()
-  }, [current])
+  useFocusEffect(
+    useCallback(() => {
+      if (current) {
+        const fetchUserData = async () => {
+          try {
+            const data: UserDataDocumentsType = await database.getDocument(
+              'hp_db',
+              'userdata',
+              `${current.$id || current.userId}`
+            )
+            setUserData(data)
+          } catch (error) {
+            Sentry.captureException(error)
+            //console.error(error)
+            return
+          }
+        }
+        fetchUserData().then()
+      }
+      fetchNextEvent().then()
+    }, [current])
+  )
 
-  useEffect(() => {
-    const fetchAvatarUrl = async () => {
-      const url = await getAvatarUrl(userData?.avatarId)
-      setAvatarUrl(url)
-    }
+  useFocusEffect(
+    useCallback(() => {
+      const fetchAvatarUrl = async () => {
+        const url = await getAvatarUrl(userData?.avatarId)
+        setAvatarUrl(url)
+      }
 
-    if (userData?.avatarId) {
-      fetchAvatarUrl().then()
-    }
-  }, [userData?.avatarId])
+      if (userData?.avatarId) {
+        fetchAvatarUrl().then()
+      }
+    }, [userData?.avatarId])
+  )
 
   return (
     <ScrollView
@@ -120,7 +127,7 @@ export default function HomeView() {
       <View className="justify-center items-center">
         {current ? (
           <>
-            <Avatar alt="Zach Nugent's Avatar" className={'w-32 h-32 mt-8'}>
+            <Avatar alt="User Avatar" className={'w-32 h-32 mt-8'}>
               <AvatarImage
                 source={{
                   uri: avatarUrl,
@@ -212,7 +219,7 @@ export default function HomeView() {
         </Card>
 
         <Card className={'w-3/4 mt-4'}>
-          <TouchableOpacity onPress={() => router.push('/events')}>
+          <TouchableOpacity onPress={() => router.push('/events/(tabs)')}>
             <CardContent className={'p-0'}>
               <CardFooter className={'mt-2 text-xl flex pb-4'}>
                 <CalendarClockIcon

@@ -15,9 +15,12 @@ import AppleIcon from '~/components/icons/AppleIcon'
 import GithubIcon from '~/components/icons/GithubIcon'
 import GoogleIcon from '~/components/icons/GoogleIcon'
 import SpotifyIcon from '~/components/icons/SpotifyIcon'
+import { makeRedirectUri } from 'expo-auth-session'
+import * as WebBrowser from 'expo-web-browser'
+import * as Sentry from '@sentry/react-native'
 
 export default function ModalScreen() {
-  const { register, current }: any = useUser()
+  const { loginOAuth, register, current }: any = useUser()
   const [acceptedTerms, setAcceptedTerms] = useState(false)
   const [isRegistering, setIsRegistering] = useState(false)
 
@@ -42,7 +45,7 @@ export default function ModalScreen() {
       await register(data.email, data.password, data.username)
       router.push('/account')
     } catch (error) {
-      console.log(error.type, error.message)
+      //console.log(error.type, error.message)
       if (error.type == 'user_invalid_credentials') {
         toast('E-Mail or Password incorrect.')
       } else if (error.type == 'user_blocked') {
@@ -53,9 +56,29 @@ export default function ModalScreen() {
     }
   }
 
-  const handleOAuth2Login = async (provider: string) => {
-    console.log(provider)
-    //await account.createEmailPasswordSession(data.email, data.password)
+  WebBrowser.maybeCompleteAuthSession()
+  const redirectTo = makeRedirectUri()
+
+  const handleOAuth2Login = async (provider: OAuthProvider) => {
+    try {
+      const data = account.createOAuth2Token(provider, redirectTo)
+      const res = await WebBrowser.openAuthSessionAsync(`${data}`, redirectTo)
+
+      if (res.type === 'success') {
+        const { url } = res
+        const urlWithoutFragment = url.split('#')[0]
+
+        const params = new URLSearchParams(urlWithoutFragment.split('?')[1])
+        const secret = params.get('secret')
+        const userId = params.get('userId')
+
+        await loginOAuth(userId, secret)
+        router.push('/account')
+      }
+    } catch (error) {
+      toast('An error occurred.')
+      Sentry.captureException(error)
+    }
   }
 
   return (

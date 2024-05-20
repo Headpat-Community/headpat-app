@@ -15,13 +15,12 @@ import GithubIcon from '~/components/icons/GithubIcon'
 import GoogleIcon from '~/components/icons/GoogleIcon'
 import SpotifyIcon from '~/components/icons/SpotifyIcon'
 import SocialLoginButton from '~/components/SocialLoginButton'
-import * as Linking from 'expo-linking'
-import { getQueryParams } from 'expo-auth-session/build/QueryParams'
 import { makeRedirectUri } from 'expo-auth-session'
 import * as WebBrowser from 'expo-web-browser'
+import * as Sentry from '@sentry/react-native'
 
 export default function ModalScreen() {
-  const { login, current }: any = useUser()
+  const { current, login, loginOAuth }: any = useUser()
 
   const [data, setData] = useState({
     email: '',
@@ -43,7 +42,6 @@ export default function ModalScreen() {
       await login(data.email, data.password)
       router.push('/account')
     } catch (error) {
-      console.log(error.type, error.message)
       if (error.type == 'user_invalid_credentials') {
         toast('E-Mail or Password incorrect.')
       } else if (error.type == 'user_blocked') {
@@ -54,42 +52,30 @@ export default function ModalScreen() {
     }
   }
 
+  WebBrowser.maybeCompleteAuthSession()
   const redirectTo = makeRedirectUri()
-  console.log(redirectTo)
-
-  const createSessionFromUrl = async (url: string) => {
-    const params = getQueryParams(url)
-
-    if (params.errorCode) throw new Error(params.errorCode)
-    const { access_token, refresh_token } = params.params
-    console.log(access_token, refresh_token)
-    if (!access_token) return
-  }
 
   const handleOAuth2Login = async (provider: OAuthProvider) => {
     try {
-      const data = account.createOAuth2Session(
-        provider,
-        'http://65e2126e0f1d5cc19391.functions.fayevr.dev/createOAuthSession'
-      )
-      //const dataResponse = Linking.openURL(`${data}`)
-      //console.log(dataResponse)
+      const data = account.createOAuth2Token(provider, redirectTo)
       const res = await WebBrowser.openAuthSessionAsync(`${data}`, redirectTo)
 
-      console.log(res)
       if (res.type === 'success') {
         const { url } = res
-        console.log(url)
-        await createSessionFromUrl(url)
+        const urlWithoutFragment = url.split('#')[0]
+
+        const params = new URLSearchParams(urlWithoutFragment.split('?')[1])
+        const secret = params.get('secret')
+        const userId = params.get('userId')
+
+        await loginOAuth(userId, secret)
+        router.push('/account')
       }
     } catch (error) {
-      console.log(error)
+      toast('An error occurred.')
+      Sentry.captureException(error)
     }
   }
-
-  const url = Linking.useURL()
-  console.log({ url })
-  if (url) createSessionFromUrl(url).then()
 
   return (
     <View className="flex-1 justify-center items-center">

@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router'
-import { LayoutPanelLeft, MenuSquare } from '~/components/Icons'
+import { CalendarClockIcon, CalendarIcon } from 'lucide-react-native'
 
 export default function TabsLayout() {
   return (
@@ -7,19 +7,19 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Tabs',
+          title: 'Active',
           tabBarIcon({ color, size }) {
-            return <LayoutPanelLeft color={color} size={size} />
+            return <CalendarIcon color={color} size={size} />
           },
           headerShown: false,
         }}
       />
       <Tabs.Screen
-        name="components"
+        name="upcoming"
         options={{
-          title: 'Components',
+          title: 'Upcoming',
           tabBarIcon({ color, size }) {
-            return <MenuSquare color={color} size={size} />
+            return <CalendarClockIcon color={color} size={size} />
           },
           headerShown: false,
         }}
