@@ -18,6 +18,9 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.headpat.app",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
       "associatedDomains": [
         "applinks:headpat.app",
         "applinks:headpat.de",
