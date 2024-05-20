@@ -11,6 +11,7 @@ import {
   GalleryImagesDocumentsType,
   GalleryImagesType,
 } from '~/lib/types/collections'
+import { Query } from 'react-native-appwrite'
 
 export default function GalleryPage() {
   const [images, setImages] = useState<GalleryImagesDocumentsType[]>([])
@@ -20,7 +21,8 @@ export default function GalleryPage() {
     try {
       const data: GalleryImagesType = await database.listDocuments(
         'hp_db',
-        'gallery-images'
+        'gallery-images',
+        [Query.equal('nsfw', false)]
       )
 
       setImages(data.documents)
