@@ -18,9 +18,6 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.headpat.app",
-      "config": {
-        "usesNonExemptEncryption": false
-      },
       "associatedDomains": [
         "applinks:headpat.app",
         "applinks:headpat.de",
@@ -49,6 +46,12 @@
         "projectId": "904378a3-321c-4abe-9c08-48274d5f6267"
       }
     },
-    "owner": "expo-headpat"
+    "owner": "expo-headpat",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/904378a3-321c-4abe-9c08-48274d5f6267"
+    }
   }
 }
