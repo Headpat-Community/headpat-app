@@ -18,6 +18,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.headpat.app",
+      "usesAppleSignIn": true,
       "config": {
         "usesNonExemptEncryption": false,
         "googleMapsApiKey": "AIzaSyBlqdKEHTabryf5Et0bZQAtxO10VJMf1go"
@@ -64,7 +65,13 @@
     },
     "plugins": [
       "expo-localization",
-      "expo-location"
+      "expo-apple-authentication",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow Headpat to use your location."
+        }
+      ]
     ]
   }
 }

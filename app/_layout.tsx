@@ -213,7 +213,7 @@ function CustomDrawerContent({
                 )
               }}
               onPress={() =>
-                navigation.navigate('friends/(tabs)', { screen: 'index' })
+                navigation.navigate('friends/(tabs)', { screen: 'friends' })
               }
             />
           </>

@@ -17,7 +17,7 @@ import {
 import { useColorScheme } from '~/lib/useColorScheme'
 import { useUser } from '~/components/contexts/UserContext'
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import {
   EventsDocumentsType,
   EventsType,

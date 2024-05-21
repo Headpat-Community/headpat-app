@@ -47,13 +47,12 @@ export default function EventPage() {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
+        contentContainerClassName={'flex-1 justify-center items-center h-full'}
       >
-        <View className={'flex-1 justify-center items-center'}>
-          <View className={'p-4 native:pb-24 max-w-md gap-6'}>
-            <View className={'gap-1'}>
-              <H1 className={'text-foreground text-center'}>Event</H1>
-              <Muted className={'text-base text-center'}>Loading...</Muted>
-            </View>
+        <View className={'p-4 native:pb-24 max-w-md gap-6'}>
+          <View className={'gap-1'}>
+            <H1 className={'text-foreground text-center'}>Event</H1>
+            <Muted className={'text-base text-center'}>Loading...</Muted>
           </View>
         </View>
       </ScrollView>
@@ -65,15 +64,14 @@ export default function EventPage() {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
+        contentContainerClassName={'flex-1 justify-center items-center h-full'}
       >
-        <View className={'flex-1 justify-center items-center h-full'}>
-          <View className={'p-4 native:pb-24 max-w-md gap-6'}>
-            <View className={'gap-1'}>
-              <H1 className={'text-foreground text-center'}>Event</H1>
-              <Muted className={'text-base text-center'}>
-                Event unavailable. Does it even exist?
-              </Muted>
-            </View>
+        <View className={'p-4 native:pb-24 max-w-md gap-6'}>
+          <View className={'gap-1'}>
+            <H1 className={'text-foreground text-center'}>Event</H1>
+            <Muted className={'text-base text-center'}>
+              Event unavailable. Does it even exist?
+            </Muted>
           </View>
         </View>
       </ScrollView>

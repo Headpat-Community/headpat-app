@@ -99,3 +99,20 @@ export interface GalleryImagesDocumentsType extends Models.Document {
   nsfw: boolean
   tags: string[]
 }
+
+/**
+ * This data is returned from the API by calling the friends endpoint.
+ * @see FriendsDocumentsType
+ */
+export interface FriendsType {
+  total: number
+  documents: FriendsDocumentsType[]
+}
+
+/**
+ * This data is returned from the API within the FriendsType `documents` array.
+ * @see FriendsType
+ */
+export interface FriendsDocumentsType extends Models.Document {
+  friendIds: string[]
+}

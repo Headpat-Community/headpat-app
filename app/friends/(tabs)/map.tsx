@@ -11,8 +11,7 @@ import { FilterIcon, LocateIcon } from 'lucide-react-native'
 import * as Location from 'expo-location'
 import { Image } from 'expo-image'
 
-export default function FriendLocationsPage(...props) {
-  console.log(props)
+export default function FriendLocationsPage() {
   const mapRef = useRef(null)
   const [userLocation, setUserLocation] = useState(null)
 
