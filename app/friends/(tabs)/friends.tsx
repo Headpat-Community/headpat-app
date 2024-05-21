@@ -1,4 +1,9 @@
-import { RefreshControl, ScrollView, View } from 'react-native'
+import {
+  RefreshControl,
+  ScrollView,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import { H1, Muted } from '~/components/ui/typography'
 import { useColorScheme } from '~/lib/useColorScheme'
 import { useEffect, useState } from 'react'
@@ -12,6 +17,8 @@ import { Query } from 'react-native-appwrite'
 import { toast } from '~/lib/toast'
 import * as Sentry from '@sentry/react-native'
 import { Text } from '~/components/ui/text'
+import { Image } from 'expo-image'
+import { Link, router } from 'expo-router'
 
 export default function FriendsPage() {
   const { isDarkColorScheme } = useColorScheme()
@@ -31,9 +38,9 @@ export default function FriendsPage() {
     }
   }
 
-  const fetchUserdataForFriends = async (friendIds: string[]) => {
+  const fetchUserdataForFriends = async (friends: string[]) => {
     try {
-      const promises = friendIds.map((friendId) =>
+      const promises = friends.map((friendId) =>
         database.listDocuments('hp_db', 'userdata', [
           Query.equal('$id', friendId),
         ])
@@ -52,10 +59,10 @@ export default function FriendsPage() {
       if (friends && friends.documents) {
         const allFriendData = await Promise.all(
           friends.documents.map((friend: any) =>
-            fetchUserdataForFriends(friend.friendIds)
+            fetchUserdataForFriends(friend.friends)
           )
         )
-        setFriendData(allFriendData)
+        setFriendData(allFriendData[0])
       }
     }
 
@@ -71,6 +78,11 @@ export default function FriendsPage() {
   useEffect(() => {
     fetchFriends().then()
   }, [])
+
+  const getUserAvatar = (avatarId: string) => {
+    if (!avatarId) return
+    return `https://api.headpat.de/v1/storage/buckets/avatars/files/${avatarId}/preview?project=6557c1a8b6c2739b3ecf&width=250&height=250`
+  }
 
   if (!friends)
     return (
@@ -92,19 +104,62 @@ export default function FriendsPage() {
       </ScrollView>
     )
 
+  if (!friendData)
+    return (
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        contentContainerClassName={'flex-1 justify-center items-center h-full'}
+      >
+        <View className={'p-4 native:pb-24 max-w-md gap-6'}>
+          <View className={'gap-1'}>
+            <H1 className={'text-foreground text-center'}>Loading...</H1>
+            <Muted className={'text-base text-center'}>
+              Fetching your friends...
+            </Muted>
+          </View>
+        </View>
+      </ScrollView>
+    )
+
   return (
     <ScrollView
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
-      contentContainerClassName={'flex-row flex-wrap justify-between'}
+      contentContainerStyle={{
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+      }}
     >
-      {friendData.map((data, index) => (
-        <View key={index} className={'w-[30%] m-[1.66%]'}>
-          <Text>{data.displayName}</Text>
-          <Text>{data.bio}</Text>
-        </View>
-      ))}
+      {friendData.map((user, index) => {
+        return (
+          <Link
+            href={{
+              pathname: '/user/[userId]',
+              params: { userId: user.$id },
+            }}
+            key={index}
+            asChild
+          >
+            <TouchableOpacity
+              style={{ width: '30%', margin: '1.66%', padding: 10 }}
+            >
+              <Image
+                source={
+                  getUserAvatar(user?.avatarId) ||
+                  require('../../../assets/pfp-placeholder.png')
+                }
+                style={{ width: '100%', height: 100, borderRadius: 25 }}
+                contentFit={'cover'}
+              />
+              <Text className={'text-center mt-2'}>{user.displayName}</Text>
+            </TouchableOpacity>
+          </Link>
+        )
+      })}
     </ScrollView>
   )
 }

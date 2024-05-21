@@ -45,6 +45,7 @@ export default function UserPage() {
       setRefreshing(false)
     } catch (error) {
       setRefreshing(false)
+      Sentry.captureException(error)
     }
   }
 
@@ -95,21 +96,25 @@ export default function UserPage() {
       }
     >
       {/* Banner section */}
-      <View className={'flex-1 justify-center items-center'}>
-        <Image
-          source={{
-            uri: getUserBanner(userData?.profileBannerId),
-          }}
-          style={{ width: '100%', height: 100 }}
-          contentFit={'cover'}
-        />
-      </View>
+      {!userData?.profileBannerId ? null : (
+        <View className={'flex-1 justify-center items-center'}>
+          <Image
+            source={
+              getUserBanner(userData?.profileBannerId) ||
+              require('../../../assets/pfp-placeholder.png')
+            }
+            style={{ width: '100%', height: 100 }}
+            contentFit={'cover'}
+          />
+        </View>
+      )}
       {/* Avatar section */}
       <View className={'mx-6 my-4 flex-row items-center gap-4'}>
         <Image
-          source={{
-            uri: getUserAvatar(userData?.avatarId),
-          }}
+          source={
+            getUserAvatar(userData?.avatarId) ||
+            require('../../../assets/pfp-placeholder.png')
+          }
           style={{ width: 100, height: 100, borderRadius: 50 }}
           contentFit={'cover'}
         />
@@ -132,14 +137,18 @@ export default function UserPage() {
       >
         <View>
           <Muted className={'text-center mb-2'}>
-            <MapPinIcon
-              size={12}
-              color={theme}
-              style={{
-                marginRight: 4,
-              }}
-            />
-            {userData?.location}
+            {!userData?.location ? null : (
+              <>
+                <MapPinIcon
+                  size={12}
+                  color={theme}
+                  style={{
+                    marginRight: 4,
+                  }}
+                />
+                {userData?.location}
+              </>
+            )}
           </Muted>
           <Muted className={'text-center mb-2'}>
             {/* If birthday includes 1900-01-01 then don't show */}
@@ -159,14 +168,18 @@ export default function UserPage() {
         </View>
         <View>
           <Muted className={'text-center mb-2'}>
-            <TagIcon
-              size={12}
-              color={theme}
-              style={{
-                marginRight: 4,
-              }}
-            />
-            {userData?.pronouns}
+            {!userData?.pronouns ? null : (
+              <>
+                <TagIcon
+                  size={12}
+                  color={theme}
+                  style={{
+                    marginRight: 4,
+                  }}
+                />
+                {userData?.pronouns}
+              </>
+            )}
           </Muted>
           <Muted className={'text-center mb-2'}>
             {/* Some other attributes later */}
@@ -181,7 +194,7 @@ export default function UserPage() {
 
       {/* Social section */}
       <View className={'mx-10 my-4 gap-4'}>
-        {userData?.telegramname === '' ? null : (
+        {!userData?.telegramname ? null : (
           <TouchableOpacity
             className={'flex-row items-center gap-4'}
             onPress={() =>
@@ -201,7 +214,7 @@ export default function UserPage() {
           </TouchableOpacity>
         )}
 
-        {userData?.discordname === '' ? null : (
+        {!userData?.discordname ? null : (
           <TouchableOpacity
             className={'flex-row items-center gap-4'}
             onPress={() => {
@@ -220,8 +233,13 @@ export default function UserPage() {
           </TouchableOpacity>
         )}
 
-        {userData?.X_name === '' ? null : (
-          <View className={'flex-row items-center gap-4'}>
+        {!userData?.X_name ? null : (
+          <TouchableOpacity
+            className={'flex-row items-center gap-4'}
+            onPress={() =>
+              WebBrowser.openBrowserAsync(`https://x.com/${userData?.X_name}`)
+            }
+          >
             <XIcon
               size={32}
               color={theme}
@@ -230,11 +248,18 @@ export default function UserPage() {
               }}
             />
             <Text>{userData?.X_name}</Text>
-          </View>
+          </TouchableOpacity>
         )}
 
-        {userData?.twitchname === '' ? null : (
-          <View className={'flex-row items-center gap-4'}>
+        {!userData?.twitchname ? null : (
+          <TouchableOpacity
+            className={'flex-row items-center gap-4'}
+            onPress={() =>
+              WebBrowser.openBrowserAsync(
+                `https://twitch.tv/${userData?.twitchname}`
+              )
+            }
+          >
             <TwitchIcon
               size={32}
               color={theme}
@@ -243,11 +268,18 @@ export default function UserPage() {
               }}
             />
             <Text>{userData?.twitchname}</Text>
-          </View>
+          </TouchableOpacity>
         )}
 
-        {userData?.furaffinityname === '' ? null : (
-          <View className={'flex-row items-center gap-4'}>
+        {!userData?.furaffinityname ? null : (
+          <TouchableOpacity
+            className={'flex-row items-center gap-4'}
+            onPress={() =>
+              WebBrowser.openBrowserAsync(
+                `https://furaffinity.net/user/${userData?.furaffinityname}`
+              )
+            }
+          >
             <FuraffinityIcon
               size={32}
               color={theme}
@@ -256,7 +288,7 @@ export default function UserPage() {
               }}
             />
             <Text>{userData?.furaffinityname}</Text>
-          </View>
+          </TouchableOpacity>
         )}
       </View>
     </ScrollView>

@@ -114,5 +114,5 @@ export interface FriendsType {
  * @see FriendsType
  */
 export interface FriendsDocumentsType extends Models.Document {
-  friendIds: string[]
+  friends: string[]
 }
