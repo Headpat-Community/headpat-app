@@ -4,7 +4,7 @@ import { IconType } from '~/lib/types/IconTypes'
 import Svg, { Path } from 'react-native-svg'
 import { LegacyRef } from 'react'
 
-type SiDiscordProps = React.ComponentPropsWithoutRef<'svg'> & {
+type SiGithubProps = React.ComponentPropsWithoutRef<'svg'> & {
   /**
    * The title provides an accessible short text description to the SVG
    */
@@ -21,7 +21,7 @@ type SiDiscordProps = React.ComponentPropsWithoutRef<'svg'> & {
 
 const defaultColor = '#5865F2'
 
-const GithubIcon: IconType = React.forwardRef<SVGSVGElement, SiDiscordProps>(
+const GithubIcon: IconType = React.forwardRef<SVGSVGElement, SiGithubProps>(
   function GithubIcon(
     { color = 'currentColor', size = 24 },
     ref: LegacyRef<any>

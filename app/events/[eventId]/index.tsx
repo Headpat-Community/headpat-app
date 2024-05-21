@@ -112,6 +112,15 @@ export default function EventPage() {
         <View>
           <Card className={'flex-1 p-0'}>
             <CardContent className={'p-6'}>
+              <Text className={'font-bold'}>Location: </Text>
+              <Text>{event?.location}</Text>
+            </CardContent>
+          </Card>
+        </View>
+
+        <View>
+          <Card className={'flex-1 p-0'}>
+            <CardContent className={'p-6'}>
               <Text>{event?.description || 'No description given.'}</Text>
             </CardContent>
           </Card>

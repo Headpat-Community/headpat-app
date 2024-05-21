@@ -24,6 +24,14 @@ export const DrawerScreensData = [
     title: 'Gallery',
   },
   {
+    location: 'friends/(tabs)',
+    title: 'Friends',
+  },
+  {
+    location: 'communities/index',
+    title: 'Communities',
+  },
+  {
     location: 'events/(tabs)',
     title: 'Events',
   },
@@ -46,6 +54,10 @@ export const DrawerScreensData = [
   {
     location: 'account/index',
     title: 'Account',
+  },
+  {
+    location: 'user/[userId]/index',
+    title: 'Profile',
   },
   {
     location: '(tabs)',

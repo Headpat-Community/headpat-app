@@ -119,9 +119,6 @@ export default function HomeView() {
           <View
             style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
           >
-            <TouchableOpacity onPress={() => setModalVisible(false)}>
-              <Text>Close</Text>
-            </TouchableOpacity>
             <Gallery
               data={handleModalImage(image?.galleryId)}
               onSwipeToClose={() => setModalVisible(false)}

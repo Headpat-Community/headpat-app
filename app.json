@@ -19,7 +19,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.headpat.app",
       "config": {
-        "usesNonExemptEncryption": false
+        "usesNonExemptEncryption": false,
+        "googleMapsApiKey": "AIzaSyBlqdKEHTabryf5Et0bZQAtxO10VJMf1go"
       },
       "associatedDomains": [
         "applinks:headpat.app",
@@ -32,6 +33,11 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/headpat_logo.png",
         "backgroundColor": "#ffffff"
+      },
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyD4v3MV8UByXinnFD_9Ck_QBI2tS9VFR3Q"
+        }
       },
       "package": "com.headpat.app",
       "versionCode": 15
@@ -55,6 +61,10 @@
     },
     "updates": {
       "url": "https://u.expo.dev/904378a3-321c-4abe-9c08-48274d5f6267"
-    }
+    },
+    "plugins": [
+      "expo-localization",
+      "expo-location"
+    ]
   }
 }

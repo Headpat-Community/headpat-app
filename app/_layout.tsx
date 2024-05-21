@@ -7,10 +7,10 @@ import {
 } from '@react-navigation/native'
 import { PortalHost } from '~/components/primitives/portal'
 import { ToastProvider } from '~/components/primitives/deprecated-ui/toast'
-import { SplashScreen, Stack } from 'expo-router'
+import { router, SplashScreen, Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import * as React from 'react'
-import { Platform, ScrollView, Text, View } from 'react-native'
+import { Appearance, Platform, ScrollView, Text, View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { ProfileThemeToggle } from '~/components/ThemeToggle'
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar'
@@ -21,14 +21,21 @@ import { DrawerItem } from '@react-navigation/drawer'
 import { TouchableOpacity } from '@gorhom/bottom-sheet'
 import { Image } from 'expo-image'
 import {
+  BoxesIcon,
   CalendarIcon,
   HomeIcon,
   LayoutPanelLeftIcon,
   LogInIcon,
+  MapPinnedIcon,
+  MegaphoneIcon,
   MenuIcon,
+  UserIcon,
+  UsersIcon,
 } from 'lucide-react-native'
 import { UserProvider, useUser } from '~/components/contexts/UserContext'
 import { DrawerScreensData } from '~/components/data/DrawerScreensData'
+import { Separator } from '~/components/ui/separator'
+import { MoonStar, Sun } from '~/components/Icons'
 
 const LIGHT_THEME: Theme = {
   dark: false,
@@ -84,19 +91,12 @@ function CustomDrawerContent({
   // const insets = useSafeAreaInsets();
   // const router = useRouter();
 
-  const { isDarkColorScheme } = useColorScheme()
+  const { isDarkColorScheme, setColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
   const { current }: any = useUser()
 
   return (
-    <ScrollView
-      style={{ flex: 1, flexDirection: 'column', height: '100%' }}
-      contentContainerStyle={{
-        display: 'flex',
-        flexDirection: 'column',
-        flex: 1,
-      }}
-    >
+    <>
       <View
         style={{
           height: 200,
@@ -119,106 +119,179 @@ function CustomDrawerContent({
         <Text style={{ color: theme }}>Headpat Community</Text>
       </View>
 
-      {/* Horizontal Row with Icon and Text */}
+      <ScrollView>
+        <DrawerItem
+          label={() => {
+            return (
+              <View className="flex-row items-center gap-3 pl-3">
+                <HomeIcon size={20} color={theme} />
+                <Text style={{ color: theme }}>Home</Text>
+              </View>
+            )
+          }}
+          onPress={() => navigation.navigate('index')}
+        />
 
-      <DrawerItem
-        label={() => {
-          return (
-            <View className="flex-row items-center gap-3 pl-3">
-              <HomeIcon size={20} color={theme} />
-              <Text style={{ color: theme }}>Home</Text>
-            </View>
-          )
-        }}
-        onPress={() => navigation.navigate('index')}
-      />
+        <DrawerItem
+          label={() => {
+            return (
+              <View className="flex-row items-center gap-3 pl-3">
+                <LayoutPanelLeftIcon size={20} color={theme} />
+                <Text style={{ color: theme }}>Gallery</Text>
+              </View>
+            )
+          }}
+          onPress={() => navigation.navigate('gallery/index')}
+        />
 
-      <DrawerItem
-        label={() => {
-          return (
-            <View className="flex-row items-center gap-3 pl-3">
-              <LayoutPanelLeftIcon size={20} color={theme} />
-              <Text style={{ color: theme }}>Gallery</Text>
-            </View>
-          )
-        }}
-        onPress={() => navigation.navigate('gallery/index')}
-      />
+        <DrawerItem
+          label={() => {
+            return (
+              <View className="flex-row items-center gap-3 pl-3">
+                <MapPinnedIcon size={20} color={theme} />
+                <Text style={{ color: theme }}>Friend Locations</Text>
+              </View>
+            )
+          }}
+          onPress={() =>
+            navigation.navigate('friends/(tabs)', { screen: 'map' })
+          }
+        />
 
-      <DrawerItem
-        label={() => {
-          return (
-            <View className="flex-row items-center gap-3 pl-3">
-              <CalendarIcon size={20} color={theme} />
-              <Text style={{ color: theme }}>Events</Text>
-            </View>
-          )
-        }}
-        onPress={() => navigation.navigate('events/(tabs)')}
-      />
+        <DrawerItem
+          label={() => {
+            return (
+              <View className="flex-row items-center gap-3 pl-3">
+                <MegaphoneIcon size={20} color={theme} />
+                <Text style={{ color: theme }}>Announcements</Text>
+              </View>
+            )
+          }}
+          onPress={() => navigation.navigate('announcements/index')}
+        />
 
-      <View style={{ borderBottomColor: '#f4f4f4', borderBottomWidth: 1 }} />
+        <DrawerItem
+          label={() => {
+            return (
+              <View className="flex-row items-center gap-3 pl-3">
+                <CalendarIcon size={20} color={theme} />
+                <Text style={{ color: theme }}>Events</Text>
+              </View>
+            )
+          }}
+          onPress={() => navigation.navigate('events/(tabs)')}
+        />
 
-      <DrawerItem
-        label={() => {
-          return (
-            <View className="flex-row items-center gap-3 pl-3">
-              <LogInIcon size={20} color={theme} />
-              <Text style={{ color: theme }}>
-                {current ? 'Account' : 'Login'}
-              </Text>
-            </View>
-          )
-        }}
-        onPress={() => {
-          current
-            ? navigation.navigate('account/index')
-            : navigation.navigate('login/index')
-        }}
-      />
+        <Separator />
 
-      <View
-        style={{
-          borderWidth: 1,
-          borderColor: 'gray',
-          margin: 20,
-          marginTop: 50,
-          padding: 10,
-        }}
-      >
+        {current && (
+          <>
+            <DrawerItem
+              label={() => {
+                return (
+                  <View className="flex-row items-center gap-3 pl-3">
+                    <UserIcon size={20} color={theme} />
+                    <Text style={{ color: theme }}>My Profile</Text>
+                  </View>
+                )
+              }}
+              onPress={() => {
+                router.push({
+                  pathname: 'user/[userId]',
+                  params: { userId: current.$id },
+                })
+              }}
+            />
+
+            <DrawerItem
+              label={() => {
+                return (
+                  <View className="flex-row items-center gap-3 pl-3">
+                    <UsersIcon size={20} color={theme} />
+                    <Text style={{ color: theme }}>Friends</Text>
+                  </View>
+                )
+              }}
+              onPress={() =>
+                navigation.navigate('friends/(tabs)', { screen: 'index' })
+              }
+            />
+          </>
+        )}
+
+        <DrawerItem
+          label={() => {
+            return (
+              <View className="flex-row items-center gap-3 pl-3">
+                <BoxesIcon size={20} color={theme} />
+                <Text style={{ color: theme }}>Communities</Text>
+              </View>
+            )
+          }}
+          onPress={() => navigation.navigate('communities/index')}
+        />
+
+        <View style={{ flex: 1, flexGrow: 1 }}></View>
+        <Separator />
+        <DrawerItem
+          label={() => {
+            return (
+              <View className="flex-row items-center gap-3 pl-3">
+                {isDarkColorScheme ? (
+                  <MoonStar
+                    className="text-foreground"
+                    size={23}
+                    strokeWidth={1.25}
+                  />
+                ) : (
+                  <Sun
+                    className="text-foreground"
+                    size={24}
+                    strokeWidth={1.25}
+                  />
+                )}
+                <Text style={{ color: theme }}>Switch theme</Text>
+              </View>
+            )
+          }}
+          onPress={() => {
+            const newTheme = isDarkColorScheme ? 'light' : 'dark'
+            setColorScheme(newTheme)
+            setAndroidNavigationBar(newTheme).then()
+            AsyncStorage.setItem('theme', newTheme).then()
+          }}
+        />
+
+        <DrawerItem
+          label={() => {
+            return (
+              <View className="flex-row items-center gap-3 pl-3">
+                <LogInIcon size={20} color={theme} />
+                <Text style={{ color: theme }}>
+                  {current ? 'Account' : 'Login'}
+                </Text>
+              </View>
+            )
+          }}
+          onPress={() => {
+            current
+              ? navigation.navigate('account/index')
+              : navigation.navigate('login/index')
+          }}
+        />
+        <Separator />
         <Text
           style={{
-            marginTop: -20,
-            backgroundColor: 'white',
-            width: 100,
-            paddingHorizontal: 5,
+            color: theme,
+            padding: 10,
+            paddingBottom: 16,
+            textAlign: 'center',
           }}
         >
-          Debug Pages
+          Headpat App v0.2.0
         </Text>
-        <DrawerItem
-          label="Tabs"
-          onPress={() => navigation.navigate('(tabs)')}
-        />
-        <DrawerItem
-          label="Material Top Tabs"
-          onPress={() => navigation.navigate('material-top-tabs')}
-        />
-      </View>
-
-      <View style={{ flex: 1, flexGrow: 1 }}></View>
-      <View style={{ borderBottomColor: '#f4f4f4', borderBottomWidth: 1 }} />
-      <Text
-        style={{
-          color: theme,
-          padding: 10,
-          paddingBottom: 16,
-          textAlign: 'center',
-        }}
-      >
-        Headpat App v0.2.0
-      </Text>
-    </ScrollView>
+      </ScrollView>
+    </>
   )
 }
 

@@ -4,7 +4,7 @@ import { IconType } from '~/lib/types/IconTypes'
 import Svg, { Path } from 'react-native-svg'
 import { LegacyRef } from 'react'
 
-type SiDiscordProps = React.ComponentPropsWithoutRef<'svg'> & {
+type SiSpotifyProps = React.ComponentPropsWithoutRef<'svg'> & {
   /**
    * The title provides an accessible short text description to the SVG
    */
@@ -21,7 +21,7 @@ type SiDiscordProps = React.ComponentPropsWithoutRef<'svg'> & {
 
 const defaultColor = '#5865F2'
 
-const SpotifyIcon: IconType = React.forwardRef<SVGSVGElement, SiDiscordProps>(
+const SpotifyIcon: IconType = React.forwardRef<SVGSVGElement, SiSpotifyProps>(
   function SpotifyIcon(
     { color = 'currentColor', size = 24 },
     ref: LegacyRef<any>

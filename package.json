@@ -82,7 +82,10 @@
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.22.4",
     "zustand": "^4.5.2",
-    "expo-updates": "~0.25.14"
+    "expo-updates": "~0.25.14",
+    "expo-localization": "~15.0.3",
+    "expo-location": "~17.0.1",
+    "react-native-maps": "1.14.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

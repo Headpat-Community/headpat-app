@@ -172,28 +172,30 @@ export default function HomeView() {
         </Card>
 
         <Card className={'w-3/4 mt-4'}>
-          <CardContent className={'p-0'}>
-            <CardFooter className={'mt-2 text-xl flex pb-4'}>
-              <MapPinnedIcon
-                size={20}
-                color={theme}
-                style={{
-                  marginRight: 4,
-                }}
-              />
-              <Text>Friend locations</Text>
-            </CardFooter>
-            <CardFooter
-              className={'p-0 pb-2 justify-between flex flex-wrap mx-7'}
-            >
-              <CardDescription>
-                <Text>Find your friends!</Text>
-              </CardDescription>
-              <CardDescription>
-                <Text>a</Text>
-              </CardDescription>
-            </CardFooter>
-          </CardContent>
+          <TouchableOpacity onPress={() => router.push('/friends')}>
+            <CardContent className={'p-0'}>
+              <CardFooter className={'mt-2 text-xl flex pb-4'}>
+                <MapPinnedIcon
+                  size={20}
+                  color={theme}
+                  style={{
+                    marginRight: 4,
+                  }}
+                />
+                <Text>Friend locations</Text>
+              </CardFooter>
+              <CardFooter
+                className={'p-0 pb-2 justify-between flex flex-wrap mx-7'}
+              >
+                <CardDescription>
+                  <Text>Find your friends!</Text>
+                </CardDescription>
+                <CardDescription>
+                  <Text>a</Text>
+                </CardDescription>
+              </CardFooter>
+            </CardContent>
+          </TouchableOpacity>
         </Card>
 
         <Card className={'w-3/4 mt-4'}>
@@ -249,7 +251,7 @@ export default function HomeView() {
                       {calculateTimeLeft(nextEvent?.date, nextEvent?.dateUntil)}
                     </CardDescription>
                   </CardFooter>
-                  <CardFooter className={'p-0 flex flex-wrap ml-7 mt-1 pb-3'}>
+                  <CardFooter className={'p-0 flex flex-wrap ml-7 mt-1 pb-2'}>
                     <CardDescription>
                       <MapPinIcon size={12} color={theme} />{' '}
                       {nextEvent?.location}
