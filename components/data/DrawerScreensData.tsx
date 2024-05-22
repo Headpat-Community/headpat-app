@@ -77,6 +77,10 @@ export const DrawerScreensData = [
     title: 'Account',
   },
   {
+    location: 'user/list/index',
+    title: 'Users',
+  },
+  {
     location: 'user/[userId]/index',
     title: 'Profile',
   },
