@@ -6,20 +6,12 @@ import MapView, {
   PROVIDER_DEFAULT,
   PROVIDER_GOOGLE,
 } from 'react-native-maps'
-import {
-  Modal,
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native'
+import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native'
 import { FilterIcon, LocateIcon } from 'lucide-react-native'
 import * as Location from 'expo-location'
 import { Image } from 'expo-image'
 import {
   EventsType,
-  FriendsType,
-  LocationDocumentsType,
   LocationType,
   UserDataDocumentsType,
 } from '~/lib/types/collections'
@@ -45,7 +37,6 @@ export default function FriendLocationsPage() {
   const [events, setEvents] = useState<EventsType>(null)
   const [friendsLocations, setFriendsLocations] = useState(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
-  const [modalVisible, setModalVisible] = useState(false)
   const [currentEvent, setCurrentEvent] = useState(null)
 
   const fetchEvents = async () => {
@@ -184,7 +175,7 @@ export default function FriendLocationsPage() {
                 return { latitude, longitude }
               })
               return (
-                <DialogTrigger asChild>
+                <DialogTrigger key={index} asChild>
                   <Polygon
                     key={index}
                     coordinates={coords}
@@ -203,7 +194,7 @@ export default function FriendLocationsPage() {
                 .split(',')
                 .map(Number)
               return (
-                <DialogTrigger asChild>
+                <DialogTrigger key={index} asChild>
                   <Circle
                     key={index}
                     center={{

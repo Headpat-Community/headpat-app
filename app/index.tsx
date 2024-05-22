@@ -222,18 +222,20 @@ export default function HomeView() {
                   <CardFooter className={'mt-4'}>
                     <Separator />
                   </CardFooter>
-                  <CardFooter className={'p-0 flex flex-wrap ml-7'}>
+                  <CardFooter className={'p-0 flex flex-wrap ml-7 mb-2'}>
                     <CardDescription>
                       <ClockIcon size={12} color={theme} /> {nextEvent?.title} -{' '}
                       {calculateTimeLeft(nextEvent?.date, nextEvent?.dateUntil)}
                     </CardDescription>
                   </CardFooter>
-                  <CardFooter className={'p-0 flex flex-wrap ml-7 mt-1 pb-2'}>
-                    <CardDescription>
-                      <MapPinIcon size={12} color={theme} />{' '}
-                      {nextEvent?.location}
-                    </CardDescription>
-                  </CardFooter>
+                  {nextEvent?.locationZoneMethod === 'virtual' && (
+                    <CardFooter className={'p-0 flex flex-wrap ml-7 mt-1 pb-2'}>
+                      <CardDescription>
+                        <MapPinIcon size={12} color={theme} />{' '}
+                        {nextEvent?.location}
+                      </CardDescription>
+                    </CardFooter>
+                  )}
                 </>
               )}
             </CardContent>
