@@ -155,10 +155,7 @@ function CustomDrawerContent({
             )
           }}
           onPress={() =>
-            router.push({
-              pathname: '/friends/(tabs)',
-              params: { screen: 'map' },
-            })
+            navigation.navigate('friends/(tabs)', { screen: 'map' })
           }
         />
 
@@ -229,10 +226,7 @@ function CustomDrawerContent({
                 )
               }}
               onPress={() =>
-                router.push({
-                  pathname: 'friends',
-                  params: { screen: 'friends' },
-                })
+                navigation.navigate('friends/(tabs)', { screen: 'friends' })
               }
             />
           </>
