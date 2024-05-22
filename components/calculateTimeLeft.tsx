@@ -1,17 +1,24 @@
-export const calculateTimeLeft = (eventDate: string, eventEndDate: string) => {
+export const calculateTimeLeft = (
+  eventDate: string,
+  eventEndDate: string,
+  upcoming: boolean = false
+) => {
   const now = new Date()
   const eventStart = new Date(eventDate)
   const eventEnd = new Date(eventEndDate)
+  const upcomingTime = eventStart.getTime() - now.getTime()
   const differenceInTime = eventEnd.getTime() - now.getTime()
+
+  const timeLeft = upcoming ? upcomingTime : differenceInTime
 
   if (now < eventStart) {
     // Event hasn't started yet
     if (differenceInTime < 0) {
       return 'Event has ended'
     } else {
-      const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24))
-      const differenceInHours = Math.ceil(differenceInTime / (1000 * 3600))
-      const differenceInMinutes = Math.ceil(differenceInTime / (1000 * 60))
+      const differenceInDays = Math.ceil(timeLeft / (1000 * 3600 * 24))
+      const differenceInHours = Math.ceil(timeLeft / (1000 * 3600))
+      const differenceInMinutes = Math.ceil(timeLeft / (1000 * 60))
 
       if (differenceInDays > 1) {
         return `${differenceInDays} days left`
@@ -23,12 +30,12 @@ export const calculateTimeLeft = (eventDate: string, eventEndDate: string) => {
     }
   } else {
     // Event has started, but not ended
-    if (differenceInTime < 0) {
+    if (timeLeft < 0) {
       return 'Event has ended'
     } else {
-      const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24))
-      const differenceInHours = Math.ceil(differenceInTime / (1000 * 3600))
-      const differenceInMinutes = Math.ceil(differenceInTime / (1000 * 60))
+      const differenceInDays = Math.ceil(timeLeft / (1000 * 3600 * 24))
+      const differenceInHours = Math.ceil(timeLeft / (1000 * 3600))
+      const differenceInMinutes = Math.ceil(timeLeft / (1000 * 60))
 
       if (differenceInDays > 1) {
         return `${differenceInDays} days until end`

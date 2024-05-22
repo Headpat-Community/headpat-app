@@ -36,7 +36,6 @@ import * as Sentry from '@sentry/react-native'
 
 export default function HomeView() {
   const [userData, setUserData] = useState<UserDataDocumentsType>(null)
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [nextEvent, setNextEvent] = useState<EventsDocumentsType>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const { isDarkColorScheme } = useColorScheme()
@@ -49,33 +48,24 @@ export default function HomeView() {
     setRefreshing(false)
   }
 
-  const getAvatarUrl = async (avatarId: string) => {
+  const getAvatarUrl = (avatarId: string) => {
     if (!avatarId) return
-    //return `https://api.headpat.de/v1/storage/buckets/avatars/files/${avatarId}/view?project=6557c1a8b6c2739b3ecf`
-
-    /*
-    // TODO: getFilePreview doesn't seem to work?
-    //const data = await storage.getFile('avatars', avatarId)
-
-    if (data.mimeType === 'image/gif') {
-      return storage.getFileView('avatars', `${avatarId}`).toString()
-    } else {
-      return storage.getFilePreview('avatars', `${avatarId}`, 64, 64).toString()
-    }
-     */
-
-    return storage.getFileView('avatars', `${avatarId}`).toString()
+    return `https://api.headpat.de/v1/storage/buckets/avatars/files/${avatarId}/preview?project=6557c1a8b6c2739b3ecf&width=350&height=350`
   }
 
   const fetchNextEvent = async () => {
     try {
       const data: EventsType = await database.listDocuments('hp_db', 'events', [
         Query.orderAsc('date'),
-        Query.greaterThanEqual('dateUntil', new Date().toISOString()),
+        Query.greaterThanEqual('date', new Date().toISOString()),
         Query.limit(1),
       ])
 
-      setNextEvent(data.documents[0])
+      if (data.documents.length > 0) {
+        setNextEvent(data.documents[0])
+      } else {
+        setNextEvent(null)
+      }
     } catch (error) {
       //console.error(error)
       Sentry.captureException(error)
@@ -105,19 +95,6 @@ export default function HomeView() {
     }, [current])
   )
 
-  useFocusEffect(
-    useCallback(() => {
-      const fetchAvatarUrl = async () => {
-        const url = await getAvatarUrl(userData?.avatarId)
-        setAvatarUrl(url)
-      }
-
-      if (userData?.avatarId) {
-        fetchAvatarUrl().then()
-      }
-    }, [userData?.avatarId])
-  )
-
   return (
     <ScrollView
       refreshControl={
@@ -130,7 +107,7 @@ export default function HomeView() {
             <Avatar alt="User Avatar" className={'w-32 h-32 mt-8'}>
               <AvatarImage
                 source={{
-                  uri: avatarUrl,
+                  uri: getAvatarUrl(userData?.avatar),
                 }}
               />
               <AvatarFallback>

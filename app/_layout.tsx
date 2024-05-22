@@ -7,10 +7,10 @@ import {
 } from '@react-navigation/native'
 import { PortalHost } from '~/components/primitives/portal'
 import { ToastProvider } from '~/components/primitives/deprecated-ui/toast'
-import { router, SplashScreen, Stack } from 'expo-router'
+import { router, SplashScreen } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import * as React from 'react'
-import { Appearance, Platform, ScrollView, Text, View } from 'react-native'
+import { Platform, ScrollView, Text, View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { ProfileThemeToggle } from '~/components/ThemeToggle'
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar'
@@ -30,6 +30,7 @@ import {
   MegaphoneIcon,
   MenuIcon,
   UserIcon,
+  UserSearchIcon,
   UsersIcon,
 } from 'lucide-react-native'
 import { UserProvider, useUser } from '~/components/contexts/UserContext'
@@ -59,7 +60,7 @@ export const unstable_settings = {
 // Prevent the splash screen from auto-hiding before getting the color scheme.
 SplashScreen.preventAutoHideAsync()
 
-function HeaderLeft() {
+function HeaderMenuSidebar() {
   const navigation = useNavigation()
 
   const { isDarkColorScheme } = useColorScheme()
@@ -70,8 +71,8 @@ function HeaderLeft() {
   }
 
   return (
-    <View style={{ paddingLeft: 16 }}>
-      <TouchableOpacity onPress={openMenu}>
+    <View style={{ paddingLeft: 16, flexDirection: 'row' }}>
+      <TouchableOpacity onPress={openMenu} className={'mr-4'}>
         <MenuIcon size={20} color={theme} onPress={() => openMenu} />
       </TouchableOpacity>
     </View>
@@ -129,7 +130,7 @@ function CustomDrawerContent({
               </View>
             )
           }}
-          onPress={() => navigation.navigate('index')}
+          onPress={() => router.push('/')}
         />
 
         <DrawerItem
@@ -141,7 +142,7 @@ function CustomDrawerContent({
               </View>
             )
           }}
-          onPress={() => navigation.navigate('gallery/index')}
+          onPress={() => router.push('/gallery')}
         />
 
         <DrawerItem
@@ -154,7 +155,10 @@ function CustomDrawerContent({
             )
           }}
           onPress={() =>
-            navigation.navigate('friends/(tabs)', { screen: 'map' })
+            router.push({
+              pathname: '/friends/(tabs)',
+              params: { screen: 'map' },
+            })
           }
         />
 
@@ -167,7 +171,7 @@ function CustomDrawerContent({
               </View>
             )
           }}
-          onPress={() => navigation.navigate('announcements/index')}
+          onPress={() => router.push('/announcements')}
         />
 
         <DrawerItem
@@ -179,7 +183,19 @@ function CustomDrawerContent({
               </View>
             )
           }}
-          onPress={() => navigation.navigate('events/(tabs)')}
+          onPress={() => router.push('/events/(tabs)')}
+        />
+
+        <DrawerItem
+          label={() => {
+            return (
+              <View className="flex-row items-center gap-3 pl-3">
+                <UserSearchIcon size={20} color={theme} />
+                <Text style={{ color: theme }}>Users</Text>
+              </View>
+            )
+          }}
+          onPress={() => router.push('/user/list')}
         />
 
         <Separator />
@@ -197,7 +213,7 @@ function CustomDrawerContent({
               }}
               onPress={() => {
                 router.push({
-                  pathname: 'user/[userId]',
+                  pathname: '/user/[userId]',
                   params: { userId: current.$id },
                 })
               }}
@@ -213,7 +229,10 @@ function CustomDrawerContent({
                 )
               }}
               onPress={() =>
-                navigation.navigate('friends/(tabs)', { screen: 'friends' })
+                router.push({
+                  pathname: 'friends',
+                  params: { screen: 'friends' },
+                })
               }
             />
           </>
@@ -228,7 +247,7 @@ function CustomDrawerContent({
               </View>
             )
           }}
-          onPress={() => navigation.navigate('communities/index')}
+          onPress={() => router.push('/communities')}
         />
 
         <View style={{ flex: 1, flexGrow: 1 }}></View>
@@ -274,9 +293,7 @@ function CustomDrawerContent({
             )
           }}
           onPress={() => {
-            current
-              ? navigation.navigate('account/index')
-              : navigation.navigate('login/index')
+            current ? router.push('/account') : router.push('/login')
           }}
         />
         <Separator />
@@ -298,7 +315,6 @@ function CustomDrawerContent({
 export default function RootLayout() {
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme()
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = React.useState(false)
-
   React.useEffect(() => {
     ;(async () => {
       const theme = await AsyncStorage.getItem('theme')
@@ -347,10 +363,9 @@ export default function RootLayout() {
             }}
             initialRouteName={'index'}
             screenOptions={{
-              drawerType: 'slide',
               drawerStyle: {},
-              swipeEdgeWidth: 100,
-              headerLeft: () => <HeaderLeft />,
+              swipeEdgeWidth: 50,
+              headerLeft: () => <HeaderMenuSidebar />,
             }}
           >
             {/* <Image

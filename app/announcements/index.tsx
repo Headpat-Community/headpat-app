@@ -18,7 +18,7 @@ import {
   CardFooter,
   CardTitle,
 } from '~/components/ui/card'
-import { ClockIcon, MapPinIcon } from 'lucide-react-native'
+import { ClockIcon } from 'lucide-react-native'
 import { formatDate } from '~/components/calculateTimeLeft'
 import { useColorScheme } from '~/lib/useColorScheme'
 
@@ -86,7 +86,6 @@ export default function AnnouncementsPage() {
     >
       <View className={'gap-4 mx-2'}>
         <H3 className={'text-foreground text-center'}>Currently active</H3>
-
         {announcements &&
           announcements?.documents?.map((announcement, index) => {
             return (

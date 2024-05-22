@@ -113,16 +113,18 @@ export default function EventsPage() {
                           {formatDate(new Date(event.date))}
                         </CardDescription>
                         <CardDescription>
-                          {calculateTimeLeft(event.date, event.dateUntil)}
+                          {calculateTimeLeft(event.date, event.dateUntil, true)}
                         </CardDescription>
                       </CardFooter>
 
-                      <CardFooter className={'p-0 mt-2 flex flex-wrap'}>
-                        <CardDescription>
-                          <MapPinIcon size={12} color={theme} />{' '}
-                          {event.location}
-                        </CardDescription>
-                      </CardFooter>
+                      {event?.locationZoneMethod === 'virtual' && (
+                        <CardFooter className={'p-0 mt-2 flex flex-wrap'}>
+                          <CardDescription>
+                            <MapPinIcon size={12} color={theme} />{' '}
+                            {event.location}
+                          </CardDescription>
+                        </CardFooter>
+                      )}
                     </CardContent>
                   </Card>
                 </TouchableOpacity>

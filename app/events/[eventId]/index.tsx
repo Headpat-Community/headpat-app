@@ -111,7 +111,11 @@ export default function EventPage() {
           <Card className={'flex-1 p-0'}>
             <CardContent className={'p-6'}>
               <Text className={'font-bold'}>Location: </Text>
-              <Text>{event?.location}</Text>
+              <Text>
+                {event?.locationZoneMethod === 'virtual'
+                  ? event?.location
+                  : 'Physical, check the map!'}
+              </Text>
             </CardContent>
           </Card>
         </View>

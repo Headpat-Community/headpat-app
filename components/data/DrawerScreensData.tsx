@@ -1,3 +1,24 @@
+import { useColorScheme } from '~/lib/useColorScheme'
+import { View } from 'react-native'
+import { TouchableOpacity } from '@gorhom/bottom-sheet'
+import { ArrowLeftIcon } from 'lucide-react-native'
+import * as React from 'react'
+import { router } from 'expo-router'
+
+function HeaderSidebarBackButton() {
+  // Back button to go back to the previous screen
+  const { isDarkColorScheme } = useColorScheme()
+  const theme = isDarkColorScheme ? 'white' : 'black'
+
+  return (
+    <View style={{ paddingLeft: 16 }}>
+      <TouchableOpacity onPress={() => router.back()}>
+        <ArrowLeftIcon size={20} color={theme} />
+      </TouchableOpacity>
+    </View>
+  )
+}
+
 export const DrawerScreensData = [
   {
     location: '+not-found',

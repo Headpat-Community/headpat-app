@@ -18,6 +18,9 @@ export interface EventsDocumentsType extends Models.Document {
   label: string
   description: string
   location: string
+  locationZoneMethod: 'virtual' | 'circle' | 'polygon'
+  coordinates: string[]
+  circleRadius: number
   date: string
   dateUntil: string
 }
@@ -75,6 +78,25 @@ export interface UserDataDocumentsType extends Models.Document {
   hideLocation: boolean
   hideBirthday: boolean
   hidePats: boolean
+}
+
+/**
+ * This data is returned from the API by calling the location endpoint.
+ * @see LocationDocumentsType
+ */
+export interface LocationType {
+  total: number
+  documents: LocationDocumentsType[]
+}
+
+/**
+ * This data is returned in the friends/map view.
+ * @see UserDataDocumentsType
+ */
+export interface LocationDocumentsType extends Models.Document {
+  lat: number
+  long: number
+  userData: UserDataDocumentsType
 }
 
 /**
