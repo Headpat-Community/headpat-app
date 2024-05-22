@@ -116,11 +116,6 @@ export default function FriendLocationsPage() {
   ]
    */
 
-  const handleUserClick = (user) => {
-    // Handle user click here
-    console.log(`User ${user.name} was clicked`)
-  }
-
   useEffect(() => {
     let watcher = null
     const startWatching = async () => {
@@ -234,9 +229,7 @@ export default function FriendLocationsPage() {
                 title={user?.userData?.displayName}
                 description={'No peeking!'}
               >
-                <TouchableOpacity
-                  onPress={() => handleUserClick(user?.userData?.displayName)}
-                >
+                <TouchableOpacity>
                   <Image
                     source={{ uri: getUserAvatar(user?.userData?.avatarId) }}
                     style={{ width: 40, height: 40, borderRadius: 25 }}
