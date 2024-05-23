@@ -1,9 +1,10 @@
 import { useColorScheme } from '~/lib/useColorScheme'
 import { View } from 'react-native'
 import { TouchableOpacity } from '@gorhom/bottom-sheet'
-import { ArrowLeftIcon } from 'lucide-react-native'
+import { ArrowLeftIcon, PlusIcon } from 'lucide-react-native'
 import * as React from 'react'
 import { router } from 'expo-router'
+import { ProfileThemeToggle } from '~/components/ThemeToggle'
 
 function HeaderSidebarBackButton() {
   // Back button to go back to the previous screen
@@ -13,9 +14,30 @@ function HeaderSidebarBackButton() {
   return (
     <View style={{ paddingLeft: 16 }}>
       <TouchableOpacity onPress={() => router.back()}>
-        <ArrowLeftIcon size={20} color={theme} />
+        <ArrowLeftIcon aria-label={'Go back'} size={20} color={theme} />
       </TouchableOpacity>
     </View>
+  )
+}
+
+function GalleryAddButton() {
+  // Add button to add a new gallery
+  const { isDarkColorScheme } = useColorScheme()
+  const theme = isDarkColorScheme ? 'white' : 'black'
+
+  return (
+    <>
+      <View className={'items-center flex-row'}>
+        <View>
+          <TouchableOpacity>
+            <PlusIcon aria-label={'Add gallery item'} size={20} color={theme} />
+          </TouchableOpacity>
+        </View>
+        <View>
+          <ProfileThemeToggle />
+        </View>
+      </View>
+    </>
   )
 }
 
@@ -39,6 +61,7 @@ export const DrawerScreensData = [
   {
     location: 'gallery/index',
     title: 'Gallery',
+    headerLeft: <GalleryAddButton />,
   },
   {
     location: 'gallery/[galleryId]/index',
@@ -65,6 +88,14 @@ export const DrawerScreensData = [
     title: 'Event',
   },
   {
+    location: 'user/list/index',
+    title: 'Users',
+  },
+  {
+    location: 'user/[userId]/index',
+    title: 'Profile',
+  },
+  {
     location: 'login/index',
     title: 'Login',
   },
@@ -74,15 +105,15 @@ export const DrawerScreensData = [
   },
   {
     location: 'account/index',
-    title: 'Account',
+    title: 'My Account',
   },
   {
-    location: 'user/list/index',
-    title: 'Users',
+    location: 'account/userprofile/index',
+    title: 'User Profile',
   },
   {
-    location: 'user/[userId]/index',
-    title: 'Profile',
+    location: 'account/security/index',
+    title: 'Security',
   },
   {
     location: '(tabs)',

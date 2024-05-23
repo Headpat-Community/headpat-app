@@ -9,13 +9,13 @@ import MapView, {
 import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native'
 import { FilterIcon, LocateIcon } from 'lucide-react-native'
 import * as Location from 'expo-location'
-import { Image } from 'expo-image'
 import {
   EventsType,
+  LocationDocumentsType,
   LocationType,
   UserDataDocumentsType,
 } from '~/lib/types/collections'
-import { database } from '~/lib/appwrite-client'
+import { database, client } from '~/lib/appwrite-client'
 import { Query } from 'react-native-appwrite'
 import { toast } from '~/lib/toast'
 import { useFocusEffect } from '@react-navigation/core'
@@ -29,6 +29,7 @@ import {
 } from '~/components/ui/dialog'
 import * as Sentry from '@sentry/react-native'
 import { formatDate } from '~/components/calculateTimeLeft'
+import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
 
 export default function FriendLocationsPage() {
   const mapRef = useRef(null)
@@ -91,21 +92,11 @@ export default function FriendLocationsPage() {
   useFocusEffect(
     useCallback(() => {
       onRefresh()
-      return () => {} // Optional cleanup function
+      return () => {
+        // Unsubscribe from events here
+      }
     }, [])
   )
-
-  /*
-  const users = [
-    {
-      name: 'Faye',
-      coordinate: { latitude: 52.53674137410944, longitude: 6.854766681796735 },
-      avatar:
-        'https://api.headpat.de/v1/storage/buckets/avatars/files/661f306803b13ecb728c/view?project=6557c1a8b6c2739b3ecf',
-    },
-    // Add more users as needed
-  ]
-   */
 
   useEffect(() => {
     let watcher = null
@@ -148,8 +139,64 @@ export default function FriendLocationsPage() {
     return `https://api.headpat.de/v1/storage/buckets/avatars/files/${avatarId}/preview?project=6557c1a8b6c2739b3ecf&width=100&height=100`
   }
 
+  let locationsSubscribed = null
+  useFocusEffect(
+    useCallback(() => {
+      handleSubscribedEvents()
+
+      // Return a cleanup function
+      return () => {
+        // Unsubscribe from events here
+        locationsSubscribed()
+      }
+    }, [])
+  )
+
+  function handleSubscribedEvents() {
+    locationsSubscribed = client.subscribe(
+      ['databases.hp_db.collections.locations.documents'],
+      (response) => {
+        const eventType = response.events[0].split('.').pop()
+        const updatedDocument: any = response.payload
+
+        switch (eventType) {
+          case 'update':
+            setFriendsLocations((prevLocations: LocationDocumentsType[]) => {
+              return prevLocations.map((location) => {
+                if (location.$id === updatedDocument.$id) {
+                  return updatedDocument
+                } else {
+                  return location
+                }
+              })
+            })
+            break
+          case 'delete':
+            setFriendsLocations((prevLocations: LocationDocumentsType[]) => {
+              return prevLocations.filter(
+                (location) => location.$id !== updatedDocument.$id
+              )
+            })
+            break
+          case 'create':
+            setFriendsLocations((prevLocations: LocationDocumentsType[]) => {
+              return [...prevLocations, updatedDocument]
+            })
+            break
+          default:
+            Sentry.captureException('Unknown event type:', updatedDocument)
+        }
+      }
+    )
+  }
+
   return (
     <View style={styles.container}>
+      {refreshing && (
+        <View>
+          <Text>Loading...</Text>
+        </View>
+      )}
       <Dialog>
         <DialogContent>
           <DialogTitle>{currentEvent?.title}</DialogTitle>
@@ -168,6 +215,34 @@ export default function FriendLocationsPage() {
           }
           showsUserLocation={true}
         >
+          {friendsLocations?.map((user, index) => {
+            return (
+              <Marker
+                key={index}
+                coordinate={{
+                  latitude: user.lat,
+                  longitude: user.long,
+                }}
+                title={user?.userData?.displayName}
+                description={'No peeking!'}
+              >
+                <TouchableOpacity>
+                  <Avatar
+                    alt={user?.userData?.displayName}
+                    className={'rounded-xl'}
+                  >
+                    <AvatarImage
+                      source={
+                        { uri: getUserAvatar(user?.userData?.avatarId) } ||
+                        require('~/assets/pfp-placeholder.png')
+                      }
+                    />
+                    <AvatarFallback>HP</AvatarFallback>
+                  </Avatar>
+                </TouchableOpacity>
+              </Marker>
+            )
+          })}
           {events?.documents.map((event, index) => {
             if (event?.locationZoneMethod === 'polygon') {
               const coords = event?.coordinates.map((coord) => {
@@ -208,26 +283,6 @@ export default function FriendLocationsPage() {
                 </DialogTrigger>
               )
             }
-          })}
-          {friendsLocations?.map((user, index) => {
-            return (
-              <Marker
-                key={index}
-                coordinate={{
-                  latitude: user.lat,
-                  longitude: user.long,
-                }}
-                title={user?.userData?.displayName}
-                description={'No peeking!'}
-              >
-                <TouchableOpacity>
-                  <Image
-                    source={{ uri: getUserAvatar(user?.userData?.avatarId) }}
-                    style={{ width: 40, height: 40, borderRadius: 25 }}
-                  />
-                </TouchableOpacity>
-              </Marker>
-            )
           })}
         </MapView>
         <View style={styles.filterButton}>
@@ -299,7 +354,7 @@ const styles = StyleSheet.create({
   },
   locationButton: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 70,
     right: 10,
     borderRadius: 50,
     overflow: 'hidden',

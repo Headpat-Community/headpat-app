@@ -150,7 +150,7 @@ export default function FriendsPage() {
               <Image
                 source={
                   getUserAvatar(user?.avatarId) ||
-                  require('../../../assets/pfp-placeholder.png')
+                  require('~/assets/pfp-placeholder.png')
                 }
                 style={{ width: '100%', height: 100, borderRadius: 25 }}
                 contentFit={'cover'}

@@ -17,7 +17,7 @@ import {
 import { useColorScheme } from '~/lib/useColorScheme'
 import { useUser } from '~/components/contexts/UserContext'
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   EventsDocumentsType,
   EventsType,
@@ -50,7 +50,7 @@ export default function HomeView() {
 
   const getAvatarUrl = (avatarId: string) => {
     if (!avatarId) return
-    return `https://api.headpat.de/v1/storage/buckets/avatars/files/${avatarId}/preview?project=6557c1a8b6c2739b3ecf&width=350&height=350`
+    return `https://api.headpat.de/v1/storage/buckets/avatars/files/${avatarId}/preview?project=6557c1a8b6c2739b3ecf&width=300&height=300`
   }
 
   const fetchNextEvent = async () => {
@@ -72,27 +72,30 @@ export default function HomeView() {
     }
   }
 
+  useEffect(() => {
+    if (current) {
+      const fetchUserData = async () => {
+        try {
+          const data: UserDataDocumentsType = await database.getDocument(
+            'hp_db',
+            'userdata',
+            `${current.userId || current.$id}`
+          )
+          setUserData(data)
+        } catch (error) {
+          Sentry.captureException(error)
+          //console.error(error)
+          return
+        }
+      }
+      fetchUserData().then()
+    }
+  }, [current])
+
   useFocusEffect(
     useCallback(() => {
-      if (current) {
-        const fetchUserData = async () => {
-          try {
-            const data: UserDataDocumentsType = await database.getDocument(
-              'hp_db',
-              'userdata',
-              `${current.$id || current.userId}`
-            )
-            setUserData(data)
-          } catch (error) {
-            Sentry.captureException(error)
-            //console.error(error)
-            return
-          }
-        }
-        fetchUserData().then()
-      }
       fetchNextEvent().then()
-    }, [current])
+    }, [])
   )
 
   return (
@@ -104,16 +107,18 @@ export default function HomeView() {
       <View className="justify-center items-center">
         {current ? (
           <>
-            <Avatar alt="User Avatar" className={'w-32 h-32 mt-8'}>
-              <AvatarImage
-                source={{
-                  uri: getAvatarUrl(userData?.avatar),
-                }}
-              />
-              <AvatarFallback>
-                <Image source={require('~/assets/images/favicon.png')} />
-              </AvatarFallback>
-            </Avatar>
+            <Image
+              source={
+                getAvatarUrl(userData?.avatarId) ||
+                require('~/assets/pfp-placeholder.png')
+              }
+              style={{
+                width: 100,
+                height: 100,
+                borderRadius: 25,
+                marginTop: 20,
+              }}
+            />
             {userData?.displayName ? (
               <H4 className={'mt-2'}>Welcome back, {userData?.displayName}</H4>
             ) : (
@@ -192,7 +197,7 @@ export default function HomeView() {
                 className={'p-0 pb-2 justify-between flex flex-wrap ml-7'}
               >
                 <CardDescription>
-                  <Text>Stay updated with our news</Text>
+                  <Text>Stay updated with our news.</Text>
                 </CardDescription>
               </CardFooter>
             </CardContent>

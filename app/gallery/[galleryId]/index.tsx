@@ -2,7 +2,7 @@ import { Modal, RefreshControl, TouchableOpacity, View } from 'react-native'
 import { database } from '~/lib/appwrite-client'
 import Gallery from 'react-native-awesome-gallery'
 import { ScrollView } from 'react-native-gesture-handler'
-import { useLocalSearchParams } from 'expo-router'
+import { Link, useLocalSearchParams } from 'expo-router'
 import { useEffect, useState } from 'react'
 import {
   GalleryImagesDocumentsType,
@@ -71,6 +71,75 @@ export default function HomeView() {
     return `https://api.headpat.de/v1/storage/buckets/avatars/files/${userAvatarId}/preview?project=6557c1a8b6c2739b3ecf&width=128&height=128`
   }
 
+  if (refreshing) {
+    return (
+      <View style={{ flex: 1 }}>
+        <TouchableOpacity onPress={() => setModalVisible(true)}>
+          <Image
+            source={{ uri: getGalleryUrl(image?.galleryId) }}
+            style={{ height: 300 }}
+            contentFit={'contain'}
+          />
+        </TouchableOpacity>
+
+        <H4 className={'text-center mx-8'}>{image?.name}</H4>
+        {image?.longText && (
+          <Text className={'mx-8 mt-4'}>{image?.longText}</Text>
+        )}
+        <View className={'mt-8 px-8'}>
+          <Muted className={'pb-4'}>Uploaded by</Muted>
+          <View className={'flex-row flex-wrap items-center justify-between'}>
+            <Link
+              href={{
+                pathname: '/user/[userId]',
+                params: { userId: image?.userId },
+              }}
+              className={''}
+            >
+              <TouchableOpacity></TouchableOpacity>
+              <View className={'flex-row items-center gap-4'}>
+                <Image
+                  source={
+                    getUserAvatar(userData?.avatarId) ||
+                    require('~/assets/pfp-placeholder.png')
+                  }
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 10,
+                  }}
+                />
+                <Text>{userData?.displayName}</Text>
+              </View>
+            </Link>
+
+            <View>
+              <Text>{timeSince(image?.$createdAt)}</Text>
+            </View>
+          </View>
+        </View>
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(!modalVisible)
+          }}
+        >
+          <View
+            style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+          >
+            <Gallery
+              data={handleModalImage(image?.galleryId)}
+              onSwipeToClose={() => setModalVisible(false)}
+            />
+          </View>
+        </Modal>
+      </View>
+    )
+  }
+
   return (
     <ScrollView
       refreshControl={
@@ -86,22 +155,37 @@ export default function HomeView() {
           />
         </TouchableOpacity>
 
-        <H4 className={'text-center'}>{image?.name}</H4>
+        <H4 className={'text-center mx-8'}>{image?.name}</H4>
+        {image?.longText && (
+          <Text className={'mx-8 mt-4'}>{image?.longText}</Text>
+        )}
         <View className={'mt-8 px-8'}>
           <Muted className={'pb-4'}>Uploaded by</Muted>
           <View className={'flex-row flex-wrap items-center justify-between'}>
-            <View className={'flex-row items-center gap-4'}>
-              <Avatar
-                alt={userData?.displayName || 'Unknown name'}
-                style={{ width: 44, height: 44 }}
-              >
-                <AvatarImage
-                  source={{ uri: getUserAvatar(userData?.avatarId) }}
+            <Link
+              href={{
+                pathname: '/user/[userId]',
+                params: { userId: image?.userId },
+              }}
+              className={''}
+            >
+              <TouchableOpacity></TouchableOpacity>
+              <View className={'flex-row items-center gap-4'}>
+                <Image
+                  source={
+                    getUserAvatar(userData?.avatarId) ||
+                    require('~/assets/pfp-placeholder.png')
+                  }
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 10,
+                  }}
                 />
-                <AvatarFallback>HP</AvatarFallback>
-              </Avatar>
-              <Text>{userData?.displayName}</Text>
-            </View>
+                <Text>{userData?.displayName}</Text>
+              </View>
+            </Link>
+
             <View>
               <Text>{timeSince(image?.$createdAt)}</Text>
             </View>

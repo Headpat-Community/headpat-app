@@ -101,8 +101,9 @@ export default function UserPage() {
           <Image
             source={
               getUserBanner(userData?.profileBannerId) ||
-              require('../../../assets/pfp-placeholder.png')
+              require('~/assets/pfp-placeholder.png')
             }
+            alt={`${userData?.displayName}'s banner`}
             style={{ width: '100%', height: 100 }}
             contentFit={'cover'}
           />
@@ -113,8 +114,9 @@ export default function UserPage() {
         <Image
           source={
             getUserAvatar(userData?.avatarId) ||
-            require('../../../assets/pfp-placeholder.png')
+            require('~/assets/pfp-placeholder.png')
           }
+          alt={`${userData?.displayName}'s avatar`}
           style={{ width: 100, height: 100, borderRadius: 50 }}
           contentFit={'cover'}
         />
@@ -141,6 +143,7 @@ export default function UserPage() {
               <>
                 <MapPinIcon
                   size={12}
+                  title={'Location'}
                   color={theme}
                   style={{
                     marginRight: 4,
@@ -173,6 +176,7 @@ export default function UserPage() {
                 <TagIcon
                   size={12}
                   color={theme}
+                  title={'Pronouns'}
                   style={{
                     marginRight: 4,
                   }}
@@ -206,6 +210,7 @@ export default function UserPage() {
             <TelegramIcon
               size={32}
               color={theme}
+              title={'Telegram'}
               style={{
                 marginRight: 4,
               }}
@@ -225,6 +230,7 @@ export default function UserPage() {
             <DiscordIcon
               size={32}
               color={theme}
+              title={'Discord'}
               style={{
                 marginRight: 4,
               }}
@@ -243,6 +249,7 @@ export default function UserPage() {
             <XIcon
               size={32}
               color={theme}
+              title={'X'}
               style={{
                 marginRight: 4,
               }}
@@ -263,6 +270,7 @@ export default function UserPage() {
             <TwitchIcon
               size={32}
               color={theme}
+              title={'Twitch'}
               style={{
                 marginRight: 4,
               }}
@@ -283,6 +291,7 @@ export default function UserPage() {
             <FuraffinityIcon
               size={32}
               color={theme}
+              title={'Furaffinity'}
               style={{
                 marginRight: 4,
               }}

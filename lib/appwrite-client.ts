@@ -5,8 +5,8 @@ import {
   Functions,
   Storage,
 } from 'react-native-appwrite'
-// Init your Web SDK
-const client = new Client()
+
+export const client = new Client()
 
 client
   .setEndpoint('https://api.headpat.de/v1') // Your Appwrite Endpoint

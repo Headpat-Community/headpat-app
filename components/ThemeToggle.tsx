@@ -12,7 +12,7 @@ export function ProfileThemeToggle() {
   const { current }: any = useUser()
 
   return (
-    <View className={'flex-wrap'}>
+    <View className={'flex-wrap items-center'}>
       <Link href={current ? '/account' : '/login'} asChild>
         <Pressable className="web:ring-offset-background web:transition-colors web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2">
           {({ pressed }) => (

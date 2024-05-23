@@ -66,6 +66,7 @@ export default function GalleryPage() {
             <TouchableWithoutFeedback>
               <Image
                 source={getGalleryUrl(image.galleryId)}
+                alt={image.name}
                 style={{ width: '48%', height: 200, borderRadius: 4 }}
                 contentFit={'contain'}
               />

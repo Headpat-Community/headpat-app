@@ -73,7 +73,12 @@ function HeaderMenuSidebar() {
   return (
     <View style={{ paddingLeft: 16, flexDirection: 'row' }}>
       <TouchableOpacity onPress={openMenu} className={'mr-4'}>
-        <MenuIcon size={20} color={theme} onPress={() => openMenu} />
+        <MenuIcon
+          aria-label={'Menu'}
+          size={20}
+          color={theme}
+          onPress={() => openMenu}
+        />
       </TouchableOpacity>
     </View>
   )
@@ -379,7 +384,9 @@ export default function RootLayout() {
                 options={{
                   drawerLabel: screen.title,
                   title: screen.title,
-                  headerRight: () => <ProfileThemeToggle />,
+                  headerTitleAlign: 'left',
+                  headerRight: () =>
+                    screen.headerLeft || <ProfileThemeToggle />,
                 }}
               />
             ))}
