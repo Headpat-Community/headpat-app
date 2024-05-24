@@ -23,6 +23,15 @@
         "usesNonExemptEncryption": false,
         "googleMapsApiKey": "AIzaSyBlqdKEHTabryf5Et0bZQAtxO10VJMf1go"
       },
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "location",
+          "fetch"
+        ],
+        "NSLocationWhenInUseUsageDescription": "This app requires access to your location when open.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "This app requires access to your location even when closed.",
+        "NSLocationAlwaysUsageDescription": "This app requires access to your location when open."
+      },
       "associatedDomains": [
         "applinks:headpat.app",
         "applinks:headpat.de",
@@ -31,6 +40,10 @@
       "buildNumber": "19"
     },
     "android": {
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/headpat_logo.png",
         "backgroundColor": "#ffffff"
@@ -66,10 +79,31 @@
     "plugins": [
       "expo-localization",
       "expo-apple-authentication",
+      "expo-background-fetch",
+      [
+        "expo-task-manager",
+        {
+          "ios": {
+            "minimumOSVersion": "14"
+          }
+        }
+      ],
+      [
+        "expo-background-fetch",
+        {
+          "ios": {
+            "minimumOSVersion": "14"
+          }
+        }
+      ],
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Allow Headpat to use your location."
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location.",
+          "locationAlwaysPermission": "Allow $(PRODUCT_NAME) to use your location.",
+          "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location.",
+          "isIosBackgroundLocationEnabled": true,
+          "isAndroidBackgroundLocationEnabled": true
         }
       ]
     ]
