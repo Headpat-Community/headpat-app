@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, StyleSheet, View } from 'react-native'
+import { Alert, Button, StyleSheet, View } from 'react-native'
 import { H1 } from '~/components/ui/typography'
 import { Text } from '~/components/ui/text'
 import { database } from '~/lib/appwrite-client'
@@ -56,10 +56,19 @@ async function registerBackgroundFetchAsync() {
     startOnBoot: true, // android only
   })
 
-  let { status } = await Location.requestBackgroundPermissionsAsync()
-  if (status !== 'granted') {
-    console.error('Permission to access location was denied')
-    return
+  const { granted: fgGranted } =
+    await Location.requestForegroundPermissionsAsync()
+  if (!fgGranted) {
+    return Alert.alert('Required', 'Please grant GPS Location')
+  }
+  const { granted: bgGranted } =
+    await Location.requestBackgroundPermissionsAsync()
+
+  if (!bgGranted) {
+    return Alert.alert(
+      'Location Access Required',
+      'App requires location even when the App is backgrounded.'
+    )
   }
 
   await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
