@@ -23,8 +23,8 @@ import { Link, router } from 'expo-router'
 export default function FriendsPage() {
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
-  const [friends, setFriends] = useState<any>(null)
-  const [friendData, setFriendData] = useState<UserDataDocumentsType[]>([])
+  const [friends, setFriends] = useState<FriendsType>(null)
+  const [friendData, setFriendData] = useState<UserDataDocumentsType>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
 
   const fetchFriends = async () => {
@@ -57,7 +57,7 @@ export default function FriendsPage() {
   useEffect(() => {
     const fetchAllFriendData = async () => {
       if (friends && friends.documents) {
-        const allFriendData = await Promise.all(
+        const allFriendData: any = await Promise.all(
           friends.documents.map((friend: any) =>
             fetchUserdataForFriends(friend.friends)
           )
@@ -84,7 +84,7 @@ export default function FriendsPage() {
     return `https://api.headpat.de/v1/storage/buckets/avatars/files/${avatarId}/preview?project=6557c1a8b6c2739b3ecf&width=250&height=250`
   }
 
-  if (!friends)
+  if (friends?.total === 0)
     return (
       <ScrollView
         refreshControl={
