@@ -4,11 +4,13 @@
   },
   "build": {
     "development": {
+      "autoIncrement": true,
       "developmentClient": true,
       "distribution": "internal",
       "channel": "development"
     },
     "preview": {
+      "autoIncrement": true,
       "distribution": "internal",
       "channel": "preview"
     },

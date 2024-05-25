@@ -37,12 +37,13 @@
         "applinks:headpat.de",
         "applinks:api.headpat.de"
       ],
-      "buildNumber": "19"
+      "buildNumber": "20"
     },
     "android": {
       "permissions": [
         "ACCESS_COARSE_LOCATION",
         "ACCESS_FINE_LOCATION",
+        "FOREGROUND_SERVICE_LOCATION",
         "ACCESS_BACKGROUND_LOCATION"
       ],
       "adaptiveIcon": {

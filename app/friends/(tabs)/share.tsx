@@ -8,13 +8,11 @@ import * as Location from 'expo-location'
 import * as BackgroundFetch from 'expo-background-fetch'
 import * as TaskManager from 'expo-task-manager'
 
-const BACKGROUND_FETCH_TASK = 'sharing-background-location'
 const LOCATION_TASK_NAME = 'background-location-task'
 
-// 1. Define the task by providing a name and the function that should be executed
-// Note: This needs to be called in the global scope (e.g outside of your React components)
-TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
-  // Request location permissions
+TaskManager.defineTask(LOCATION_TASK_NAME, async (locations) => {
+  console.log('Received new locations', locations)
+
   let { status } = await Location.requestForegroundPermissionsAsync()
   const { current }: any = useUser() // Move the hook here
   console.log('current', current)
@@ -40,22 +38,9 @@ TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
       timeUntilEnd: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     })
   }
-
-  return BackgroundFetch.BackgroundFetchResult.NewData
-})
-
-TaskManager.defineTask(LOCATION_TASK_NAME, (locations) => {
-  console.log('Received new locations', locations)
-  // Your code to share the location goes here
 })
 
 async function registerBackgroundFetchAsync() {
-  await BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
-    minimumInterval: 60 * 15, // 15 minutes
-    stopOnTerminate: false, // android only,
-    startOnBoot: true, // android only
-  })
-
   const { granted: fgGranted } =
     await Location.requestForegroundPermissionsAsync()
   if (!fgGranted) {
@@ -77,13 +62,13 @@ async function registerBackgroundFetchAsync() {
 }
 
 async function unregisterBackgroundFetchAsync() {
-  await BackgroundFetch.unregisterTaskAsync(BACKGROUND_FETCH_TASK)
   await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME)
 }
 
 export default function ShareLocationView() {
   const [isRegistered, setIsRegistered] = React.useState(false)
   const [status, setStatus] = React.useState(null)
+  const [debug, setDebug] = React.useState('')
 
   React.useEffect(() => {
     checkStatusAsync().then()
@@ -120,11 +105,11 @@ export default function ShareLocationView() {
         <Text>
           Background fetch task name:{' '}
           <Text style={styles.boldText}>
-            {isRegistered ? BACKGROUND_FETCH_TASK : 'Not registered yet!'}
+            {isRegistered ? LOCATION_TASK_NAME : 'Not registered yet!'}
           </Text>
         </Text>
       </View>
-      <View style={styles.textContainer}></View>
+      <View style={styles.textContainer}>{debug}</View>
       <Button
         title={
           isRegistered
