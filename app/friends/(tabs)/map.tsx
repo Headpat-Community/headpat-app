@@ -39,6 +39,11 @@ export default function FriendLocationsPage() {
   const [friendsLocations, setFriendsLocations] = useState(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [currentEvent, setCurrentEvent] = useState(null)
+  const [filters, setFilters] = useState({
+    showEvents: true,
+    showFriends: true,
+    showCommunity: true,
+  })
 
   const fetchEvents = async () => {
     try {
@@ -89,15 +94,6 @@ export default function FriendLocationsPage() {
     setRefreshing(false)
   }
 
-  useFocusEffect(
-    useCallback(() => {
-      onRefresh()
-      return () => {
-        // Unsubscribe from events here
-      }
-    }, [])
-  )
-
   useEffect(() => {
     let watcher = null
     const startWatching = async () => {
@@ -142,11 +138,11 @@ export default function FriendLocationsPage() {
   let locationsSubscribed = null
   useFocusEffect(
     useCallback(() => {
+      // Refresh and subscribe to events when the component is focused
+      onRefresh()
       handleSubscribedEvents()
-
-      // Return a cleanup function
       return () => {
-        // Unsubscribe from events here
+        // Remove the event listener when the component is unmounted
         locationsSubscribed()
       }
     }, [])

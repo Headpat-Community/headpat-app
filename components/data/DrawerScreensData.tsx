@@ -5,6 +5,8 @@ import { ArrowLeftIcon, PlusIcon } from 'lucide-react-native'
 import * as React from 'react'
 import { router } from 'expo-router'
 import { ProfileThemeToggle } from '~/components/ThemeToggle'
+import AddGalleryItem from '~/components/gallery/addGalleryItem'
+import { useUser } from '~/components/contexts/UserContext'
 
 function HeaderSidebarBackButton() {
   // Back button to go back to the previous screen
@@ -21,18 +23,23 @@ function HeaderSidebarBackButton() {
 }
 
 function GalleryAddButton() {
-  // Add button to add a new gallery
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
+  const { current }: any = useUser()
 
   return (
     <>
       <View className={'items-center flex-row'}>
-        <View>
-          <TouchableOpacity>
-            <PlusIcon aria-label={'Add gallery item'} size={20} color={theme} />
+        {current && (
+          <TouchableOpacity onPress={() => router.push('/gallery/add')}>
+            <PlusIcon
+              aria-label={'Add gallery item'}
+              title={'Add gallery item'}
+              size={20}
+              color={theme}
+            />
           </TouchableOpacity>
-        </View>
+        )}
         <View>
           <ProfileThemeToggle />
         </View>
@@ -65,6 +72,11 @@ export const DrawerScreensData = [
   },
   {
     location: 'gallery/[galleryId]/index',
+    title: 'Gallery',
+    headerLeft: <GalleryAddButton />,
+  },
+  {
+    location: 'gallery/add/index',
     title: 'Gallery',
   },
   {
