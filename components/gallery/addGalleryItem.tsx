@@ -97,7 +97,7 @@ export default function AddGalleryItem() {
             </AlertDialogDescription>
           )}
           {page === 1 && (
-            <View className={'items-center justify-center py-8'}>
+            <View className={'items-center justify-center my-8'}>
               <Button onPress={pickImage}>
                 <Text>Pick an image from camera roll</Text>
               </Button>

@@ -60,6 +60,7 @@
     "expo-status-bar": "~1.12.1",
     "expo-system-ui": "~3.0.4",
     "expo-updates": "~0.25.14",
+    "expo-video": "^1.1.9",
     "expo-web-browser": "~13.0.3",
     "i18next": "^23.10.1",
     "lucide-react-native": "^0.367.0",

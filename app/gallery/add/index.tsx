@@ -12,12 +12,13 @@ import * as React from 'react'
 import { H2, Muted } from '~/components/ui/typography'
 import { router } from 'expo-router'
 import { database, storage } from '~/lib/appwrite-client'
-import { ID, Permission, Role } from 'react-native-appwrite'
+import { ID } from 'react-native-appwrite'
 import { Progress } from '~/components/ui/progress'
 import { useUser } from '~/components/contexts/UserContext'
+import * as Sentry from '@sentry/react-native'
 
 export default function GalleryAdd() {
-  const [image, setImage] = useState(null)
+  const [image, setImage] = useState<ImagePicker.ImagePickerAsset>(null)
   const [page, setPage] = useState(1)
   const [title, setTitle] = useState('')
   const [nsfw, setNsfw] = useState(false)
@@ -34,7 +35,7 @@ export default function GalleryAdd() {
     if (!result.canceled) {
       const image = result.assets[0]
       const maxResolution = 5000 * 5000
-      const maxFileSize = 8 * 1024 * 1024 // 4MB in bytes
+      const maxFileSize = 8 * 1024 * 1024 // 8MB in bytes
 
       if (image.width * image.height > maxResolution) {
         toast('Image resolution is too large')
@@ -48,7 +49,8 @@ export default function GalleryAdd() {
         image.width * image.height <= maxResolution &&
         image.fileSize <= maxFileSize
       ) {
-        setImage(image.uri)
+        console.log(image)
+        setImage(image)
         setPage(2)
       }
     }
@@ -57,10 +59,17 @@ export default function GalleryAdd() {
   const handleClose = () => {
     setImage(null)
     setPage(1)
+    router.push('/gallery')
+  }
+
+  const handleFinish = (galleryId: string) => {
+    setImage(null)
+    setPage(1)
+    router.push(`/gallery/${galleryId}`)
   }
 
   async function uploadImageAsync() {
-    if (!image) {
+    if (!image.uri) {
       toast('Please select an image to upload')
       return
     }
@@ -70,15 +79,20 @@ export default function GalleryAdd() {
     }
 
     try {
+      const fileData = {
+        name: image.fileName,
+        type: image.mimeType,
+        size: image.fileSize,
+        uri: image.uri,
+      }
       //setUploading(true)
       const storageData = await storage.createFile(
         'gallery',
         ID.unique(),
-        image,
+        fileData,
         [],
         (event) => setProgress(event.progress)
       )
-      console.log(storageData)
 
       await database.createDocument(
         'hp_db',
@@ -89,11 +103,17 @@ export default function GalleryAdd() {
           longText: description,
           nsfw: nsfw,
           userId: current.userId,
+          mimeType: image.mimeType,
         }
       )
+      console.log(storageData)
+
+      handleFinish(storageData.$id)
     } catch (error) {
       setUploading(false)
-      console.error(error)
+      console.log(error)
+      toast('Error uploading image')
+      Sentry.captureException(error)
     }
   }
 
@@ -171,10 +191,7 @@ export default function GalleryAdd() {
           </View>
           <View style={{ marginBottom: 40 }} className={'gap-4'}>
             <>
-              <Button
-                variant={'outline'}
-                onPress={() => router.push('/gallery')}
-              >
+              <Button variant={'outline'} onPress={handleClose}>
                 <Text>Cancel</Text>
               </Button>
               {page === 2 && (
@@ -182,7 +199,7 @@ export default function GalleryAdd() {
                   <Button onPress={uploadImageAsync}>
                     <Text>Submit</Text>
                   </Button>
-                  <Button onPress={handleClose}>
+                  <Button onPress={() => setPage(1)}>
                     <Text>Back</Text>
                   </Button>
                 </>

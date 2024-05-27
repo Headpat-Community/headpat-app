@@ -1,10 +1,16 @@
-import { RefreshControl, TouchableWithoutFeedback, View } from 'react-native'
+import {
+  Button,
+  RefreshControl,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native'
 import { Image } from 'expo-image'
 import { database } from '~/lib/appwrite-client'
 import { ScrollView } from 'react-native-gesture-handler'
 import { Link } from 'expo-router'
 import { useColorScheme } from '~/lib/useColorScheme'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { toast } from '~/lib/toast'
 import * as Sentry from '@sentry/react-native'
 import {
@@ -12,10 +18,20 @@ import {
   GalleryImagesType,
 } from '~/lib/types/collections'
 import { Query } from 'react-native-appwrite'
+import { useVideoPlayer, VideoView } from 'expo-video'
 
 export default function GalleryPage() {
+  const videoSource =
+    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
+
   const [images, setImages] = useState<GalleryImagesDocumentsType[]>([])
   const [refreshing, setRefreshing] = useState<boolean>(false)
+  const [isPlaying, setIsPlaying] = useState(true)
+  const player = useVideoPlayer(videoSource, (player) => {
+    player.loop = true
+    player.play()
+  })
+  const ref = useRef(null)
 
   const fetchGallery = async () => {
     try {
@@ -47,6 +63,16 @@ export default function GalleryPage() {
     fetchGallery().then()
   }, [])
 
+  useEffect(() => {
+    const subscription = player.addListener('playingChange', (isPlaying) => {
+      setIsPlaying(isPlaying)
+    })
+
+    return () => {
+      subscription.remove()
+    }
+  }, [player])
+
   return (
     <ScrollView
       refreshControl={
@@ -64,12 +90,37 @@ export default function GalleryPage() {
             asChild
           >
             <TouchableWithoutFeedback>
-              <Image
-                source={getGalleryUrl(image.galleryId)}
-                alt={image.name}
-                style={{ width: '48%', height: 200, borderRadius: 4 }}
-                contentFit={'contain'}
-              />
+              {image.mimeType === 'video/mp4' ? (
+                <>
+                  <VideoView
+                    ref={ref}
+                    style={styles.video}
+                    player={player}
+                    allowsFullscreen
+                    allowsPictureInPicture
+                  />
+                  <View style={styles.controlsContainer}>
+                    <Button
+                      title={isPlaying ? 'Pause' : 'Play'}
+                      onPress={() => {
+                        if (isPlaying) {
+                          player.pause()
+                        } else {
+                          player.play()
+                        }
+                        setIsPlaying(!isPlaying)
+                      }}
+                    />
+                  </View>
+                </>
+              ) : (
+                <Image
+                  source={getGalleryUrl(image.$id)}
+                  alt={image.name}
+                  style={{ width: '48%', height: 200, borderRadius: 4 }}
+                  contentFit={'contain'}
+                />
+              )}
             </TouchableWithoutFeedback>
           </Link>
         ))}
@@ -77,3 +128,20 @@ export default function GalleryPage() {
     </ScrollView>
   )
 }
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    flex: 1,
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 50,
+  },
+  video: {
+    width: 350,
+    height: 275,
+  },
+  controlsContainer: {
+    padding: 10,
+  },
+})
