@@ -1,9 +1,15 @@
-import { Modal, RefreshControl, TouchableOpacity, View } from 'react-native'
+import {
+  Modal,
+  RefreshControl,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import { database } from '~/lib/appwrite-client'
 import Gallery from 'react-native-awesome-gallery'
 import { ScrollView } from 'react-native-gesture-handler'
 import { Link, useLocalSearchParams } from 'expo-router'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   GalleryImagesDocumentsType,
   UserDataDocumentsType,
@@ -13,6 +19,9 @@ import { Text } from '~/components/ui/text'
 import { H4, Muted } from '~/components/ui/typography'
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
 import { timeSince } from '~/components/calculateTimeLeft'
+import { useVideoPlayer, VideoView } from 'expo-video'
+import { useFocusEffect } from '@react-navigation/core'
+import { Skeleton } from '~/components/ui/skeleton'
 
 export default function HomeView() {
   const local = useLocalSearchParams()
@@ -20,6 +29,8 @@ export default function HomeView() {
   const [userData, setUserData] = useState<UserDataDocumentsType>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [modalVisible, setModalVisible] = useState(false)
+  const ref = useRef(null)
+  const [isPlaying, setIsPlaying] = useState(true)
 
   const fetchGallery = async () => {
     try {
@@ -71,15 +82,38 @@ export default function HomeView() {
     return `https://api.headpat.de/v1/storage/buckets/avatars/files/${userAvatarId}/preview?project=6557c1a8b6c2739b3ecf&width=128&height=128`
   }
 
+  const player = useVideoPlayer(
+    getGalleryUrl(`${local.galleryId}`),
+    (player) => {
+      player.loop = true
+      //player.play()
+      //player.staysActiveInBackground = true
+    }
+  )
+
+  useEffect(() => {
+    const subscription = player.addListener('playingChange', (isPlaying) => {
+      setIsPlaying(isPlaying)
+    })
+
+    return () => {
+      subscription.remove()
+    }
+  }, [player])
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        player.pause()
+      }
+    }, [player])
+  )
+
   if (refreshing) {
     return (
       <View style={{ flex: 1 }}>
         <TouchableOpacity onPress={() => setModalVisible(true)}>
-          <Image
-            source={{ uri: getGalleryUrl(image?.galleryId) }}
-            style={{ height: 300 }}
-            contentFit={'contain'}
-          />
+          <Skeleton className={'w-full'} />
         </TouchableOpacity>
 
         <H4 className={'text-center mx-8'}>{image?.name}</H4>
@@ -94,9 +128,7 @@ export default function HomeView() {
                 pathname: '/user/[userId]',
                 params: { userId: image?.userId },
               }}
-              className={''}
             >
-              <TouchableOpacity></TouchableOpacity>
               <View className={'flex-row items-center gap-4'}>
                 <Image
                   source={
@@ -147,13 +179,23 @@ export default function HomeView() {
       }
     >
       <View style={{ flex: 1 }}>
-        <TouchableOpacity onPress={() => setModalVisible(true)}>
-          <Image
-            source={{ uri: getGalleryUrl(image?.galleryId) }}
-            style={{ height: 300 }}
-            contentFit={'contain'}
+        {image?.mimeType.includes('video') ? (
+          <VideoView
+            ref={ref}
+            style={styles.video}
+            player={player}
+            allowsFullscreen
+            allowsPictureInPicture
           />
-        </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={() => setModalVisible(true)}>
+            <Image
+              source={{ uri: getGalleryUrl(image?.galleryId) }}
+              style={{ height: 300 }}
+              contentFit={'contain'}
+            />
+          </TouchableOpacity>
+        )}
 
         <H4 className={'text-center mx-8'}>{image?.name}</H4>
         {image?.longText && (
@@ -167,23 +209,24 @@ export default function HomeView() {
                 pathname: '/user/[userId]',
                 params: { userId: image?.userId },
               }}
-              className={''}
+              asChild
             >
-              <TouchableOpacity></TouchableOpacity>
-              <View className={'flex-row items-center gap-4'}>
-                <Image
-                  source={
-                    getUserAvatar(userData?.avatarId) ||
-                    require('~/assets/pfp-placeholder.png')
-                  }
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 10,
-                  }}
-                />
-                <Text>{userData?.displayName}</Text>
-              </View>
+              <TouchableOpacity>
+                <View className={'flex-row items-center gap-4'}>
+                  <Image
+                    source={
+                      getUserAvatar(userData?.avatarId) ||
+                      require('~/assets/pfp-placeholder.png')
+                    }
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 10,
+                    }}
+                  />
+                  <Text>{userData?.displayName}</Text>
+                </View>
+              </TouchableOpacity>
             </Link>
 
             <View>
@@ -213,3 +256,19 @@ export default function HomeView() {
     </ScrollView>
   )
 }
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    flex: 1,
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 50,
+  },
+  video: {
+    height: 300,
+  },
+  controlsContainer: {
+    padding: 10,
+  },
+})

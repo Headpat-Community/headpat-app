@@ -120,6 +120,7 @@ export interface GalleryImagesDocumentsType extends Models.Document {
   longText: string
   nsfw: boolean
   tags: string[]
+  mimeType: string
 }
 
 /**

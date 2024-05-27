@@ -18,7 +18,7 @@ import {
   GalleryImagesType,
 } from '~/lib/types/collections'
 import { Query } from 'react-native-appwrite'
-import { useVideoPlayer, VideoView } from 'expo-video'
+import * as VideoThumbnails from 'expo-video-thumbnails'
 
 export default function GalleryPage() {
   const videoSource =
@@ -26,12 +26,7 @@ export default function GalleryPage() {
 
   const [images, setImages] = useState<GalleryImagesDocumentsType[]>([])
   const [refreshing, setRefreshing] = useState<boolean>(false)
-  const [isPlaying, setIsPlaying] = useState(true)
-  const player = useVideoPlayer(videoSource, (player) => {
-    player.loop = true
-    player.play()
-  })
-  const ref = useRef(null)
+  const [thumbnails, setThumbnails] = useState<{ [key: string]: string }>({})
 
   const fetchGallery = async () => {
     try {
@@ -42,6 +37,11 @@ export default function GalleryPage() {
       )
 
       setImages(data.documents)
+      data.documents.forEach((image) => {
+        if (image.mimeType.includes('video')) {
+          generateThumbnail(image.$id)
+        }
+      })
     } catch (error) {
       toast('Failed to fetch gallery. Please try again later.')
       Sentry.captureException(error)
@@ -63,15 +63,19 @@ export default function GalleryPage() {
     fetchGallery().then()
   }, [])
 
-  useEffect(() => {
-    const subscription = player.addListener('playingChange', (isPlaying) => {
-      setIsPlaying(isPlaying)
-    })
-
-    return () => {
-      subscription.remove()
+  const generateThumbnail = async (galleryId: string) => {
+    try {
+      const { uri } = await VideoThumbnails.getThumbnailAsync(
+        `https://api.headpat.de/v1/storage/buckets/gallery/files/${galleryId}/view?project=6557c1a8b6c2739b3ecf`
+      )
+      setThumbnails((prevThumbnails) => ({
+        ...prevThumbnails,
+        [galleryId]: uri,
+      }))
+    } catch (e) {
+      console.warn(e)
     }
-  }, [player])
+  }
 
   return (
     <ScrollView
@@ -80,50 +84,34 @@ export default function GalleryPage() {
       }
     >
       <View className={'flex-1 flex-row flex-wrap mt-4 gap-4'}>
-        {images.map((image, index) => (
-          <Link
-            href={{
-              pathname: '/gallery/[galleryId]',
-              params: { galleryId: image.$id },
-            }}
-            key={index}
-            asChild
-          >
-            <TouchableWithoutFeedback>
-              {image.mimeType === 'video/mp4' ? (
-                <>
-                  <VideoView
-                    ref={ref}
-                    style={styles.video}
-                    player={player}
-                    allowsFullscreen
-                    allowsPictureInPicture
+        {images.map(
+          (image, index) => (
+            console.log(image.mimeType),
+            (
+              <Link
+                href={{
+                  pathname: '/gallery/[galleryId]',
+                  params: { galleryId: image.$id },
+                }}
+                key={index}
+                asChild
+              >
+                <TouchableWithoutFeedback>
+                  <Image
+                    source={
+                      image.mimeType.includes('video')
+                        ? { uri: thumbnails[image.$id] }
+                        : { uri: getGalleryUrl(image.$id) }
+                    }
+                    alt={image.name}
+                    style={{ width: '48%', height: 200, borderRadius: 4 }}
+                    contentFit={'contain'}
                   />
-                  <View style={styles.controlsContainer}>
-                    <Button
-                      title={isPlaying ? 'Pause' : 'Play'}
-                      onPress={() => {
-                        if (isPlaying) {
-                          player.pause()
-                        } else {
-                          player.play()
-                        }
-                        setIsPlaying(!isPlaying)
-                      }}
-                    />
-                  </View>
-                </>
-              ) : (
-                <Image
-                  source={getGalleryUrl(image.$id)}
-                  alt={image.name}
-                  style={{ width: '48%', height: 200, borderRadius: 4 }}
-                  contentFit={'contain'}
-                />
-              )}
-            </TouchableWithoutFeedback>
-          </Link>
-        ))}
+                </TouchableWithoutFeedback>
+              </Link>
+            )
+          )
+        )}
       </View>
     </ScrollView>
   )

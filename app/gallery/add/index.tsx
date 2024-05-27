@@ -85,7 +85,7 @@ export default function GalleryAdd() {
         size: image.fileSize,
         uri: image.uri,
       }
-      //setUploading(true)
+      setUploading(true)
       const storageData = await storage.createFile(
         'gallery',
         ID.unique(),
@@ -102,11 +102,10 @@ export default function GalleryAdd() {
           name: title,
           longText: description,
           nsfw: nsfw,
-          userId: current.userId,
+          userId: current.$id,
           mimeType: image.mimeType,
         }
       )
-      console.log(storageData)
 
       handleFinish(storageData.$id)
     } catch (error) {
