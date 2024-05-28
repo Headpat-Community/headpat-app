@@ -24,22 +24,21 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
   const location = await Location.getCurrentPositionAsync({})
 
   // Make API calls to update or create location document
-  try {
-    await database.updateDocument('hp_db', 'locations', userId, {
+  await database
+    .updateDocument('hp_db', 'locations', userId, {
       long: location.coords.longitude,
       lat: location.coords.latitude,
     })
-  } catch (error) {
-    console.error('Error updating location', error)
-    await database.createDocument('hp_db', 'locations', userId, {
-      long: location.coords.longitude,
-      lat: location.coords.latitude,
-      timeUntilEnd: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+    .catch(async () => {
+      await database.createDocument('hp_db', 'locations', userId, {
+        long: location.coords.longitude,
+        lat: location.coords.latitude,
+        timeUntilEnd: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      })
     })
-  }
 })
 
-async function registerBackgroundFetchAsync(current: any) {
+async function registerBackgroundFetchAsync(userId: string) {
   const { granted: fgGranted } =
     await Location.requestForegroundPermissionsAsync()
   if (!fgGranted) {
@@ -51,17 +50,17 @@ async function registerBackgroundFetchAsync(current: any) {
   if (!bgGranted) {
     return Alert.alert(
       'Location Access Required',
-      'App requires location even when the App is backgrounded.'
+      'Headpat requires location even when the App is backgrounded.'
     )
   }
 
-  await AsyncStorage.setItem('userId', current.userId)
+  await AsyncStorage.setItem('userId', userId)
 
   await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
     accuracy: Location.Accuracy.High,
     showsBackgroundLocationIndicator: true,
-    distanceInterval: 2,
-    timeInterval: 1000,
+    distanceInterval: 10,
+    timeInterval: 10000,
   })
 }
 
@@ -75,7 +74,7 @@ async function unregisterBackgroundFetchAsync() {
 export default function ShareLocationView() {
   const [isRegistered, setIsRegistered] = React.useState(false)
   const [status, setStatus] = React.useState(null)
-  const { current }: any = useUser() // Move the hook here
+  const user: any = useUser()
 
   React.useEffect(() => {
     checkStatusAsync().then()
@@ -94,7 +93,11 @@ export default function ShareLocationView() {
     if (isRegistered) {
       await unregisterBackgroundFetchAsync()
     } else {
-      await registerBackgroundFetchAsync(current) // Pass the user data here
+      if (user.current.$id) {
+        await registerBackgroundFetchAsync(user.current.$id)
+      } else {
+        Alert.alert('Error', 'Please log in to share location')
+      }
     }
 
     await checkStatusAsync()

@@ -16,14 +16,13 @@ import {
 } from 'lucide-react-native'
 import { useColorScheme } from '~/lib/useColorScheme'
 import { useUser } from '~/components/contexts/UserContext'
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
 import { useCallback, useEffect, useState } from 'react'
 import {
   EventsDocumentsType,
   EventsType,
   UserDataDocumentsType,
 } from '~/lib/types/collections'
-import { database, storage } from '~/lib/appwrite-client'
+import { database } from '~/lib/appwrite-client'
 import { H4 } from '~/components/ui/typography'
 import { Separator } from '~/components/ui/separator'
 import { Query } from 'react-native-appwrite'
@@ -40,7 +39,7 @@ export default function HomeView() {
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
-  const { current }: any = useUser()
+  const user: any = useUser()
 
   const onRefresh = () => {
     setRefreshing(true)
@@ -61,7 +60,7 @@ export default function HomeView() {
         Query.limit(1),
       ])
 
-      if (data.documents.length > 0) {
+      if (data?.documents?.length > 0) {
         setNextEvent(data.documents[0])
       } else {
         setNextEvent(null)
@@ -73,13 +72,13 @@ export default function HomeView() {
   }
 
   useEffect(() => {
-    if (current) {
+    if (user?.current?.$id) {
       const fetchUserData = async () => {
         try {
           const data: UserDataDocumentsType = await database.getDocument(
             'hp_db',
             'userdata',
-            `${current.userId || current.$id}`
+            `${user?.current?.$id}`
           )
           setUserData(data)
         } catch (error) {
@@ -90,7 +89,7 @@ export default function HomeView() {
       }
       fetchUserData().then()
     }
-  }, [current])
+  }, [user?.current])
 
   useFocusEffect(
     useCallback(() => {
@@ -105,7 +104,7 @@ export default function HomeView() {
       }
     >
       <View className="justify-center items-center">
-        {current ? (
+        {user?.current?.$id ? (
           <>
             <Image
               source={

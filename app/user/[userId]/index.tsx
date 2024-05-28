@@ -69,6 +69,26 @@ export default function UserPage() {
     fetchUser().then()
   }, [local.userId])
 
+  if (refreshing)
+    return (
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <View className={'flex-1 justify-center items-center h-full'}>
+          <View className={'p-4 native:pb-24 max-w-md gap-6'}>
+            <View className={'gap-1'}>
+              <H1 className={'text-foreground text-center'}>Loading...</H1>
+              <Muted className={'text-base text-center'}>
+                Please wait while we load the user's data.
+              </Muted>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
+    )
+
   if (!userData)
     return (
       <ScrollView

@@ -30,8 +30,11 @@ import {
 import * as Sentry from '@sentry/react-native'
 import { formatDate } from '~/components/calculateTimeLeft'
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
+import { useUser } from '~/components/contexts/UserContext'
 
 export default function FriendLocationsPage() {
+  const user: any = useUser()
+
   const mapRef = useRef(null)
   const [userLocation, setUserLocation] = useState(null)
 
@@ -68,7 +71,8 @@ export default function FriendLocationsPage() {
     try {
       const data: LocationType = await database.listDocuments(
         'hp_db',
-        'locations'
+        'locations',
+        [Query.notEqual('$id', user?.current?.$id)]
       )
 
       const promises = data.documents.map(async (doc) => {

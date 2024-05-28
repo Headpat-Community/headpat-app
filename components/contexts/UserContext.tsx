@@ -1,7 +1,7 @@
-import {ID, Models} from 'react-native-appwrite'
-import {createContext, useContext, useEffect, useState} from 'react'
-import {account} from '~/lib/appwrite-client'
-import {toast} from '~/lib/toast'
+import { ID, Models } from 'react-native-appwrite'
+import { createContext, useContext, useEffect, useState } from 'react'
+import { account } from '~/lib/appwrite-client'
+import { toast } from '~/lib/toast'
 
 // TODO: Check this out, proper typing.
 // @ts-ignore
@@ -12,7 +12,7 @@ export function useUser() {
 }
 
 export function UserProvider(props: any) {
-  const [user, setUser] = useState<Models.Session | Models.User<Models.Preferences>>()
+  const [user, setUser] = useState(null)
 
   async function login(email: string, password: string) {
     const loggedIn = await account.createEmailPasswordSession(email, password)
@@ -53,10 +53,10 @@ export function UserProvider(props: any) {
   }, [])
 
   return (
-      <UserContext.Provider
-          value={{current: user, login, loginOAuth, logout, register, toast}}
-      >
-        {props.children}
-      </UserContext.Provider>
+    <UserContext.Provider
+      value={{ current: user, login, loginOAuth, logout, register, toast }}
+    >
+      {props.children}
+    </UserContext.Provider>
   )
 }

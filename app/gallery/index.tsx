@@ -1,5 +1,4 @@
 import {
-  Button,
   RefreshControl,
   StyleSheet,
   TouchableWithoutFeedback,
@@ -9,7 +8,6 @@ import { Image } from 'expo-image'
 import { database } from '~/lib/appwrite-client'
 import { ScrollView } from 'react-native-gesture-handler'
 import { Link } from 'expo-router'
-import { useColorScheme } from '~/lib/useColorScheme'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from '~/lib/toast'
 import * as Sentry from '@sentry/react-native'
@@ -19,6 +17,8 @@ import {
 } from '~/lib/types/collections'
 import { Query } from 'react-native-appwrite'
 import * as VideoThumbnails from 'expo-video-thumbnails'
+import { Badge } from '~/components/ui/badge'
+import { Text } from '~/components/ui/text'
 
 export default function GalleryPage() {
   const videoSource =
@@ -84,34 +84,45 @@ export default function GalleryPage() {
       }
     >
       <View className={'flex-1 flex-row flex-wrap mt-4 gap-4'}>
-        {images.map(
-          (image, index) => (
-            console.log(image.mimeType),
-            (
-              <Link
-                href={{
-                  pathname: '/gallery/[galleryId]',
-                  params: { galleryId: image.$id },
-                }}
-                key={index}
-                asChild
-              >
-                <TouchableWithoutFeedback>
-                  <Image
-                    source={
-                      image.mimeType.includes('video')
-                        ? { uri: thumbnails[image.$id] }
-                        : { uri: getGalleryUrl(image.$id) }
-                    }
-                    alt={image.name}
-                    style={{ width: '48%', height: 200, borderRadius: 4 }}
-                    contentFit={'contain'}
-                  />
-                </TouchableWithoutFeedback>
-              </Link>
-            )
-          )
-        )}
+        {images.map((image, index) => (
+          <Link
+            href={{
+              pathname: '/gallery/[galleryId]',
+              params: { galleryId: image.$id },
+            }}
+            key={index}
+            asChild
+          >
+            <TouchableWithoutFeedback>
+              <View style={{ position: 'relative', width: '48%', height: 200 }}>
+                <Image
+                  source={
+                    image.mimeType.includes('video')
+                      ? { uri: thumbnails[image.$id] }
+                      : { uri: getGalleryUrl(image.$id) }
+                  }
+                  alt={image.name}
+                  style={{ width: '100%', height: '100%', borderRadius: 4 }}
+                  contentFit={'contain'}
+                />
+                {image.mimeType.includes('gif') && (
+                  <Badge
+                    className={'absolute border-2 bg-secondary border-primary'}
+                  >
+                    <Text className={'text-primary'}>GIF</Text>
+                  </Badge>
+                )}
+                {image.mimeType.includes('video') && (
+                  <Badge
+                    className={'absolute border-2 bg-secondary border-primary'}
+                  >
+                    <Text className={'text-primary'}>Video</Text>
+                  </Badge>
+                )}
+              </View>
+            </TouchableWithoutFeedback>
+          </Link>
+        ))}
       </View>
     </ScrollView>
   )
