@@ -154,6 +154,7 @@ export default function FriendLocationsPage() {
       (response) => {
         const eventType = response.events[0].split('.').pop()
         const updatedDocument: any = response.payload
+        console.log(updatedDocument)
 
         switch (eventType) {
           case 'update':

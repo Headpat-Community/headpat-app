@@ -1,38 +1,37 @@
 import React from 'react'
 import { Alert, Button, StyleSheet, View } from 'react-native'
-import { H1 } from '~/components/ui/typography'
 import { Text } from '~/components/ui/text'
 import { database } from '~/lib/appwrite-client'
 import { useUser } from '~/components/contexts/UserContext'
 import * as Location from 'expo-location'
 import * as BackgroundFetch from 'expo-background-fetch'
 import * as TaskManager from 'expo-task-manager'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const LOCATION_TASK_NAME = 'background-location-task'
 
-TaskManager.defineTask(LOCATION_TASK_NAME, async (locations) => {
-  console.log('Received new locations', locations)
+TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
+  console.log('Received new locations', data)
 
-  let { status } = await Location.requestForegroundPermissionsAsync()
-  const { current }: any = useUser() // Move the hook here
-  console.log('current', current)
-
-  if (status !== 'granted') {
+  if (error) {
     return BackgroundFetch.BackgroundFetchResult.Failed
   }
+
+  // Use the user data from the task
+  const userId = await AsyncStorage.getItem('userId')
 
   // Get current location
   const location = await Location.getCurrentPositionAsync({})
 
   // Make API calls to update or create location document
   try {
-    await database.updateDocument('hp_db', 'locations', current.$id, {
+    await database.updateDocument('hp_db', 'locations', userId, {
       long: location.coords.longitude,
       lat: location.coords.latitude,
     })
   } catch (error) {
     console.error('Error updating location', error)
-    await database.createDocument('hp_db', 'locations', current.$id, {
+    await database.createDocument('hp_db', 'locations', userId, {
       long: location.coords.longitude,
       lat: location.coords.latitude,
       timeUntilEnd: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
@@ -40,7 +39,7 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async (locations) => {
   }
 })
 
-async function registerBackgroundFetchAsync() {
+async function registerBackgroundFetchAsync(current: any) {
   const { granted: fgGranted } =
     await Location.requestForegroundPermissionsAsync()
   if (!fgGranted) {
@@ -56,19 +55,27 @@ async function registerBackgroundFetchAsync() {
     )
   }
 
+  await AsyncStorage.setItem('userId', current.userId)
+
   await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
     accuracy: Location.Accuracy.High,
+    showsBackgroundLocationIndicator: true,
+    distanceInterval: 2,
+    timeInterval: 1000,
   })
 }
 
 async function unregisterBackgroundFetchAsync() {
+  const userId = await AsyncStorage.getItem('userId')
   await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME)
+
+  await database.deleteDocument('hp_db', 'locations', userId)
 }
 
 export default function ShareLocationView() {
   const [isRegistered, setIsRegistered] = React.useState(false)
   const [status, setStatus] = React.useState(null)
-  const [debug, setDebug] = React.useState('')
+  const { current }: any = useUser() // Move the hook here
 
   React.useEffect(() => {
     checkStatusAsync().then()
@@ -87,10 +94,10 @@ export default function ShareLocationView() {
     if (isRegistered) {
       await unregisterBackgroundFetchAsync()
     } else {
-      await registerBackgroundFetchAsync()
+      await registerBackgroundFetchAsync(current) // Pass the user data here
     }
 
-    checkStatusAsync()
+    await checkStatusAsync()
   }
 
   return (
@@ -109,7 +116,6 @@ export default function ShareLocationView() {
           </Text>
         </Text>
       </View>
-      <View style={styles.textContainer}>{debug}</View>
       <Button
         title={
           isRegistered
