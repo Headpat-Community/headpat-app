@@ -1,5 +1,5 @@
 import React from 'react'
-import { Alert, Button, StyleSheet, View } from 'react-native'
+import { Alert, StyleSheet, View } from 'react-native'
 import { Text } from '~/components/ui/text'
 import { database } from '~/lib/appwrite-client'
 import { useUser } from '~/components/contexts/UserContext'
@@ -7,6 +7,8 @@ import * as Location from 'expo-location'
 import * as BackgroundFetch from 'expo-background-fetch'
 import * as TaskManager from 'expo-task-manager'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { H1, Muted } from '~/components/ui/typography'
+import { Button } from '~/components/ui/button'
 
 const LOCATION_TASK_NAME = 'background-location-task'
 
@@ -93,7 +95,7 @@ export default function ShareLocationView() {
     if (isRegistered) {
       await unregisterBackgroundFetchAsync()
     } else {
-      if (user.current.$id) {
+      if (user?.current) {
         await registerBackgroundFetchAsync(user.current.$id)
       } else {
         Alert.alert('Error', 'Please log in to share location')
@@ -105,28 +107,19 @@ export default function ShareLocationView() {
 
   return (
     <View style={styles.screen}>
+      <H1>Location Sharing</H1>
+      <Muted>BETA</Muted>
       <View style={styles.textContainer}>
         <Text>
-          Background fetch status:{' '}
+          Background status:{' '}
           <Text style={styles.boldText}>
             {status && BackgroundFetch.BackgroundFetchStatus[status]}
           </Text>
         </Text>
-        <Text>
-          Background fetch task name:{' '}
-          <Text style={styles.boldText}>
-            {isRegistered ? LOCATION_TASK_NAME : 'Not registered yet!'}
-          </Text>
-        </Text>
       </View>
-      <Button
-        title={
-          isRegistered
-            ? 'Unregister BackgroundFetch task'
-            : 'Register BackgroundFetch task'
-        }
-        onPress={toggleFetchTask}
-      />
+      <Button onPress={toggleFetchTask}>
+        <Text>{isRegistered ? 'Disable sharing' : 'Enable sharing'}</Text>
+      </Button>
     </View>
   )
 }
