@@ -69,10 +69,15 @@ export default function FriendLocationsPage() {
 
   const fetchUserLocations = async () => {
     try {
+      let query = []
+      if (user?.current?.$id) {
+        query = [Query.notEqual('$id', user?.current?.$id)]
+      }
+
       const data: LocationType = await database.listDocuments(
         'hp_db',
         'locations',
-        [Query.notEqual('$id', user?.current?.$id)]
+        query
       )
 
       const promises = data.documents.map(async (doc) => {
@@ -87,7 +92,7 @@ export default function FriendLocationsPage() {
       const results = await Promise.all(promises)
       setFriendsLocations(results)
     } catch (error) {
-      toast('Failed to fetch events. Please try again later.')
+      toast('Failed to fetch locations. Please try again later.')
     }
   }
 
@@ -291,7 +296,7 @@ export default function FriendLocationsPage() {
             className={
               'justify-center items-center bg-white h-14 w-14 rounded-full shadow'
             }
-            onPress={() => console.log('Filter button pressed')}
+            onPress={() => toast('This button is still useless.')}
           >
             <FilterIcon size={24} color={'black'} />
           </TouchableOpacity>

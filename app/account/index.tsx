@@ -5,6 +5,7 @@ import { Card, CardContent, CardFooter, CardTitle } from '~/components/ui/card'
 import {
   BringToFrontIcon,
   CookieIcon,
+  LogOutIcon,
   MegaphoneIcon,
   ShieldAlertIcon,
 } from 'lucide-react-native'
@@ -14,6 +15,16 @@ import { toast } from '~/lib/toast'
 export default function AccountPage() {
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
+  const { logout }: any = useUser()
+
+  const handleLogout = async () => {
+    try {
+      await logout()
+      router.push('/')
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   return (
     <View className="mx-4 gap-4 mt-4">
@@ -63,6 +74,19 @@ export default function AccountPage() {
               <CardTitle>Notifications</CardTitle>
               <CardTitle>
                 <MegaphoneIcon size={32} color={theme} />
+              </CardTitle>
+            </CardFooter>
+          </CardContent>
+        </Card>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={handleLogout}>
+        <Card>
+          <CardContent className={'py-8'}>
+            <CardFooter className={'p-0 justify-between flex flex-wrap'}>
+              <CardTitle>Logout</CardTitle>
+              <CardTitle>
+                <LogOutIcon size={32} color={theme} />
               </CardTitle>
             </CardFooter>
           </CardContent>

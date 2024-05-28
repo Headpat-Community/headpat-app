@@ -17,19 +17,19 @@ export function UserProvider(props: any) {
   async function login(email: string, password: string) {
     const loggedIn = await account.createEmailPasswordSession(email, password)
     setUser(loggedIn)
-    toast('Welcome back. You are logged in!')
+    //toast('Welcome back. You are logged in!')
   }
 
   async function loginOAuth(userId: string, secret: string) {
     const loggedIn = await account.createSession(userId, secret)
     setUser(loggedIn)
-    toast('Welcome back. You are logged in!')
+    //toast('Welcome back. You are logged in!')
   }
 
   async function logout() {
     await account.deleteSession('current')
     setUser(null)
-    toast('Logged out.')
+    //toast('Logged out.')
   }
 
   async function register(email: string, password: string, username: string) {
