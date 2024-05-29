@@ -304,7 +304,7 @@ function CustomDrawerContent({
             textAlign: 'center',
           }}
         >
-          Headpat App v0.3.0
+          Headpat App v0.4.0
         </Text>
       </ScrollView>
     </>

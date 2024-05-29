@@ -2,7 +2,7 @@
   "expo": {
     "name": "Headpat",
     "slug": "headpat-app",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "orientation": "portrait",
     "icon": "./assets/images/headpat_logo.png",
     "scheme": "headpatapp",
@@ -38,7 +38,7 @@
         "applinks:headpat.de",
         "applinks:api.headpat.de"
       ],
-      "buildNumber": "23"
+      "buildNumber": "24"
     },
     "android": {
       "permissions": [
@@ -57,7 +57,7 @@
         }
       },
       "package": "com.headpat.app",
-      "versionCode": 17
+      "versionCode": 24
     },
     "web": {
       "bundler": "metro",
