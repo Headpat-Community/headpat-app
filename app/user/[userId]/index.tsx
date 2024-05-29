@@ -12,7 +12,12 @@ import { database } from '~/lib/appwrite-client'
 import { Image } from 'expo-image'
 import { Text } from '~/components/ui/text'
 import { Button } from '~/components/ui/button'
-import { CakeIcon, MapPinIcon, TagIcon } from 'lucide-react-native'
+import {
+  CakeIcon,
+  MapPinIcon,
+  RectangleEllipsisIcon,
+  TagIcon,
+} from 'lucide-react-native'
 import { useColorScheme } from '~/lib/useColorScheme'
 import { calculateBirthday } from '~/components/calculateTimeLeft'
 import TelegramIcon from '~/components/icons/TelegramIcon'
@@ -206,7 +211,19 @@ export default function UserPage() {
             )}
           </Muted>
           <Muted className={'text-center mb-2'}>
-            {/* Some other attributes later */}
+            {!userData?.status ? null : (
+              <>
+                <RectangleEllipsisIcon
+                  size={12}
+                  color={theme}
+                  title={'Status'}
+                  style={{
+                    marginRight: 4,
+                  }}
+                />
+                {userData?.status}
+              </>
+            )}
           </Muted>
         </View>
       </View>

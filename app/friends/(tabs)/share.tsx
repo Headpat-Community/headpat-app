@@ -10,69 +10,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { H1, Muted } from '~/components/ui/typography'
 import { Button } from '~/components/ui/button'
 
-const LOCATION_TASK_NAME = 'background-location-task'
-
-TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
-  console.log('Received new locations', data)
-
-  if (error) {
-    return BackgroundFetch.BackgroundFetchResult.Failed
-  }
-
-  // Use the user data from the task
-  const userId = await AsyncStorage.getItem('userId')
-
-  // Get current location
-  const location = await Location.getCurrentPositionAsync({})
-
-  // Make API calls to update or create location document
-  await database
-    .updateDocument('hp_db', 'locations', userId, {
-      long: location.coords.longitude,
-      lat: location.coords.latitude,
-    })
-    .catch(async () => {
-      await database.createDocument('hp_db', 'locations', userId, {
-        long: location.coords.longitude,
-        lat: location.coords.latitude,
-        timeUntilEnd: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-      })
-    })
-})
-
-async function registerBackgroundFetchAsync(userId: string) {
-  const { granted: fgGranted } =
-    await Location.requestForegroundPermissionsAsync()
-  if (!fgGranted) {
-    return Alert.alert('Required', 'Please grant GPS Location')
-  }
-  const { granted: bgGranted } =
-    await Location.requestBackgroundPermissionsAsync()
-
-  if (!bgGranted) {
-    return Alert.alert(
-      'Location Access Required',
-      'Headpat requires location even when the App is backgrounded.'
-    )
-  }
-
-  await AsyncStorage.setItem('userId', userId)
-
-  await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-    accuracy: Location.Accuracy.High,
-    showsBackgroundLocationIndicator: true,
-    distanceInterval: 10,
-    timeInterval: 10000,
-  })
-}
-
-async function unregisterBackgroundFetchAsync() {
-  const userId = await AsyncStorage.getItem('userId')
-  await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME)
-
-  await database.deleteDocument('hp_db', 'locations', userId)
-}
-
 export default function ShareLocationView() {
   const [isRegistered, setIsRegistered] = React.useState(false)
   const [status, setStatus] = React.useState(null)
@@ -85,10 +22,43 @@ export default function ShareLocationView() {
   const checkStatusAsync = async () => {
     const status = await BackgroundFetch.getStatusAsync()
     const isRegistered = await TaskManager.isTaskRegisteredAsync(
-      LOCATION_TASK_NAME
+      'background-location-task'
     )
     setStatus(status)
     setIsRegistered(isRegistered)
+  }
+
+  async function registerBackgroundFetchAsync(userId: string) {
+    const { granted: fgGranted } =
+      await Location.requestForegroundPermissionsAsync()
+    if (!fgGranted) {
+      return Alert.alert('Required', 'Please grant GPS Location')
+    }
+    const { granted: bgGranted } =
+      await Location.requestBackgroundPermissionsAsync()
+
+    if (!bgGranted) {
+      return Alert.alert(
+        'Location Access Required',
+        'Headpat requires location even when the App is backgrounded.'
+      )
+    }
+
+    await AsyncStorage.setItem('userId', userId)
+
+    await Location.startLocationUpdatesAsync('background-location-task', {
+      accuracy: Location.Accuracy.High,
+      showsBackgroundLocationIndicator: true,
+      distanceInterval: 10,
+      timeInterval: 10000,
+    })
+  }
+
+  async function unregisterBackgroundFetchAsync() {
+    const userId = await AsyncStorage.getItem('userId')
+    await Location.stopLocationUpdatesAsync('background-location-task')
+
+    await database.deleteDocument('hp_db', 'locations', userId)
   }
 
   const toggleFetchTask = async () => {

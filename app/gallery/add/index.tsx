@@ -104,6 +104,7 @@ export default function GalleryAdd() {
           nsfw: nsfw,
           userId: current.$id,
           mimeType: image.mimeType,
+          galleryId: storageData.$id,
         }
       )
 
