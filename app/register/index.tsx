@@ -20,7 +20,7 @@ import * as WebBrowser from 'expo-web-browser'
 import * as Sentry from '@sentry/react-native'
 
 export default function ModalScreen() {
-  const { loginOAuth, register, current }: any = useUser()
+  const { loginOAuth, register, current } = useUser()
   const [acceptedTerms, setAcceptedTerms] = useState(false)
   const [isRegistering, setIsRegistering] = useState(false)
 
@@ -37,8 +37,8 @@ export default function ModalScreen() {
   }, [current])
 
   useEffect(() => {
-    if (currentData) router.push('/account')
-  }, [])
+    if (currentData) router.navigate('/account')
+  }, [currentData])
 
   const handleEmailLogin = async () => {
     if (data.username.length < 3) {
@@ -56,7 +56,7 @@ export default function ModalScreen() {
 
     try {
       await register(data.email, data.password, data.username)
-      router.push('/account')
+      router.navigate('/account')
     } catch (error) {
       console.log(error.type, error.message, error.code)
       if (error.type == 'general_argument_invalid') {
@@ -92,7 +92,7 @@ export default function ModalScreen() {
         const userId = params.get('userId')
 
         await loginOAuth(userId, secret)
-        router.push('/account')
+        router.navigate('/account')
       }
     } catch (error) {
       toast('An error occurred.')
@@ -111,7 +111,7 @@ export default function ModalScreen() {
           <Muted className="text-base text-center">
             Already have an account?
           </Muted>
-          <Button variant={'ghost'} onPress={() => router.push('/login')}>
+          <Button variant={'ghost'} onPress={() => router.navigate('/login')}>
             <Text>Login</Text>
           </Button>
         </View>

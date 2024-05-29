@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "expo start",
     "dev:ios": "expo start -c --ios",
+    "dev:android": "expo start -c --android",
     "dev:web": "expo start -c --web",
     "run:android": "expo run:android",
     "run:ios": "expo run:ios",
@@ -16,7 +17,10 @@
     "build:android": "eas build --platform android",
     "build:all": "eas build --platform all",
     "submit:ios": "eas submit -p ios",
-    "submit:android": "eas submit -p android"
+    "submit:android": "eas submit -p android",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "lint": "eslint ."
   },
   "prettier": {
     "trailingComma": "es5",
@@ -29,6 +33,7 @@
     "@hookform/resolvers": "^3.3.4",
     "@icons-pack/react-simple-icons": "^9.5.0",
     "@react-native-async-storage/async-storage": "1.23.1",
+    "@react-native-community/hooks": "^3.0.0",
     "@react-native-community/slider": "4.5.2",
     "@react-native-masked-view/masked-view": "^0.3.1",
     "@react-native/metro-config": "^0.74.83",
@@ -46,6 +51,7 @@
     "expo-background-fetch": "~12.0.1",
     "expo-blur": "~13.0.2",
     "expo-clipboard": "~6.0.3",
+    "expo-dev-client": "~4.0.14",
     "expo-font": "~12.0.5",
     "expo-haptics": "~13.0.1",
     "expo-image": "~1.12.9",
@@ -95,6 +101,8 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@types/react": "~18.2.45",
+    "eslint": "^8.57.0",
+    "eslint-config-expo": "^7.0.0",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.3.3"
   },

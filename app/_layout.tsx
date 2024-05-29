@@ -10,13 +10,13 @@ import { ToastProvider } from '~/components/primitives/deprecated-ui/toast'
 import { router, SplashScreen } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import * as React from 'react'
-import { Platform, ScrollView, Text, View } from 'react-native'
+import { ScrollView, Text, View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { ProfileThemeToggle } from '~/components/ThemeToggle'
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar'
 import { NAV_THEME } from '~/lib/constants'
 import { useColorScheme } from '~/lib/useColorScheme'
-import { Drawer } from 'expo-router/drawer'
+import { Drawer } from '~/components/Drawer'
 import { DrawerItem } from '@react-navigation/drawer'
 import { TouchableOpacity } from '@gorhom/bottom-sheet'
 import { Image } from 'expo-image'
@@ -99,7 +99,7 @@ function CustomDrawerContent({
 
   const { isDarkColorScheme, setColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
-  const { current }: any = useUser()
+  const { current } = useUser()
 
   return (
     <>
@@ -135,7 +135,7 @@ function CustomDrawerContent({
               </View>
             )
           }}
-          onPress={() => router.push('/')}
+          onPress={() => router.navigate('/')}
         />
 
         <DrawerItem
@@ -147,7 +147,7 @@ function CustomDrawerContent({
               </View>
             )
           }}
-          onPress={() => router.push('/gallery')}
+          onPress={() => router.navigate('/gallery')}
         />
 
         <DrawerItem
@@ -173,7 +173,7 @@ function CustomDrawerContent({
               </View>
             )
           }}
-          onPress={() => router.push('/announcements')}
+          onPress={() => router.navigate('/announcements')}
         />
 
         <DrawerItem
@@ -185,7 +185,7 @@ function CustomDrawerContent({
               </View>
             )
           }}
-          onPress={() => router.push('/events/(tabs)')}
+          onPress={() => router.navigate('/events/(tabs)')}
         />
 
         <DrawerItem
@@ -197,7 +197,7 @@ function CustomDrawerContent({
               </View>
             )
           }}
-          onPress={() => router.push('/user/list')}
+          onPress={() => router.navigate('/user/list')}
         />
 
         <Separator />
@@ -214,7 +214,7 @@ function CustomDrawerContent({
                 )
               }}
               onPress={() => {
-                router.push({
+                router.navigate({
                   pathname: '/user/[userId]',
                   params: { userId: current.$id },
                 })
@@ -246,7 +246,7 @@ function CustomDrawerContent({
               </View>
             )
           }}
-          onPress={() => router.push('/communities')}
+          onPress={() => router.navigate('/communities')}
         />
 
         <View style={{ flex: 1, flexGrow: 1 }}></View>
@@ -292,7 +292,7 @@ function CustomDrawerContent({
             )
           }}
           onPress={() => {
-            current ? router.push('/account') : router.push('/login')
+            current ? router.navigate('/account') : router.navigate('/login')
           }}
         />
         <Separator />
@@ -304,7 +304,7 @@ function CustomDrawerContent({
             textAlign: 'center',
           }}
         >
-          Headpat App v0.2.0
+          Headpat App v0.3.0
         </Text>
       </ScrollView>
     </>
@@ -317,10 +317,6 @@ export default function RootLayout() {
   React.useEffect(() => {
     ;(async () => {
       const theme = await AsyncStorage.getItem('theme')
-      if (Platform.OS === 'web') {
-        // Adds the background color to the html element to prevent white background on overscroll.
-        document.documentElement.classList.add('bg-background')
-      }
       if (!theme) {
         await setAndroidNavigationBar(colorScheme)
         await AsyncStorage.setItem('theme', colorScheme)

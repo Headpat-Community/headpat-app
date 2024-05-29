@@ -15,12 +15,12 @@ import { toast } from '~/lib/toast'
 export default function AccountPage() {
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
-  const { logout }: any = useUser()
+  const { logout } = useUser()
 
   const handleLogout = async () => {
     try {
       await logout()
-      router.push('/')
+      router.navigate('/')
     } catch (error) {
       console.error(error)
     }
@@ -28,7 +28,7 @@ export default function AccountPage() {
 
   return (
     <View className="mx-4 gap-4 mt-4">
-      <TouchableOpacity onPress={() => router.push('/account/userprofile')}>
+      <TouchableOpacity onPress={() => router.navigate('/account/userprofile')}>
         <Card>
           <CardContent className={'py-8'}>
             <CardFooter className={'p-0 justify-between flex flex-wrap'}>
@@ -41,7 +41,7 @@ export default function AccountPage() {
         </Card>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.push('/account/security')}>
+      <TouchableOpacity onPress={() => router.navigate('/account/security')}>
         <Card>
           <CardContent className={'py-8'}>
             <CardFooter className={'p-0 justify-between flex flex-wrap'}>

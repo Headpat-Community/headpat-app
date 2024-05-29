@@ -33,7 +33,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
 import { useUser } from '~/components/contexts/UserContext'
 
 export default function FriendLocationsPage() {
-  const user: any = useUser()
+  const user = useUser()
 
   const mapRef = useRef(null)
   const [userLocation, setUserLocation] = useState(null)

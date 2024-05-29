@@ -25,7 +25,7 @@ export default function GalleryAdd() {
   const [description, setDescription] = useState('')
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress] = useState(0)
-  const { current }: any = useUser()
+  const { current } = useUser()
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -59,13 +59,13 @@ export default function GalleryAdd() {
   const handleClose = () => {
     setImage(null)
     setPage(1)
-    router.push('/gallery')
+    router.navigate('/gallery')
   }
 
   const handleFinish = (galleryId: string) => {
     setImage(null)
     setPage(1)
-    router.push(`/gallery/${galleryId}`)
+    router.navigate(`/gallery/${galleryId}`)
   }
 
   async function uploadImageAsync() {

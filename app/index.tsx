@@ -1,4 +1,4 @@
-import { Button, RefreshControl, ScrollView, View } from 'react-native'
+import { RefreshControl, ScrollView, View } from 'react-native'
 import { Text } from '~/components/ui/text'
 import {
   Card,
@@ -83,13 +83,12 @@ export default function HomeView() {
           setUserData(data)
         } catch (error) {
           Sentry.captureException(error)
-          //console.error(error)
           return
         }
       }
       fetchUserData().then()
     }
-  }, [user?.current])
+  }, [user])
 
   useFocusEffect(
     useCallback(() => {
@@ -129,7 +128,7 @@ export default function HomeView() {
         )}
 
         <Card className={'w-3/4 mt-8'}>
-          <TouchableOpacity onPress={() => router.push('/gallery')}>
+          <TouchableOpacity onPress={() => router.navigate('/gallery')}>
             <CardContent className={'p-0'}>
               <CardFooter className={'mt-2 text-xl flex pb-4'}>
                 <LayoutDashboardIcon
@@ -153,7 +152,7 @@ export default function HomeView() {
         </Card>
 
         <Card className={'w-3/4 mt-4'}>
-          <TouchableOpacity onPress={() => router.push('/friends')}>
+          <TouchableOpacity onPress={() => router.navigate('/friends')}>
             <CardContent className={'p-0'}>
               <CardFooter className={'mt-2 text-xl flex pb-4'}>
                 <MapPinnedIcon
@@ -180,7 +179,7 @@ export default function HomeView() {
         </Card>
 
         <Card className={'w-3/4 mt-4'}>
-          <TouchableOpacity onPress={() => router.push('/announcements')}>
+          <TouchableOpacity onPress={() => router.navigate('/announcements')}>
             <CardContent className={'p-0'}>
               <CardFooter className={'mt-2 text-xl flex pb-4'}>
                 <MegaphoneIcon
@@ -204,7 +203,7 @@ export default function HomeView() {
         </Card>
 
         <Card className={'w-3/4 mt-4'}>
-          <TouchableOpacity onPress={() => router.push('/events/(tabs)')}>
+          <TouchableOpacity onPress={() => router.navigate('/events/(tabs)')}>
             <CardContent className={'p-0'}>
               <CardFooter className={'mt-2 text-xl flex pb-4'}>
                 <CalendarClockIcon

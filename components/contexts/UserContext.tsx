@@ -1,14 +1,29 @@
-import { ID, Models } from 'react-native-appwrite'
-import { createContext, useContext, useEffect, useState } from 'react'
+import { ID } from 'react-native-appwrite'
+import React, { createContext, useContext, useEffect, useState } from 'react'
 import { account } from '~/lib/appwrite-client'
 import { toast } from '~/lib/toast'
+import { UserAccountType } from '~/lib/types/collections'
+
+interface UserContextValue {
+  current: UserAccountType | null
+  setUser: React.Dispatch<React.SetStateAction<UserAccountType | null>>
+  login: (email: string, password: string) => Promise<void>
+  loginOAuth: (userId: string, secret: string) => Promise<void>
+  logout: () => Promise<void>
+  register: (email: string, password: string, username: string) => Promise<void>
+  toast: (message: string) => void
+}
 
 // TODO: Check this out, proper typing.
 // @ts-ignore
-const UserContext = createContext()
+const UserContext = createContext<UserContextValue | undefined>(undefined)
 
-export function useUser() {
-  return useContext(UserContext)
+export function useUser(): UserContextValue {
+  const context = useContext(UserContext)
+  if (!context) {
+    throw new Error('useUser must be used within a UserProvider')
+  }
+  return context
 }
 
 export function UserProvider(props: any) {
@@ -54,7 +69,15 @@ export function UserProvider(props: any) {
 
   return (
     <UserContext.Provider
-      value={{ current: user, login, loginOAuth, logout, register, toast }}
+      value={{
+        current: user,
+        setUser,
+        login,
+        loginOAuth,
+        logout,
+        register,
+        toast,
+      }}
     >
       {props.children}
     </UserContext.Provider>

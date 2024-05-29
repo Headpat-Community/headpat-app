@@ -25,13 +25,13 @@ function HeaderSidebarBackButton() {
 function GalleryAddButton() {
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
-  const { current }: any = useUser()
+  const { current } = useUser()
 
   return (
     <>
       <View className={'items-center flex-row'}>
         {current && (
-          <TouchableOpacity onPress={() => router.push('/gallery/add')}>
+          <TouchableOpacity onPress={() => router.navigate('/gallery/add')}>
             <PlusIcon
               aria-label={'Add gallery item'}
               title={'Add gallery item'}

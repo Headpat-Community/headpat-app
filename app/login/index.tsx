@@ -20,7 +20,7 @@ import * as WebBrowser from 'expo-web-browser'
 import * as Sentry from '@sentry/react-native'
 
 export default function ModalScreen() {
-  const { current, login, loginOAuth }: any = useUser()
+  const { current, login, loginOAuth } = useUser()
 
   const [data, setData] = useState({
     email: '',
@@ -34,8 +34,8 @@ export default function ModalScreen() {
   }, [current])
 
   useEffect(() => {
-    if (currentData) router.push('/account')
-  }, [])
+    if (currentData) router.navigate('/account')
+  }, [currentData])
 
   const handleEmailLogin = async () => {
     if (data.email.length < 1) {
@@ -49,7 +49,7 @@ export default function ModalScreen() {
 
     try {
       await login(data.email, data.password)
-      router.push('/account')
+      router.navigate('/account')
     } catch (error) {
       if (error.type == 'user_invalid_credentials') {
         toast('E-Mail or Password incorrect.')
@@ -84,7 +84,7 @@ export default function ModalScreen() {
         const userId = params.get('userId')
 
         await loginOAuth(userId, secret)
-        router.push('/account')
+        router.navigate('/account')
       }
     } catch (error) {
       toast('An error occurred.')
@@ -101,7 +101,10 @@ export default function ModalScreen() {
             Enter you data below to register your account
           </Muted>
           <Muted className="text-base text-center">No account yet?</Muted>
-          <Button variant={'ghost'} onPress={() => router.push('/register')}>
+          <Button
+            variant={'ghost'}
+            onPress={() => router.navigate('/register')}
+          >
             <Text>Register</Text>
           </Button>
         </View>

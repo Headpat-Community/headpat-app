@@ -105,7 +105,12 @@ export default function UserListPage() {
                   getUserAvatar(user?.avatarId) ||
                   require('~/assets/pfp-placeholder.png')
                 }
-                style={{ width: '100%', height: 100, borderRadius: 25 }}
+                style={{
+                  width: 100,
+                  height: 100,
+                  borderRadius: 25,
+                  alignSelf: 'center',
+                }}
                 contentFit={'cover'}
               />
               <Text className={'text-center mt-2'}>{user.displayName}</Text>

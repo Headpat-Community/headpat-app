@@ -8,7 +8,7 @@ import { Text } from '~/components/ui/text'
 import { Label } from '~/components/ui/label'
 import { Input } from '~/components/ui/input'
 import { Button } from '~/components/ui/button'
-import { database } from '~/lib/appwrite-client'
+import { account, database } from '~/lib/appwrite-client'
 import { Separator } from '~/components/ui/separator'
 import { H1, H4, Muted } from '~/components/ui/typography'
 import { useCallback, useState } from 'react'
@@ -17,12 +17,14 @@ import { useUser } from '~/components/contexts/UserContext'
 import * as Sentry from '@sentry/react-native'
 import { UserDataDocumentsType } from '~/lib/types/collections'
 import { useFocusEffect } from '@react-navigation/core'
+import { Checkbox } from '~/components/ui/checkbox'
 
 export default function UserprofilePage() {
   const [isDisabled, setIsDisabled] = useState(false)
-  const { current }: any = useUser()
+  const { setUser, current } = useUser()
 
   const [userData, setUserData] = useState<UserDataDocumentsType | null>(null)
+  const [nsfw, setNsfw] = useState<boolean>(false)
   const [profileUrl, setProfileUrl] = useState<string>('')
   const [displayName, setDisplayName] = useState<string>('')
   const [status, setStatus] = useState<string>('')
@@ -38,6 +40,9 @@ export default function UserprofilePage() {
       setUserData(data)
       setStatus(data.status)
       setPronouns(data.pronouns)
+      setDisplayName(data.displayName)
+      setProfileUrl(data.profileUrl)
+      setNsfw(current.prefs.nsfw)
     } catch (error) {
       toast('Failed to fetch userdata for friends. Please try again later.')
       Sentry.captureException(error)
@@ -50,44 +55,100 @@ export default function UserprofilePage() {
 
   useFocusEffect(memoizedCallback)
 
+  const handleNsfw = async () => {
+    setIsDisabled(true)
+    const prefs = current.prefs
+    const body = {
+      ...prefs,
+      nsfw: nsfw,
+    }
+    try {
+      await account.updatePrefs(body)
+      setUser((prev: any) => ({
+        ...prev,
+        prefs: body,
+      }))
+      toast('NSFW preference updated successfully.')
+      setUser((prev: any) => ({
+        ...prev,
+        prefs: body,
+      }))
+      setTimeout(() => {
+        setIsDisabled(false)
+      }, 2000)
+    } catch (error) {
+      toast(error.message)
+      console.error(error)
+      Sentry.captureException(error)
+      setTimeout(() => {
+        setIsDisabled(false)
+      }, 2000)
+    }
+  }
+
   const changeProfileUrl = async () => {
+    setIsDisabled(true)
     try {
       await database.updateDocument('hp_db', 'userdata', current.$id, {
         profileUrl: profileUrl,
       })
       toast('Profile URL changed successfully')
       setProfileUrl('')
+      setTimeout(() => {
+        setIsDisabled(false)
+      }, 2000)
     } catch (error) {
       toast(error.message)
+      Sentry.captureException(error)
       console.error(error)
+      setTimeout(() => {
+        setIsDisabled(false)
+      }, 2000)
     }
   }
 
   const changeStatus = async () => {
+    setIsDisabled(true)
     try {
       await database.updateDocument('hp_db', 'userdata', current.$id, {
         status: status,
       })
       toast('Status changed successfully')
+      setTimeout(() => {
+        setIsDisabled(false)
+      }, 2000)
     } catch (error) {
       toast(error.message)
+      Sentry.captureException(error)
       console.error(error)
+      setTimeout(() => {
+        setIsDisabled(false)
+      }, 2000)
     }
   }
 
   const changeDisplayName = async () => {
+    setIsDisabled(true)
     try {
       await database.updateDocument('hp_db', 'userdata', current.$id, {
         displayName: displayName,
       })
       toast('Display Name changed successfully')
+      setTimeout(() => {
+        setIsDisabled(false)
+      }, 2000)
     } catch (error) {
       toast(error.message)
       console.error(error)
+      Sentry.captureException(error)
+      setTimeout(() => {
+        setIsDisabled(false)
+      }, 2000)
     }
   }
 
   const changePronouns = async () => {
+    setIsDisabled(true)
     try {
       await database.updateDocument('hp_db', 'userdata', current.$id, {
         pronouns: pronouns,
@@ -96,6 +157,10 @@ export default function UserprofilePage() {
     } catch (error) {
       toast(error.message)
       console.error(error)
+      Sentry.captureException(error)
+      setTimeout(() => {
+        setIsDisabled(false)
+      }, 2000)
     }
   }
 
@@ -117,6 +182,29 @@ export default function UserprofilePage() {
     <ScrollView>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <View className="mx-4 gap-4 mt-4 mb-8">
+          <View className={'flex-row gap-8'}>
+            <View className={'w-full gap-4'}>
+              <View>
+                <H4>Enable NSFW?</H4>
+                <Muted>Dangerous! Only enable if you are 18+.</Muted>
+              </View>
+              <Separator className={'w-[100px]'} />
+              <View>
+                <Label nativeID={'nsfw'}>NSFW</Label>
+                <Checkbox
+                  nativeID={'nsfw'}
+                  checked={nsfw}
+                  onCheckedChange={(e) => setNsfw(e)}
+                />
+              </View>
+              <View>
+                <Button onPress={handleNsfw} disabled={isDisabled}>
+                  <Text>Save</Text>
+                </Button>
+              </View>
+            </View>
+          </View>
+          <Separator />
           <View className={'flex-row gap-8'}>
             <View className={'w-full gap-4'}>
               <View>
@@ -144,7 +232,6 @@ export default function UserprofilePage() {
                     textContentType={'name'}
                     onChangeText={(text) => setProfileUrl(text)}
                     value={profileUrl}
-                    placeholder={userData?.profileUrl || ''}
                   />
                 </View>
               </View>
@@ -173,7 +260,6 @@ export default function UserprofilePage() {
                   onChange={(e) => setDisplayName(e.nativeEvent.text)}
                   textContentType={'name'}
                   value={displayName}
-                  placeholder={userData?.displayName || ''}
                 />
               </View>
               <View>

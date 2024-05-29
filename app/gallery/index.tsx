@@ -7,8 +7,8 @@ import {
 import { Image } from 'expo-image'
 import { database } from '~/lib/appwrite-client'
 import { ScrollView } from 'react-native-gesture-handler'
-import { Link } from 'expo-router'
-import { useEffect, useRef, useState } from 'react'
+import { Link, router } from 'expo-router'
+import { useEffect, useState } from 'react'
 import { toast } from '~/lib/toast'
 import * as Sentry from '@sentry/react-native'
 import {
@@ -19,10 +19,12 @@ import { Query } from 'react-native-appwrite'
 import * as VideoThumbnails from 'expo-video-thumbnails'
 import { Badge } from '~/components/ui/badge'
 import { Text } from '~/components/ui/text'
+import { useUser } from '~/components/contexts/UserContext'
+import { useBackHandler } from '@react-native-community/hooks'
+import { useNavigation } from '@react-navigation/native'
 
 export default function GalleryPage() {
-  const videoSource =
-    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
+  const { current } = useUser()
 
   const [images, setImages] = useState<GalleryImagesDocumentsType[]>([])
   const [refreshing, setRefreshing] = useState<boolean>(false)
@@ -30,10 +32,13 @@ export default function GalleryPage() {
 
   const fetchGallery = async () => {
     try {
+      const nsfwPreference = current?.prefs?.nsfw ?? false
+      let query = nsfwPreference ? [] : [Query.equal('nsfw', false)]
+
       const data: GalleryImagesType = await database.listDocuments(
         'hp_db',
         'gallery-images',
-        [Query.equal('nsfw', false)]
+        query
       )
 
       setImages(data.documents)
@@ -63,6 +68,10 @@ export default function GalleryPage() {
     fetchGallery().then()
   }, [])
 
+  useEffect(() => {
+    fetchGallery().then()
+  }, [current])
+
   const generateThumbnail = async (galleryId: string) => {
     try {
       const { uri } = await VideoThumbnails.getThumbnailAsync(
@@ -76,6 +85,15 @@ export default function GalleryPage() {
       console.warn(e)
     }
   }
+  const navigation = useNavigation()
+
+  useBackHandler(() => {
+    if (navigation.canGoBack()) {
+      navigation.goBack()
+      return true
+    }
+    return false
+  })
 
   return (
     <ScrollView
@@ -83,7 +101,7 @@ export default function GalleryPage() {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
     >
-      <View className={'flex-1 flex-row flex-wrap mt-4 gap-4'}>
+      <View className={'flex-1 flex-row flex-wrap my-4 justify-between mx-0.5'}>
         {images.map((image, index) => (
           <Link
             href={{
@@ -94,7 +112,14 @@ export default function GalleryPage() {
             asChild
           >
             <TouchableWithoutFeedback>
-              <View style={{ position: 'relative', width: '48%', height: 200 }}>
+              <View
+                style={{
+                  position: 'relative',
+                  width: '49%',
+                  height: 200,
+                  marginBottom: 10,
+                }}
+              >
                 <Image
                   source={
                     image.mimeType.includes('video')
@@ -102,7 +127,7 @@ export default function GalleryPage() {
                       : { uri: getGalleryUrl(image.$id) }
                   }
                   alt={image.name}
-                  style={{ width: '100%', height: '100%', borderRadius: 4 }}
+                  style={{ width: '100%', height: '100%' }}
                   contentFit={'contain'}
                 />
                 {image.mimeType.includes('gif') && (

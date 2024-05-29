@@ -9,7 +9,7 @@ import { useUser } from '~/components/contexts/UserContext'
 
 export function ProfileThemeToggle() {
   const { isDarkColorScheme, setColorScheme } = useColorScheme()
-  const { current }: any = useUser()
+  const { current } = useUser()
 
   return (
     <View className={'flex-wrap items-center'}>

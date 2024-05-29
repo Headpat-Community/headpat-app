@@ -76,7 +76,7 @@ async function unregisterBackgroundFetchAsync() {
 export default function ShareLocationView() {
   const [isRegistered, setIsRegistered] = React.useState(false)
   const [status, setStatus] = React.useState(null)
-  const user: any = useUser()
+  const user = useUser()
 
   React.useEffect(() => {
     checkStatusAsync().then()

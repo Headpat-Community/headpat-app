@@ -47,6 +47,15 @@ export interface AnnouncementsDocumentsType extends Models.Document {
 }
 
 /**
+ * This data is returned from the API by calling their own account data.
+ */
+export interface UserAccountType extends Models.User<Models.Preferences> {
+  prefs: {
+    nsfw: boolean
+  }
+}
+
+/**
  * This data is returned from the API by calling the userdata endpoint.
  * @see UserDataDocumentsType
  */
