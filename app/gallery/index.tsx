@@ -1,13 +1,7 @@
-import {
-  RefreshControl,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native'
+import { FlatList, TouchableWithoutFeedback, View } from 'react-native'
 import { Image } from 'expo-image'
 import { database } from '~/lib/appwrite-client'
-import { ScrollView } from 'react-native-gesture-handler'
-import { Link, router } from 'expo-router'
+import { Link } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { toast } from '~/lib/toast'
 import * as Sentry from '@sentry/react-native'
@@ -29,11 +23,14 @@ export default function GalleryPage() {
   const [images, setImages] = useState<GalleryImagesDocumentsType[]>([])
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [thumbnails, setThumbnails] = useState<{ [key: string]: string }>({})
+  const [offset, setOffset] = useState<number>(0)
 
   const fetchGallery = async () => {
     try {
       const nsfwPreference = current?.prefs?.nsfw ?? false
-      let query = nsfwPreference ? [] : [Query.equal('nsfw', false)]
+      let query = nsfwPreference
+        ? [Query.limit(10), Query.offset(offset)]
+        : [Query.limit(10), Query.offset(offset), Query.equal('nsfw', false)]
 
       const data: GalleryImagesType = await database.listDocuments(
         'hp_db',
@@ -58,15 +55,15 @@ export default function GalleryPage() {
     return `https://api.headpat.de/v1/storage/buckets/gallery/files/${galleryId}/preview?project=6557c1a8b6c2739b3ecf&width=400&height=400`
   }
 
-  const onRefresh = () => {
+  const onRefresh = async () => {
     setRefreshing(true)
-    fetchGallery().then()
+    await fetchGallery()
     setRefreshing(false)
   }
 
   useEffect(() => {
     fetchGallery().then()
-  }, [])
+  }, [offset])
 
   useEffect(() => {
     fetchGallery().then()
@@ -96,76 +93,59 @@ export default function GalleryPage() {
   })
 
   return (
-    <ScrollView
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-    >
-      <View className={'flex-1 flex-row flex-wrap my-4 justify-between mx-0.5'}>
-        {images.map((image, index) => (
-          <Link
-            href={{
-              pathname: '/gallery/[galleryId]',
-              params: { galleryId: image.$id },
-            }}
-            key={index}
-            asChild
-          >
-            <TouchableWithoutFeedback>
-              <View
-                style={{
-                  position: 'relative',
-                  width: '49%',
-                  height: 200,
-                  marginBottom: 10,
-                }}
-              >
-                <Image
-                  source={
-                    image.mimeType.includes('video')
-                      ? { uri: thumbnails[image.$id] }
-                      : { uri: getGalleryUrl(image.$id) }
-                  }
-                  alt={image.name}
-                  style={{ width: '100%', height: '100%' }}
-                  contentFit={'contain'}
-                />
-                {image.mimeType.includes('gif') && (
-                  <Badge
-                    className={'absolute border-2 bg-secondary border-primary'}
-                  >
-                    <Text className={'text-primary'}>GIF</Text>
-                  </Badge>
-                )}
-                {image.mimeType.includes('video') && (
-                  <Badge
-                    className={'absolute border-2 bg-secondary border-primary'}
-                  >
-                    <Text className={'text-primary'}>Video</Text>
-                  </Badge>
-                )}
-              </View>
-            </TouchableWithoutFeedback>
-          </Link>
-        ))}
-      </View>
-    </ScrollView>
+    <FlatList
+      data={images}
+      keyExtractor={(item) => item.$id}
+      renderItem={({ item: image }) => (
+        <Link
+          href={{
+            pathname: '/gallery/[galleryId]',
+            params: { galleryId: image.$id },
+          }}
+          asChild
+        >
+          <TouchableWithoutFeedback>
+            <View
+              style={{
+                position: 'relative',
+                width: '48%',
+                height: 200,
+                marginBottom: 10,
+                margin: 5, // Add this line
+              }}
+            >
+              <Image
+                source={
+                  image.mimeType.includes('video')
+                    ? { uri: thumbnails[image.$id] }
+                    : { uri: getGalleryUrl(image.$id) }
+                }
+                alt={image.name}
+                style={{ width: '100%', height: '100%' }}
+                contentFit={'contain'}
+              />
+              {image.mimeType.includes('gif') && (
+                <Badge
+                  className={'absolute border-2 bg-secondary border-primary'}
+                >
+                  <Text className={'text-primary'}>GIF</Text>
+                </Badge>
+              )}
+              {image.mimeType.includes('video') && (
+                <Badge
+                  className={'absolute border-2 bg-secondary border-primary'}
+                >
+                  <Text className={'text-primary'}>Video</Text>
+                </Badge>
+              )}
+            </View>
+          </TouchableWithoutFeedback>
+        </Link>
+      )}
+      onRefresh={onRefresh}
+      refreshing={refreshing}
+      numColumns={2} // for 2 columns
+      contentContainerStyle={{ justifyContent: 'space-between' }} // to maintain the space between items
+    />
   )
 }
-
-const styles = StyleSheet.create({
-  contentContainer: {
-    flex: 1,
-    padding: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 50,
-  },
-  video: {
-    width: 350,
-    height: 275,
-  },
-  controlsContainer: {
-    padding: 10,
-  },
-})

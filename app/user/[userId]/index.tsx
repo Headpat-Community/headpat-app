@@ -12,12 +12,7 @@ import { database } from '~/lib/appwrite-client'
 import { Image } from 'expo-image'
 import { Text } from '~/components/ui/text'
 import { Button } from '~/components/ui/button'
-import {
-  CakeIcon,
-  MapPinIcon,
-  RectangleEllipsisIcon,
-  TagIcon,
-} from 'lucide-react-native'
+import { CakeIcon, MapPinIcon, TagIcon } from 'lucide-react-native'
 import { useColorScheme } from '~/lib/useColorScheme'
 import { calculateBirthday } from '~/components/calculateTimeLeft'
 import TelegramIcon from '~/components/icons/TelegramIcon'
@@ -150,12 +145,20 @@ export default function UserPage() {
             <H3>{userData?.displayName}</H3>
           </View>
           <Text className={'mb-4 flex-row flex-wrap'}>{userData?.status}</Text>
-          <Button
-            className={'text-center w-60'}
-            onPress={() => toast('Ha! You thought this was a real button!')}
-          >
-            <Text>Friend</Text>
-          </Button>
+          <View className={'flex-row gap-2'}>
+            <Button
+              className={'text-center w-28'}
+              onPress={() => toast('Ha! You thought this was a real button!')}
+            >
+              <Text>Friend</Text>
+            </Button>
+            <Button
+              className={'text-center w-28'}
+              onPress={() => toast('Ha! You thought this was a real button!')}
+            >
+              <Text>Message</Text>
+            </Button>
+          </View>
         </View>
       </View>
       {/* Extra info section */}
@@ -210,21 +213,7 @@ export default function UserPage() {
               </>
             )}
           </Muted>
-          <Muted className={'text-center mb-2'}>
-            {!userData?.status ? null : (
-              <>
-                <RectangleEllipsisIcon
-                  size={12}
-                  color={theme}
-                  title={'Status'}
-                  style={{
-                    marginRight: 4,
-                  }}
-                />
-                {userData?.status}
-              </>
-            )}
-          </Muted>
+          <Muted className={'text-center mb-2'}>{/* For later */}</Muted>
         </View>
       </View>
 
