@@ -31,6 +31,18 @@ import * as Sentry from '@sentry/react-native'
 import { formatDate } from '~/components/calculateTimeLeft'
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
 import { useUser } from '~/components/contexts/UserContext'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '~/components/ui/alert-dialog'
+import { Button } from '~/components/ui/button'
 
 export default function FriendLocationsPage() {
   const user = useUser()
@@ -42,6 +54,8 @@ export default function FriendLocationsPage() {
   const [friendsLocations, setFriendsLocations] = useState(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [currentEvent, setCurrentEvent] = useState(null)
+  const [modalOpen, setModalOpen] = useState<boolean>(false)
+  const [modalAccepted, setModalAccepted] = useState<boolean>(false)
   const [filters, setFilters] = useState({
     showEvents: true,
     showFriends: true,
@@ -106,8 +120,10 @@ export default function FriendLocationsPage() {
   useEffect(() => {
     let watcher = null
     const startWatching = async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync()
-      if (status === 'granted') {
+      let { status } = await Location.getForegroundPermissionsAsync()
+      if (status !== 'granted') {
+        setModalOpen(true)
+      } else {
         watcher = await Location.watchPositionAsync(
           {
             accuracy: Location.Accuracy.High,
@@ -120,13 +136,15 @@ export default function FriendLocationsPage() {
         )
       }
     }
-    startWatching().then()
+    if (modalAccepted) {
+      startWatching().then()
+    }
     return () => {
       if (watcher) {
         watcher.remove()
       }
     }
-  }, [])
+  }, [modalAccepted])
 
   const handleLocationButtonPress = () => {
     if (userLocation) {
@@ -163,7 +181,6 @@ export default function FriendLocationsPage() {
       (response) => {
         const eventType = response.events[0].split('.').pop()
         const updatedDocument: any = response.payload
-        console.log(updatedDocument)
 
         switch (eventType) {
           case 'update':
@@ -202,6 +219,36 @@ export default function FriendLocationsPage() {
         <View>
           <Text>Loading...</Text>
         </View>
+      )}
+      {modalOpen && (
+        <AlertDialog onOpenChange={setModalOpen} open={modalOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Headpat needs permission</AlertDialogTitle>
+              <AlertDialogDescription>
+                Headpat requires your location to show you on the map. You can
+                always change this later in your settings.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onPress={() => setModalOpen(false)}>
+                <Text>Cancel</Text>
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onPress={async () => {
+                  let { status } =
+                    await Location.requestForegroundPermissionsAsync()
+                  if (status === 'granted') {
+                    setModalAccepted(true)
+                  }
+                  setModalOpen(false)
+                }}
+              >
+                <Text>Continue</Text>
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       )}
       <Dialog>
         <DialogContent>
@@ -301,7 +348,7 @@ export default function FriendLocationsPage() {
             <FilterIcon size={24} color={'black'} />
           </TouchableOpacity>
         </View>
-        {userLocation && (
+        {userLocation && Platform.OS === 'ios' && (
           <View style={styles.locationButton}>
             <TouchableOpacity
               className={
@@ -360,14 +407,14 @@ const styles = StyleSheet.create({
   },
   locationButton: {
     position: 'absolute',
-    bottom: 70,
+    bottom: 20,
     right: 10,
     borderRadius: 50,
     overflow: 'hidden',
   },
   filterButton: {
     position: 'absolute',
-    top: 10,
+    top: 60,
     right: 10,
     borderRadius: 50,
     overflow: 'hidden',
