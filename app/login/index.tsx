@@ -51,9 +51,9 @@ export default function ModalScreen() {
       await login(data.email, data.password)
       router.navigate('/account')
     } catch (error) {
-      if (error.type == 'user_invalid_credentials') {
+      if (error.type === 'user_invalid_credentials') {
         toast('E-Mail or Password incorrect.')
-      } else if (error.type == 'user_blocked') {
+      } else if (error.type === 'user_blocked') {
         toast('User is blocked.')
       } else {
         toast('E-Mail or Password incorrect.')

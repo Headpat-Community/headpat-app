@@ -52,13 +52,16 @@ export default function ShareLocationView() {
       distanceInterval: 10,
       timeInterval: 10000,
     })
+    console.log('Location updates started')
   }
 
   async function unregisterBackgroundFetchAsync() {
     const userId = await AsyncStorage.getItem('userId')
     await Location.stopLocationUpdatesAsync('background-location-task')
 
-    await database.deleteDocument('hp_db', 'locations', userId)
+    await database.deleteDocument('hp_db', 'locations', userId).catch(() => {
+      return
+    })
   }
 
   const toggleFetchTask = async () => {
