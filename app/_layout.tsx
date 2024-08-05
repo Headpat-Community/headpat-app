@@ -53,6 +53,7 @@ TaskManager.defineTask('background-location-task', async ({ data, error }) => {
 
   // Get current location
   const location = await Location.getCurrentPositionAsync({})
+  console.log('user location: ', location)
 
   // Make API calls to update or create location document
   await database

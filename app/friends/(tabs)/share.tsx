@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Alert, StyleSheet, View } from 'react-native'
 import { Text } from '~/components/ui/text'
 import { database } from '~/lib/appwrite-client'
@@ -9,6 +9,7 @@ import * as TaskManager from 'expo-task-manager'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { H1, Muted } from '~/components/ui/typography'
 import { Button } from '~/components/ui/button'
+import { useIsFocused } from '@react-navigation/native'
 
 export default function ShareLocationView() {
   const [isRegistered, setIsRegistered] = React.useState(false)
@@ -27,7 +28,6 @@ export default function ShareLocationView() {
     setStatus(status)
     setIsRegistered(isRegistered)
   }
-
   async function registerBackgroundFetchAsync(userId: string) {
     const { granted: fgGranted } =
       await Location.requestForegroundPermissionsAsync()
@@ -54,7 +54,16 @@ export default function ShareLocationView() {
     })
     console.log('Location updates started')
   }
-
+  const focus = useIsFocused()
+  useEffect(() => {
+    async function test() {
+      const res = await Location.hasStartedLocationUpdatesAsync(
+        'background-location-task'
+      )
+      console.log(res)
+    }
+    test()
+  }, [status, focus])
   async function unregisterBackgroundFetchAsync() {
     const userId = await AsyncStorage.getItem('userId')
     await Location.stopLocationUpdatesAsync('background-location-task')
