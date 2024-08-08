@@ -226,7 +226,7 @@ PODS:
     - Yoga
   - ExpoAppleAuthentication (6.4.1):
     - ExpoModulesCore
-  - ExpoAsset (10.0.6):
+  - ExpoAsset (10.0.10):
     - ExpoModulesCore
   - ExpoBackgroundFetch (12.0.1):
     - ExpoModulesCore
@@ -2062,7 +2062,7 @@ SPEC CHECKSUMS:
   expo-dev-menu: 8559d77f4037c6105b21a424dec68f235496c391
   expo-dev-menu-interface: be32c09f1e03833050f0ee290dcc86b3ad0e73e4
   ExpoAppleAuthentication: 7af0b493e820dc0b22150cb9531fc1c31dc4fbfd
-  ExpoAsset: 9b7433ecc5f1b608ccbb823492e062bde944abd2
+  ExpoAsset: 323700f291684f110fb55f0d4022a3362ea9f875
   ExpoBackgroundFetch: a06c553ecaf0bade0acd691042d996b9ce926327
   ExpoBlur: fa53f874e7b208bc3756d1bf07903c12e790beb1
   ExpoClipboard: 23d203f5d4843699fbc45be1cc4fe1fbd811a6fa

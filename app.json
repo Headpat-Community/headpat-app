@@ -102,13 +102,12 @@
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location.",
-          "locationAlwaysPermission": "Allow $(PRODUCT_NAME) to use your location.",
-          "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location.",
-          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
+          "locationAlwaysAndWhenInUsePermission": "Allow Headpat to use your location.",
+          "locationAlwaysPermission": "Allow Headpat to use your location.",
+          "locationWhenInUsePermission": "Allow Headpat to use your location.",
+          "photosPermission": "Allow Headpat to access your photos.",
           "isIosBackgroundLocationEnabled": true,
-          "isAndroidBackgroundLocationEnabled": true,
-          "isAndroidForegroundServiceEnabled": true
+          "isAndroidBackgroundLocationEnabled": true
         }
       ],
       [

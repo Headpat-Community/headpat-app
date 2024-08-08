@@ -28,11 +28,15 @@ export default function ShareLocationView() {
     setIsRegistered(isRegistered)
   }
 
-  async function registerBackgroundFetchAsync(userId: string) {
+
+  const requestPermissions = async () => {
     const { granted: fgGranted } =
       await Location.requestForegroundPermissionsAsync()
     if (!fgGranted) {
-      return Alert.alert('Required', 'Please grant GPS Location')
+      return Alert.alert(
+        'Location Access Required',
+        'Headpat requires your location to share with friends'
+      )
     }
     const { granted: bgGranted } =
       await Location.requestBackgroundPermissionsAsync()
@@ -43,8 +47,11 @@ export default function ShareLocationView() {
         'Headpat requires location even when the App is backgrounded.'
       )
     }
+  }
 
+  async function registerBackgroundFetchAsync(userId: string) {
     await AsyncStorage.setItem('userId', userId)
+    await requestPermissions()
 
     await Location.startLocationUpdatesAsync('background-location-task', {
       accuracy: Location.Accuracy.High,
