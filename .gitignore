@@ -40,3 +40,8 @@ yarn-error.*
 
 # Build tests
 test/
+
+# expo
+android/app
+android/gradle
+ios/
