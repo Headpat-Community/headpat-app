@@ -102,17 +102,6 @@ export default function ShareLocationView() {
     await checkStatusAsync()
   }
 
-  TaskManager.defineTask('background-location-task', ({ data, error }) => {
-    if (error) {
-      // Error occurred - check `error.message` for more details.
-      return
-    }
-    if (data) {
-      console.log('test')
-      // do something with the locations captured in the background
-    }
-  })
-
   return (
     <View style={styles.screen}>
       {modalOpen && (
