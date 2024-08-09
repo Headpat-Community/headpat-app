@@ -41,7 +41,7 @@ export default function MutualsPage() {
 
       setMutuals({ ...data, documents: mutualsList })
     } catch (error) {
-      toast('Failed to fetch friends. Please try again later.')
+      toast('Failed to fetch mutuals. Please try again later.')
       Sentry.captureException(error)
     }
   }
@@ -102,10 +102,9 @@ export default function MutualsPage() {
       >
         <View className={'p-4 native:pb-24 max-w-md gap-6'}>
           <View className={'gap-1'}>
-            <H1 className={'text-foreground text-center'}>No friends!</H1>
+            <H1 className={'text-foreground text-center'}>No mutuals!</H1>
             <Muted className={'text-base text-center'}>
-              Looks like you don't have any friends yet. Add some friends to see
-              them here!
+              Looks like you don't have any mutuals yet.
             </Muted>
           </View>
         </View>
@@ -124,7 +123,7 @@ export default function MutualsPage() {
           <View className={'gap-1'}>
             <H1 className={'text-foreground text-center'}>Loading...</H1>
             <Muted className={'text-base text-center'}>
-              Fetching your friends...
+              Fetching your mutuals...
             </Muted>
           </View>
         </View>

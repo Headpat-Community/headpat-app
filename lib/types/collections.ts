@@ -123,7 +123,7 @@ export namespace Location {
   }
 
   /**
-   * This data is returned in the friends/map view.
+   * This data is returned in the mutuals/map view.
    * @see UserDataDocumentsType
    */
   export interface LocationDocumentsType extends Models.Document {
