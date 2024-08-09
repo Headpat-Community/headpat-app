@@ -41,7 +41,7 @@ import {
   AlertDialogTitle,
 } from '~/components/ui/alert-dialog'
 
-export default function FriendLocationsPage() {
+export default function MutualLocationsPage() {
   const user = useUser()
 
   const mapRef = useRef(null)
@@ -375,34 +375,34 @@ export default function FriendLocationsPage() {
 
 // Examples:
 /*
-Users:
+ Users:
 
-        {users.map((user, index) => (
-          <Marker
-            key={index}
-            coordinate={user.coordinate}
-            title={user.name}
-            description={'No peeking!'}
-          >
-            <TouchableOpacity onPress={() => handleUserClick(user)}>
-              <Image
-                source={{ uri: user.avatar }}
-                style={{ width: 50, height: 50, borderRadius: 25 }}
-              />
-            </TouchableOpacity>
-          </Marker>
-        ))}
+ {users.map((user, index) => (
+ <Marker
+ key={index}
+ coordinate={user.coordinate}
+ title={user.name}
+ description={'No peeking!'}
+ >
+ <TouchableOpacity onPress={() => handleUserClick(user)}>
+ <Image
+ source={{ uri: user.avatar }}
+ style={{ width: 50, height: 50, borderRadius: 25 }}
+ />
+ </TouchableOpacity>
+ </Marker>
+ ))}
  */
 
 /*
-Circle markers:
+ Circle markers:
 
-        <Circle
-          center={{ latitude: 37.78825, longitude: -122.4324 }}
-          radius={10000} // specify the radius here
-          fillColor="rgba(100, 200, 200, 0.5)" // optional, fill color of the circle
-          strokeColor="rgba(255,0,0,0.5)" // optional, border color of the circle
-        />
+ <Circle
+ center={{ latitude: 37.78825, longitude: -122.4324 }}
+ radius={10000} // specify the radius here
+ fillColor="rgba(100, 200, 200, 0.5)" // optional, fill color of the circle
+ strokeColor="rgba(255,0,0,0.5)" // optional, border color of the circle
+ />
  */
 
 const styles = StyleSheet.create({

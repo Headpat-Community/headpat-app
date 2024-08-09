@@ -151,7 +151,7 @@ export default function UserPage() {
               className={'text-center w-28'}
               onPress={() => toast('Ha! You thought this was a real button!')}
             >
-              <Text>Friend</Text>
+              <Text>Follow</Text>
             </Button>
             <Button
               className={'text-center w-28'}

@@ -5,7 +5,6 @@ import {
   View,
 } from 'react-native'
 import { H1, Muted } from '~/components/ui/typography'
-import { useColorScheme } from '~/lib/useColorScheme'
 import { useEffect, useState } from 'react'
 import { Followers, UserData } from '~/lib/types/collections'
 import { database } from '~/lib/appwrite-client'
@@ -15,12 +14,12 @@ import * as Sentry from '@sentry/react-native'
 import { Text } from '~/components/ui/text'
 import { Image } from 'expo-image'
 import { Link } from 'expo-router'
+import { useUser } from '~/components/contexts/UserContext'
 
 export default function MutualsPage() {
-  const { isDarkColorScheme } = useColorScheme()
-  const theme = isDarkColorScheme ? 'white' : 'black'
+  const { current } = useUser()
   const [mutuals, setMutuals] = useState<Followers.FollowerType>(null)
-  const [friendData, setFriendData] =
+  const [mutualData, setMutualData] =
     useState<UserData.UserDataDocumentsType>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
 
@@ -32,14 +31,24 @@ export default function MutualsPage() {
       )
 
       const mutualsList = data.documents.filter((follower) => {
-        return data.documents.some(
-          (otherFollower) =>
-            otherFollower.userId === follower.followerId &&
-            otherFollower.followerId === follower.userId
+        return (
+          follower.userId !== current.$id && // Filter out current user
+          data.documents.some(
+            (otherFollower) =>
+              otherFollower.userId === follower.followerId &&
+              otherFollower.followerId === follower.userId &&
+              otherFollower.userId !== current.$id // Ensure other follower isn't the current user
+          )
         )
       })
 
-      setMutuals({ ...data, documents: mutualsList })
+      // Remove duplicates based on `userId`
+      const uniqueMutualsList = mutualsList.filter(
+        (mutual, index, self) =>
+          index === self.findIndex((m) => m.followerId === mutual.followerId)
+      )
+
+      setMutuals({ ...data, documents: uniqueMutualsList })
     } catch (error) {
       toast('Failed to fetch mutuals. Please try again later.')
       Sentry.captureException(error)
@@ -48,14 +57,10 @@ export default function MutualsPage() {
 
   const fetchUserdataForId = async (userId: string) => {
     try {
-      const promises = mutuals.documents.map((mutual) =>
-        database.listDocuments('hp_db', 'userdata', [
-          Query.equal('$id', mutual.userId),
-        ])
-      )
-
-      const results = await Promise.all(promises)
-      return results.map((result) => result.documents[0])
+      const result = await database.listDocuments('hp_db', 'userdata', [
+        Query.equal('$id', userId),
+      ])
+      return result.documents[0]
     } catch (error) {
       toast('Failed to fetch userdata for mutuals. Please try again later.')
       Sentry.captureException(error)
@@ -63,28 +68,28 @@ export default function MutualsPage() {
   }
 
   useEffect(() => {
-    const fetchAllFriendData = async () => {
+    const fetchAllMutualData = async () => {
       if (mutuals && mutuals.documents) {
-        const allFriendData: any = await Promise.all(
+        const allMutualData: any = await Promise.all(
           mutuals.documents.map((mutual: any) =>
-            fetchUserdataForId(mutual.userId)
+            fetchUserdataForId(mutual.followerId)
           )
         )
-        setFriendData(allFriendData[0])
+        setMutualData(allMutualData)
       }
     }
 
-    fetchAllFriendData().then()
+    fetchAllMutualData().then()
   }, [mutuals])
 
   const onRefresh = () => {
     setRefreshing(true)
-    fetchMutuals().then()
-    setRefreshing(false)
+    fetchMutuals().then(() => setRefreshing(false))
   }
 
   useEffect(() => {
     fetchMutuals().then()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const getUserAvatar = (avatarId: string) => {
@@ -92,7 +97,7 @@ export default function MutualsPage() {
     return `https://api.headpat.de/v1/storage/buckets/avatars/files/${avatarId}/preview?project=6557c1a8b6c2739b3ecf&width=250&height=250`
   }
 
-  if (mutuals?.total === 0)
+  if (mutuals?.documents?.length === 0)
     return (
       <ScrollView
         refreshControl={
@@ -111,7 +116,7 @@ export default function MutualsPage() {
       </ScrollView>
     )
 
-  if (!friendData)
+  if (!mutualData || mutualData.length === 0)
     return (
       <ScrollView
         refreshControl={
@@ -141,7 +146,7 @@ export default function MutualsPage() {
         justifyContent: 'space-between',
       }}
     >
-      {friendData.map((user, index) => {
+      {mutualData.map((user: UserData.UserDataDocumentsType, index: number) => {
         return (
           <Link
             href={{

@@ -7,10 +7,10 @@ import {
 } from '@react-navigation/native'
 import { PortalHost } from '~/components/primitives/portal'
 import { ToastProvider } from '~/components/primitives/deprecated-ui/toast'
-import { router, SplashScreen } from 'expo-router'
+import { router, SplashScreen, useRouter, useSegments } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import * as React from 'react'
-import { ScrollView, Text, View } from 'react-native'
+import { Alert, BackHandler, ScrollView, Text, View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { ProfileThemeToggle } from '~/components/ThemeToggle'
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar'
@@ -41,6 +41,7 @@ import * as TaskManager from 'expo-task-manager'
 import * as BackgroundFetch from 'expo-background-fetch'
 import * as Location from 'expo-location'
 import { database } from '~/lib/appwrite-client'
+import { useEffect } from 'react'
 
 TaskManager.defineTask('background-location-task', async ({ data, error }) => {
   if (error) {
@@ -177,7 +178,7 @@ function CustomDrawerContent({
               </View>
             )
           }}
-          onPress={() => router.navigate('/gallery')}
+          onPress={() => router.replace('/gallery')}
         />
 
         <DrawerItem
@@ -185,13 +186,11 @@ function CustomDrawerContent({
             return (
               <View className="flex-row items-center gap-3 pl-3">
                 <MapPinnedIcon size={20} color={theme} />
-                <Text style={{ color: theme }}>Friend Locations</Text>
+                <Text style={{ color: theme }}>Mutual Locations</Text>
               </View>
             )
           }}
-          onPress={() =>
-            navigation.navigate('mutuals/(tabs)', { screen: 'map' })
-          }
+          onPress={() => router.replace('/mutuals')}
         />
 
         <DrawerItem
@@ -203,7 +202,7 @@ function CustomDrawerContent({
               </View>
             )
           }}
-          onPress={() => router.navigate('/announcements')}
+          onPress={() => router.replace('/announcements')}
         />
 
         <DrawerItem
@@ -215,7 +214,7 @@ function CustomDrawerContent({
               </View>
             )
           }}
-          onPress={() => router.navigate('/events/(tabs)')}
+          onPress={() => router.replace('/events')}
         />
 
         <DrawerItem
@@ -227,7 +226,7 @@ function CustomDrawerContent({
               </View>
             )
           }}
-          onPress={() => router.navigate('/user/list')}
+          onPress={() => router.replace('/user/list')}
         />
 
         <Separator />
@@ -244,7 +243,7 @@ function CustomDrawerContent({
                 )
               }}
               onPress={() => {
-                router.navigate({
+                router.push({
                   pathname: '/user/[userId]',
                   params: { userId: current.$id },
                 })
@@ -260,9 +259,7 @@ function CustomDrawerContent({
                   </View>
                 )
               }}
-              onPress={() =>
-                navigation.navigate('mutuals/(tabs)', { screen: 'mutuals' })
-              }
+              onPress={() => router.push('/mutuals/mutualsList')}
             />
           </>
         )}
@@ -276,7 +273,7 @@ function CustomDrawerContent({
               </View>
             )
           }}
-          onPress={() => router.navigate('/communities')}
+          onPress={() => router.push('/communities')}
         />
 
         <View style={{ flex: 1, flexGrow: 1 }}></View>
@@ -322,7 +319,7 @@ function CustomDrawerContent({
             )
           }}
           onPress={() => {
-            current ? router.navigate('/account') : router.navigate('/login')
+            current ? router.push('/account') : router.push('/login')
           }}
         />
         <Separator />
@@ -334,7 +331,7 @@ function CustomDrawerContent({
             textAlign: 'center',
           }}
         >
-          Headpat App v0.4.0
+          Headpat App v0.5.0
         </Text>
       </ScrollView>
     </>
@@ -344,7 +341,7 @@ function CustomDrawerContent({
 export default function RootLayout() {
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme()
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = React.useState(false)
-  React.useEffect(() => {
+  useEffect(() => {
     ;(async () => {
       const theme = await AsyncStorage.getItem('theme')
       if (!theme) {
@@ -365,7 +362,30 @@ export default function RootLayout() {
     })().finally(() => {
       SplashScreen.hideAsync()
     })
-  }, [])
+  }, [colorScheme, setColorScheme])
+
+  const router = useRouter()
+  const segments = useSegments()
+
+  useEffect(() => {
+    const backAction = () => {
+      if (segments.length > 1) {
+        // If there is more than one segment, go back to the previous segment
+        router.back()
+      } else {
+        // If the user is on the first segment, you might want to show a confirmation dialog
+        router.navigate('/')
+      }
+      return true
+    }
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    )
+
+    return () => backHandler.remove()
+  }, [router, segments])
 
   if (!isColorSchemeLoaded) {
     return null

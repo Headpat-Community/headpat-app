@@ -17,11 +17,7 @@ import {
 import { useColorScheme } from '~/lib/useColorScheme'
 import { useUser } from '~/components/contexts/UserContext'
 import { useCallback, useEffect, useState } from 'react'
-import {
-  EventsDocumentsType,
-  EventsType,
-  UserDataDocumentsType,
-} from '~/lib/types/collections'
+import { Events, UserData } from '~/lib/types/collections'
 import { database } from '~/lib/appwrite-client'
 import { H4 } from '~/components/ui/typography'
 import { Separator } from '~/components/ui/separator'
@@ -34,8 +30,8 @@ import { useFocusEffect } from '@react-navigation/core'
 import * as Sentry from '@sentry/react-native'
 
 export default function HomeView() {
-  const [userData, setUserData] = useState<UserDataDocumentsType>(null)
-  const [nextEvent, setNextEvent] = useState<EventsDocumentsType>(null)
+  const [userData, setUserData] = useState<UserData.UserDataDocumentsType>(null)
+  const [nextEvent, setNextEvent] = useState<Events.EventsDocumentsType>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
@@ -54,11 +50,15 @@ export default function HomeView() {
 
   const fetchNextEvent = async () => {
     try {
-      const data: EventsType = await database.listDocuments('hp_db', 'events', [
-        Query.orderAsc('date'),
-        Query.greaterThanEqual('date', new Date().toISOString()),
-        Query.limit(1),
-      ])
+      const data: Events.EventsType = await database.listDocuments(
+        'hp_db',
+        'events',
+        [
+          Query.orderAsc('date'),
+          Query.greaterThanEqual('date', new Date().toISOString()),
+          Query.limit(1),
+        ]
+      )
 
       if (data?.documents?.length > 0) {
         setNextEvent(data.documents[0])
@@ -75,11 +75,12 @@ export default function HomeView() {
     if (user?.current?.$id) {
       const fetchUserData = async () => {
         try {
-          const data: UserDataDocumentsType = await database.getDocument(
-            'hp_db',
-            'userdata',
-            `${user?.current?.$id}`
-          )
+          const data: UserData.UserDataDocumentsType =
+            await database.getDocument(
+              'hp_db',
+              'userdata',
+              `${user?.current?.$id}`
+            )
           setUserData(data)
         } catch (error) {
           Sentry.captureException(error)
@@ -128,7 +129,7 @@ export default function HomeView() {
         )}
 
         <Card className={'w-3/4 mt-8'}>
-          <TouchableOpacity onPress={() => router.navigate('/gallery')}>
+          <TouchableOpacity onPress={() => router.push('/gallery')}>
             <CardContent className={'p-0'}>
               <CardFooter className={'mt-2 text-xl flex pb-4'}>
                 <LayoutDashboardIcon
@@ -152,7 +153,7 @@ export default function HomeView() {
         </Card>
 
         <Card className={'w-3/4 mt-4'}>
-          <TouchableOpacity onPress={() => router.navigate('/mutuals')}>
+          <TouchableOpacity onPress={() => router.push('/mutuals')}>
             <CardContent className={'p-0'}>
               <CardFooter className={'mt-2 text-xl flex pb-4'}>
                 <MapPinnedIcon
@@ -162,7 +163,7 @@ export default function HomeView() {
                     marginRight: 4,
                   }}
                 />
-                <Text>Friend locations</Text>
+                <Text>Mutual locations</Text>
               </CardFooter>
               <CardFooter
                 className={'p-0 pb-2 justify-between flex flex-wrap mx-7'}
@@ -179,7 +180,7 @@ export default function HomeView() {
         </Card>
 
         <Card className={'w-3/4 mt-4'}>
-          <TouchableOpacity onPress={() => router.navigate('/announcements')}>
+          <TouchableOpacity onPress={() => router.push('/announcements')}>
             <CardContent className={'p-0'}>
               <CardFooter className={'mt-2 text-xl flex pb-4'}>
                 <MegaphoneIcon
@@ -203,7 +204,7 @@ export default function HomeView() {
         </Card>
 
         <Card className={'w-3/4 mt-4'}>
-          <TouchableOpacity onPress={() => router.navigate('/events/(tabs)')}>
+          <TouchableOpacity onPress={() => router.push('/events/(tabs)')}>
             <CardContent className={'p-0'}>
               <CardFooter className={'mt-2 text-xl flex pb-4'}>
                 <CalendarClockIcon

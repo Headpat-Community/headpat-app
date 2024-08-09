@@ -37,7 +37,7 @@ export default function ModalScreen() {
   }, [current])
 
   useEffect(() => {
-    if (currentData) router.navigate('/account')
+    if (currentData) router.push('/account')
   }, [currentData])
 
   const handleEmailLogin = async () => {
@@ -56,7 +56,7 @@ export default function ModalScreen() {
 
     try {
       await register(data.email, data.password, data.username)
-      router.navigate('/account')
+      router.push('/account')
     } catch (error) {
       console.log(error.type, error.message, error.code)
       if (error.type === 'general_argument_invalid') {
@@ -92,7 +92,7 @@ export default function ModalScreen() {
         const userId = params.get('userId')
 
         await loginOAuth(userId, secret)
-        router.navigate('/account')
+        router.push('/account')
       }
     } catch (error) {
       toast('An error occurred.')
@@ -111,7 +111,7 @@ export default function ModalScreen() {
           <Muted className="text-base text-center">
             Already have an account?
           </Muted>
-          <Button variant={'ghost'} onPress={() => router.navigate('/login')}>
+          <Button variant={'ghost'} onPress={() => router.push('/login')}>
             <Text>Login</Text>
           </Button>
         </View>

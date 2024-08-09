@@ -59,13 +59,13 @@ export default function GalleryAdd() {
   const handleClose = () => {
     setImage(null)
     setPage(1)
-    router.navigate('/gallery')
+    router.push('/gallery')
   }
 
   const handleFinish = (galleryId: string) => {
     setImage(null)
     setPage(1)
-    router.navigate(`/gallery/${galleryId}`)
+    router.push(`/gallery/${galleryId}`)
   }
 
   async function uploadImageAsync() {

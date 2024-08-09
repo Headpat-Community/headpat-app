@@ -30,7 +30,7 @@ function GalleryAddButton() {
     <>
       <View className={'items-center flex-row'}>
         {current && (
-          <TouchableOpacity onPress={() => router.navigate('/gallery/add')}>
+          <TouchableOpacity onPress={() => router.push('/gallery/add')}>
             <PlusIcon
               aria-label={'Add gallery item'}
               title={'Add gallery item'}
@@ -79,7 +79,7 @@ export const DrawerScreensData = [
     title: 'Gallery',
   },
   {
-    location: 'mutuals/(tabs)',
+    location: 'mutuals',
     title: 'Mutuals',
   },
   {

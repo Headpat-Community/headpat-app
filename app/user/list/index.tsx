@@ -7,7 +7,7 @@ import {
 import { H1, Muted } from '~/components/ui/typography'
 import { useColorScheme } from '~/lib/useColorScheme'
 import { useEffect, useState } from 'react'
-import { UserDataType } from '~/lib/types/collections'
+import { UserData } from '~/lib/types/collections'
 import { database } from '~/lib/appwrite-client'
 import { Query } from 'react-native-appwrite'
 import { toast } from '~/lib/toast'
@@ -19,12 +19,12 @@ import { Link } from 'expo-router'
 export default function UserListPage() {
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
-  const [users, setUsers] = useState<UserDataType>(null)
+  const [users, setUsers] = useState<UserData.UserDataType>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
 
   const fetchUsers = async () => {
     try {
-      const data: UserDataType = await database.listDocuments(
+      const data: UserData.UserDataType = await database.listDocuments(
         'hp_db',
         'userdata',
         [Query.orderDesc('$createdAt')]

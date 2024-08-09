@@ -5,7 +5,7 @@ export default function TabsLayout() {
   return (
     <Tabs>
       <Tabs.Screen
-        name="map"
+        name="index"
         options={{
           title: 'Map',
           tabBarIcon({ color, size }) {
@@ -15,7 +15,7 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="mutuals"
+        name="mutualsList"
         options={{
           title: 'Mutuals',
           tabBarIcon({ color, size }) {
