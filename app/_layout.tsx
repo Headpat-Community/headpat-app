@@ -43,7 +43,6 @@ import * as Location from 'expo-location'
 import { database } from '~/lib/appwrite-client'
 
 TaskManager.defineTask('background-location-task', async ({ data, error }) => {
-  console.log('starting task')
   if (error) {
     return BackgroundFetch.BackgroundFetchResult.Failed
   }

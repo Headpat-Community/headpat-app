@@ -40,9 +40,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from '~/components/ui/alert-dialog'
-import { Button } from '~/components/ui/button'
 
 export default function FriendLocationsPage() {
   const user = useUser()
@@ -136,9 +134,9 @@ export default function FriendLocationsPage() {
         )
       }
     }
-    if (modalAccepted) {
-      startWatching().then()
-    }
+    //if (modalAccepted) {
+    startWatching().then()
+    //}
     return () => {
       if (watcher) {
         watcher.remove()
@@ -302,39 +300,41 @@ export default function FriendLocationsPage() {
                 const [latitude, longitude] = coord.split(',').map(Number)
                 return { latitude, longitude }
               })
-              return (
-                <DialogTrigger key={index} asChild>
-                  <Polygon
-                    key={index}
-                    coordinates={coords}
-                    tappable={true}
-                    onPress={() => {
-                      setCurrentEvent(event)
-                    }}
-                    fillColor="rgba(100, 200, 200, 0.5)" // optional, fill color of the polygon
-                    strokeColor="rgba(255,0,0,0.5)" // optional, border color of the polygon
-                  />
-                </DialogTrigger>
-              )
+              if (coords?.length)
+                return (
+                  <DialogTrigger key={index} asChild>
+                    <Polygon
+                      key={index}
+                      coordinates={coords}
+                      tappable={true}
+                      onPress={() => {
+                        setCurrentEvent(event)
+                      }}
+                      fillColor="rgba(100, 200, 200, 0.5)" // optional, fill color of the polygon
+                      strokeColor="rgba(255,0,0,0.5)" // optional, border color of the polygon
+                    />
+                  </DialogTrigger>
+                )
             } else if (event?.locationZoneMethod === 'circle') {
               // Assuming the first coordinate is the center of the circle
               const [centerLatitude, centerLongitude] = event?.coordinates[0]
                 .split(',')
                 .map(Number)
-              return (
-                <DialogTrigger key={index} asChild>
-                  <Circle
-                    key={index}
-                    center={{
-                      latitude: centerLatitude,
-                      longitude: centerLongitude,
-                    }}
-                    radius={event?.circleRadius} // specify the radius here
-                    fillColor="rgba(100, 200, 200, 0.5)" // optional, fill color of the circle
-                    strokeColor="rgba(255,0,0,0.5)" // optional, border color of the circle
-                  />
-                </DialogTrigger>
-              )
+              if (centerLatitude && centerLongitude)
+                return (
+                  <DialogTrigger key={index} asChild>
+                    <Circle
+                      key={index}
+                      center={{
+                        latitude: centerLatitude,
+                        longitude: centerLongitude,
+                      }}
+                      radius={event?.circleRadius} // specify the radius here
+                      fillColor="rgba(100, 200, 200, 0.5)" // optional, fill color of the circle
+                      strokeColor="rgba(255,0,0,0.5)" // optional, border color of the circle
+                    />
+                  </DialogTrigger>
+                )
             }
           })}
         </MapView>

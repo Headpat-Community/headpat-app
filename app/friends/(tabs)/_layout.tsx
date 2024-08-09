@@ -1,11 +1,5 @@
 import { Tabs } from 'expo-router'
-import {
-  CalendarClockIcon,
-  CalendarIcon,
-  MapIcon,
-  PersonStandingIcon,
-  UsersIcon,
-} from 'lucide-react-native'
+import { MapIcon, PersonStandingIcon, UsersIcon } from 'lucide-react-native'
 
 export default function TabsLayout() {
   return (

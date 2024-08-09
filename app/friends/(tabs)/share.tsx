@@ -9,10 +9,21 @@ import * as TaskManager from 'expo-task-manager'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { H1, Muted } from '~/components/ui/typography'
 import { Button } from '~/components/ui/button'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '~/components/ui/alert-dialog'
 
 export default function ShareLocationView() {
   const [isRegistered, setIsRegistered] = React.useState(false)
   const [status, setStatus] = React.useState(null)
+  const [modalOpen, setModalOpen] = React.useState(false)
   const user = useUser()
 
   React.useEffect(() => {
@@ -28,11 +39,14 @@ export default function ShareLocationView() {
     setIsRegistered(isRegistered)
   }
 
-  async function registerBackgroundFetchAsync(userId: string) {
+  const requestPermissions = async () => {
     const { granted: fgGranted } =
       await Location.requestForegroundPermissionsAsync()
     if (!fgGranted) {
-      return Alert.alert('Required', 'Please grant GPS Location')
+      return Alert.alert(
+        'Location Access Required',
+        'Headpat requires your location to share with friends.'
+      )
     }
     const { granted: bgGranted } =
       await Location.requestBackgroundPermissionsAsync()
@@ -40,11 +54,21 @@ export default function ShareLocationView() {
     if (!bgGranted) {
       return Alert.alert(
         'Location Access Required',
-        'Headpat requires location even when the App is backgrounded.'
+        'You need to enable background location access in settings to share your location with friends.'
       )
     }
+    await toggleFetchTask()
+  }
 
+  async function registerBackgroundFetchAsync(userId: string) {
     await AsyncStorage.setItem('userId', userId)
+    //await requestPermissions()
+    let foreground = await Location.getForegroundPermissionsAsync()
+    let background = await Location.getBackgroundPermissionsAsync()
+    if (foreground.status !== 'granted' || background.status !== 'granted') {
+      setModalOpen(true)
+      return
+    }
 
     await Location.startLocationUpdatesAsync('background-location-task', {
       accuracy: Location.Accuracy.High,
@@ -80,6 +104,37 @@ export default function ShareLocationView() {
 
   return (
     <View style={styles.screen}>
+      {modalOpen && (
+        <AlertDialog onOpenChange={setModalOpen} open={modalOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Headpat needs permission</AlertDialogTitle>
+              <AlertDialogDescription>
+                In order to share your location with friends, we need your
+                permission to access your location in the foreground and
+                background.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onPress={() => setModalOpen(false)}>
+                <Text>Cancel</Text>
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onPress={async () => {
+                  let { status } =
+                    await Location.requestForegroundPermissionsAsync()
+                  if (status === 'granted') {
+                    await requestPermissions()
+                  }
+                  setModalOpen(false)
+                }}
+              >
+                <Text>Continue</Text>
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
       <H1>Location Sharing</H1>
       <Muted>BETA</Muted>
       <View style={styles.textContainer}>
