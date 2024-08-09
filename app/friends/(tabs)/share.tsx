@@ -45,7 +45,7 @@ export default function ShareLocationView() {
     if (!fgGranted) {
       return Alert.alert(
         'Location Access Required',
-        'Headpat requires your location to share with friends.'
+        'Headpat requires your location to share with users.'
       )
     }
     const { granted: bgGranted } =
@@ -54,7 +54,7 @@ export default function ShareLocationView() {
     if (!bgGranted) {
       return Alert.alert(
         'Location Access Required',
-        'You need to enable background location access in settings to share your location with friends.'
+        'You need to enable background location access in settings to share your location with users.'
       )
     }
     await toggleFetchTask()
@@ -110,7 +110,7 @@ export default function ShareLocationView() {
             <AlertDialogHeader>
               <AlertDialogTitle>Headpat needs permission</AlertDialogTitle>
               <AlertDialogDescription>
-                In order to share your location with friends, we need your
+                In order to share your location with users, we need your
                 permission to access your location in the foreground and
                 background.
               </AlertDialogDescription>

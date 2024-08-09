@@ -1,4 +1,5 @@
 import type { ForceMountable } from '~/components/primitives/types';
+import React from "react";
 
 interface NavigationMenuRootProps {
   value: string | undefined;

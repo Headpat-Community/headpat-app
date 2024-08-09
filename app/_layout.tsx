@@ -190,7 +190,7 @@ function CustomDrawerContent({
             )
           }}
           onPress={() =>
-            navigation.navigate('friends/(tabs)', { screen: 'map' })
+            navigation.navigate('mutuals/(tabs)', { screen: 'map' })
           }
         />
 
@@ -256,12 +256,12 @@ function CustomDrawerContent({
                 return (
                   <View className="flex-row items-center gap-3 pl-3">
                     <UsersIcon size={20} color={theme} />
-                    <Text style={{ color: theme }}>Friends</Text>
+                    <Text style={{ color: theme }}>Mutuals</Text>
                   </View>
                 )
               }}
               onPress={() =>
-                navigation.navigate('friends/(tabs)', { screen: 'friends' })
+                navigation.navigate('mutuals/(tabs)', { screen: 'mutuals' })
               }
             />
           </>

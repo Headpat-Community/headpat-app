@@ -5,10 +5,7 @@ import { Link } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { toast } from '~/lib/toast'
 import * as Sentry from '@sentry/react-native'
-import {
-  GalleryImagesDocumentsType,
-  GalleryImagesType,
-} from '~/lib/types/collections'
+import { Gallery } from '~/lib/types/collections'
 import { Query } from 'react-native-appwrite'
 import * as VideoThumbnails from 'expo-video-thumbnails'
 import { Badge } from '~/components/ui/badge'
@@ -20,7 +17,7 @@ import { useNavigation } from '@react-navigation/native'
 export default function GalleryPage() {
   const { current } = useUser()
 
-  const [images, setImages] = useState<GalleryImagesDocumentsType[]>([])
+  const [images, setImages] = useState<Gallery.GalleryDocumentsType[]>([])
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [thumbnails, setThumbnails] = useState<{ [key: string]: string }>({})
   const [offset, setOffset] = useState<number>(0)
@@ -32,7 +29,7 @@ export default function GalleryPage() {
         ? [Query.limit(10), Query.offset(offset)]
         : [Query.limit(10), Query.offset(offset), Query.equal('nsfw', false)]
 
-      const data: GalleryImagesType = await database.listDocuments(
+      const data: Gallery.GalleryType = await database.listDocuments(
         'hp_db',
         'gallery-images',
         query
@@ -63,10 +60,12 @@ export default function GalleryPage() {
 
   useEffect(() => {
     fetchGallery().then()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [offset])
 
   useEffect(() => {
     fetchGallery().then()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current])
 
   const generateThumbnail = async (galleryId: string) => {

@@ -10,10 +10,9 @@ import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native'
 import { FilterIcon, LocateIcon } from 'lucide-react-native'
 import * as Location from 'expo-location'
 import {
-  EventsType,
-  LocationDocumentsType,
-  LocationType,
-  UserDataDocumentsType,
+  Events,
+  Location as LocationType,
+  UserData,
 } from '~/lib/types/collections'
 import { database, client } from '~/lib/appwrite-client'
 import { Query } from 'react-native-appwrite'
@@ -48,15 +47,15 @@ export default function FriendLocationsPage() {
   const mapRef = useRef(null)
   const [userLocation, setUserLocation] = useState(null)
 
-  const [events, setEvents] = useState<EventsType>(null)
-  const [friendsLocations, setFriendsLocations] = useState(null)
+  const [events, setEvents] = useState<Events.EventsType>(null)
+  const [mutualLocations, setMutualLocations] = useState(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [currentEvent, setCurrentEvent] = useState(null)
   const [modalOpen, setModalOpen] = useState<boolean>(false)
   const [modalAccepted, setModalAccepted] = useState<boolean>(false)
   const [filters, setFilters] = useState({
     showEvents: true,
-    showFriends: true,
+    showMutuals: true,
     showCommunity: true,
   })
 
@@ -64,17 +63,22 @@ export default function FriendLocationsPage() {
     try {
       const currentDate = new Date()
 
-      const data: EventsType = await database.listDocuments('hp_db', 'events', [
-        Query.orderAsc('date'),
-        Query.greaterThanEqual('dateUntil', currentDate.toISOString()),
-        Query.or([
-          Query.equal('locationZoneMethod', 'circle'),
-          Query.equal('locationZoneMethod', 'polygon'),
-        ]),
-      ])
+      const data: Events.EventsType = await database.listDocuments(
+        'hp_db',
+        'events',
+        [
+          Query.orderAsc('date'),
+          Query.greaterThanEqual('dateUntil', currentDate.toISOString()),
+          Query.or([
+            Query.equal('locationZoneMethod', 'circle'),
+            Query.equal('locationZoneMethod', 'polygon'),
+          ]),
+        ]
+      )
 
       setEvents(data)
-    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error: any) {
       toast('Failed to fetch events. Please try again later.')
     }
   }
@@ -86,23 +90,21 @@ export default function FriendLocationsPage() {
         query = [Query.notEqual('$id', user?.current?.$id)]
       }
 
-      const data: LocationType = await database.listDocuments(
+      const data: LocationType.LocationType = await database.listDocuments(
         'hp_db',
         'locations',
         query
       )
 
       const promises = data.documents.map(async (doc) => {
-        const userData: UserDataDocumentsType = await database.getDocument(
-          'hp_db',
-          'userdata',
-          doc.$id
-        )
+        const userData: UserData.UserDataDocumentsType =
+          await database.getDocument('hp_db', 'userdata', doc.$id)
         return { ...doc, userData }
       })
 
       const results = await Promise.all(promises)
-      setFriendsLocations(results)
+      setMutualLocations(results)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast('Failed to fetch locations. Please try again later.')
     }
@@ -182,27 +184,33 @@ export default function FriendLocationsPage() {
 
         switch (eventType) {
           case 'update':
-            setFriendsLocations((prevLocations: LocationDocumentsType[]) => {
-              return prevLocations.map((location) => {
-                if (location.$id === updatedDocument.$id) {
-                  return updatedDocument
-                } else {
-                  return location
-                }
-              })
-            })
+            setMutualLocations(
+              (prevLocations: LocationType.LocationDocumentsType[]) => {
+                return prevLocations.map((location) => {
+                  if (location.$id === updatedDocument.$id) {
+                    return updatedDocument
+                  } else {
+                    return location
+                  }
+                })
+              }
+            )
             break
           case 'delete':
-            setFriendsLocations((prevLocations: LocationDocumentsType[]) => {
-              return prevLocations.filter(
-                (location) => location.$id !== updatedDocument.$id
-              )
-            })
+            setMutualLocations(
+              (prevLocations: LocationType.LocationDocumentsType[]) => {
+                return prevLocations.filter(
+                  (location) => location.$id !== updatedDocument.$id
+                )
+              }
+            )
             break
           case 'create':
-            setFriendsLocations((prevLocations: LocationDocumentsType[]) => {
-              return [...prevLocations, updatedDocument]
-            })
+            setMutualLocations(
+              (prevLocations: LocationType.LocationDocumentsType[]) => {
+                return [...prevLocations, updatedDocument]
+              }
+            )
             break
           default:
             Sentry.captureException('Unknown event type:', updatedDocument)
@@ -266,7 +274,7 @@ export default function FriendLocationsPage() {
           }
           showsUserLocation={true}
         >
-          {friendsLocations?.map((user, index) => {
+          {mutualLocations?.map((user, index) => {
             return (
               <Marker
                 key={index}

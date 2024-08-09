@@ -80,10 +80,7 @@ export default function TabsScreen() {
               delayDuration={150}
             >
               <TooltipTrigger className="web:focus:outline-none">
-                <Info
-                  size={Platform.OS == 'web' ? 14 : 16}
-                  className="text-foreground"
-                />
+                <Info size={16} className="text-foreground" />
               </TooltipTrigger>
               <TooltipContent
                 side="bottom"

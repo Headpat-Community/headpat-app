@@ -152,7 +152,7 @@ export default function HomeView() {
         </Card>
 
         <Card className={'w-3/4 mt-4'}>
-          <TouchableOpacity onPress={() => router.navigate('/friends')}>
+          <TouchableOpacity onPress={() => router.navigate('/mutuals')}>
             <CardContent className={'p-0'}>
               <CardFooter className={'mt-2 text-xl flex pb-4'}>
                 <MapPinnedIcon
@@ -168,7 +168,7 @@ export default function HomeView() {
                 className={'p-0 pb-2 justify-between flex flex-wrap mx-7'}
               >
                 <CardDescription>
-                  <Text>Find your friends!</Text>
+                  <Text>Find your mutuals!</Text>
                 </CardDescription>
                 <CardDescription>
                   <Text>a</Text>

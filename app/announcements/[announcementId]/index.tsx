@@ -1,7 +1,7 @@
 import { RefreshControl, ScrollView, View } from 'react-native'
 import { H1, H3, Muted } from '~/components/ui/typography'
 import { useLocalSearchParams } from 'expo-router'
-import { AnnouncementsDocumentsType } from '~/lib/types/collections'
+import { Announcements } from '~/lib/types/collections'
 import { database } from '~/lib/appwrite-client'
 import { useEffect, useState } from 'react'
 import { Card, CardContent } from '~/components/ui/card'
@@ -13,20 +13,22 @@ import { Badge } from '~/components/ui/badge'
 export default function AnnouncementSinglePage() {
   const local = useLocalSearchParams()
   const [announcement, setAnnouncement] =
-    useState<AnnouncementsDocumentsType>(null)
+    useState<Announcements.AnnouncementDocumentsType>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
 
   const fetchAnnouncement = async () => {
     try {
       setRefreshing(true)
-      const data: AnnouncementsDocumentsType = await database.getDocument(
-        'hp_db',
-        'announcements',
-        `${local.announcementId}`
-      )
+      const data: Announcements.AnnouncementDocumentsType =
+        await database.getDocument(
+          'hp_db',
+          'announcements',
+          `${local.announcementId}`
+        )
 
       setAnnouncement(data)
       setRefreshing(false)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setRefreshing(false)
     }
@@ -40,6 +42,7 @@ export default function AnnouncementSinglePage() {
 
   useEffect(() => {
     fetchAnnouncement().then()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [local.announcementId])
 
   if (refreshing)

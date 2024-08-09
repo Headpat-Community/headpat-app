@@ -1,3 +1,5 @@
+import React from "react";
+
 interface SwitchRootProps {
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;

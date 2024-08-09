@@ -15,7 +15,7 @@ import { useCallback, useState } from 'react'
 import { toast } from '~/lib/toast'
 import { useUser } from '~/components/contexts/UserContext'
 import * as Sentry from '@sentry/react-native'
-import { UserDataDocumentsType } from '~/lib/types/collections'
+import { UserData } from '~/lib/types/collections'
 import { useFocusEffect } from '@react-navigation/core'
 import { Checkbox } from '~/components/ui/checkbox'
 
@@ -23,7 +23,8 @@ export default function UserprofilePage() {
   const [isDisabled, setIsDisabled] = useState(false)
   const { setUser, current } = useUser()
 
-  const [userData, setUserData] = useState<UserDataDocumentsType | null>(null)
+  const [userData, setUserData] =
+    useState<UserData.UserDataDocumentsType | null>(null)
   const [nsfw, setNsfw] = useState<boolean>(false)
   const [profileUrl, setProfileUrl] = useState<string>('')
   const [displayName, setDisplayName] = useState<string>('')
@@ -32,7 +33,7 @@ export default function UserprofilePage() {
 
   const fetchUserData = async () => {
     try {
-      const data: UserDataDocumentsType = await database.getDocument(
+      const data: UserData.UserDataDocumentsType = await database.getDocument(
         'hp_db',
         'userdata',
         current.$id
@@ -44,13 +45,14 @@ export default function UserprofilePage() {
       setProfileUrl(data.profileUrl)
       setNsfw(current.prefs.nsfw)
     } catch (error) {
-      toast('Failed to fetch userdata for friends. Please try again later.')
+      toast('Failed to fetch userdata. Please try again later.')
       Sentry.captureException(error)
     }
   }
 
   const memoizedCallback = useCallback(() => {
     if (current) fetchUserData().then()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current])
 
   useFocusEffect(memoizedCallback)

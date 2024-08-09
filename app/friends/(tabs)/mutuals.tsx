@@ -7,59 +7,67 @@ import {
 import { H1, Muted } from '~/components/ui/typography'
 import { useColorScheme } from '~/lib/useColorScheme'
 import { useEffect, useState } from 'react'
-import {
-  FriendsDocumentsType,
-  FriendsType,
-  UserDataDocumentsType,
-} from '~/lib/types/collections'
+import { Followers, UserData } from '~/lib/types/collections'
 import { database } from '~/lib/appwrite-client'
 import { Query } from 'react-native-appwrite'
 import { toast } from '~/lib/toast'
 import * as Sentry from '@sentry/react-native'
 import { Text } from '~/components/ui/text'
 import { Image } from 'expo-image'
-import { Link, router } from 'expo-router'
+import { Link } from 'expo-router'
 
-export default function FriendsPage() {
+export default function MutualsPage() {
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
-  const [friends, setFriends] = useState<FriendsType>(null)
-  const [friendData, setFriendData] = useState<UserDataDocumentsType>(null)
+  const [mutuals, setMutuals] = useState<Followers.FollowerType>(null)
+  const [friendData, setFriendData] =
+    useState<UserData.UserDataDocumentsType>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
 
-  const fetchFriends = async () => {
+  const fetchMutuals = async () => {
     try {
-      const data: FriendsType = await database.listDocuments('hp_db', 'friends')
+      const data: Followers.FollowerType = await database.listDocuments(
+        'hp_db',
+        'followers'
+      )
 
-      setFriends(data)
+      const mutualsList = data.documents.filter((follower) => {
+        return data.documents.some(
+          (otherFollower) =>
+            otherFollower.userId === follower.followerId &&
+            otherFollower.followerId === follower.userId
+        )
+      })
+
+      setMutuals({ ...data, documents: mutualsList })
     } catch (error) {
       toast('Failed to fetch friends. Please try again later.')
       Sentry.captureException(error)
     }
   }
 
-  const fetchUserdataForFriends = async (friends: string[]) => {
+  const fetchUserdataForId = async (userId: string) => {
     try {
-      const promises = friends.map((friendId) =>
+      const promises = mutuals.documents.map((mutual) =>
         database.listDocuments('hp_db', 'userdata', [
-          Query.equal('$id', friendId),
+          Query.equal('$id', mutual.userId),
         ])
       )
 
       const results = await Promise.all(promises)
       return results.map((result) => result.documents[0])
     } catch (error) {
-      toast('Failed to fetch userdata for friends. Please try again later.')
+      toast('Failed to fetch userdata for mutuals. Please try again later.')
       Sentry.captureException(error)
     }
   }
 
   useEffect(() => {
     const fetchAllFriendData = async () => {
-      if (friends && friends.documents) {
+      if (mutuals && mutuals.documents) {
         const allFriendData: any = await Promise.all(
-          friends.documents.map((friend: any) =>
-            fetchUserdataForFriends(friend.friends)
+          mutuals.documents.map((mutual: any) =>
+            fetchUserdataForId(mutual.userId)
           )
         )
         setFriendData(allFriendData[0])
@@ -67,16 +75,16 @@ export default function FriendsPage() {
     }
 
     fetchAllFriendData().then()
-  }, [friends])
+  }, [mutuals])
 
   const onRefresh = () => {
     setRefreshing(true)
-    fetchFriends().then()
+    fetchMutuals().then()
     setRefreshing(false)
   }
 
   useEffect(() => {
-    fetchFriends().then()
+    fetchMutuals().then()
   }, [])
 
   const getUserAvatar = (avatarId: string) => {
@@ -84,7 +92,7 @@ export default function FriendsPage() {
     return `https://api.headpat.de/v1/storage/buckets/avatars/files/${avatarId}/preview?project=6557c1a8b6c2739b3ecf&width=250&height=250`
   }
 
-  if (friends?.total === 0)
+  if (mutuals?.total === 0)
     return (
       <ScrollView
         refreshControl={

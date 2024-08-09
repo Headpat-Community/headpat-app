@@ -2,11 +2,11 @@ import { ID } from 'react-native-appwrite'
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { account } from '~/lib/appwrite-client'
 import { toast } from '~/lib/toast'
-import { UserAccountType } from '~/lib/types/collections'
+import { Account } from '~/lib/types/collections'
 
 interface UserContextValue {
-  current: UserAccountType | null
-  setUser: React.Dispatch<React.SetStateAction<UserAccountType | null>>
+  current: Account.AccountType | null
+  setUser: React.Dispatch<React.SetStateAction<Account.AccountType | null>>
   login: (email: string, password: string) => Promise<void>
   loginOAuth: (userId: string, secret: string) => Promise<void>
   logout: () => Promise<void>
@@ -58,7 +58,8 @@ export function UserProvider(props: any) {
       const loggedIn = await account.get()
       setUser(loggedIn)
       //toast('Welcome back. You are logged in!')
-    } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
       setUser(null)
     }
   }

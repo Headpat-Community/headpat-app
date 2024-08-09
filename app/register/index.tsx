@@ -59,9 +59,9 @@ export default function ModalScreen() {
       router.navigate('/account')
     } catch (error) {
       console.log(error.type, error.message, error.code)
-      if (error.type == 'general_argument_invalid') {
+      if (error.type === 'general_argument_invalid') {
         toast('Invalid E-Mail or password.')
-      } else if (error.type == 'user_blocked') {
+      } else if (error.type === 'user_blocked') {
         toast('User is blocked.')
       } else {
         toast('E-Mail or Password incorrect.')

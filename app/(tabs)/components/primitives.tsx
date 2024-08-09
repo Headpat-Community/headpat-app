@@ -21,15 +21,3 @@ export default function PrimitivesScreen() {
     </View>
   )
 }
-
-function toOptions(name: string) {
-  const title = name
-    .split('-')
-    .map(function (str: string) {
-      return str.replace(/\b\w/g, function (char) {
-        return char.toUpperCase()
-      })
-    })
-    .join(' ')
-  return title
-}

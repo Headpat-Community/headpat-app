@@ -38,7 +38,7 @@
         "applinks:headpat.de",
         "applinks:api.headpat.de"
       ],
-      "buildNumber": "25"
+      "buildNumber": "26"
     },
     "android": {
       "permissions": [
@@ -57,7 +57,7 @@
         }
       },
       "package": "com.headpat.app",
-      "versionCode": 25
+      "versionCode": 27
     },
     "web": {
       "bundler": "metro",
@@ -113,7 +113,7 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "The app accesses your photos to let you share them with your friends."
+          "photosPermission": "The app accesses your photos to let you share them with your fellow headpatters."
         }
       ],
       "expo-video"

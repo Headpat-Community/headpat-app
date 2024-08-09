@@ -10,14 +10,10 @@ import Gallery from 'react-native-awesome-gallery'
 import { ScrollView } from 'react-native-gesture-handler'
 import { Link, useLocalSearchParams } from 'expo-router'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import {
-  GalleryImagesDocumentsType,
-  UserDataDocumentsType,
-} from '~/lib/types/collections'
+import { Gallery as GalleryType, UserData } from '~/lib/types/collections'
 import { Image } from 'expo-image'
 import { Text } from '~/components/ui/text'
 import { H4, Muted } from '~/components/ui/typography'
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
 import { timeSince } from '~/components/calculateTimeLeft'
 import { useVideoPlayer, VideoView } from 'expo-video'
 import { useFocusEffect } from '@react-navigation/core'
@@ -25,8 +21,8 @@ import { Skeleton } from '~/components/ui/skeleton'
 
 export default function HomeView() {
   const local = useLocalSearchParams()
-  const [image, setImage] = useState<GalleryImagesDocumentsType>(null)
-  const [userData, setUserData] = useState<UserDataDocumentsType>(null)
+  const [image, setImage] = useState<GalleryType.GalleryDocumentsType>(null)
+  const [userData, setUserData] = useState<UserData.UserDataDocumentsType>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [modalVisible, setModalVisible] = useState(false)
   const ref = useRef(null)
@@ -35,7 +31,7 @@ export default function HomeView() {
   const fetchGallery = async () => {
     try {
       setRefreshing(true)
-      const data: GalleryImagesDocumentsType = await database.getDocument(
+      const data: GalleryType.GalleryDocumentsType = await database.getDocument(
         'hp_db',
         'gallery-images',
         `${local.galleryId}`
@@ -43,13 +39,11 @@ export default function HomeView() {
 
       setImage(data)
 
-      const userData: UserDataDocumentsType = await database.getDocument(
-        'hp_db',
-        'userdata',
-        data.userId
-      )
+      const userData: UserData.UserDataDocumentsType =
+        await database.getDocument('hp_db', 'userdata', data.userId)
       setUserData(userData)
       setRefreshing(false)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setRefreshing(false)
     }
@@ -63,6 +57,7 @@ export default function HomeView() {
 
   useEffect(() => {
     fetchGallery().then()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [local.galleryId])
 
   const getGalleryUrl = (galleryId: string) => {

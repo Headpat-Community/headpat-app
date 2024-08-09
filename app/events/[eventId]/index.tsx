@@ -1,7 +1,7 @@
 import { RefreshControl, ScrollView, View } from 'react-native'
 import { H1, H3, Muted } from '~/components/ui/typography'
 import { useLocalSearchParams } from 'expo-router'
-import { EventsDocumentsType } from '~/lib/types/collections'
+import { Events } from '~/lib/types/collections'
 import { database } from '~/lib/appwrite-client'
 import { useEffect, useState } from 'react'
 import { Card, CardContent } from '~/components/ui/card'
@@ -12,13 +12,13 @@ import { Badge } from '~/components/ui/badge'
 
 export default function EventPage() {
   const local = useLocalSearchParams()
-  const [event, setEvent] = useState<EventsDocumentsType>(null)
+  const [event, setEvent] = useState<Events.EventsDocumentsType>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
 
   const fetchEvents = async () => {
     try {
       setRefreshing(true)
-      const data: EventsDocumentsType = await database.getDocument(
+      const data: Events.EventsDocumentsType = await database.getDocument(
         'hp_db',
         'events',
         `${local.eventId}`
@@ -26,6 +26,7 @@ export default function EventPage() {
 
       setEvent(data)
       setRefreshing(false)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setRefreshing(false)
     }
@@ -39,6 +40,7 @@ export default function EventPage() {
 
   useEffect(() => {
     fetchEvents().then()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [local.eventId])
 
   if (refreshing)

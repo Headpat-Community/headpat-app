@@ -1,4 +1,5 @@
 import type { ForceMountable } from '~/components/primitives/types';
+import React from "react";
 
 interface RootContext extends TooltipRootProps {
   open: boolean;

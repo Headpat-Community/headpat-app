@@ -7,7 +7,7 @@ import {
 import { H1, H3, Muted } from '~/components/ui/typography'
 import { useLocalSearchParams } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { UserDataDocumentsType } from '~/lib/types/collections'
+import { UserData } from '~/lib/types/collections'
 import { database } from '~/lib/appwrite-client'
 import { Image } from 'expo-image'
 import { Text } from '~/components/ui/text'
@@ -29,13 +29,13 @@ export default function UserPage() {
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
   const local = useLocalSearchParams()
-  const [userData, setUserData] = useState<UserDataDocumentsType>(null)
+  const [userData, setUserData] = useState<UserData.UserDataDocumentsType>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
 
   const fetchUser = async () => {
     try {
       setRefreshing(true)
-      const data: UserDataDocumentsType = await database.getDocument(
+      const data: UserData.UserDataDocumentsType = await database.getDocument(
         'hp_db',
         'userdata',
         `${local.userId}`
@@ -67,6 +67,7 @@ export default function UserPage() {
 
   useEffect(() => {
     fetchUser().then()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [local.userId])
 
   if (refreshing)
@@ -249,7 +250,7 @@ export default function UserPage() {
           <TouchableOpacity
             className={'flex-row items-center gap-4'}
             onPress={() => {
-              Clipboard.setStringAsync(userData?.discordname)
+              Clipboard.setStringAsync(userData?.discordname).then()
               toast('Copied name!')
             }}
           >

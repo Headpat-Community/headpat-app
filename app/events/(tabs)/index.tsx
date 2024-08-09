@@ -15,7 +15,7 @@ import { ClockIcon, MapPinIcon } from 'lucide-react-native'
 import { useColorScheme } from '~/lib/useColorScheme'
 import { useEffect, useState } from 'react'
 import { database } from '~/lib/appwrite-client'
-import { EventsDocumentsType, EventsType } from '~/lib/types/collections'
+import { Events } from '~/lib/types/collections'
 import { H1, H3, Muted } from '~/components/ui/typography'
 import { Query } from 'react-native-appwrite'
 import { calculateTimeLeft, formatDate } from '~/components/calculateTimeLeft'
@@ -25,18 +25,22 @@ import { Link } from 'expo-router'
 export default function EventsPage() {
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
-  const [events, setEvents] = useState<EventsDocumentsType[]>([])
+  const [events, setEvents] = useState<Events.EventsDocumentsType[]>([])
   const [refreshing, setRefreshing] = useState<boolean>(false)
 
   const fetchEvents = async () => {
     try {
       const currentDate = new Date()
 
-      const data: EventsType = await database.listDocuments('hp_db', 'events', [
-        Query.orderAsc('date'),
-        Query.greaterThanEqual('dateUntil', currentDate.toISOString()),
-        Query.lessThanEqual('date', currentDate.toISOString()),
-      ])
+      const data: Events.EventsType = await database.listDocuments(
+        'hp_db',
+        'events',
+        [
+          Query.orderAsc('date'),
+          Query.greaterThanEqual('dateUntil', currentDate.toISOString()),
+          Query.lessThanEqual('date', currentDate.toISOString()),
+        ]
+      )
 
       setEvents(
         data.documents.filter((event) => {
@@ -44,6 +48,7 @@ export default function EventsPage() {
           return eventDateUntil > currentDate
         })
       )
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast('Failed to fetch events. Please try again later.')
     }

@@ -1,4 +1,5 @@
 import type { ForceMountable } from '~/components/primitives/types';
+import React from "react";
 
 type AlertDialogRootProps = {
   open?: boolean;

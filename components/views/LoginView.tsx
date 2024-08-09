@@ -1,4 +1,4 @@
-import { Link, router } from 'expo-router'
+import { Link } from 'expo-router'
 import { Pressable, View } from 'react-native'
 import { CircleUserRound } from '~/components/Icons'
 import { cn } from '~/lib/utils'

@@ -7,19 +7,14 @@ import {
 import { H1, Muted } from '~/components/ui/typography'
 import { useColorScheme } from '~/lib/useColorScheme'
 import { useEffect, useState } from 'react'
-import {
-  FriendsDocumentsType,
-  FriendsType,
-  UserDataDocumentsType,
-  UserDataType,
-} from '~/lib/types/collections'
+import { UserDataType } from '~/lib/types/collections'
 import { database } from '~/lib/appwrite-client'
 import { Query } from 'react-native-appwrite'
 import { toast } from '~/lib/toast'
 import * as Sentry from '@sentry/react-native'
 import { Text } from '~/components/ui/text'
 import { Image } from 'expo-image'
-import { Link, router } from 'expo-router'
+import { Link } from 'expo-router'
 
 export default function UserListPage() {
   const { isDarkColorScheme } = useColorScheme()
@@ -37,7 +32,7 @@ export default function UserListPage() {
 
       setUsers(data)
     } catch (error) {
-      toast('Failed to fetch friends. Please try again later.')
+      toast('Failed to fetch mutuals. Please try again later.')
       Sentry.captureException(error)
     }
   }

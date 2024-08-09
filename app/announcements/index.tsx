@@ -6,7 +6,7 @@ import {
 } from 'react-native'
 import { H1, H3, Muted } from '~/components/ui/typography'
 import { useEffect, useState } from 'react'
-import { AnnouncementsType } from '~/lib/types/collections'
+import { Announcements } from '~/lib/types/collections'
 import { database } from '~/lib/appwrite-client'
 import { Query } from 'react-native-appwrite'
 import { toast } from '~/lib/toast'
@@ -25,23 +25,22 @@ import { useColorScheme } from '~/lib/useColorScheme'
 export default function AnnouncementsPage() {
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
-  const [announcements, setAnnouncements] = useState<AnnouncementsType>(null)
+  const [announcements, setAnnouncements] =
+    useState<Announcements.AnnouncementDataType>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
 
   const fetchAnnouncements = async () => {
     try {
       const currentDate = new Date()
 
-      const data: AnnouncementsType = await database.listDocuments(
-        'hp_db',
-        'announcements',
-        [
+      const data: Announcements.AnnouncementDataType =
+        await database.listDocuments('hp_db', 'announcements', [
           Query.orderAsc('validUntil'),
           Query.greaterThanEqual('validUntil', currentDate.toISOString()),
-        ]
-      )
+        ])
 
       setAnnouncements(data)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast('Failed to fetch events. Please try again later.')
     }

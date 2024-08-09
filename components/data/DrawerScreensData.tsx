@@ -5,7 +5,6 @@ import { ArrowLeftIcon, PlusIcon } from 'lucide-react-native'
 import * as React from 'react'
 import { router } from 'expo-router'
 import { ProfileThemeToggle } from '~/components/ThemeToggle'
-import AddGalleryItem from '~/components/gallery/addGalleryItem'
 import { useUser } from '~/components/contexts/UserContext'
 
 function HeaderSidebarBackButton() {
@@ -80,8 +79,8 @@ export const DrawerScreensData = [
     title: 'Gallery',
   },
   {
-    location: 'friends/(tabs)',
-    title: 'Friends',
+    location: 'mutuals/(tabs)',
+    title: 'Mutuals',
   },
   {
     location: 'communities/index',
