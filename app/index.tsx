@@ -35,11 +35,12 @@ export default function HomeView() {
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
-  const user: any = useUser()
+  const { current } = useUser()
 
   const onRefresh = () => {
     setRefreshing(true)
     fetchNextEvent().then()
+    fetchUserData().then()
     setRefreshing(false)
   }
 
@@ -72,24 +73,24 @@ export default function HomeView() {
   }
 
   useEffect(() => {
-    if (user?.current?.$id) {
-      const fetchUserData = async () => {
-        try {
-          const data: UserData.UserDataDocumentsType =
-            await database.getDocument(
-              'hp_db',
-              'userdata',
-              `${user?.current?.$id}`
-            )
-          setUserData(data)
-        } catch (error) {
-          Sentry.captureException(error)
-          return
-        }
-      }
+    if (current?.$id) {
       fetchUserData().then()
     }
-  }, [user])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [current])
+
+  const fetchUserData = async () => {
+    try {
+      const data: UserData.UserDataDocumentsType = await database.getDocument(
+        'hp_db',
+        'userdata',
+        `${current.$id}`
+      )
+      setUserData(data)
+    } catch (error) {
+      Sentry.captureException(error)
+    }
+  }
 
   useFocusEffect(
     useCallback(() => {
@@ -104,7 +105,7 @@ export default function HomeView() {
       }
     >
       <View className="justify-center items-center">
-        {user?.current?.$id ? (
+        {current ? (
           <>
             <Image
               source={

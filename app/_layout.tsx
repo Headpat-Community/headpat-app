@@ -372,10 +372,10 @@ export default function RootLayout() {
     const backAction = () => {
       if (segments.length > 1) {
         // If there is more than one segment, go back to the previous segment
-        router.back()
+        router.navigate('/')
       } else {
         // If the user is on the first segment, you might want to show a confirmation dialog
-        router.navigate('/')
+        BackHandler.exitApp()
       }
       return true
     }

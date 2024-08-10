@@ -30,8 +30,9 @@ export function UserProvider(props: any) {
   const [user, setUser] = useState(null)
 
   async function login(email: string, password: string) {
-    const loggedIn = await account.createEmailPasswordSession(email, password)
-    setUser(loggedIn)
+    await account.createEmailPasswordSession(email, password)
+    const accountData = await account.get()
+    setUser(accountData)
     //toast('Welcome back. You are logged in!')
   }
 
