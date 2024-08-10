@@ -42,6 +42,7 @@ import * as BackgroundFetch from 'expo-background-fetch'
 import * as Location from 'expo-location'
 import { database } from '~/lib/appwrite-client'
 import { useEffect } from 'react'
+import * as Updates from 'expo-updates'
 
 TaskManager.defineTask('background-location-task', async ({ data, error }) => {
   if (error) {

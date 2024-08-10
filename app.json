@@ -77,7 +77,9 @@
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/904378a3-321c-4abe-9c08-48274d5f6267"
+      "url": "https://u.expo.dev/904378a3-321c-4abe-9c08-48274d5f6267",
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD"
     },
     "plugins": [
       "expo-localization",
