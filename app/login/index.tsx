@@ -65,14 +65,14 @@ export default function ModalScreen() {
   const redirectTo = makeRedirectUri()
   const redirect = redirectTo.includes('exp://')
     ? redirectTo
-    : `${redirectTo}headpatapp`
+    : `${redirectTo}headpat.app`
 
   const handleOAuth2Login = async (provider: OAuthProvider) => {
     try {
       const data = account.createOAuth2Token(provider, `${redirect}`)
       const res = await WebBrowser.openAuthSessionAsync(
         `${data}`,
-        `${redirect}`
+        `${redirectTo}`
       )
 
       if (res.type === 'success') {

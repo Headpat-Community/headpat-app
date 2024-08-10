@@ -39,8 +39,8 @@ export default function HomeView() {
 
   const onRefresh = () => {
     setRefreshing(true)
-    fetchNextEvent().then()
     fetchUserData().then()
+    fetchNextEvent().then()
     setRefreshing(false)
   }
 
@@ -164,7 +164,7 @@ export default function HomeView() {
                     marginRight: 4,
                   }}
                 />
-                <Text>Mutual locations</Text>
+                <Text>Locations</Text>
               </CardFooter>
               <CardFooter
                 className={'p-0 pb-2 justify-between flex flex-wrap mx-7'}

@@ -10,7 +10,14 @@ import { ToastProvider } from '~/components/primitives/deprecated-ui/toast'
 import { router, SplashScreen, useRouter, useSegments } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import * as React from 'react'
-import { Alert, BackHandler, ScrollView, Text, View } from 'react-native'
+import {
+  Alert,
+  BackHandler,
+  Platform,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { ProfileThemeToggle } from '~/components/ThemeToggle'
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar'
@@ -41,8 +48,12 @@ import * as TaskManager from 'expo-task-manager'
 import * as BackgroundFetch from 'expo-background-fetch'
 import * as Location from 'expo-location'
 import { database } from '~/lib/appwrite-client'
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import * as Updates from 'expo-updates'
+import { toast } from '~/lib/toast'
+import * as Device from 'expo-device'
+import * as Notifications from 'expo-notifications'
+import Constants from 'expo-constants'
 
 TaskManager.defineTask('background-location-task', async ({ data, error }) => {
   if (error) {
@@ -92,6 +103,67 @@ export const unstable_settings = {
 // Prevent the splash screen from auto-hiding before getting the color scheme.
 SplashScreen.preventAutoHideAsync()
 
+/**
+ * Set the notification handler
+ */
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: true,
+  }),
+})
+
+function handleRegistrationError(errorMessage: string) {
+  alert(errorMessage)
+  throw new Error(errorMessage)
+}
+
+async function registerForPushNotificationsAsync() {
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    })
+  }
+
+  if (Device.isDevice) {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync()
+    let finalStatus = existingStatus
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync()
+      finalStatus = status
+    }
+    if (finalStatus !== 'granted') {
+      handleRegistrationError(
+        'Permission not granted to get push token for push notification!'
+      )
+      return
+    }
+    const projectId =
+      Constants?.expoConfig?.extra?.eas?.projectId ??
+      Constants?.easConfig?.projectId
+    if (!projectId) {
+      handleRegistrationError('Project ID not found')
+    }
+    try {
+      const pushTokenString = (
+        await Notifications.getExpoPushTokenAsync({
+          projectId,
+        })
+      ).data
+      console.log(pushTokenString)
+      return pushTokenString
+    } catch (e: unknown) {
+      handleRegistrationError(`${e}`)
+    }
+  } else {
+    handleRegistrationError('Must use physical device for push notifications')
+  }
+}
+
 function HeaderMenuSidebar() {
   const navigation = useNavigation()
 
@@ -103,8 +175,8 @@ function HeaderMenuSidebar() {
   }
 
   return (
-    <View style={{ paddingLeft: 16, flexDirection: 'row' }}>
-      <TouchableOpacity onPress={openMenu} className={'mr-4'}>
+    <View style={{ flexDirection: 'row' }}>
+      <TouchableOpacity onPress={openMenu} className={'p-5'}>
         <MenuIcon
           aria-label={'Menu'}
           size={20}
@@ -187,7 +259,7 @@ function CustomDrawerContent({
             return (
               <View className="flex-row items-center gap-3 pl-3">
                 <MapPinnedIcon size={20} color={theme} />
-                <Text style={{ color: theme }}>Mutual Locations</Text>
+                <Text style={{ color: theme }}>Locations</Text>
               </View>
             )
           }}
@@ -341,7 +413,8 @@ function CustomDrawerContent({
 
 export default function RootLayout() {
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme()
-  const [isColorSchemeLoaded, setIsColorSchemeLoaded] = React.useState(false)
+  const [isColorSchemeLoaded, setIsColorSchemeLoaded] = useState(false)
+  const [lastBackPressed, setLastBackPressed] = useState(0)
   useEffect(() => {
     ;(async () => {
       const theme = await AsyncStorage.getItem('theme')
@@ -370,12 +443,17 @@ export default function RootLayout() {
 
   useEffect(() => {
     const backAction = () => {
+      const now = Date.now()
       if (segments.length > 1) {
         // If there is more than one segment, go back to the previous segment
         router.navigate('/')
       } else {
-        // If the user is on the first segment, you might want to show a confirmation dialog
-        BackHandler.exitApp()
+        if (now - lastBackPressed < 2000) {
+          BackHandler.exitApp()
+        } else {
+          toast('Press back again to exit')
+          setLastBackPressed(now)
+        }
       }
       return true
     }
@@ -386,7 +464,39 @@ export default function RootLayout() {
     )
 
     return () => backHandler.remove()
-  }, [router, segments])
+  }, [router, segments, lastBackPressed])
+
+  const [expoPushToken, setExpoPushToken] = useState('')
+  const [notification, setNotification] = useState<
+    Notifications.Notification | undefined
+  >(undefined)
+  const notificationListener = useRef<Notifications.Subscription>()
+  const responseListener = useRef<Notifications.Subscription>()
+
+  useEffect(() => {
+    registerForPushNotificationsAsync()
+      .then((token) => setExpoPushToken(token ?? ''))
+      .catch((error: any) => setExpoPushToken(`${error}`))
+
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
+        setNotification(notification)
+      })
+
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log(response)
+      })
+
+    return () => {
+      notificationListener.current &&
+        Notifications.removeNotificationSubscription(
+          notificationListener.current
+        )
+      responseListener.current &&
+        Notifications.removeNotificationSubscription(responseListener.current)
+    }
+  }, [])
 
   if (!isColorSchemeLoaded) {
     return null

@@ -37,8 +37,9 @@ export function UserProvider(props: any) {
   }
 
   async function loginOAuth(userId: string, secret: string) {
-    const loggedIn = await account.createSession(userId, secret)
-    setUser(loggedIn)
+    await account.createSession(userId, secret)
+    const accountData = await account.get()
+    setUser(accountData)
     //toast('Welcome back. You are logged in!')
   }
 

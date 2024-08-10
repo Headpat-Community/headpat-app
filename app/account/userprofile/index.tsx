@@ -11,13 +11,15 @@ import { Button } from '~/components/ui/button'
 import { account, database } from '~/lib/appwrite-client'
 import { Separator } from '~/components/ui/separator'
 import { H1, H4, Muted } from '~/components/ui/typography'
-import { useCallback, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { toast } from '~/lib/toast'
 import { useUser } from '~/components/contexts/UserContext'
 import * as Sentry from '@sentry/react-native'
 import { UserData } from '~/lib/types/collections'
 import { useFocusEffect } from '@react-navigation/core'
 import { Checkbox } from '~/components/ui/checkbox'
+import { z } from 'zod'
+import { Form } from 'react-hook-form'
 
 export default function UserprofilePage() {
   const [isDisabled, setIsDisabled] = useState(false)
@@ -57,6 +59,62 @@ export default function UserprofilePage() {
 
   useFocusEffect(memoizedCallback)
 
+  const handleUpdate = async (name: string, value: string) => {
+    try {
+      setIsDisabled(true)
+      const schemaDefinitions = {
+        profileUrl: z
+          .string()
+          .min(1, 'Profile URL cannot be blank')
+          .max(48, 'Max length is 48'),
+        displayName: z
+          .string()
+          .min(3, 'Display Name should be at least 3 characters')
+          .max(48, 'Max length is 48'),
+        status: z.string().max(24, 'Max length is 24'),
+        pronouns: z.string().max(16, 'Max length is 16'),
+      }
+
+      // Dynamically create a schema with only the field that needs validation
+      const dynamicSchema = z.object({
+        [name]: schemaDefinitions[name],
+      })
+
+      try {
+        // Validate only the field that triggered the event
+        dynamicSchema.parse({ [name]: value })
+      } catch (error) {
+        console.log(error.errors)
+        toast(error.errors[0].message)
+        return
+      }
+
+      try {
+        await database.updateDocument('hp_db', 'userdata', current.$id, {
+          [name]: value,
+        })
+        toast('Data saved successfully')
+        setTimeout(() => {
+          setIsDisabled(false)
+        }, 2000)
+      } catch (error) {
+        console.log(error)
+        Sentry.captureException(error)
+        toast('Failed to save employee data')
+        setTimeout(() => {
+          setIsDisabled(false)
+        }, 2000)
+      }
+    } catch (error) {
+      console.error(error)
+      Sentry.captureException(error)
+      toast('An error occurred. Please try again later.')
+      setTimeout(() => {
+        setIsDisabled(false)
+      }, 2000)
+    }
+  }
+
   const handleNsfw = async () => {
     setIsDisabled(true)
     const prefs = current.prefs
@@ -78,84 +136,6 @@ export default function UserprofilePage() {
       setTimeout(() => {
         setIsDisabled(false)
       }, 2000)
-    } catch (error) {
-      toast(error.message)
-      console.error(error)
-      Sentry.captureException(error)
-      setTimeout(() => {
-        setIsDisabled(false)
-      }, 2000)
-    }
-  }
-
-  const changeProfileUrl = async () => {
-    setIsDisabled(true)
-    try {
-      await database.updateDocument('hp_db', 'userdata', current.$id, {
-        profileUrl: profileUrl,
-      })
-      toast('Profile URL changed successfully')
-      setProfileUrl('')
-      setTimeout(() => {
-        setIsDisabled(false)
-      }, 2000)
-    } catch (error) {
-      toast(error.message)
-      Sentry.captureException(error)
-      console.error(error)
-      setTimeout(() => {
-        setIsDisabled(false)
-      }, 2000)
-    }
-  }
-
-  const changeStatus = async () => {
-    setIsDisabled(true)
-    try {
-      await database.updateDocument('hp_db', 'userdata', current.$id, {
-        status: status,
-      })
-      toast('Status changed successfully')
-      setTimeout(() => {
-        setIsDisabled(false)
-      }, 2000)
-    } catch (error) {
-      toast(error.message)
-      Sentry.captureException(error)
-      console.error(error)
-      setTimeout(() => {
-        setIsDisabled(false)
-      }, 2000)
-    }
-  }
-
-  const changeDisplayName = async () => {
-    setIsDisabled(true)
-    try {
-      await database.updateDocument('hp_db', 'userdata', current.$id, {
-        displayName: displayName,
-      })
-      toast('Display Name changed successfully')
-      setTimeout(() => {
-        setIsDisabled(false)
-      }, 2000)
-    } catch (error) {
-      toast(error.message)
-      console.error(error)
-      Sentry.captureException(error)
-      setTimeout(() => {
-        setIsDisabled(false)
-      }, 2000)
-    }
-  }
-
-  const changePronouns = async () => {
-    setIsDisabled(true)
-    try {
-      await database.updateDocument('hp_db', 'userdata', current.$id, {
-        pronouns: pronouns,
-      })
-      toast('Pronouns changed successfully')
     } catch (error) {
       toast(error.message)
       console.error(error)
@@ -239,7 +219,7 @@ export default function UserprofilePage() {
               </View>
               <View>
                 <Button
-                  onPress={changeProfileUrl}
+                  onPress={() => handleUpdate('profileUrl', profileUrl)}
                   disabled={isDisabled || profileUrl.length < 3}
                 >
                   <Text>Save</Text>
@@ -266,7 +246,7 @@ export default function UserprofilePage() {
               </View>
               <View>
                 <Button
-                  onPress={changeDisplayName}
+                  onPress={() => handleUpdate('displayName', displayName)}
                   disabled={isDisabled || displayName.length < 3}
                 >
                   <Text>Save</Text>
@@ -291,7 +271,10 @@ export default function UserprofilePage() {
                 />
               </View>
               <View>
-                <Button onPress={changeStatus} disabled={isDisabled}>
+                <Button
+                  onPress={() => handleUpdate('status', status)}
+                  disabled={isDisabled}
+                >
                   <Text>Save</Text>
                 </Button>
               </View>
@@ -315,7 +298,10 @@ export default function UserprofilePage() {
                 />
               </View>
               <View>
-                <Button onPress={changePronouns} disabled={isDisabled}>
+                <Button
+                  onPress={() => handleUpdate('pronouns', pronouns)}
+                  disabled={isDisabled}
+                >
                   <Text>Save</Text>
                 </Button>
               </View>
