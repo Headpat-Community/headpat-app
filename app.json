@@ -39,7 +39,7 @@
         "applinks:headpat.de",
         "applinks:api.headpat.de"
       ],
-      "buildNumber": "27"
+      "buildNumber": "29"
     },
     "android": {
       "permissions": [
@@ -59,7 +59,7 @@
         }
       },
       "package": "com.headpat.app",
-      "versionCode": 28
+      "versionCode": 29
     },
     "web": {
       "bundler": "metro",
