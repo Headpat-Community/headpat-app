@@ -30,16 +30,20 @@ export default function MutualsPage() {
         'followers'
       )
 
+      // Filtering to find mutuals
       const mutualsList = data.documents.filter((follower) => {
-        return (
-          follower.userId !== current.$id && // Filter out current user
-          data.documents.some(
-            (otherFollower) =>
-              otherFollower.userId === follower.followerId &&
-              otherFollower.followerId === follower.userId &&
-              otherFollower.userId !== current.$id // Ensure other follower isn't the current user
-          )
+        const followsYou = data.documents.some(
+          (otherFollower) =>
+            otherFollower.userId === follower.followerId && // They follow you
+            otherFollower.followerId === current.$id // Current user is followed by them
         )
+        const youFollow = data.documents.some(
+          (otherFollower) =>
+            otherFollower.userId === current.$id && // Current user follows
+            otherFollower.followerId === follower.userId // Follower is followed by you
+        )
+
+        return followsYou && youFollow
       })
 
       // Remove duplicates based on `userId`
