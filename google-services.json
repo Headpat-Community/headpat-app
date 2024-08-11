@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "968293497666",
+    "project_id": "headpat-app",
+    "storage_bucket": "headpat-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:968293497666:android:9018ab03ac71a4b3d7a6db",
+        "android_client_info": {
+          "package_name": "com.headpat.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "968293497666-om2lu654m12s0s18th8acj7bf23u6cpr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCD1Ss9S2PAAm7ZcaD7keOC1qkxK8SNjno"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "968293497666-om2lu654m12s0s18th8acj7bf23u6cpr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

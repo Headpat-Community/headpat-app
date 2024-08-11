@@ -10,14 +10,7 @@ import { ToastProvider } from '~/components/primitives/deprecated-ui/toast'
 import { router, SplashScreen, useRouter, useSegments } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import * as React from 'react'
-import {
-  Alert,
-  BackHandler,
-  Platform,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native'
+import { BackHandler, ScrollView, Text, View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { ProfileThemeToggle } from '~/components/ThemeToggle'
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar'
@@ -49,11 +42,9 @@ import * as BackgroundFetch from 'expo-background-fetch'
 import * as Location from 'expo-location'
 import { database } from '~/lib/appwrite-client'
 import { useEffect, useRef, useState } from 'react'
-import * as Updates from 'expo-updates'
 import { toast } from '~/lib/toast'
-import * as Device from 'expo-device'
 import * as Notifications from 'expo-notifications'
-import Constants from 'expo-constants'
+import { registerForPushNotificationsAsync } from '~/components/system/pushNotifications'
 
 TaskManager.defineTask('background-location-task', async ({ data, error }) => {
   if (error) {
@@ -95,11 +86,6 @@ export {
   ErrorBoundary,
 } from 'expo-router'
 
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: 'index',
-}
-
 // Prevent the splash screen from auto-hiding before getting the color scheme.
 SplashScreen.preventAutoHideAsync()
 
@@ -113,56 +99,6 @@ Notifications.setNotificationHandler({
     shouldSetBadge: true,
   }),
 })
-
-function handleRegistrationError(errorMessage: string) {
-  alert(errorMessage)
-  throw new Error(errorMessage)
-}
-
-async function registerForPushNotificationsAsync() {
-  if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('default', {
-      name: 'default',
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FF231F7C',
-    })
-  }
-
-  if (Device.isDevice) {
-    const { status: existingStatus } = await Notifications.getPermissionsAsync()
-    let finalStatus = existingStatus
-    if (existingStatus !== 'granted') {
-      const { status } = await Notifications.requestPermissionsAsync()
-      finalStatus = status
-    }
-    if (finalStatus !== 'granted') {
-      handleRegistrationError(
-        'Permission not granted to get push token for push notification!'
-      )
-      return
-    }
-    const projectId =
-      Constants?.expoConfig?.extra?.eas?.projectId ??
-      Constants?.easConfig?.projectId
-    if (!projectId) {
-      handleRegistrationError('Project ID not found')
-    }
-    try {
-      const pushTokenString = (
-        await Notifications.getExpoPushTokenAsync({
-          projectId,
-        })
-      ).data
-      console.log(pushTokenString)
-      return pushTokenString
-    } catch (e: unknown) {
-      handleRegistrationError(`${e}`)
-    }
-  } else {
-    handleRegistrationError('Must use physical device for push notifications')
-  }
-}
 
 function HeaderMenuSidebar() {
   const navigation = useNavigation()
@@ -251,7 +187,7 @@ function CustomDrawerContent({
               </View>
             )
           }}
-          onPress={() => router.replace('/gallery')}
+          onPress={() => router.navigate('/gallery')}
         />
 
         <DrawerItem
@@ -263,7 +199,7 @@ function CustomDrawerContent({
               </View>
             )
           }}
-          onPress={() => router.replace('/mutuals')}
+          onPress={() => router.navigate('/mutuals')}
         />
 
         <DrawerItem
@@ -275,7 +211,7 @@ function CustomDrawerContent({
               </View>
             )
           }}
-          onPress={() => router.replace('/announcements')}
+          onPress={() => router.navigate('/announcements')}
         />
 
         <DrawerItem
@@ -287,7 +223,7 @@ function CustomDrawerContent({
               </View>
             )
           }}
-          onPress={() => router.replace('/events')}
+          onPress={() => router.navigate('/events')}
         />
 
         <DrawerItem
@@ -299,7 +235,7 @@ function CustomDrawerContent({
               </View>
             )
           }}
-          onPress={() => router.replace('/user/list')}
+          onPress={() => router.navigate('/user/list')}
         />
 
         <Separator />
@@ -332,7 +268,7 @@ function CustomDrawerContent({
                   </View>
                 )
               }}
-              onPress={() => router.push('/mutuals/mutualsList')}
+              onPress={() => router.navigate('/mutuals/mutualsList')}
             />
           </>
         )}
@@ -346,7 +282,7 @@ function CustomDrawerContent({
               </View>
             )
           }}
-          onPress={() => router.push('/communities')}
+          onPress={() => router.navigate('/communities')}
         />
 
         <View style={{ flex: 1, flexGrow: 1 }}></View>
@@ -392,7 +328,8 @@ function CustomDrawerContent({
             )
           }}
           onPress={() => {
-            current ? router.push('/account') : router.push('/login')
+            // eslint-disable-next-line no-unused-expressions
+            current ? router.navigate('/account') : router.navigate('/login')
           }}
         />
         <Separator />
@@ -467,6 +404,9 @@ export default function RootLayout() {
   }, [router, segments, lastBackPressed])
 
   const [expoPushToken, setExpoPushToken] = useState('')
+  const [channels, setChannels] = useState<Notifications.NotificationChannel[]>(
+    []
+  )
   const [notification, setNotification] = useState<
     Notifications.Notification | undefined
   >(undefined)

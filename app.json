@@ -19,6 +19,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.headpat.app",
       "usesAppleSignIn": true,
+      "googleServicesFile": "./GoogleService-Info.plist",
       "config": {
         "usesNonExemptEncryption": false,
         "googleMapsApiKey": "AIzaSyBlqdKEHTabryf5Et0bZQAtxO10VJMf1go"
@@ -38,7 +39,7 @@
         "applinks:headpat.de",
         "applinks:api.headpat.de"
       ],
-      "buildNumber": "26"
+      "buildNumber": "27"
     },
     "android": {
       "permissions": [
@@ -47,6 +48,7 @@
         "FOREGROUND_SERVICE_LOCATION",
         "ACCESS_BACKGROUND_LOCATION"
       ],
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/headpat_logo.png",
         "backgroundColor": "#ffffff"
@@ -57,7 +59,7 @@
         }
       },
       "package": "com.headpat.app",
-      "versionCode": 27
+      "versionCode": 28
     },
     "web": {
       "bundler": "metro",
