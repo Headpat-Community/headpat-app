@@ -44,7 +44,10 @@ import { database } from '~/lib/appwrite-client'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from '~/lib/toast'
 import * as Notifications from 'expo-notifications'
-import { registerForPushNotificationsAsync } from '~/components/system/pushNotifications'
+import {
+  registerForPushNotificationsAsync,
+  useNotificationObserver,
+} from '~/components/system/pushNotifications'
 
 TaskManager.defineTask('background-location-task', async ({ data, error }) => {
   if (error) {
@@ -341,7 +344,7 @@ function CustomDrawerContent({
             textAlign: 'center',
           }}
         >
-          Headpat App v0.5.0
+          Headpat App v0.5.1
         </Text>
       </ScrollView>
     </>
@@ -352,6 +355,8 @@ export default function RootLayout() {
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme()
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = useState(false)
   const [lastBackPressed, setLastBackPressed] = useState(0)
+  useNotificationObserver()
+
   useEffect(() => {
     ;(async () => {
       const theme = await AsyncStorage.getItem('theme')
