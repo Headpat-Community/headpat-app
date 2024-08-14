@@ -7,7 +7,7 @@ import { Text } from '~/components/ui/text'
 const UserItem = React.memo(({ user }: any) => {
   const getUserAvatar = (avatarId: string) => {
     if (!avatarId) return require('~/assets/pfp-placeholder.png')
-    return `https://api.headpat.de/v1/storage/buckets/avatars/files/${avatarId}/preview?project=6557c1a8b6c2739b3ecf&width=250&height=250`
+    return `https://api.headpat.de/v1/storage/buckets/avatars/files/${avatarId}/preview?project=hp-main&width=250&height=250`
   }
 
   return (

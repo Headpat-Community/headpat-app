@@ -51,12 +51,12 @@ export default function UserPage() {
 
   const getUserAvatar = (avatarId: string) => {
     if (!avatarId) return
-    return `https://api.headpat.de/v1/storage/buckets/avatars/files/${avatarId}/view?project=6557c1a8b6c2739b3ecf`
+    return `https://api.headpat.de/v1/storage/buckets/avatars/files/${avatarId}/view?project=hp-main`
   }
 
   const getUserBanner = (bannerId: string) => {
     if (!bannerId) return
-    return `https://api.headpat.de/v1/storage/buckets/banners/files/${bannerId}/preview?project=6557c1a8b6c2739b3ecf&width=1280&height=720`
+    return `https://api.headpat.de/v1/storage/buckets/banners/files/${bannerId}/preview?project=hp-main&width=1280&height=720`
   }
 
   const onRefresh = () => {

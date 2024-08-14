@@ -60,7 +60,7 @@ export default function GalleryPage() {
 
   const getGalleryUrl = useCallback((galleryId: string) => {
     if (!galleryId) return
-    return `https://api.headpat.de/v1/storage/buckets/gallery/files/${galleryId}/preview?project=6557c1a8b6c2739b3ecf&width=400&height=400`
+    return `https://api.headpat.de/v1/storage/buckets/gallery/files/${galleryId}/preview?project=hp-main&width=400&height=400`
   }, [])
 
   const onRefresh = async () => {
@@ -87,7 +87,7 @@ export default function GalleryPage() {
   const generateThumbnail = useCallback(async (galleryId: string) => {
     try {
       const { uri } = await VideoThumbnails.getThumbnailAsync(
-        `https://api.headpat.de/v1/storage/buckets/gallery/files/${galleryId}/view?project=6557c1a8b6c2739b3ecf`
+        `https://api.headpat.de/v1/storage/buckets/gallery/files/${galleryId}/view?project=hp-main`
       )
       setThumbnails((prevThumbnails) => ({
         ...prevThumbnails,

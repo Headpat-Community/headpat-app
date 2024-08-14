@@ -62,19 +62,19 @@ export default function HomeView() {
 
   const getGalleryUrl = (galleryId: string) => {
     if (!galleryId) return
-    return `https://api.headpat.de/v1/storage/buckets/gallery/files/${galleryId}/view?project=6557c1a8b6c2739b3ecf`
+    return `https://api.headpat.de/v1/storage/buckets/gallery/files/${galleryId}/view?project=hp-main`
   }
 
   const handleModalImage = (galleryId: string) => {
     if (!galleryId) return
     return [
-      `https://api.headpat.de/v1/storage/buckets/gallery/files/${galleryId}/view?project=6557c1a8b6c2739b3ecf`,
+      `https://api.headpat.de/v1/storage/buckets/gallery/files/${galleryId}/view?project=hp-main`,
     ]
   }
 
   const getUserAvatar = (userAvatarId: string) => {
     if (!userAvatarId) return
-    return `https://api.headpat.de/v1/storage/buckets/avatars/files/${userAvatarId}/preview?project=6557c1a8b6c2739b3ecf&width=128&height=128`
+    return `https://api.headpat.de/v1/storage/buckets/avatars/files/${userAvatarId}/preview?project=hp-main&width=128&height=128`
   }
 
   const player = useVideoPlayer(
