@@ -1,7 +1,9 @@
 import { Tabs } from 'expo-router'
-import { MapIcon, PersonStandingIcon, UsersIcon } from 'lucide-react-native'
+import { MapIcon, PersonStandingIcon } from 'lucide-react-native'
+import { useUser } from '~/components/contexts/UserContext'
 
 export default function TabsLayout() {
+  const { current } = useUser()
   return (
     <Tabs>
       <Tabs.Screen
@@ -15,22 +17,13 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="mutualsList"
-        options={{
-          title: 'Mutuals',
-          tabBarIcon({ color, size }) {
-            return <UsersIcon color={color} size={size} />
-          },
-          headerShown: false,
-        }}
-      />
-      <Tabs.Screen
         name="share"
         options={{
           title: 'Share my location',
           tabBarIcon({ color, size }) {
             return <PersonStandingIcon color={color} size={size} />
           },
+          href: !current?.$id ? `/locations/share/` : null,
           headerShown: false,
         }}
       />

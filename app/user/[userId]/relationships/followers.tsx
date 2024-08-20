@@ -1,20 +1,20 @@
 import { toast } from '~/lib/toast'
 import { database } from '~/lib/appwrite-client'
 import { Query } from 'react-native-appwrite'
-import { useUser } from '~/components/contexts/UserContext'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Followers, UserData } from '~/lib/types/collections'
 import * as Sentry from '@sentry/react-native'
 import UserItem from '~/components/user/UserItem'
 import { FlatList, RefreshControl, ScrollView, Text, View } from 'react-native'
 import { H1, Muted } from '~/components/ui/typography'
+import { useLocalSearchParams } from 'expo-router'
 
 export default function FollowingPage() {
   const [users, setUsers] = useState<UserData.UserDataDocumentsType[]>([])
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
   const [offset, setOffset] = useState<number>(0)
-  const { current } = useUser()
+  const local = useLocalSearchParams()
 
   const onRefresh = async () => {
     setRefreshing(true)
@@ -30,7 +30,7 @@ export default function FollowingPage() {
           'hp_db',
           'followers',
           [
-            Query.equal('followerId', current?.$id),
+            Query.equal('followerId', local?.$id),
             Query.orderDesc('$createdAt'),
             Query.limit(20),
             Query.offset(newOffset),
@@ -50,7 +50,7 @@ export default function FollowingPage() {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [current]
+    [local]
   )
 
   const fetchUserDataForUsers = async (users: any[]) => {
@@ -92,11 +92,11 @@ export default function FollowingPage() {
   }
 
   useEffect(() => {
-    if (!current?.$id) return
+    if (!local?.$id) return
     fetchUsers().then()
-  }, [current, fetchUsers])
+  }, [local, fetchUsers])
 
-  if (!current?.$id)
+  if (!local?.$id)
     return (
       <ScrollView
         refreshControl={

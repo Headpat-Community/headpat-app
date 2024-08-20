@@ -24,6 +24,7 @@ import { toast } from '~/lib/toast'
 import * as WebBrowser from 'expo-web-browser'
 import * as Sentry from '@sentry/react-native'
 import * as Clipboard from 'expo-clipboard'
+import { useUser } from '~/components/contexts/UserContext'
 
 export default function UserPage() {
   const { isDarkColorScheme } = useColorScheme()
@@ -31,6 +32,7 @@ export default function UserPage() {
   const local = useLocalSearchParams()
   const [userData, setUserData] = useState<UserData.UserDataDocumentsType>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
+  const { current } = useUser()
 
   const fetchUser = async () => {
     try {
@@ -147,18 +149,26 @@ export default function UserPage() {
           </View>
           <Text className={'mb-4 flex-row flex-wrap'}>{userData?.status}</Text>
           <View className={'flex-row gap-2'}>
-            <Button
-              className={'text-center w-28'}
-              onPress={() => toast('Ha! You thought this was a real button!')}
-            >
-              <Text>Follow</Text>
-            </Button>
-            <Button
-              className={'text-center w-28'}
-              onPress={() => toast('Ha! You thought this was a real button!')}
-            >
-              <Text>Message</Text>
-            </Button>
+            {current?.$id === userData?.$id && (
+              <>
+                <Button
+                  className={'text-center w-28'}
+                  onPress={() =>
+                    toast('Ha! You thought this was a real button!')
+                  }
+                >
+                  <Text>Follow</Text>
+                </Button>
+                <Button
+                  className={'text-center w-28'}
+                  onPress={() =>
+                    toast('Ha! You thought this was a real button!')
+                  }
+                >
+                  <Text>Message</Text>
+                </Button>
+              </>
+            )}
           </View>
         </View>
       </View>

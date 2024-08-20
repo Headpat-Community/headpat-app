@@ -1,16 +1,15 @@
-import React, { useEffect, useState, useCallback } from 'react'
-import { FlatList } from 'react-native'
-import { database } from '~/lib/appwrite-client'
+import React, { useCallback, useEffect, useState } from 'react'
+import { FlatList, Text } from 'react-native'
+import { database, storage } from '~/lib/appwrite-client'
 import { toast } from '~/lib/toast'
 import * as Sentry from '@sentry/react-native'
 import { Gallery } from '~/lib/types/collections'
-import { Query } from 'react-native-appwrite'
+import { ImageFormat, Query } from 'react-native-appwrite'
 import * as VideoThumbnails from 'expo-video-thumbnails'
 import { useUser } from '~/components/contexts/UserContext'
 import { useBackHandler } from '@react-native-community/hooks'
 import { useNavigation } from '@react-navigation/native'
 import GalleryItem from '~/components/gallery/GalleryItem'
-import { Text } from 'react-native'
 
 export default function GalleryPage() {
   const { current } = useUser()
@@ -55,13 +54,32 @@ export default function GalleryPage() {
         Sentry.captureException(error)
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [current]
   )
 
-  const getGalleryUrl = useCallback((galleryId: string) => {
-    if (!galleryId) return
-    return `https://api.headpat.de/v1/storage/buckets/gallery/files/${galleryId}/preview?project=hp-main&width=400&height=400`
-  }, [])
+  const getGalleryUrl = useCallback(
+    (galleryId: string, output: ImageFormat = ImageFormat.Jpeg) => {
+      if (!galleryId) return
+      const data = storage.getFilePreview(
+        'gallery',
+        `${galleryId}`,
+        400,
+        400,
+        undefined,
+        50,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        output
+      )
+      return data.href
+    },
+    []
+  )
 
   const onRefresh = async () => {
     setRefreshing(true)

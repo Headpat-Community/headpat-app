@@ -202,7 +202,7 @@ function CustomDrawerContent({
               </View>
             )
           }}
-          onPress={() => router.navigate('/mutuals')}
+          onPress={() => router.navigate('/locations')}
         />
 
         <DrawerItem
@@ -271,7 +271,7 @@ function CustomDrawerContent({
                   </View>
                 )
               }}
-              onPress={() => router.navigate('/mutuals/mutualsList')}
+              onPress={() => router.navigate('/user/relationships/mutuals')}
             />
           </>
         )}

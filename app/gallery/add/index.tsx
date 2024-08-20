@@ -49,7 +49,6 @@ export default function GalleryAdd() {
         image.width * image.height <= maxResolution &&
         image.fileSize <= maxFileSize
       ) {
-        console.log(image)
         setImage(image)
         setPage(2)
       }

@@ -21,8 +21,6 @@ import * as Sentry from '@sentry/react-native'
 
 export default function ModalScreen() {
   const { loginOAuth, register, current } = useUser()
-  const [acceptedTerms, setAcceptedTerms] = useState(false)
-  const [isRegistering, setIsRegistering] = useState(false)
 
   const [data, setData] = useState({
     email: '',
@@ -58,6 +56,9 @@ export default function ModalScreen() {
       await register(data.email, data.password, data.username)
       router.push('/account')
     } catch (error) {
+      Sentry.captureException(
+        `Error registering: ${error.type} ${error.message} ${error.code}`
+      )
       console.log(error.type, error.message, error.code)
       if (error.type === 'general_argument_invalid') {
         toast('Invalid E-Mail or password.')

@@ -79,8 +79,8 @@ export const DrawerScreensData = [
     title: 'Gallery',
   },
   {
-    location: 'mutuals',
-    title: 'Mutuals',
+    location: 'locations',
+    title: 'Locations',
   },
   {
     location: 'communities/index',
@@ -103,8 +103,20 @@ export const DrawerScreensData = [
     title: 'Users',
   },
   {
+    location: 'user/relationships',
+    title: 'Users',
+  },
+  {
     location: 'user/[userId]/index',
     title: 'Profile',
+  },
+  {
+    location: 'user/[userId]/relationships/followers',
+    title: 'Followers',
+  },
+  {
+    location: 'user/[userId]/relationships/following',
+    title: 'Following',
   },
   {
     location: 'login/index',

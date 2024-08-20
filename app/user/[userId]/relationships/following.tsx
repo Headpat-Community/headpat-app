@@ -8,13 +8,14 @@ import * as Sentry from '@sentry/react-native'
 import UserItem from '~/components/user/UserItem'
 import { FlatList, RefreshControl, ScrollView, Text, View } from 'react-native'
 import { H1, Muted } from '~/components/ui/typography'
+import { useLocalSearchParams } from 'expo-router'
 
 export default function FollowingPage() {
   const [users, setUsers] = useState<UserData.UserDataDocumentsType[]>([])
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
   const [offset, setOffset] = useState<number>(0)
-  const { current } = useUser()
+  const local = useLocalSearchParams()
 
   const onRefresh = async () => {
     setRefreshing(true)
@@ -30,7 +31,7 @@ export default function FollowingPage() {
           'hp_db',
           'followers',
           [
-            Query.equal('followerId', current?.$id),
+            Query.equal('userId', local.$id),
             Query.orderDesc('$createdAt'),
             Query.limit(20),
             Query.offset(newOffset),
@@ -49,23 +50,8 @@ export default function FollowingPage() {
         Sentry.captureException(error)
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [current]
+    [local]
   )
-
-  const fetchUserDataForUsers = async (users: any[]) => {
-    try {
-      const userDataPromises = users.map((user) =>
-        fetchUserDataForId(user.userId)
-      )
-      const usersData = await Promise.all(userDataPromises)
-      return usersData.filter((userData) => userData !== undefined)
-    } catch (error) {
-      toast('Failed to fetch user data. Please try again later.')
-      Sentry.captureException(error)
-      return []
-    }
-  }
 
   const fetchUserDataForId = async (userId: string) => {
     try {
@@ -81,6 +67,22 @@ export default function FollowingPage() {
     }
   }
 
+  const fetchUserDataForUsers = async (
+    users: Followers.FollowerDocumentsType[]
+  ) => {
+    try {
+      const userDataPromises = users.map((user) =>
+        fetchUserDataForId(user.followerId)
+      )
+      const usersData = await Promise.all(userDataPromises)
+      return usersData.filter((userData) => userData !== undefined)
+    } catch (error) {
+      toast('Failed to fetch user data. Please try again later.')
+      Sentry.captureException(error)
+      return []
+    }
+  }
+
   const loadMore = async () => {
     if (!loadingMore) {
       setLoadingMore(true)
@@ -92,11 +94,11 @@ export default function FollowingPage() {
   }
 
   useEffect(() => {
-    if (!current?.$id) return
+    if (!local?.$id) return
     fetchUsers().then()
-  }, [current, fetchUsers])
+  }, [local, fetchUsers])
 
-  if (!current?.$id)
+  if (!local?.$id)
     return (
       <ScrollView
         refreshControl={
@@ -126,9 +128,11 @@ export default function FollowingPage() {
         <View className={'flex-1 justify-center items-center'}>
           <View className={'p-4 native:pb-24 max-w-md gap-6'}>
             <View className={'gap-1'}>
-              <H1 className={'text-foreground text-center'}>Following</H1>
+              <H1 className={'text-foreground text-center'}>
+                Following nobody
+              </H1>
               <Muted className={'text-base text-center'}>
-                You are not following anyone yet.
+                Seems kind of lonely in here...
               </Muted>
             </View>
           </View>

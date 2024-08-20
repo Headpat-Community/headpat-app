@@ -154,7 +154,7 @@ export default function HomeView() {
         </Card>
 
         <Card className={'w-3/4 mt-4'}>
-          <TouchableOpacity onPress={() => router.push('/mutuals')}>
+          <TouchableOpacity onPress={() => router.push('/locations')}>
             <CardContent className={'p-0'}>
               <CardFooter className={'mt-2 text-xl flex pb-4'}>
                 <MapPinnedIcon
