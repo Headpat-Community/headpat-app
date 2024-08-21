@@ -1,8 +1,8 @@
 import { toast } from '~/lib/toast'
-import { database } from '~/lib/appwrite-client'
-import { Query } from 'react-native-appwrite'
+import { functions } from '~/lib/appwrite-client'
+import { ExecutionMethod } from 'react-native-appwrite'
 import React, { useCallback, useEffect, useState } from 'react'
-import { Followers, UserData } from '~/lib/types/collections'
+import { UserData } from '~/lib/types/collections'
 import * as Sentry from '@sentry/react-native'
 import UserItem from '~/components/user/UserItem'
 import { FlatList, RefreshControl, ScrollView, Text, View } from 'react-native'
@@ -14,11 +14,13 @@ export default function FollowingPage() {
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
   const [offset, setOffset] = useState<number>(0)
+  const [hasMore, setHasMore] = useState<boolean>(true)
   const local = useLocalSearchParams()
 
   useEffect(() => {
     setUsers([]) // Clear the old users
     setOffset(0) // Reset the offset
+    setHasMore(true) // Reset hasMore
   }, [local?.userId])
 
   const onRefresh = async () => {
@@ -33,26 +35,25 @@ export default function FollowingPage() {
       let isMounted = true
 
       try {
-        const data: Followers.FollowerType = await database.listDocuments(
-          'hp_db',
-          'followers',
-          [
-            Query.equal('followerId', local?.userId),
-            Query.orderDesc('$createdAt'),
-            Query.limit(20),
-            Query.offset(newOffset),
-          ]
+        const data = await functions.createExecution(
+          '65e2126d9e431eb3c473',
+          '',
+          false,
+          `/user/followers?userId=${local?.userId}&limit=20&offset=${newOffset}`,
+          ExecutionMethod.GET
+        )
+        const response: UserData.UserDataDocumentsType[] = JSON.parse(
+          data.responseBody
         )
 
-        if (!isMounted) return // Prevent state updates if unmounted
-
-        const newUsers = await fetchUserDataForUsers(data.documents)
-
         if (newOffset === 0) {
-          setUsers(newUsers)
+          setUsers(response)
         } else {
-          setUsers((prevUsers) => [...prevUsers, ...newUsers])
+          setUsers((prevUsers) => [...prevUsers, ...response])
         }
+
+        // Update hasMore based on the response length
+        setHasMore(response.length === 20)
       } catch (error) {
         toast('Failed to fetch users. Please try again later.')
         Sentry.captureException(error)
@@ -66,36 +67,8 @@ export default function FollowingPage() {
     [local?.userId]
   )
 
-  const fetchUserDataForUsers = async (users: any[]) => {
-    try {
-      const userDataPromises = users.map((user) =>
-        fetchUserDataForId(user.userId)
-      )
-      const usersData = await Promise.all(userDataPromises)
-      return usersData.filter((userData) => userData !== undefined)
-    } catch (error) {
-      toast('Failed to fetch user data. Please try again later.')
-      Sentry.captureException(error)
-      return []
-    }
-  }
-
-  const fetchUserDataForId = async (userId: string) => {
-    try {
-      const result: UserData.UserDataType = await database.listDocuments(
-        'hp_db',
-        'userdata',
-        [Query.equal('$id', userId)]
-      )
-      return result.documents[0]
-    } catch (error) {
-      toast('Failed to fetch user data. Please try again later.')
-      Sentry.captureException(error)
-    }
-  }
-
   const loadMore = async () => {
-    if (!loadingMore) {
+    if (!loadingMore && hasMore) {
       setLoadingMore(true)
       const newOffset = offset + 20
       setOffset(newOffset)
@@ -178,7 +151,9 @@ export default function FollowingPage() {
       contentContainerStyle={{ justifyContent: 'space-between' }}
       onEndReached={loadMore}
       onEndReachedThreshold={0.5}
-      ListFooterComponent={loadingMore ? <Text>Loading...</Text> : null}
+      ListFooterComponent={
+        loadingMore && hasMore ? <Text>Loading...</Text> : null
+      }
     />
   )
 }
