@@ -10,11 +10,16 @@ import { H1, Muted } from '~/components/ui/typography'
 import { useLocalSearchParams } from 'expo-router'
 
 export default function FollowingPage() {
-  const [users, setUsers] = useState<UserData.UserDataDocumentsType[]>([])
+  const [users, setUsers] = useState<UserData.UserDataDocumentsType[]>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
   const [offset, setOffset] = useState<number>(0)
   const local = useLocalSearchParams()
+
+  useEffect(() => {
+    setUsers([]) // Clear the old users
+    setOffset(0) // Reset the offset
+  }, [local?.userId])
 
   const onRefresh = async () => {
     setRefreshing(true)
@@ -25,17 +30,21 @@ export default function FollowingPage() {
 
   const fetchUsers = useCallback(
     async (newOffset: number = 0) => {
+      let isMounted = true
+
       try {
         const data: Followers.FollowerType = await database.listDocuments(
           'hp_db',
           'followers',
           [
-            Query.equal('followerId', local?.$id),
+            Query.equal('followerId', local?.userId),
             Query.orderDesc('$createdAt'),
             Query.limit(20),
             Query.offset(newOffset),
           ]
         )
+
+        if (!isMounted) return // Prevent state updates if unmounted
 
         const newUsers = await fetchUserDataForUsers(data.documents)
 
@@ -48,9 +57,13 @@ export default function FollowingPage() {
         toast('Failed to fetch users. Please try again later.')
         Sentry.captureException(error)
       }
+
+      return () => {
+        isMounted = false // Set the flag to false on unmount
+      }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [local]
+    [local?.userId]
   )
 
   const fetchUserDataForUsers = async (users: any[]) => {
@@ -92,31 +105,45 @@ export default function FollowingPage() {
   }
 
   useEffect(() => {
-    if (!local?.$id) return
+    if (!local?.userId) return
     fetchUsers().then()
-  }, [local, fetchUsers])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [local?.userId])
 
-  if (!local?.$id)
+  if (!local?.userId)
     return (
       <ScrollView
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
+        contentContainerClassName={'flex-1 justify-center items-center h-full'}
       >
-        <View className={'flex-1 justify-center items-center'}>
-          <View className={'p-4 native:pb-24 max-w-md gap-6'}>
-            <View className={'gap-1'}>
-              <H1 className={'text-foreground text-center'}>Following</H1>
-              <Muted className={'text-base text-center'}>
-                You need to be logged in to see who you are following.
-              </Muted>
-            </View>
+        <View className={'p-4 native:pb-24 max-w-md gap-6'}>
+          <View className={'gap-1'}>
+            <H1 className={'text-foreground text-center'}>Followers</H1>
+            <Muted className={'text-base text-center'}>
+              This user does not exist.
+            </Muted>
           </View>
         </View>
       </ScrollView>
     )
 
-  if (users.length === 0)
+  if (refreshing)
+    return (
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        contentContainerClassName={'flex-1 justify-center items-center h-full'}
+      >
+        <View className={'p-4 native:pb-24 max-w-md gap-6'}>
+          <View className={'gap-1'}>
+            <H1 className={'text-foreground text-center'}>Followers</H1>
+            <Muted className={'text-base text-center'}>Loading...</Muted>
+          </View>
+        </View>
+      </ScrollView>
+    )
+
+  if (refreshing && users && users.length === 0)
     return (
       <ScrollView
         refreshControl={
@@ -126,9 +153,9 @@ export default function FollowingPage() {
         <View className={'flex-1 justify-center items-center'}>
           <View className={'p-4 native:pb-24 max-w-md gap-6'}>
             <View className={'gap-1'}>
-              <H1 className={'text-foreground text-center'}>Following</H1>
+              <H1 className={'text-foreground text-center'}>Followers</H1>
               <Muted className={'text-base text-center'}>
-                You are not following anyone yet.
+                This user does not have any followers.
               </Muted>
             </View>
           </View>

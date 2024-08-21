@@ -5,7 +5,7 @@ import {
   View,
 } from 'react-native'
 import { H1, H3, Muted } from '~/components/ui/typography'
-import { useLocalSearchParams } from 'expo-router'
+import { Link, useLocalSearchParams } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { UserData } from '~/lib/types/collections'
 import { database } from '~/lib/appwrite-client'
@@ -244,25 +244,29 @@ export default function UserPage() {
           >
             <View>
               <Muted className={'text-center mb-2'}>
-                <EyeIcon
-                  size={12}
-                  title={'Location'}
-                  color={theme}
-                  style={{
-                    marginRight: 4,
-                  }}
-                />
-                55 Followers
+                <Link href={`/user/${userData?.$id}/relationships/followers`}>
+                  <EyeIcon
+                    size={12}
+                    title={'Location'}
+                    color={theme}
+                    style={{
+                      marginRight: 4,
+                    }}
+                  />
+                  55 Followers
+                </Link>
               </Muted>
               <Muted className={'text-center mb-2'}>
-                <ScanEyeIcon
-                  size={12}
-                  color={theme}
-                  style={{
-                    marginRight: 4,
-                  }}
-                />
-                69 Following
+                <Link href={`/user/${userData?.$id}/relationships/following`}>
+                  <ScanEyeIcon
+                    size={12}
+                    color={theme}
+                    style={{
+                      marginRight: 4,
+                    }}
+                  />
+                  69 Following
+                </Link>
               </Muted>
             </View>
           </View>

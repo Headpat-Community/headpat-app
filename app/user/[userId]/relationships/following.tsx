@@ -1,7 +1,6 @@
 import { toast } from '~/lib/toast'
 import { database } from '~/lib/appwrite-client'
 import { Query } from 'react-native-appwrite'
-import { useUser } from '~/components/contexts/UserContext'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Followers, UserData } from '~/lib/types/collections'
 import * as Sentry from '@sentry/react-native'
@@ -17,6 +16,11 @@ export default function FollowingPage() {
   const [offset, setOffset] = useState<number>(0)
   const local = useLocalSearchParams()
 
+  useEffect(() => {
+    setUsers([]) // Clear the old users
+    setOffset(0) // Reset the offset
+  }, [local?.userId])
+
   const onRefresh = async () => {
     setRefreshing(true)
     setOffset(0)
@@ -31,7 +35,7 @@ export default function FollowingPage() {
           'hp_db',
           'followers',
           [
-            Query.equal('userId', local.$id),
+            Query.equal('userId', local.userId),
             Query.orderDesc('$createdAt'),
             Query.limit(20),
             Query.offset(newOffset),
@@ -50,7 +54,8 @@ export default function FollowingPage() {
         Sentry.captureException(error)
       }
     },
-    [local]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [local?.userId]
   )
 
   const fetchUserDataForId = async (userId: string) => {
@@ -94,11 +99,12 @@ export default function FollowingPage() {
   }
 
   useEffect(() => {
-    if (!local?.$id) return
+    if (!local?.userId) return
     fetchUsers().then()
-  }, [local, fetchUsers])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [local?.userId])
 
-  if (!local?.$id)
+  if (!local?.userId)
     return (
       <ScrollView
         refreshControl={
@@ -117,8 +123,24 @@ export default function FollowingPage() {
         </View>
       </ScrollView>
     )
+  if (refreshing)
+    return (
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        contentContainerClassName={'flex-1 justify-center items-center h-full'}
+      >
+        <View className={'p-4 native:pb-24 max-w-md gap-6'}>
+          <View className={'gap-1'}>
+            <H1 className={'text-foreground text-center'}>Following</H1>
+            <Muted className={'text-base text-center'}>Loading...</Muted>
+          </View>
+        </View>
+      </ScrollView>
+    )
 
-  if (users.length === 0)
+  if (refreshing && users && users.length === 0)
     return (
       <ScrollView
         refreshControl={
