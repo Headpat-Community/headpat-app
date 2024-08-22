@@ -21,13 +21,13 @@ export default function GalleryPage() {
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
 
   const fetchGallery = useCallback(
-    async (newOffset: number = 0) => {
+    async (newOffset: number = 0, limit: number = 10) => {
       try {
         const nsfwPreference = current?.prefs?.nsfw ?? false
         let query = nsfwPreference
-          ? [Query.limit(10), Query.offset(newOffset)]
+          ? [Query.limit(limit), Query.offset(newOffset)]
           : [
-              Query.limit(10),
+              Query.limit(limit),
               Query.offset(newOffset),
               Query.equal('nsfw', false),
             ]
@@ -84,7 +84,7 @@ export default function GalleryPage() {
   const onRefresh = async () => {
     setRefreshing(true)
     setOffset(0)
-    await fetchGallery(0)
+    await fetchGallery(0, 5) // Prioritize the first 5 images
     setRefreshing(false)
   }
 
@@ -99,7 +99,7 @@ export default function GalleryPage() {
   }
 
   useEffect(() => {
-    fetchGallery().then()
+    fetchGallery(0, 5).then() // Fetch the first 5 images with higher priority
   }, [current, fetchGallery])
 
   const generateThumbnail = useCallback(async (galleryId: string) => {
