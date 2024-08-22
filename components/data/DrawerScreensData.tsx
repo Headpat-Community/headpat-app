@@ -59,10 +59,12 @@ export const DrawerScreensData = [
   {
     location: 'announcements/index',
     title: 'Announcements',
+    headerLeft: <HeaderSidebarBackButton />,
   },
   {
     location: 'announcements/[announcementId]/index',
     title: 'Announcement',
+    headerLeft: <HeaderSidebarBackButton />,
   },
   {
     location: 'gallery/index',
@@ -132,14 +134,17 @@ export const DrawerScreensData = [
   {
     location: 'account/index',
     title: 'My Account',
+    headerLeft: <HeaderSidebarBackButton />,
   },
   {
     location: 'account/userprofile/index',
     title: 'User Profile',
+    headerLeft: <HeaderSidebarBackButton />,
   },
   {
     location: 'account/security/index',
     title: 'Security',
+    headerLeft: <HeaderSidebarBackButton />,
   },
   {
     location: '(tabs)',
