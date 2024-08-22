@@ -67,12 +67,12 @@ export const DrawerScreensData = [
   {
     location: 'gallery/index',
     title: 'Gallery',
-    headerLeft: <GalleryAddButton />,
+    headerRight: <GalleryAddButton />,
   },
   {
     location: 'gallery/[galleryId]/index',
     title: 'Gallery',
-    headerLeft: <GalleryAddButton />,
+    headerRight: <GalleryAddButton />,
   },
   {
     location: 'gallery/add/index',
@@ -101,6 +101,7 @@ export const DrawerScreensData = [
   {
     location: 'user/list/index',
     title: 'Users',
+    headerLeft: <HeaderSidebarBackButton />,
   },
   {
     location: 'user/relationships',
@@ -111,12 +112,14 @@ export const DrawerScreensData = [
     title: 'Profile',
   },
   {
-    location: 'user/[userId]/relationships/followers',
+    location: 'user/[userId]/relationships/followers/index',
     title: 'Followers',
+    headerLeft: <HeaderSidebarBackButton />,
   },
   {
-    location: 'user/[userId]/relationships/following',
+    location: 'user/[userId]/relationships/following/index',
     title: 'Following',
+    headerLeft: <HeaderSidebarBackButton />,
   },
   {
     location: 'login/index',

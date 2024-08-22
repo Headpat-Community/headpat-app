@@ -32,8 +32,6 @@ export default function FollowingPage() {
 
   const fetchUsers = useCallback(
     async (newOffset: number = 0) => {
-      let isMounted = true
-
       try {
         const data = await functions.createExecution(
           '65e2126d9e431eb3c473',
@@ -57,10 +55,6 @@ export default function FollowingPage() {
       } catch (error) {
         toast('Failed to fetch users. Please try again later.')
         Sentry.captureException(error)
-      }
-
-      return () => {
-        isMounted = false // Set the flag to false on unmount
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps

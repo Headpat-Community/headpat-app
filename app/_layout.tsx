@@ -255,7 +255,7 @@ function CustomDrawerContent({
                 )
               }}
               onPress={() => {
-                router.push({
+                router.navigate({
                   pathname: '/user/[userId]',
                   params: { userId: current.$id },
                 })
@@ -466,7 +466,6 @@ export default function RootLayout() {
             screenOptions={{
               drawerStyle: {},
               swipeEdgeWidth: 50,
-              headerLeft: () => <HeaderMenuSidebar />,
             }}
           >
             {/* <Image
@@ -487,8 +486,9 @@ export default function RootLayout() {
                   drawerLabel: screen.title,
                   title: screen.title,
                   headerTitleAlign: 'left',
+                  headerLeft: () => screen.headerLeft || <HeaderMenuSidebar />,
                   headerRight: () =>
-                    screen.headerLeft || <ProfileThemeToggle />,
+                    screen.headerRight || <ProfileThemeToggle />,
                 }}
               />
             ))}
