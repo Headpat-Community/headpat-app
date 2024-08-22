@@ -59,28 +59,30 @@ export const DrawerScreensData = [
   {
     location: 'announcements/index',
     title: 'Announcements',
+    headerLeft: <HeaderSidebarBackButton />,
   },
   {
     location: 'announcements/[announcementId]/index',
     title: 'Announcement',
+    headerLeft: <HeaderSidebarBackButton />,
   },
   {
     location: 'gallery/index',
     title: 'Gallery',
-    headerLeft: <GalleryAddButton />,
+    headerRight: <GalleryAddButton />,
   },
   {
     location: 'gallery/[galleryId]/index',
     title: 'Gallery',
-    headerLeft: <GalleryAddButton />,
+    headerRight: <GalleryAddButton />,
   },
   {
     location: 'gallery/add/index',
     title: 'Gallery',
   },
   {
-    location: 'mutuals',
-    title: 'Mutuals',
+    location: 'locations',
+    title: 'Locations',
   },
   {
     location: 'communities/index',
@@ -101,10 +103,25 @@ export const DrawerScreensData = [
   {
     location: 'user/list/index',
     title: 'Users',
+    headerLeft: <HeaderSidebarBackButton />,
+  },
+  {
+    location: 'user/relationships',
+    title: 'Users',
   },
   {
     location: 'user/[userId]/index',
     title: 'Profile',
+  },
+  {
+    location: 'user/[userId]/relationships/followers/index',
+    title: 'Followers',
+    headerLeft: <HeaderSidebarBackButton />,
+  },
+  {
+    location: 'user/[userId]/relationships/following/index',
+    title: 'Following',
+    headerLeft: <HeaderSidebarBackButton />,
   },
   {
     location: 'login/index',
@@ -117,14 +134,17 @@ export const DrawerScreensData = [
   {
     location: 'account/index',
     title: 'My Account',
+    headerLeft: <HeaderSidebarBackButton />,
   },
   {
     location: 'account/userprofile/index',
     title: 'User Profile',
+    headerLeft: <HeaderSidebarBackButton />,
   },
   {
     location: 'account/security/index',
     title: 'Security',
+    headerLeft: <HeaderSidebarBackButton />,
   },
   {
     location: '(tabs)',

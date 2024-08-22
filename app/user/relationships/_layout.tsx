@@ -5,9 +5,19 @@ export default function TabsLayout() {
   return (
     <Tabs>
       <Tabs.Screen
-        name="index"
+        name="mutuals"
         options={{
-          title: 'Map',
+          title: 'Mutuals',
+          tabBarIcon({ color, size }) {
+            return <PersonStandingIcon color={color} size={size} />
+          },
+          headerShown: false,
+        }}
+      />
+      <Tabs.Screen
+        name="followers"
+        options={{
+          title: 'Followers',
           tabBarIcon({ color, size }) {
             return <MapIcon color={color} size={size} />
           },
@@ -15,21 +25,11 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="mutualsList"
+        name="following"
         options={{
-          title: 'Mutuals',
+          title: 'Following',
           tabBarIcon({ color, size }) {
             return <UsersIcon color={color} size={size} />
-          },
-          headerShown: false,
-        }}
-      />
-      <Tabs.Screen
-        name="share"
-        options={{
-          title: 'Share my location',
-          tabBarIcon({ color, size }) {
-            return <PersonStandingIcon color={color} size={size} />
           },
           headerShown: false,
         }}

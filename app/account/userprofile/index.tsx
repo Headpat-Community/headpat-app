@@ -84,7 +84,6 @@ export default function UserprofilePage() {
         // Validate only the field that triggered the event
         dynamicSchema.parse({ [name]: value })
       } catch (error) {
-        console.log(error.errors)
         toast(error.errors[0].message)
         return
       }
@@ -98,7 +97,6 @@ export default function UserprofilePage() {
           setIsDisabled(false)
         }, 2000)
       } catch (error) {
-        console.log(error)
         Sentry.captureException(error)
         toast('Failed to save employee data')
         setTimeout(() => {

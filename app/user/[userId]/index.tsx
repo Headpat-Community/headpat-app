@@ -5,14 +5,22 @@ import {
   View,
 } from 'react-native'
 import { H1, H3, Muted } from '~/components/ui/typography'
-import { useLocalSearchParams } from 'expo-router'
+import { Link, useLocalSearchParams } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { UserData } from '~/lib/types/collections'
 import { database } from '~/lib/appwrite-client'
 import { Image } from 'expo-image'
 import { Text } from '~/components/ui/text'
 import { Button } from '~/components/ui/button'
-import { CakeIcon, MapPinIcon, TagIcon } from 'lucide-react-native'
+import {
+  CakeIcon,
+  EyeIcon,
+  MailIcon,
+  MapPinIcon,
+  ScanEyeIcon,
+  TagIcon,
+  UserPlusIcon,
+} from 'lucide-react-native'
 import { useColorScheme } from '~/lib/useColorScheme'
 import { calculateBirthday } from '~/components/calculateTimeLeft'
 import TelegramIcon from '~/components/icons/TelegramIcon'
@@ -24,13 +32,17 @@ import { toast } from '~/lib/toast'
 import * as WebBrowser from 'expo-web-browser'
 import * as Sentry from '@sentry/react-native'
 import * as Clipboard from 'expo-clipboard'
+import { useUser } from '~/components/contexts/UserContext'
 
 export default function UserPage() {
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
+  const themeButtons = isDarkColorScheme ? 'black' : 'white'
+
   const local = useLocalSearchParams()
   const [userData, setUserData] = useState<UserData.UserDataDocumentsType>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
+  const { current } = useUser()
 
   const fetchUser = async () => {
     try {
@@ -147,74 +159,117 @@ export default function UserPage() {
           </View>
           <Text className={'mb-4 flex-row flex-wrap'}>{userData?.status}</Text>
           <View className={'flex-row gap-2'}>
-            <Button
-              className={'text-center w-28'}
-              onPress={() => toast('Ha! You thought this was a real button!')}
-            >
-              <Text>Follow</Text>
-            </Button>
-            <Button
-              className={'text-center w-28'}
-              onPress={() => toast('Ha! You thought this was a real button!')}
-            >
-              <Text>Message</Text>
-            </Button>
+            {current?.$id === userData?.$id && (
+              <>
+                <Button
+                  className={'text-center'}
+                  onPress={() =>
+                    toast('Ha! You thought this was a real button!')
+                  }
+                >
+                  <UserPlusIcon color={themeButtons} />
+                </Button>
+                <Button
+                  className={'text-center'}
+                  onPress={() =>
+                    toast('Ha! You thought this was a real button!')
+                  }
+                >
+                  <MailIcon color={themeButtons} />
+                </Button>
+              </>
+            )}
           </View>
         </View>
       </View>
       {/* Extra info section */}
-      <View
-        className={'mx-10 my-4 flex-row justify-between items-center gap-4'}
-      >
-        <View>
-          <Muted className={'text-center mb-2'}>
-            {!userData?.location ? null : (
-              <>
-                <MapPinIcon
-                  size={12}
-                  title={'Location'}
-                  color={theme}
-                  style={{
-                    marginRight: 4,
-                  }}
-                />
-                {userData?.location}
-              </>
-            )}
-          </Muted>
-          <Muted className={'text-center mb-2'}>
-            {/* If birthday includes 1900-01-01 then don't show */}
-            {userData?.birthday.includes('1900-01-01') ? null : (
-              <>
-                <CakeIcon
-                  size={12}
-                  color={theme}
-                  style={{
-                    marginRight: 4,
-                  }}
-                />
-                {calculateBirthday(new Date(userData?.birthday))}
-              </>
-            )}
-          </Muted>
+      <View style={{ flexDirection: 'row' }}>
+        <View style={{ flex: 1 }}>
+          <View
+            className={'mx-10 my-4 flex-row justify-between items-center gap-4'}
+          >
+            <View>
+              <Muted className={'text-center mb-2'}>
+                {!userData?.location ? null : (
+                  <>
+                    <MapPinIcon
+                      size={12}
+                      title={'Location'}
+                      color={theme}
+                      style={{
+                        marginRight: 4,
+                      }}
+                    />
+                    {userData?.location}
+                  </>
+                )}
+              </Muted>
+              <Muted className={'text-center mb-2'}>
+                {/* If birthday includes 1900-01-01 then don't show */}
+                {userData?.birthday.includes('1900-01-01') ? null : (
+                  <>
+                    <CakeIcon
+                      size={12}
+                      color={theme}
+                      style={{
+                        marginRight: 4,
+                      }}
+                    />
+                    {calculateBirthday(new Date(userData?.birthday))}
+                  </>
+                )}
+              </Muted>
+              <Muted className={'text-center mb-2'}>
+                {!userData?.pronouns ? null : (
+                  <>
+                    <TagIcon
+                      size={12}
+                      color={theme}
+                      title={'Pronouns'}
+                      style={{
+                        marginRight: 4,
+                      }}
+                    />
+                    {userData?.pronouns}
+                  </>
+                )}
+              </Muted>
+              <Muted className={'text-center mb-2'}>{/* For later */}</Muted>
+            </View>
+          </View>
         </View>
-        <View>
-          <Muted className={'text-center mb-2'}>
-            {!userData?.pronouns ? null : (
-              <>
-                <TagIcon
-                  size={12}
-                  color={theme}
-                  title={'Pronouns'}
-                  style={{
-                    marginRight: 4,
-                  }}
-                />
-                {userData?.pronouns}
-              </>
-            )}
-          </Muted>
-          <Muted className={'text-center mb-2'}>{/* For later */}</Muted>
+        <View style={{ flex: 1 }}>
+          <View
+            className={'mx-10 my-4 flex-row justify-between items-center gap-4'}
+          >
+            <View>
+              <Muted className={'text-center mb-2'}>
+                <Link href={`/user/${userData?.$id}/relationships/followers`}>
+                  <EyeIcon
+                    size={12}
+                    title={'Location'}
+                    color={theme}
+                    style={{
+                      marginRight: 4,
+                    }}
+                  />
+                  55 Followers
+                </Link>
+              </Muted>
+              <Muted className={'text-center mb-2'}>
+                <Link href={`/user/${userData?.$id}/relationships/following`}>
+                  <ScanEyeIcon
+                    size={12}
+                    color={theme}
+                    style={{
+                      marginRight: 4,
+                    }}
+                  />
+                  69 Following
+                </Link>
+              </Muted>
+            </View>
+          </View>
         </View>
       </View>
 

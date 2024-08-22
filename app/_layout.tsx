@@ -7,7 +7,13 @@ import {
 } from '@react-navigation/native'
 import { PortalHost } from '~/components/primitives/portal'
 import { ToastProvider } from '~/components/primitives/deprecated-ui/toast'
-import { router, SplashScreen, useRouter, useSegments } from 'expo-router'
+import {
+  router,
+  SplashScreen,
+  usePathname,
+  useRouter,
+  useSegments,
+} from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import * as React from 'react'
 import { BackHandler, ScrollView, Text, View } from 'react-native'
@@ -88,6 +94,11 @@ export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
 } from 'expo-router'
+
+export const unstable_settings = {
+  // Ensure that reloading on `/modal` keeps a back button present.
+  initialRouteName: 'index',
+}
 
 // Prevent the splash screen from auto-hiding before getting the color scheme.
 SplashScreen.preventAutoHideAsync()
@@ -202,7 +213,7 @@ function CustomDrawerContent({
               </View>
             )
           }}
-          onPress={() => router.navigate('/mutuals')}
+          onPress={() => router.navigate('/locations')}
         />
 
         <DrawerItem
@@ -255,7 +266,7 @@ function CustomDrawerContent({
                 )
               }}
               onPress={() => {
-                router.push({
+                router.navigate({
                   pathname: '/user/[userId]',
                   params: { userId: current.$id },
                 })
@@ -271,7 +282,7 @@ function CustomDrawerContent({
                   </View>
                 )
               }}
-              onPress={() => router.navigate('/mutuals/mutualsList')}
+              onPress={() => router.navigate('/user/relationships/mutuals')}
             />
           </>
         )}
@@ -355,7 +366,10 @@ export default function RootLayout() {
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme()
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = useState(false)
   const [lastBackPressed, setLastBackPressed] = useState(0)
+  const pathname = usePathname()
   useNotificationObserver()
+
+  console.log(pathname)
 
   useEffect(() => {
     ;(async () => {
@@ -382,13 +396,14 @@ export default function RootLayout() {
 
   const router = useRouter()
   const segments = useSegments()
+  console.log(segments)
 
   useEffect(() => {
     const backAction = () => {
       const now = Date.now()
       if (segments.length > 1) {
         // If there is more than one segment, go back to the previous segment
-        router.navigate('/')
+        router.back()
       } else {
         if (now - lastBackPressed < 2000) {
           BackHandler.exitApp()
@@ -466,7 +481,6 @@ export default function RootLayout() {
             screenOptions={{
               drawerStyle: {},
               swipeEdgeWidth: 50,
-              headerLeft: () => <HeaderMenuSidebar />,
             }}
           >
             {/* <Image
@@ -487,8 +501,9 @@ export default function RootLayout() {
                   drawerLabel: screen.title,
                   title: screen.title,
                   headerTitleAlign: 'left',
+                  headerLeft: () => screen.headerLeft || <HeaderMenuSidebar />,
                   headerRight: () =>
-                    screen.headerLeft || <ProfileThemeToggle />,
+                    screen.headerRight || <ProfileThemeToggle />,
                 }}
               />
             ))}
