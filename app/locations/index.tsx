@@ -86,9 +86,11 @@ export default function MutualLocationsPage() {
   const fetchUserLocations = async () => {
     try {
       let query = []
+      /*
       if (user?.current?.$id) {
         query = [Query.notEqual('$id', user?.current?.$id)]
       }
+      */
 
       const data: LocationType.LocationType = await database.listDocuments(
         'hp_db',
