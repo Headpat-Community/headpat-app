@@ -18,6 +18,7 @@ import {
   MailIcon,
   MapPinIcon,
   ScanEyeIcon,
+  ShieldAlertIcon,
   TagIcon,
   UserPlusIcon,
 } from 'lucide-react-native'
@@ -161,21 +162,32 @@ export default function UserPage() {
           <View className={'flex-row gap-2'}>
             {current?.$id === userData?.$id && (
               <>
+                <>
+                  <Button
+                    className={'text-center'}
+                    onPress={() =>
+                      toast('Ha! You thought this was a real button!')
+                    }
+                  >
+                    <UserPlusIcon color={themeButtons} />
+                  </Button>
+                  <Button
+                    className={'text-center'}
+                    onPress={() =>
+                      toast('Ha! You thought this was a real button!')
+                    }
+                  >
+                    <MailIcon color={themeButtons} />
+                  </Button>
+                </>
                 <Button
                   className={'text-center'}
+                  variant={'destructive'}
                   onPress={() =>
                     toast('Ha! You thought this was a real button!')
                   }
                 >
-                  <UserPlusIcon color={themeButtons} />
-                </Button>
-                <Button
-                  className={'text-center'}
-                  onPress={() =>
-                    toast('Ha! You thought this was a real button!')
-                  }
-                >
-                  <MailIcon color={themeButtons} />
+                  <ShieldAlertIcon color={'white'} />
                 </Button>
               </>
             )}

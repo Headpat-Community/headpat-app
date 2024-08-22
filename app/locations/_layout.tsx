@@ -23,7 +23,7 @@ export default function TabsLayout() {
           tabBarIcon({ color, size }) {
             return <PersonStandingIcon color={color} size={size} />
           },
-          href: !current?.$id ? `/locations/share/` : null,
+          href: current?.$id ? `/locations/share/` : null,
           headerShown: false,
         }}
       />

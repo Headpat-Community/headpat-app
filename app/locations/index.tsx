@@ -48,7 +48,7 @@ export default function MutualLocationsPage() {
   const [userLocation, setUserLocation] = useState(null)
 
   const [events, setEvents] = useState<Events.EventsType>(null)
-  const [mutualLocations, setMutualLocations] = useState(null)
+  const [friendsLocations, setFriendsLocations] = useState(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [currentEvent, setCurrentEvent] = useState(null)
   const [modalOpen, setModalOpen] = useState<boolean>(false)
@@ -103,7 +103,7 @@ export default function MutualLocationsPage() {
       })
 
       const results = await Promise.all(promises)
-      setMutualLocations(results)
+      setFriendsLocations(results)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast('Failed to fetch locations. Please try again later.')
@@ -178,13 +178,13 @@ export default function MutualLocationsPage() {
   function handleSubscribedEvents() {
     locationsSubscribed = client.subscribe(
       ['databases.hp_db.collections.locations.documents'],
-      (response) => {
+      async (response) => {
         const eventType = response.events[0].split('.').pop()
         const updatedDocument: any = response.payload
 
         switch (eventType) {
           case 'update':
-            setMutualLocations(
+            setFriendsLocations(
               (prevLocations: LocationType.LocationDocumentsType[]) => {
                 return prevLocations.map((location) => {
                   if (location.$id === updatedDocument.$id) {
@@ -197,7 +197,7 @@ export default function MutualLocationsPage() {
             )
             break
           case 'delete':
-            setMutualLocations(
+            setFriendsLocations(
               (prevLocations: LocationType.LocationDocumentsType[]) => {
                 return prevLocations.filter(
                   (location) => location.$id !== updatedDocument.$id
@@ -206,11 +206,31 @@ export default function MutualLocationsPage() {
             )
             break
           case 'create':
-            setMutualLocations(
-              (prevLocations: LocationType.LocationDocumentsType[]) => {
-                return [...prevLocations, updatedDocument]
+            // Fetch userData for the updated or created document
+            const userData: UserData.UserDataDocumentsType =
+              await database.getDocument(
+                'hp_db',
+                'userdata',
+                `${updatedDocument.$id}`
+              )
+            const updatedLocationWithUserData = { ...updatedDocument, userData }
+
+            setFriendsLocations((prevLocations) => {
+              const locationExists = prevLocations.some(
+                (location) => location.$id === updatedDocument.$id
+              )
+              if (locationExists) {
+                // Update existing location
+                return prevLocations.map((location) =>
+                  location.$id === updatedDocument.$id
+                    ? updatedLocationWithUserData
+                    : location
+                )
+              } else {
+                // Add new location
+                return [...prevLocations, updatedLocationWithUserData]
               }
-            )
+            })
             break
           default:
             Sentry.captureException('Unknown event type:', updatedDocument)
@@ -274,7 +294,7 @@ export default function MutualLocationsPage() {
           }
           showsUserLocation={true}
         >
-          {mutualLocations?.map((user, index) => {
+          {friendsLocations?.map((user, index) => {
             return (
               <Marker
                 key={index}
