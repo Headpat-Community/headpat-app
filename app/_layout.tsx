@@ -7,13 +7,7 @@ import {
 } from '@react-navigation/native'
 import { PortalHost } from '~/components/primitives/portal'
 import { ToastProvider } from '~/components/primitives/deprecated-ui/toast'
-import {
-  router,
-  SplashScreen,
-  usePathname,
-  useRouter,
-  useSegments,
-} from 'expo-router'
+import { router, SplashScreen, useRouter, useSegments } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import * as React from 'react'
 import { BackHandler, ScrollView, Text, View } from 'react-native'
@@ -358,10 +352,7 @@ export default function RootLayout() {
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme()
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = useState(false)
   const [lastBackPressed, setLastBackPressed] = useState(0)
-  const pathname = usePathname()
   useNotificationObserver()
-
-  console.log(pathname)
 
   useEffect(() => {
     ;(async () => {
@@ -388,7 +379,6 @@ export default function RootLayout() {
 
   const router = useRouter()
   const segments = useSegments()
-  console.log(segments)
 
   useEffect(() => {
     const backAction = () => {

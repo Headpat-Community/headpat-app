@@ -49,12 +49,12 @@ function GalleryAddButton() {
 
 export const DrawerScreensData = [
   {
-    location: '+not-found',
-    title: 'Not Found',
-  },
-  {
     location: 'index',
     title: 'Home',
+  },
+  {
+    location: '+not-found',
+    title: 'Not Found',
   },
   {
     location: 'announcements/index',

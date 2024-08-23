@@ -33,16 +33,16 @@ This will start the app in development mode, and you can scan the QR code using 
 ### Using functions:
 
 ```ts
-  const fetchEvents = async () => {
+  const fetchUsers = async () => {
     try {
       const data = await functions.createExecution(
-        '65e2126d9e431eb3c473',
+        'user-endpoints',
         '',
         false,
-        '/getEvents',
+        '/getUsers',
         ExecutionMethod.GET
       )
-      setEvents(JSON.parse(data.responseBody))
+      setUsers(JSON.parse(data.responseBody))
     } catch (error) {
       console.error(error)
     }

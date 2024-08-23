@@ -9,7 +9,7 @@ import { FlatList, RefreshControl, ScrollView, Text, View } from 'react-native'
 import { H1, Muted } from '~/components/ui/typography'
 import { useLocalSearchParams } from 'expo-router'
 
-export default function FollowingPage() {
+export default function FollowersPage() {
   const [users, setUsers] = useState<UserData.UserDataDocumentsType[]>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
@@ -34,7 +34,7 @@ export default function FollowingPage() {
     async (newOffset: number = 0) => {
       try {
         const data = await functions.createExecution(
-          '65e2126d9e431eb3c473',
+          'user-endpoints',
           '',
           false,
           `/user/followers?userId=${local?.userId}&limit=20&offset=${newOffset}`,

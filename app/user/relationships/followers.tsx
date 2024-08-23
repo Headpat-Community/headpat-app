@@ -1,20 +1,27 @@
 import { toast } from '~/lib/toast'
-import { database } from '~/lib/appwrite-client'
-import { Query } from 'react-native-appwrite'
-import { useUser } from '~/components/contexts/UserContext'
+import { functions } from '~/lib/appwrite-client'
+import { ExecutionMethod } from 'react-native-appwrite'
 import React, { useCallback, useEffect, useState } from 'react'
-import { Followers, UserData } from '~/lib/types/collections'
+import { UserData } from '~/lib/types/collections'
 import * as Sentry from '@sentry/react-native'
 import UserItem from '~/components/user/UserItem'
 import { FlatList, RefreshControl, ScrollView, Text, View } from 'react-native'
 import { H1, Muted } from '~/components/ui/typography'
+import { useUser } from '~/components/contexts/UserContext'
 
-export default function FollowingPage() {
-  const [users, setUsers] = useState<UserData.UserDataDocumentsType[]>([])
+export default function FollowersPage() {
+  const [users, setUsers] = useState<UserData.UserDataDocumentsType[]>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
   const [offset, setOffset] = useState<number>(0)
+  const [hasMore, setHasMore] = useState<boolean>(true)
   const { current } = useUser()
+
+  useEffect(() => {
+    setUsers([]) // Clear the old users
+    setOffset(0) // Reset the offset
+    setHasMore(true) // Reset hasMore
+  }, [current?.$id])
 
   const onRefresh = async () => {
     setRefreshing(true)
@@ -26,63 +33,36 @@ export default function FollowingPage() {
   const fetchUsers = useCallback(
     async (newOffset: number = 0) => {
       try {
-        const data: Followers.FollowerType = await database.listDocuments(
-          'hp_db',
-          'followers',
-          [
-            Query.equal('followerId', current?.$id),
-            Query.orderDesc('$createdAt'),
-            Query.limit(20),
-            Query.offset(newOffset),
-          ]
+        const data = await functions.createExecution(
+          'user-endpoints',
+          '',
+          false,
+          `/user/followers?userId=${current?.$id}&limit=20&offset=${newOffset}`,
+          ExecutionMethod.GET
+        )
+        const response: UserData.UserDataDocumentsType[] = JSON.parse(
+          data.responseBody
         )
 
-        const newUsers = await fetchUserDataForUsers(data.documents)
-
         if (newOffset === 0) {
-          setUsers(newUsers)
+          setUsers(response)
         } else {
-          setUsers((prevUsers) => [...prevUsers, ...newUsers])
+          setUsers((prevUsers) => [...prevUsers, ...response])
         }
+
+        // Update hasMore based on the response length
+        setHasMore(response.length === 20)
       } catch (error) {
         toast('Failed to fetch users. Please try again later.')
         Sentry.captureException(error)
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [current]
+    [current?.$id]
   )
 
-  const fetchUserDataForUsers = async (users: any[]) => {
-    try {
-      const userDataPromises = users.map((user) =>
-        fetchUserDataForId(user.userId)
-      )
-      const usersData = await Promise.all(userDataPromises)
-      return usersData.filter((userData) => userData !== undefined)
-    } catch (error) {
-      toast('Failed to fetch user data. Please try again later.')
-      Sentry.captureException(error)
-      return []
-    }
-  }
-
-  const fetchUserDataForId = async (userId: string) => {
-    try {
-      const result: UserData.UserDataType = await database.listDocuments(
-        'hp_db',
-        'userdata',
-        [Query.equal('$id', userId)]
-      )
-      return result.documents[0]
-    } catch (error) {
-      toast('Failed to fetch user data. Please try again later.')
-      Sentry.captureException(error)
-    }
-  }
-
   const loadMore = async () => {
-    if (!loadingMore) {
+    if (!loadingMore && hasMore) {
       setLoadingMore(true)
       const newOffset = offset + 20
       setOffset(newOffset)
@@ -94,29 +74,43 @@ export default function FollowingPage() {
   useEffect(() => {
     if (!current?.$id) return
     fetchUsers().then()
-  }, [current, fetchUsers])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [current?.$id])
 
   if (!current?.$id)
     return (
       <ScrollView
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
+        contentContainerClassName={'flex-1 justify-center items-center h-full'}
       >
-        <View className={'flex-1 justify-center items-center'}>
-          <View className={'p-4 native:pb-24 max-w-md gap-6'}>
-            <View className={'gap-1'}>
-              <H1 className={'text-foreground text-center'}>Following</H1>
-              <Muted className={'text-base text-center'}>
-                You need to be logged in to see who you are following.
-              </Muted>
-            </View>
+        <View className={'p-4 native:pb-24 max-w-md gap-6'}>
+          <View className={'gap-1'}>
+            <H1 className={'text-foreground text-center'}>Followers</H1>
+            <Muted className={'text-base text-center'}>
+              This user does not exist.
+            </Muted>
           </View>
         </View>
       </ScrollView>
     )
 
-  if (users.length === 0)
+  if (refreshing)
+    return (
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        contentContainerClassName={'flex-1 justify-center items-center h-full'}
+      >
+        <View className={'p-4 native:pb-24 max-w-md gap-6'}>
+          <View className={'gap-1'}>
+            <H1 className={'text-foreground text-center'}>Followers</H1>
+            <Muted className={'text-base text-center'}>Loading...</Muted>
+          </View>
+        </View>
+      </ScrollView>
+    )
+
+  if (refreshing && users && users.length === 0)
     return (
       <ScrollView
         refreshControl={
@@ -126,9 +120,9 @@ export default function FollowingPage() {
         <View className={'flex-1 justify-center items-center'}>
           <View className={'p-4 native:pb-24 max-w-md gap-6'}>
             <View className={'gap-1'}>
-              <H1 className={'text-foreground text-center'}>Following</H1>
+              <H1 className={'text-foreground text-center'}>Followers</H1>
               <Muted className={'text-base text-center'}>
-                You are not following anyone yet.
+                You have no followers yet.
               </Muted>
             </View>
           </View>
@@ -151,7 +145,9 @@ export default function FollowingPage() {
       contentContainerStyle={{ justifyContent: 'space-between' }}
       onEndReached={loadMore}
       onEndReachedThreshold={0.5}
-      ListFooterComponent={loadingMore ? <Text>Loading...</Text> : null}
+      ListFooterComponent={
+        loadingMore && hasMore ? <Text>Loading...</Text> : null
+      }
     />
   )
 }

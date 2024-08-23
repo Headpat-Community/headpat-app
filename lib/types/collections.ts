@@ -386,6 +386,10 @@ export namespace Community {
      * The status of the community.
      */
     status: string
+    /**
+     * The amount of followers the community has.
+     */
+    followersCount: number
   }
 
   export interface CommunityFollowersType {

@@ -57,7 +57,7 @@ export default function UserListPage() {
   }
 
   useEffect(() => {
-    fetchUsers().then()
+    fetchUsers(0).then()
   }, [fetchUsers])
 
   const renderItem = ({ item }: { item: UserData.UserDataDocumentsType }) => (

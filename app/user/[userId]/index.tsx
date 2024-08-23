@@ -52,7 +52,7 @@ export default function UserPage() {
     try {
       setRefreshing(true)
       const data = await functions.createExecution(
-        '65e2126d9e431eb3c473',
+        'user-endpoints',
         '',
         false,
         `/user?userId=${local?.userId}`,

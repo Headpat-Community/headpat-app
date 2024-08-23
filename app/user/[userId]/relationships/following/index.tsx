@@ -34,7 +34,7 @@ export default function FollowingPage() {
     async (newOffset: number = 0) => {
       try {
         const data = await functions.createExecution(
-          '65e2126d9e431eb3c473',
+          'user-endpoints',
           '',
           false,
           `/user/following?userId=${local?.userId}&limit=20&offset=${newOffset}`,
