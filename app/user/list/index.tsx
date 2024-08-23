@@ -7,14 +7,12 @@ import { UserData } from '~/lib/types/collections'
 import { Query } from 'react-native-appwrite'
 import UserItem from '~/components/user/UserItem'
 import { Text } from 'react-native'
-import { useUser } from '~/components/contexts/UserContext'
 
 export default function UserListPage() {
   const [users, setUsers] = useState<UserData.UserDataDocumentsType[]>([])
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
   const [offset, setOffset] = useState<number>(0)
-  const { current } = useUser()
 
   const fetchUsers = useCallback(async (newOffset: number = 0) => {
     try {

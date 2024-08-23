@@ -26,7 +26,6 @@ export default function HomeView() {
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [modalVisible, setModalVisible] = useState(false)
   const ref = useRef(null)
-  const [isPlaying, setIsPlaying] = useState(true)
 
   const fetchGallery = async () => {
     try {
@@ -85,16 +84,6 @@ export default function HomeView() {
       //player.staysActiveInBackground = true
     }
   )
-
-  useEffect(() => {
-    const subscription = player.addListener('playingChange', (isPlaying) => {
-      setIsPlaying(isPlaying)
-    })
-
-    return () => {
-      subscription.remove()
-    }
-  }, [player])
 
   useFocusEffect(
     useCallback(() => {

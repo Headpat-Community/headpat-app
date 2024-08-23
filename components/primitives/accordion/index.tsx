@@ -68,12 +68,12 @@ function useRootContext() {
   return context;
 }
 
-type AccordionItemContext = AccordionItemProps & {
+type AccordionItemContextType = AccordionItemProps & {
   nativeID: string;
   isExpanded: boolean;
 };
 
-const AccordionItemContext = React.createContext<AccordionItemContext | null>(null);
+const AccordionItemContext = React.createContext<AccordionItemContextType | null>(null);
 
 const Item = React.forwardRef<ViewRef, SlottableViewProps & AccordionItemProps>(
     ({ asChild, value, disabled, ...viewProps }, ref) => {

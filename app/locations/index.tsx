@@ -29,7 +29,6 @@ import {
 import * as Sentry from '@sentry/react-native'
 import { formatDate } from '~/components/calculateTimeLeft'
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
-import { useUser } from '~/components/contexts/UserContext'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -42,7 +41,7 @@ import {
 } from '~/components/ui/alert-dialog'
 
 export default function MutualLocationsPage() {
-  const user = useUser()
+  //const { current } = useUser()
 
   const mapRef = useRef(null)
   const [userLocation, setUserLocation] = useState(null)
@@ -87,8 +86,8 @@ export default function MutualLocationsPage() {
     try {
       let query = []
       /*
-      if (user?.current?.$id) {
-        query = [Query.notEqual('$id', user?.current?.$id)]
+      if (current?.$id) {
+        query = [Query.notEqual('$id', current?.$id)]
       }
       */
 

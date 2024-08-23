@@ -56,7 +56,15 @@ export default function FollowersPage() {
             index === self.findIndex((m) => m.followerId === mutual.followerId)
         )
 
-        setMutuals({ ...data, documents: uniqueMutualsList })
+        //setMutuals({ ...data, documents: uniqueMutualsList })
+        if (newOffset === 0) {
+          setMutuals({ ...data, documents: uniqueMutualsList })
+        } else {
+          setMutuals({
+            ...data,
+            documents: [...(mutuals?.documents || []), ...uniqueMutualsList],
+          })
+        }
       } catch (error) {
         toast('Failed to fetch users. Please try again later.')
         Sentry.captureException(error)

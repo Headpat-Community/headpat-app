@@ -23,35 +23,6 @@ export default function FollowingPage() {
     setRefreshing(false)
   }
 
-  const fetchUsers = useCallback(
-    async (newOffset: number = 0) => {
-      try {
-        const data: Followers.FollowerType = await database.listDocuments(
-          'hp_db',
-          'followers',
-          [
-            Query.equal('userId', current.$id),
-            Query.orderDesc('$createdAt'),
-            Query.limit(20),
-            Query.offset(newOffset),
-          ]
-        )
-
-        const newUsers = await fetchUserDataForUsers(data.documents)
-
-        if (newOffset === 0) {
-          setUsers(newUsers)
-        } else {
-          setUsers((prevUsers) => [...prevUsers, ...newUsers])
-        }
-      } catch (error) {
-        toast('Failed to fetch users. Please try again later.')
-        Sentry.captureException(error)
-      }
-    },
-    [current]
-  )
-
   const fetchUserDataForId = async (userId: string) => {
     try {
       const result: UserData.UserDataType = await database.listDocuments(
@@ -82,6 +53,36 @@ export default function FollowingPage() {
     }
   }
 
+  const fetchUsers = useCallback(
+    async (newOffset: number = 0) => {
+      try {
+        const data: Followers.FollowerType = await database.listDocuments(
+          'hp_db',
+          'followers',
+          [
+            Query.equal('userId', current.$id),
+            Query.orderDesc('$createdAt'),
+            Query.limit(20),
+            Query.offset(newOffset),
+          ]
+        )
+
+        const newUsers = await fetchUserDataForUsers(data.documents)
+
+        if (newOffset === 0) {
+          setUsers(newUsers)
+        } else {
+          setUsers((prevUsers) => [...prevUsers, ...newUsers])
+        }
+      } catch (error) {
+        toast('Failed to fetch users. Please try again later.')
+        Sentry.captureException(error)
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [current.$id]
+  )
+
   const loadMore = async () => {
     if (!loadingMore) {
       setLoadingMore(true)
@@ -95,7 +96,8 @@ export default function FollowingPage() {
   useEffect(() => {
     if (!current?.$id) return
     fetchUsers().then()
-  }, [current, fetchUsers])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [current.$id])
 
   if (!current?.$id)
     return (

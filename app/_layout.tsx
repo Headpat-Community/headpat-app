@@ -139,15 +139,7 @@ function HeaderMenuSidebar() {
 }
 
 // TODO: Proper TS types
-function CustomDrawerContent({
-  drawerPosition,
-  props,
-  navigation,
-}: {
-  drawerPosition: any
-  props: any
-  navigation: any
-}) {
+function CustomDrawerContent() {
   // const insets = useSafeAreaInsets();
   // const router = useRouter();
 
@@ -469,13 +461,7 @@ export default function RootLayout() {
         <GestureHandlerRootView style={{ flex: 1 }}>
           <Drawer
             drawerContent={(props) => {
-              return (
-                <CustomDrawerContent
-                  props={undefined}
-                  drawerPosition={undefined}
-                  {...props}
-                />
-              )
+              return <CustomDrawerContent />
             }}
             initialRouteName={'index'}
             screenOptions={{

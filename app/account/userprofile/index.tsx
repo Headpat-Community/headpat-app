@@ -19,7 +19,6 @@ import { UserData } from '~/lib/types/collections'
 import { useFocusEffect } from '@react-navigation/core'
 import { Checkbox } from '~/components/ui/checkbox'
 import { z } from 'zod'
-import { Form } from 'react-hook-form'
 
 export default function UserprofilePage() {
   const [isDisabled, setIsDisabled] = useState(false)
