@@ -109,6 +109,14 @@ export namespace UserData {
      * The user's location.
      */
     location: string | null
+    /**
+     * The user's followers count.
+     */
+    followersCount: number
+    /**
+     * The user's following count.
+     */
+    followingCount: number
   }
 }
 

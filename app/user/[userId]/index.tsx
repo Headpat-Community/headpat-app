@@ -8,7 +8,7 @@ import { H1, H3, Muted } from '~/components/ui/typography'
 import { Link, useLocalSearchParams } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { UserData } from '~/lib/types/collections'
-import { database } from '~/lib/appwrite-client'
+import { functions } from '~/lib/appwrite-client'
 import { Image } from 'expo-image'
 import { Text } from '~/components/ui/text'
 import { Button } from '~/components/ui/button'
@@ -34,6 +34,9 @@ import * as WebBrowser from 'expo-web-browser'
 import * as Sentry from '@sentry/react-native'
 import * as Clipboard from 'expo-clipboard'
 import { useUser } from '~/components/contexts/UserContext'
+import { ExecutionMethod } from 'react-native-appwrite'
+import sanitizeHtml from 'sanitize-html'
+import HTMLView from 'react-native-htmlview'
 
 export default function UserPage() {
   const { isDarkColorScheme } = useColorScheme()
@@ -48,13 +51,18 @@ export default function UserPage() {
   const fetchUser = async () => {
     try {
       setRefreshing(true)
-      const data: UserData.UserDataDocumentsType = await database.getDocument(
-        'hp_db',
-        'userdata',
-        `${local.userId}`
+      const data = await functions.createExecution(
+        '65e2126d9e431eb3c473',
+        '',
+        false,
+        `/user?userId=${local?.userId}`,
+        ExecutionMethod.GET
+      )
+      const response: UserData.UserDataDocumentsType = JSON.parse(
+        data.responseBody
       )
 
-      setUserData(data)
+      setUserData(response)
       setRefreshing(false)
     } catch (error) {
       setRefreshing(false)
@@ -122,6 +130,8 @@ export default function UserPage() {
         </View>
       </ScrollView>
     )
+
+  const sanitizedBio = sanitizeHtml(userData.bio)
 
   return (
     <ScrollView
@@ -265,7 +275,7 @@ export default function UserPage() {
                       marginRight: 4,
                     }}
                   />
-                  55 Followers
+                  {userData?.followersCount} Followers
                 </Link>
               </Muted>
               <Muted className={'text-center mb-2'}>
@@ -277,7 +287,7 @@ export default function UserPage() {
                       marginRight: 4,
                     }}
                   />
-                  69 Following
+                  {userData?.followingCount} Following
                 </Link>
               </Muted>
             </View>
@@ -287,7 +297,7 @@ export default function UserPage() {
 
       {/* Bio section */}
       <View className={'mx-10 mb-4'}>
-        <Text>{userData?.bio}</Text>
+        <HTMLView value={sanitizedBio} />
       </View>
 
       {/* Social section */}
