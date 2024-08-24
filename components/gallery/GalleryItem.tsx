@@ -28,7 +28,9 @@ const GalleryItem = React.memo(({ image, thumbnail, getGalleryUrl }: any) => {
             source={
               image.mimeType.includes('video')
                 ? { uri: thumbnail }
-                : { uri: getGalleryUrl(image.$id) }
+                : {
+                    uri: getGalleryUrl(image.$id),
+                  }
             }
             alt={image.name}
             style={{ width: '100%', height: '100%' }}

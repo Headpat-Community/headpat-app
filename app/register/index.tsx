@@ -191,7 +191,9 @@ export default function ModalScreen() {
             <Muted
               className="underline"
               onPress={() =>
-                Linking.openURL('https://headpat.de/legal/termsofservice.pdf')
+                Linking.openURL(
+                  'https://headpat.place/legal/termsofservice.pdf'
+                )
               }
             >
               Terms of Service
@@ -200,7 +202,7 @@ export default function ModalScreen() {
             <Muted
               className="underline"
               onPress={() =>
-                Linking.openURL('https://headpat.de/legal/privacypolicy.pdf')
+                Linking.openURL('https://headpat.place/legal/privacypolicy.pdf')
               }
             >
               Privacy Policy

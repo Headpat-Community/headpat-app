@@ -46,7 +46,7 @@ export default function HomeView() {
 
   const getAvatarUrl = (avatarId: string) => {
     if (!avatarId) return
-    return `https://api.headpat.de/v1/storage/buckets/avatars/files/${avatarId}/preview?project=hp-main&width=300&height=300`
+    return `https://api.headpat.place/v1/storage/buckets/avatars/files/${avatarId}/preview?project=hp-main&width=300&height=300`
   }
 
   const fetchNextEvent = async () => {

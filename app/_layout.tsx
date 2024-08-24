@@ -57,6 +57,10 @@ TaskManager.defineTask('background-location-task', async ({ data, error }) => {
   // Use the user data from the task
   const userId = await AsyncStorage.getItem('userId')
 
+  if (!userId) {
+    return BackgroundFetch.BackgroundFetchResult.Failed
+  }
+
   // Get current location
   const location = await Location.getCurrentPositionAsync({})
 
@@ -282,7 +286,7 @@ function CustomDrawerContent() {
               </View>
             )
           }}
-          onPress={() => router.navigate('/communities')}
+          onPress={() => router.navigate('/community/list')}
         />
 
         <View style={{ flex: 1, flexGrow: 1 }}></View>
@@ -341,7 +345,7 @@ function CustomDrawerContent() {
             textAlign: 'center',
           }}
         >
-          Headpat App v0.5.1
+          Headpat App v0.5.2
         </Text>
       </ScrollView>
     </>
@@ -414,6 +418,10 @@ export default function RootLayout() {
   >(undefined)
   const notificationListener = useRef<Notifications.Subscription>()
   const responseListener = useRef<Notifications.Subscription>()
+
+  useEffect(() => {
+    AsyncStorage.setItem('pushToken', expoPushToken).then()
+  }, [expoPushToken])
 
   useEffect(() => {
     registerForPushNotificationsAsync()

@@ -85,7 +85,7 @@ export const DrawerScreensData = [
     title: 'Locations',
   },
   {
-    location: 'communities/index',
+    location: 'community/list/index',
     title: 'Communities',
   },
   {

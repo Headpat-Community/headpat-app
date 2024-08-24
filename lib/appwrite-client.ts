@@ -9,7 +9,7 @@ import {
 export const client = new Client()
 
 client
-  .setEndpoint('https://api.headpat.de/v1') // Your Appwrite Endpoint
+  .setEndpoint('https://api.headpat.place/v1') // Your Appwrite Endpoint
   .setProject('hp-main') // Your project ID
   .setPlatform('com.headpat.app') // Your application ID or bundle ID.
 

@@ -11,7 +11,7 @@ const CommunityItem = React.memo(
   ({ community }: { community: Community.CommunityDocumentsType }) => {
     const getUserAvatar = (avatarId: string) => {
       if (!avatarId) return require('~/assets/pfp-placeholder.png')
-      return `https://api.headpat.de/v1/storage/buckets/community-avatars/files/${avatarId}/preview?project=hp-main&width=250&height=250`
+      return `https://api.headpat.place/v1/storage/buckets/community-avatars/files/${avatarId}/preview?project=hp-main&width=250&height=250`
     }
     const { isDarkColorScheme } = useColorScheme()
     const theme = isDarkColorScheme ? 'white' : 'black'
@@ -29,7 +29,7 @@ const CommunityItem = React.memo(
             <Image
               source={
                 getUserAvatar(community?.avatarId) ||
-                require('~/assets/pfp-placeholder.png')
+                require('../../assets/images/headpat_logo.png')
               }
               style={{
                 width: 100,

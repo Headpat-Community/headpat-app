@@ -160,7 +160,7 @@ export default function MutualLocationsPage() {
 
   const getUserAvatar = (avatarId: string) => {
     if (!avatarId) return
-    return `https://api.headpat.de/v1/storage/buckets/avatars/files/${avatarId}/preview?project=hp-main&width=100&height=100`
+    return `https://api.headpat.place/v1/storage/buckets/avatars/files/${avatarId}/preview?project=hp-main&width=100&height=100`
   }
 
   let locationsSubscribed = null

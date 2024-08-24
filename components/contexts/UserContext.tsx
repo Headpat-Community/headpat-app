@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react'
 import { account } from '~/lib/appwrite-client'
 import { toast } from '~/lib/toast'
 import { Account } from '~/lib/types/collections'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 interface UserContextValue {
   current: Account.AccountType | null
@@ -30,36 +31,39 @@ export function UserProvider(props: any) {
   const [user, setUser] = useState(null)
 
   async function login(email: string, password: string) {
+    const pushToken = await AsyncStorage.getItem('pushToken')
     await account.createEmailPasswordSession(email, password)
     const accountData = await account.get()
     setUser(accountData)
-    //toast('Welcome back. You are logged in!')
+    await account.createPushTarget(ID.unique(), pushToken)
   }
 
   async function loginOAuth(userId: string, secret: string) {
+    const pushToken = await AsyncStorage.getItem('pushToken')
+    console.log(pushToken)
     await account.createSession(userId, secret)
     const accountData = await account.get()
     setUser(accountData)
-    //toast('Welcome back. You are logged in!')
+    await account.createPushTarget(ID.unique(), pushToken)
   }
 
   async function logout() {
     await account.deleteSession('current')
     setUser(null)
-    //toast('Logged out.')
   }
 
   async function register(email: string, password: string, username: string) {
+    const pushToken = await AsyncStorage.getItem('pushToken')
     await account.create(ID.unique(), email, password, username)
     await login(email, password)
-    toast('Account created!')
   }
 
   async function init() {
+    const pushToken = await AsyncStorage.getItem('pushToken')
+    console.log(pushToken)
     try {
       const loggedIn = await account.get()
       setUser(loggedIn)
-      //toast('Welcome back. You are logged in!')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setUser(null)

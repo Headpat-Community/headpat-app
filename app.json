@@ -2,7 +2,7 @@
   "expo": {
     "name": "Headpat",
     "slug": "headpat-app",
-    "version": "0.5.1",
+    "version": "0.5.2",
     "orientation": "portrait",
     "icon": "./assets/images/headpat_logo.png",
     "scheme": "headpatapp",
@@ -18,7 +18,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.headpat.app",
+      "bundleIdentifier": "place.headpat.app",
       "usesAppleSignIn": true,
       "googleServicesFile": "./GoogleService-Info.plist",
       "config": {
@@ -32,14 +32,14 @@
           "remote-notification",
           "processing"
         ],
-        "NSLocationWhenInUseUsageDescription": "This app requires access to your location when open.",
-        "NSLocationAlwaysAndWhenInUseUsageDescription": "This app requires access to your location even when closed.",
-        "NSLocationAlwaysUsageDescription": "This app requires access to your location when open."
+        "NSLocationWhenInUseUsageDescription": "This app requires access to your location to show you on the map.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "This app requires access to your location to show you on the map.",
+        "NSLocationAlwaysUsageDescription": "This app requires access to your location to show you on the map."
       },
       "associatedDomains": [
         "applinks:headpat.app",
-        "applinks:headpat.de",
-        "applinks:api.headpat.de"
+        "applinks:headpat.place",
+        "applinks:api.headpat.place"
       ],
       "buildNumber": "30"
     },
@@ -60,7 +60,7 @@
           "apiKey": "AIzaSyD4v3MV8UByXinnFD_9Ck_QBI2tS9VFR3Q"
         }
       },
-      "package": "com.headpat.app",
+      "package": "place.headpat.app",
       "versionCode": 30
     },
     "web": {
@@ -108,10 +108,9 @@
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Allow Headpat to use your location.",
-          "locationAlwaysPermission": "Allow Headpat to use your location.",
-          "locationWhenInUsePermission": "Allow Headpat to use your location.",
-          "photosPermission": "Allow Headpat to access your photos.",
+          "locationAlwaysAndWhenInUsePermission": "Allow Headpat to use your location to see yourself and your friends on the map.",
+          "locationAlwaysPermission": "Allow Headpat to use your location to see yourself and your friends on the map.",
+          "locationWhenInUsePermission": "Allow Headpat to use your location to see yourself on the map.",
           "isIosBackgroundLocationEnabled": true,
           "isAndroidBackgroundLocationEnabled": true
         }
@@ -119,7 +118,7 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "The app accesses your photos to let you share them with your fellow headpatters."
+          "photosPermission": "The app accesses your photos to let you share them with your fellow users."
         }
       ],
       "expo-video"

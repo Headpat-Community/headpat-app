@@ -21,13 +21,13 @@ export default function GalleryPage() {
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
 
   const fetchGallery = useCallback(
-    async (newOffset: number = 0) => {
+    async (newOffset: number = 0, limit: number = 10) => {
       try {
         const nsfwPreference = current?.prefs?.nsfw ?? false
         let query = nsfwPreference
-          ? [Query.limit(10), Query.offset(newOffset)]
+          ? [Query.limit(limit), Query.offset(newOffset)]
           : [
-              Query.limit(10),
+              Query.limit(limit),
               Query.offset(newOffset),
               Query.equal('nsfw', false),
             ]
@@ -84,7 +84,7 @@ export default function GalleryPage() {
   const onRefresh = async () => {
     setRefreshing(true)
     setOffset(0)
-    await fetchGallery(0)
+    await fetchGallery(0, 8)
     setRefreshing(false)
   }
 
@@ -99,13 +99,13 @@ export default function GalleryPage() {
   }
 
   useEffect(() => {
-    fetchGallery().then()
+    fetchGallery(0, 8).then()
   }, [current, fetchGallery])
 
   const generateThumbnail = useCallback(async (galleryId: string) => {
     try {
       const { uri } = await VideoThumbnails.getThumbnailAsync(
-        `https://api.headpat.de/v1/storage/buckets/gallery/files/${galleryId}/view?project=hp-main`
+        `https://api.headpat.place/v1/storage/buckets/gallery/files/${galleryId}/view?project=hp-main`
       )
       setThumbnails((prevThumbnails) => ({
         ...prevThumbnails,
