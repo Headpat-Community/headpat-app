@@ -410,9 +410,6 @@ export default function RootLayout() {
   }, [router, segments, lastBackPressed])
 
   const [expoPushToken, setExpoPushToken] = useState('')
-  const [channels, setChannels] = useState<Notifications.NotificationChannel[]>(
-    []
-  )
   const [notification, setNotification] = useState<
     Notifications.Notification | undefined
   >(undefined)
@@ -420,6 +417,9 @@ export default function RootLayout() {
   const responseListener = useRef<Notifications.Subscription>()
 
   useEffect(() => {
+    if (!expoPushToken) {
+      alert('No push token found')
+    }
     AsyncStorage.setItem('pushToken', expoPushToken).then()
   }, [expoPushToken])
 

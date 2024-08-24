@@ -36,11 +36,13 @@ export function UserProvider(props: any) {
     const accountData = await account.get()
     setUser(accountData)
     await account.createPushTarget(ID.unique(), pushToken)
+    if (pushToken) {
+      alert('Push token found')
+    }
   }
 
   async function loginOAuth(userId: string, secret: string) {
     const pushToken = await AsyncStorage.getItem('pushToken')
-    console.log(pushToken)
     await account.createSession(userId, secret)
     const accountData = await account.get()
     setUser(accountData)
