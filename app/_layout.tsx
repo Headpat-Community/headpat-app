@@ -10,7 +10,8 @@ import { ToastProvider } from '~/components/primitives/deprecated-ui/toast'
 import { router, SplashScreen, useRouter, useSegments } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import * as React from 'react'
-import { BackHandler, ScrollView, Text, View } from 'react-native'
+import { useEffect, useState } from 'react'
+import { Alert, BackHandler, ScrollView, Text, View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { ProfileThemeToggle } from '~/components/ThemeToggle'
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar'
@@ -33,7 +34,11 @@ import {
   UserSearchIcon,
   UsersIcon,
 } from 'lucide-react-native'
-import { UserProvider, useUser } from '~/components/contexts/UserContext'
+import {
+  updatePushTargetWithAppwrite,
+  UserProvider,
+  useUser,
+} from '~/components/contexts/UserContext'
 import { DrawerScreensData } from '~/components/data/DrawerScreensData'
 import { Separator } from '~/components/ui/separator'
 import { MoonStar, Sun } from '~/components/Icons'
@@ -41,13 +46,9 @@ import * as TaskManager from 'expo-task-manager'
 import * as BackgroundFetch from 'expo-background-fetch'
 import * as Location from 'expo-location'
 import { database } from '~/lib/appwrite-client'
-import { useEffect, useRef, useState } from 'react'
 import { toast } from '~/lib/toast'
-import * as Notifications from 'expo-notifications'
-import {
-  registerForPushNotificationsAsync,
-  useNotificationObserver,
-} from '~/components/system/pushNotifications'
+import messaging from '@react-native-firebase/messaging'
+import { requestUserPermission } from '~/components/system/pushNotifications'
 
 TaskManager.defineTask('background-location-task', async ({ data, error }) => {
   if (error) {
@@ -100,17 +101,6 @@ export const unstable_settings = {
 
 // Prevent the splash screen from auto-hiding before getting the color scheme.
 SplashScreen.preventAutoHideAsync()
-
-/**
- * Set the notification handler
- */
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: true,
-  }),
-})
 
 function HeaderMenuSidebar() {
   const navigation = useNavigation()
@@ -345,7 +335,7 @@ function CustomDrawerContent() {
             textAlign: 'center',
           }}
         >
-          Headpat App v0.5.2
+          Headpat App v0.5.3
         </Text>
       </ScrollView>
     </>
@@ -356,7 +346,6 @@ export default function RootLayout() {
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme()
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = useState(false)
   const [lastBackPressed, setLastBackPressed] = useState(0)
-  useNotificationObserver()
 
   useEffect(() => {
     ;(async () => {
@@ -409,43 +398,24 @@ export default function RootLayout() {
     return () => backHandler.remove()
   }, [router, segments, lastBackPressed])
 
-  const [expoPushToken, setExpoPushToken] = useState('')
-  const [notification, setNotification] = useState<
-    Notifications.Notification | undefined
-  >(undefined)
-  const notificationListener = useRef<Notifications.Subscription>()
-  const responseListener = useRef<Notifications.Subscription>()
+  useEffect(() => {
+    return messaging().onMessage(async (remoteMessage) => {
+      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage))
+    })
+  }, [])
+
+  messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+    console.log('Message handled in the background!', remoteMessage)
+  })
 
   useEffect(() => {
-    if (!expoPushToken) {
-      alert('No push token found')
-    }
-    AsyncStorage.setItem('pushToken', expoPushToken).then()
-  }, [expoPushToken])
+    requestUserPermission().then()
 
-  useEffect(() => {
-    registerForPushNotificationsAsync()
-      .then((token) => setExpoPushToken(token ?? ''))
-      .catch((error: any) => setExpoPushToken(`${error}`))
-
-    notificationListener.current =
-      Notifications.addNotificationReceivedListener((notification) => {
-        setNotification(notification)
-      })
-
-    responseListener.current =
-      Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log(response)
-      })
-
-    return () => {
-      notificationListener.current &&
-        Notifications.removeNotificationSubscription(
-          notificationListener.current
-        )
-      responseListener.current &&
-        Notifications.removeNotificationSubscription(responseListener.current)
-    }
+    return messaging().onTokenRefresh(async (newFcmToken) => {
+      //console.log('FCM token refreshed:', newFcmToken)
+      await AsyncStorage.setItem('fcmToken', newFcmToken)
+      await updatePushTargetWithAppwrite(newFcmToken)
+    })
   }, [])
 
   if (!isColorSchemeLoaded) {
@@ -468,14 +438,14 @@ export default function RootLayout() {
             }}
           >
             {/* <Image
-            className=""
-            source={require('assets/images/headpat_logo.png')}
-            // placeholder={blurhash}
-            contentFit="cover"
-            // transition={1000}
-            allowDownscaling={true}
-            style={{ width: 200, height: 200, marginTop: 20 }}
-          /> */}
+               className=""
+               source={require('assets/images/headpat_logo.png')}
+               // placeholder={blurhash}
+               contentFit="cover"
+               // transition={1000}
+               allowDownscaling={true}
+               style={{ width: 200, height: 200, marginTop: 20 }}
+               /> */}
 
             {DrawerScreensData.map((screen) => (
               <Drawer.Screen

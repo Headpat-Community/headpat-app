@@ -2,12 +2,11 @@
   "expo": {
     "name": "Headpat",
     "slug": "headpat-app",
-    "version": "0.5.2",
+    "version": "0.5.3",
     "orientation": "portrait",
     "icon": "./assets/images/headpat_logo.png",
     "scheme": "headpatapp",
     "userInterfaceStyle": "automatic",
-    "jsEngine": "jsc",
     "splash": {
       "image": "./assets/images/headpat_logo.png",
       "resizeMode": "contain",
@@ -18,7 +17,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "place.headpat.app",
+      "bundleIdentifier": "com.headpat.app",
       "usesAppleSignIn": true,
       "googleServicesFile": "./GoogleService-Info.plist",
       "config": {
@@ -34,14 +33,18 @@
         ],
         "NSLocationWhenInUseUsageDescription": "This app requires access to your location to show you on the map.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "This app requires access to your location to show you on the map.",
-        "NSLocationAlwaysUsageDescription": "This app requires access to your location to show you on the map."
+        "NSLocationAlwaysUsageDescription": "This app requires access to your location to show you on the map.",
+        "BGTaskSchedulerPermittedIdentifiers": [
+          "com.headpat.app.location",
+          "com.headpat.app.fetch"
+        ]
       },
       "associatedDomains": [
         "applinks:headpat.app",
         "applinks:headpat.place",
         "applinks:api.headpat.place"
       ],
-      "buildNumber": "30"
+      "buildNumber": "40"
     },
     "android": {
       "permissions": [
@@ -60,8 +63,8 @@
           "apiKey": "AIzaSyD4v3MV8UByXinnFD_9Ck_QBI2tS9VFR3Q"
         }
       },
-      "package": "place.headpat.app",
-      "versionCode": 30
+      "package": "com.headpat.app",
+      "versionCode": 31
     },
     "web": {
       "bundler": "metro",
@@ -121,7 +124,16 @@
           "photosPermission": "The app accesses your photos to let you share them with your fellow users."
         }
       ],
-      "expo-video"
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ],
+      "expo-video",
+      "expo-router"
     ]
   }
 }

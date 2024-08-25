@@ -4,6 +4,7 @@ import { account } from '~/lib/appwrite-client'
 import { toast } from '~/lib/toast'
 import { Account } from '~/lib/types/collections'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import Device from 'expo-device'
 
 interface UserContextValue {
   current: Account.AccountType | null
@@ -31,22 +32,19 @@ export function UserProvider(props: any) {
   const [user, setUser] = useState(null)
 
   async function login(email: string, password: string) {
-    const pushToken = await AsyncStorage.getItem('pushToken')
     await account.createEmailPasswordSession(email, password)
     const accountData = await account.get()
     setUser(accountData)
-    await account.createPushTarget(ID.unique(), pushToken)
-    if (pushToken) {
-      alert('Push token found')
-    }
+    const fcmToken = await AsyncStorage.getItem('fcmToken')
+    await updatePushTargetWithAppwrite(fcmToken)
   }
 
   async function loginOAuth(userId: string, secret: string) {
-    const pushToken = await AsyncStorage.getItem('pushToken')
     await account.createSession(userId, secret)
     const accountData = await account.get()
     setUser(accountData)
-    await account.createPushTarget(ID.unique(), pushToken)
+    const fcmToken = await AsyncStorage.getItem('fcmToken')
+    await updatePushTargetWithAppwrite(fcmToken)
   }
 
   async function logout() {
@@ -55,14 +53,11 @@ export function UserProvider(props: any) {
   }
 
   async function register(email: string, password: string, username: string) {
-    const pushToken = await AsyncStorage.getItem('pushToken')
     await account.create(ID.unique(), email, password, username)
     await login(email, password)
   }
 
   async function init() {
-    const pushToken = await AsyncStorage.getItem('pushToken')
-    console.log(pushToken)
     try {
       const loggedIn = await account.get()
       setUser(loggedIn)
@@ -91,4 +86,27 @@ export function UserProvider(props: any) {
       {props.children}
     </UserContext.Provider>
   )
+}
+
+export const updatePushTargetWithAppwrite = async (fcmToken: string) => {
+  if (!Device.isDevice) return
+  const targetId = await AsyncStorage.getItem('targetId')
+
+  try {
+    // Assuming `account` is your Appwrite Account instance
+    const session = await account.get()
+
+    if (!session) return // User is not logged in
+
+    if (!targetId) {
+      // Create a new push target
+      const target = await account.createPushTarget(ID.unique(), fcmToken)
+      await AsyncStorage.setItem('targetId', target.$id)
+    } else {
+      // Update the existing push target
+      await account.updatePushTarget(targetId, fcmToken)
+    }
+  } catch (error) {
+    console.error('Failed to update push target in Appwrite:', error)
+  }
 }

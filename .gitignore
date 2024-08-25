@@ -42,6 +42,5 @@ yarn-error.*
 test/
 
 # expo
-android/app
-android/gradle
+android/
 ios/
