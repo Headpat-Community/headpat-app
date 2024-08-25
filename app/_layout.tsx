@@ -57,6 +57,7 @@ TaskManager.defineTask('background-location-task', async ({ data, error }) => {
 
   // Use the user data from the task
   const userId = await AsyncStorage.getItem('userId')
+  console.log('userId', userId)
 
   if (!userId) {
     return BackgroundFetch.BackgroundFetchResult.Failed
@@ -412,6 +413,7 @@ export default function RootLayout() {
     requestUserPermission().then()
 
     return messaging().onTokenRefresh(async (newFcmToken) => {
+      if (!newFcmToken) return
       //console.log('FCM token refreshed:', newFcmToken)
       await AsyncStorage.setItem('fcmToken', newFcmToken)
       await updatePushTargetWithAppwrite(newFcmToken)

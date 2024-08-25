@@ -4,7 +4,7 @@ import { account } from '~/lib/appwrite-client'
 import { toast } from '~/lib/toast'
 import { Account } from '~/lib/types/collections'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import Device from 'expo-device'
+import * as Sentry from '@sentry/react-native'
 
 interface UserContextValue {
   current: Account.AccountType | null
@@ -35,16 +35,14 @@ export function UserProvider(props: any) {
     await account.createEmailPasswordSession(email, password)
     const accountData = await account.get()
     setUser(accountData)
-    const fcmToken = await AsyncStorage.getItem('fcmToken')
-    await updatePushTargetWithAppwrite(fcmToken)
+    await loggedInPushNotifications()
   }
 
   async function loginOAuth(userId: string, secret: string) {
     await account.createSession(userId, secret)
     const accountData = await account.get()
     setUser(accountData)
-    const fcmToken = await AsyncStorage.getItem('fcmToken')
-    await updatePushTargetWithAppwrite(fcmToken)
+    await loggedInPushNotifications()
   }
 
   async function logout() {
@@ -61,6 +59,7 @@ export function UserProvider(props: any) {
     try {
       const loggedIn = await account.get()
       setUser(loggedIn)
+      await loggedInPushNotifications()
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setUser(null)
@@ -88,19 +87,29 @@ export function UserProvider(props: any) {
   )
 }
 
+const loggedInPushNotifications = async () => {
+  const fcmToken = await AsyncStorage.getItem('fcmToken')
+  if (!fcmToken) return
+  await updatePushTargetWithAppwrite(fcmToken)
+}
+
 export const updatePushTargetWithAppwrite = async (fcmToken: string) => {
-  if (!Device.isDevice) return
+  // If is simulator, don't update push target
   const targetId = await AsyncStorage.getItem('targetId')
+  if (!fcmToken) return
 
   try {
-    // Assuming `account` is your Appwrite Account instance
     const session = await account.get()
 
     if (!session) return // User is not logged in
 
     if (!targetId) {
       // Create a new push target
-      const target = await account.createPushTarget(ID.unique(), fcmToken)
+      const target = await account.createPushTarget(
+        ID.unique(),
+        fcmToken,
+        '66bcfc3b0028d9fb7a68'
+      )
       await AsyncStorage.setItem('targetId', target.$id)
     } else {
       // Update the existing push target
@@ -108,5 +117,6 @@ export const updatePushTargetWithAppwrite = async (fcmToken: string) => {
     }
   } catch (error) {
     console.error('Failed to update push target in Appwrite:', error)
+    Sentry.captureException(error)
   }
 }

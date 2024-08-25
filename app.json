@@ -44,7 +44,7 @@
         "applinks:headpat.place",
         "applinks:api.headpat.place"
       ],
-      "buildNumber": "40"
+      "buildNumber": "48"
     },
     "android": {
       "permissions": [
@@ -89,6 +89,8 @@
       "checkAutomatically": "ON_LOAD"
     },
     "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/messaging",
       "expo-localization",
       "expo-apple-authentication",
       "expo-background-fetch",
@@ -96,7 +98,7 @@
         "expo-task-manager",
         {
           "ios": {
-            "minimumOSVersion": "14"
+            "minimumOSVersion": "15"
           }
         }
       ],
@@ -104,7 +106,7 @@
         "expo-background-fetch",
         {
           "ios": {
-            "minimumOSVersion": "14"
+            "minimumOSVersion": "15"
           }
         }
       ],
@@ -133,7 +135,8 @@
         }
       ],
       "expo-video",
-      "expo-router"
+      "expo-router",
+      "expo-secure-store"
     ]
   }
 }

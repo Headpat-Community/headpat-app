@@ -258,9 +258,6 @@ export default function MutualLocationsPage() {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel onPress={() => setModalOpen(false)}>
-                <Text>Cancel</Text>
-              </AlertDialogCancel>
               <AlertDialogAction
                 onPress={async () => {
                   let { status } =
