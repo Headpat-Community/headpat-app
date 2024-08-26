@@ -118,6 +118,46 @@ export namespace UserData {
      */
     followingCount: number
   }
+
+  /**
+   * This data is returned from the API by calling the userprefs endpoint.
+   * @see UserDataDocumentsType
+   */
+  export interface UserPrefsType {
+    total: number
+    documents: UserPrefsDocumentsType[]
+  }
+
+  /**
+   * This data is returned from the API within the `documents` array.
+   * @see UserPrefsType
+   */
+  export interface UserPrefsDocumentsType extends Models.Document {
+    /**
+     * The user ID of the user.
+     */
+    userId: string
+    /**
+     * The user's notes.
+     */
+    notes: string
+    /**
+     * The user's favorite status.
+     */
+    isFavorited: boolean
+    /**
+     * The user's blocked status.
+     */
+    isBlocked: boolean
+    /**
+     * The user's muted status.
+     */
+    isMuted: boolean
+    /**
+     * The user's nickname.
+     */
+    nickName: string
+  }
 }
 
 export namespace Location {

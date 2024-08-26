@@ -6,7 +6,7 @@ import {
 } from 'react-native'
 import { H1, H3, Muted } from '~/components/ui/typography'
 import { Link, useLocalSearchParams } from 'expo-router'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { UserData } from '~/lib/types/collections'
 import { functions } from '~/lib/appwrite-client'
 import { Image } from 'expo-image'
@@ -37,6 +37,17 @@ import { useUser } from '~/components/contexts/UserContext'
 import { ExecutionMethod } from 'react-native-appwrite'
 import sanitizeHtml from 'sanitize-html'
 import HTMLView from 'react-native-htmlview'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '~/components/ui/alert-dialog'
+import { blockUser } from '~/components/user/api/blockUser'
 
 export default function UserPage() {
   const { isDarkColorScheme } = useColorScheme()
@@ -45,24 +56,39 @@ export default function UserPage() {
 
   const local = useLocalSearchParams()
   const [userData, setUserData] = useState<UserData.UserDataDocumentsType>(null)
+  const [userPrefs, setUserPrefs] =
+    useState<UserData.UserPrefsDocumentsType>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
+  const [moderationModalOpen, setModerationModalOpen] = useState<boolean>(false)
   const { current } = useUser()
 
   const fetchUser = async () => {
     try {
       setRefreshing(true)
-      const data = await functions.createExecution(
+      const dataUser = await functions.createExecution(
         'user-endpoints',
         '',
         false,
         `/user?userId=${local?.userId}`,
         ExecutionMethod.GET
       )
-      const response: UserData.UserDataDocumentsType = JSON.parse(
-        data.responseBody
+      const responseUser: UserData.UserDataDocumentsType = JSON.parse(
+        dataUser.responseBody
       )
 
-      setUserData(response)
+      const dataPrefs = await functions.createExecution(
+        'user-endpoints',
+        '',
+        false,
+        `/user/prefs?userId=${local?.userId}`,
+        ExecutionMethod.GET
+      )
+      const responsePrefs: UserData.UserPrefsDocumentsType = JSON.parse(
+        dataPrefs.responseBody
+      )
+
+      setUserData(responseUser)
+      setUserPrefs(responsePrefs)
       setRefreshing(false)
     } catch (error) {
       setRefreshing(false)
@@ -170,35 +196,76 @@ export default function UserPage() {
           </View>
           <Text className={'mb-4 flex-row flex-wrap'}>{userData?.status}</Text>
           <View className={'flex-row gap-2'}>
-            {current?.$id === userData?.$id && (
+            {current?.$id !== userData?.$id && (
               <>
-                <>
-                  <Button
-                    className={'text-center'}
-                    onPress={() =>
-                      toast('Ha! You thought this was a real button!')
-                    }
-                  >
-                    <UserPlusIcon color={themeButtons} />
-                  </Button>
-                  <Button
-                    className={'text-center'}
-                    onPress={() =>
-                      toast('Ha! You thought this was a real button!')
-                    }
-                  >
-                    <MailIcon color={themeButtons} />
-                  </Button>
-                </>
                 <Button
                   className={'text-center'}
-                  variant={'destructive'}
                   onPress={() =>
                     toast('Ha! You thought this was a real button!')
                   }
                 >
-                  <ShieldAlertIcon color={'white'} />
+                  <UserPlusIcon color={themeButtons} />
                 </Button>
+                <Button
+                  className={'text-center'}
+                  onPress={() =>
+                    toast('Ha! You thought this was a real button!')
+                  }
+                >
+                  <MailIcon color={themeButtons} />
+                </Button>
+
+                <AlertDialog
+                  onOpenChange={setModerationModalOpen}
+                  open={moderationModalOpen}
+                >
+                  <AlertDialogTrigger asChild>
+                    <Button className={'text-center'} variant={'destructive'}>
+                      <ShieldAlertIcon color={'white'} />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className={'w-full'}>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Moderation</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        What would you like to do?
+                      </AlertDialogDescription>
+                      <View className={'gap-4'}>
+                        <Button
+                          className={'text-center flex flex-row items-center'}
+                          variant={'destructive'}
+                          onPress={() =>
+                            toast('This feature is not yet implemented.')
+                          }
+                        >
+                          <Text>Report</Text>
+                        </Button>
+                        <Button
+                          className={'text-center flex flex-row items-center'}
+                          variant={'destructive'}
+                          onPress={() =>
+                            blockUser({
+                              userId: userData?.$id,
+                              isBlocked: !userPrefs?.isBlocked,
+                            }).then((response) => {
+                              setUserPrefs(response)
+                              setModerationModalOpen(false)
+                            })
+                          }
+                        >
+                          <Text>
+                            {userPrefs?.isBlocked ? 'Unblock' : 'Block'}
+                          </Text>
+                        </Button>
+                      </View>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className={'mt-8'}>
+                      <AlertDialogAction>
+                        <Text>Cancel</Text>
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </>
             )}
           </View>
@@ -297,7 +364,22 @@ export default function UserPage() {
 
       {/* Bio section */}
       <View className={'mx-10 mb-4'}>
-        <HTMLView value={sanitizedBio} />
+        <HTMLView
+          value={sanitizedBio}
+          stylesheet={{
+            p: {
+              color: theme,
+            },
+            a: {
+              color: 'blue',
+            },
+          }}
+          textComponentProps={{
+            style: {
+              color: theme,
+            },
+          }}
+        />
       </View>
 
       {/* Social section */}
