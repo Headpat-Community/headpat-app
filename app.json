@@ -44,7 +44,7 @@
         "applinks:headpat.place",
         "applinks:api.headpat.place"
       ],
-      "buildNumber": "48"
+      "buildNumber": "49"
     },
     "android": {
       "permissions": [
@@ -64,7 +64,7 @@
         }
       },
       "package": "com.headpat.app",
-      "versionCode": 31
+      "versionCode": 37
     },
     "web": {
       "bundler": "metro",
