@@ -109,7 +109,7 @@ export default function HomeView() {
           <View className={'flex-row flex-wrap items-center justify-between'}>
             <Link
               href={{
-                pathname: '/user/[userId]',
+                pathname: '/user/(stacks)/[userId]',
                 params: { userId: image?.userId },
               }}
             >
@@ -190,7 +190,7 @@ export default function HomeView() {
           <View className={'flex-row flex-wrap items-center justify-between'}>
             <Link
               href={{
-                pathname: '/user/[userId]',
+                pathname: '/user/(stacks)/[userId]',
                 params: { userId: image?.userId },
               }}
               asChild
