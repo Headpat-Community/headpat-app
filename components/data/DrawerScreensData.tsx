@@ -63,7 +63,7 @@ export const DrawerScreensData = [
     headerRight: <GalleryAddButton />,
   },
   {
-    location: 'locations',
+    location: 'locations/(tabs)',
     title: 'Locations',
     headerLeft: <HeaderSidebarBackButton />,
   },
