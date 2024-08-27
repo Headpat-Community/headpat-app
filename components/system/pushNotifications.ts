@@ -14,7 +14,6 @@ export async function requestUserPermission() {
     authStatus === messaging.AuthorizationStatus.PROVISIONAL
 
   if (enabled) {
-    console.log('Authorization status:', authStatus)
     await getFcmToken()
   } else {
     //Alert.alert('Push Notifications permission denied')
@@ -24,7 +23,6 @@ export async function requestUserPermission() {
 const getFcmToken = async () => {
   const fcmToken = await messaging().getToken()
   if (fcmToken) {
-    console.log('Your Firebase Cloud Messaging Token is:', fcmToken)
     await AsyncStorage.setItem('fcmToken', fcmToken)
   } else {
     console.log('Failed to get FCM token')

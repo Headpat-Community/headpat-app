@@ -86,8 +86,11 @@ export default function CommunitiesPage() {
     return (
       <ScrollView>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-          {Array.from({ length: 6 }).map((_, index) => (
-            <View className={'px-4 m-4 w-full flex flex-row items-center'}>
+          {Array.from({ length: 8 }).map((_, index) => (
+            <View
+              className={'px-4 m-4 w-full flex flex-row items-center'}
+              key={index}
+            >
               <Skeleton className="w-[100px] h-[100px] rounded-3xl" />
               <View className={'flex flex-col gap-3 ml-6'}>
                 <Skeleton className="w-[150px] h-[20px] rounded" />

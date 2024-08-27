@@ -101,7 +101,7 @@ export const updatePushTargetWithAppwrite = async (fcmToken: string) => {
   try {
     const session = await account.get()
 
-    if (!session) return // User is not logged in
+    if (!session.$id) return // User is not logged in
 
     if (!targetId) {
       // Create a new push target
