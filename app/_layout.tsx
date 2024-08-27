@@ -58,7 +58,6 @@ TaskManager.defineTask('background-location-task', async ({ data, error }) => {
 
   // Use the user data from the task
   const userId = await AsyncStorage.getItem('userId')
-  console.log('userId', userId)
 
   if (!userId) {
     return BackgroundFetch.BackgroundFetchResult.Failed
@@ -116,7 +115,13 @@ function HeaderMenuSidebar() {
 
   return (
     <View style={{ flexDirection: 'row' }}>
-      <TouchableOpacity onPress={openMenu} className={'p-5'}>
+      <TouchableOpacity
+        onPress={openMenu}
+        style={{
+          padding: 10,
+          marginLeft: 10,
+        }}
+      >
         <MenuIcon
           aria-label={'Menu'}
           size={20}
@@ -183,7 +188,7 @@ function CustomDrawerContent() {
               </View>
             )
           }}
-          onPress={() => router.navigate('/gallery')}
+          onPress={() => router.navigate('/gallery/(stacks)')}
         />
 
         <DrawerItem
@@ -207,7 +212,7 @@ function CustomDrawerContent() {
               </View>
             )
           }}
-          onPress={() => router.navigate('/announcements')}
+          onPress={() => router.navigate('/announcements/(stacks)')}
         />
 
         <DrawerItem
@@ -249,7 +254,7 @@ function CustomDrawerContent() {
               }}
               onPress={() => {
                 router.navigate({
-                  pathname: '/user/[userId]',
+                  pathname: '/user/(stacks)/[userId]',
                   params: { userId: current.$id },
                 })
               }}
@@ -264,7 +269,7 @@ function CustomDrawerContent() {
                   </View>
                 )
               }}
-              onPress={() => router.navigate('/user/relationships/mutuals')}
+              onPress={() => router.navigate('/relationships/mutuals')}
             />
           </>
         )}
@@ -439,6 +444,7 @@ export default function RootLayout() {
               screenOptions={{
                 drawerStyle: {},
                 swipeEdgeWidth: 50,
+                headerShown: segments[2] === '[eventId]' ? false : true,
               }}
             >
               {/* <Image

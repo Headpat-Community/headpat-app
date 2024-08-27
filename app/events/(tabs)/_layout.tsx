@@ -24,6 +24,24 @@ export default function TabsLayout() {
           headerShown: false,
         }}
       />
+      <Tabs.Screen
+        name="archived"
+        options={{
+          title: 'Archived',
+          tabBarIcon({ color, size }) {
+            return <CalendarClockIcon color={color} size={size} />
+          },
+          headerShown: false,
+        }}
+      />
+      <Tabs.Screen
+        name="[eventId]/index"
+        options={{
+          href: null,
+          title: 'Event Detail',
+          headerTitleAlign: 'left',
+        }}
+      />
     </Tabs>
   )
 }

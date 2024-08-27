@@ -19,6 +19,7 @@ import { UserData } from '~/lib/types/collections'
 import { useFocusEffect } from '@react-navigation/core'
 import { Checkbox } from '~/components/ui/checkbox'
 import { z } from 'zod'
+import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 
 export default function UserprofilePage() {
   const [isDisabled, setIsDisabled] = useState(false)
@@ -27,12 +28,10 @@ export default function UserprofilePage() {
   const [userData, setUserData] =
     useState<UserData.UserDataDocumentsType | null>(null)
   const [nsfw, setNsfw] = useState<boolean>(false)
-  const [profileUrl, setProfileUrl] = useState<string>('')
-  const [displayName, setDisplayName] = useState<string>('')
-  const [status, setStatus] = useState<string>('')
-  const [pronouns, setPronouns] = useState<string>('')
+  const { showLoadingModal, showAlertModal, hideLoadingModal } = useAlertModal()
 
   const fetchUserData = async () => {
+    showLoadingModal()
     try {
       const data: UserData.UserDataDocumentsType = await database.getDocument(
         'hp_db',
@@ -40,13 +39,13 @@ export default function UserprofilePage() {
         current.$id
       )
       setUserData(data)
-      setStatus(data.status)
-      setPronouns(data.pronouns)
-      setDisplayName(data.displayName)
-      setProfileUrl(data.profileUrl)
       setNsfw(current.prefs.nsfw)
+      hideLoadingModal()
     } catch (error) {
-      toast('Failed to fetch userdata. Please try again later.')
+      showAlertModal(
+        'FAILED',
+        'Failed to fetch user data. Please try again later.'
+      )
       Sentry.captureException(error)
     }
   }
@@ -59,6 +58,7 @@ export default function UserprofilePage() {
   useFocusEffect(memoizedCallback)
 
   const handleUpdate = async (name: string, value: string) => {
+    showLoadingModal()
     try {
       setIsDisabled(true)
       const schemaDefinitions = {
@@ -91,29 +91,20 @@ export default function UserprofilePage() {
         await database.updateDocument('hp_db', 'userdata', current.$id, {
           [name]: value,
         })
-        toast('Data saved successfully')
-        setTimeout(() => {
-          setIsDisabled(false)
-        }, 2000)
+        showAlertModal('SUCCESS', 'User data updated successfully.')
       } catch (error) {
+        showAlertModal('FAILED', 'Failed to save employee data')
         Sentry.captureException(error)
-        toast('Failed to save employee data')
-        setTimeout(() => {
-          setIsDisabled(false)
-        }, 2000)
       }
     } catch (error) {
       console.error(error)
       Sentry.captureException(error)
-      toast('An error occurred. Please try again later.')
-      setTimeout(() => {
-        setIsDisabled(false)
-      }, 2000)
+      showAlertModal('FAILED', 'An error occurred. Please try again later.')
     }
   }
 
   const handleNsfw = async () => {
-    setIsDisabled(true)
+    showLoadingModal()
     const prefs = current.prefs
     const body = {
       ...prefs,
@@ -125,21 +116,11 @@ export default function UserprofilePage() {
         ...prev,
         prefs: body,
       }))
-      toast('NSFW preference updated successfully.')
-      setUser((prev: any) => ({
-        ...prev,
-        prefs: body,
-      }))
-      setTimeout(() => {
-        setIsDisabled(false)
-      }, 2000)
+      showAlertModal('SUCCESS', 'NSFW preference updated successfully.')
     } catch (error) {
-      toast(error.message)
+      showAlertModal('FAILED', 'Failed to update NSFW preference.')
       console.error(error)
       Sentry.captureException(error)
-      setTimeout(() => {
-        setIsDisabled(false)
-      }, 2000)
     }
   }
 
@@ -207,15 +188,19 @@ export default function UserprofilePage() {
                     nativeID={'profileUrl'}
                     className={'border-0 bg-transparent'}
                     textContentType={'name'}
-                    onChangeText={(text) => setProfileUrl(text)}
-                    value={profileUrl}
+                    onChangeText={(text) =>
+                      setUserData({ ...userData, profileUrl: text })
+                    }
+                    value={userData.profileUrl}
                   />
                 </View>
               </View>
               <View>
                 <Button
-                  onPress={() => handleUpdate('profileUrl', profileUrl)}
-                  disabled={isDisabled || profileUrl.length < 3}
+                  onPress={() =>
+                    handleUpdate('profileUrl', userData.profileUrl)
+                  }
+                  disabled={isDisabled || userData.profileUrl.length < 3}
                 >
                   <Text>Save</Text>
                 </Button>
@@ -234,15 +219,22 @@ export default function UserprofilePage() {
                 <Label nativeID={'displayName'}>Name</Label>
                 <Input
                   nativeID={'displayName'}
-                  onChange={(e) => setDisplayName(e.nativeEvent.text)}
+                  onChange={(e) =>
+                    setUserData({
+                      ...userData,
+                      displayName: e.nativeEvent.text,
+                    })
+                  }
                   textContentType={'name'}
-                  value={displayName}
+                  value={userData.displayName}
                 />
               </View>
               <View>
                 <Button
-                  onPress={() => handleUpdate('displayName', displayName)}
-                  disabled={isDisabled || displayName.length < 3}
+                  onPress={() =>
+                    handleUpdate('displayName', userData.displayName)
+                  }
+                  disabled={isDisabled || userData.displayName.length < 3}
                 >
                   <Text>Save</Text>
                 </Button>
@@ -261,8 +253,10 @@ export default function UserprofilePage() {
                 <Label nativeID={'status'}>Status</Label>
                 <Input
                   nativeID={'status'}
-                  onChange={(e) => setStatus(e.nativeEvent.text)}
-                  value={status}
+                  onChange={(e) =>
+                    setUserData({ ...userData, status: e.nativeEvent.text })
+                  }
+                  value={userData.status}
                 />
               </View>
               <View>
@@ -287,14 +281,16 @@ export default function UserprofilePage() {
                 <Label nativeID={'pronouns'}>Pronouns</Label>
                 <Input
                   nativeID={'pronouns'}
-                  onChange={(e) => setPronouns(e.nativeEvent.text)}
-                  value={pronouns}
+                  onChange={(e) =>
+                    setUserData({ ...userData, pronouns: e.nativeEvent.text })
+                  }
+                  value={userData.pronouns}
                   maxLength={16}
                 />
               </View>
               <View>
                 <Button
-                  onPress={() => handleUpdate('pronouns', pronouns)}
+                  onPress={() => handleUpdate('pronouns', userData.pronouns)}
                   disabled={isDisabled}
                 >
                   <Text>Save</Text>

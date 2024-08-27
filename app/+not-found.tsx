@@ -6,7 +6,6 @@ import { Image } from 'expo-image'
 export default function NotFoundScreen() {
   return (
     <>
-      <Stack.Screen options={{ title: 'Oops!' }} />
       <View className="flex-1 justify-center gap-3 items-center">
         <Image
           source={'./assets/images/headpat_logo.png'}

@@ -15,7 +15,7 @@ const UserItem = React.memo(
     return (
       <Link
         href={{
-          pathname: '/user/[userId]',
+          pathname: '/user/(stacks)/[userId]',
           params: { userId: user.$id },
         }}
         asChild

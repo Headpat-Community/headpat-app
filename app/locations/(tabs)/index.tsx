@@ -32,16 +32,16 @@ import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
 import {
   AlertDialog,
   AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
 } from '~/components/ui/alert-dialog'
+import { useUser } from '~/components/contexts/UserContext'
 
 export default function MutualLocationsPage() {
-  //const { current } = useUser()
+  const { current } = useUser()
 
   const mapRef = useRef(null)
   const [userLocation, setUserLocation] = useState(null)
@@ -85,11 +85,9 @@ export default function MutualLocationsPage() {
   const fetchUserLocations = async () => {
     try {
       let query = []
-      /*
       if (current?.$id) {
         query = [Query.notEqual('$id', current?.$id)]
       }
-      */
 
       const data: LocationType.LocationType = await database.listDocuments(
         'hp_db',

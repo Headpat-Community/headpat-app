@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { FlatList, Text } from 'react-native'
+import { FlatList, Text, View } from 'react-native'
 import { database, storage } from '~/lib/appwrite-client'
 import { toast } from '~/lib/toast'
 import * as Sentry from '@sentry/react-native'
@@ -7,9 +7,8 @@ import { Gallery } from '~/lib/types/collections'
 import { ImageFormat, Query } from 'react-native-appwrite'
 import * as VideoThumbnails from 'expo-video-thumbnails'
 import { useUser } from '~/components/contexts/UserContext'
-import { useBackHandler } from '@react-native-community/hooks'
-import { useNavigation } from '@react-navigation/native'
 import GalleryItem from '~/components/gallery/GalleryItem'
+import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 
 export default function GalleryPage() {
   const { current } = useUser()
@@ -19,6 +18,7 @@ export default function GalleryPage() {
   const [thumbnails, setThumbnails] = useState<{ [key: string]: string }>({})
   const [offset, setOffset] = useState<number>(0)
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
+  const { hideLoadingModal, showLoadingModal, showAlertModal } = useAlertModal()
 
   const fetchGallery = useCallback(
     async (newOffset: number = 0, limit: number = 10) => {
@@ -50,7 +50,10 @@ export default function GalleryPage() {
           }
         })
       } catch (error) {
-        toast('Failed to fetch gallery. Please try again later.')
+        showAlertModal(
+          'FAILED',
+          'Failed to fetch gallery. Please try again later.'
+        )
         Sentry.captureException(error)
       }
     },
@@ -99,8 +102,10 @@ export default function GalleryPage() {
   }
 
   useEffect(() => {
+    showLoadingModal()
     fetchGallery(0, 8).then()
-  }, [current, fetchGallery])
+    hideLoadingModal()
+  }, [current, fetchGallery, hideLoadingModal, showLoadingModal])
 
   const generateThumbnail = useCallback(async (galleryId: string) => {
     try {
@@ -116,16 +121,6 @@ export default function GalleryPage() {
     }
   }, [])
 
-  const navigation = useNavigation()
-
-  useBackHandler(() => {
-    if (navigation.canGoBack()) {
-      navigation.goBack()
-      return true
-    }
-    return false
-  })
-
   const renderItem = ({ item }) => (
     <GalleryItem
       image={item}
@@ -135,17 +130,31 @@ export default function GalleryPage() {
   )
 
   return (
-    <FlatList
-      data={images}
-      keyExtractor={(item) => item.$id}
-      renderItem={renderItem}
-      onRefresh={onRefresh}
-      refreshing={refreshing}
-      numColumns={2}
-      contentContainerStyle={{ justifyContent: 'space-between' }}
-      onEndReached={loadMore}
-      onEndReachedThreshold={0.5}
-      ListFooterComponent={loadingMore ? <Text>Loading...</Text> : null}
-    />
+    <View style={{ flex: 1 }}>
+      <FlatList
+        data={images}
+        keyExtractor={(item) => item.$id}
+        renderItem={renderItem}
+        onRefresh={onRefresh}
+        refreshing={refreshing}
+        numColumns={2}
+        contentContainerStyle={{ flexGrow: 1 }}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          loadingMore && (
+            <View
+              style={{
+                padding: 10,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <Text>Loading...</Text>
+            </View>
+          )
+        }
+      />
+    </View>
   )
 }

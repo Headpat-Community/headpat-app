@@ -22,12 +22,14 @@ export const AlertModalProvider = ({ children }) => {
   const [type, setType] = useState<AlertModalTypes>('SUCCESS')
 
   const showAlertModal = (type: AlertModalTypes, text: string) => {
+    hideLoadingModal()
     setText(text)
     setType(type)
     setIsVisible(true)
   }
 
   const showLoadingModal = () => {
+    hideAlertModal()
     setIsLoading(true)
   }
 

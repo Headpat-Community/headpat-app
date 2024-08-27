@@ -66,11 +66,6 @@
       "package": "com.headpat.app",
       "versionCode": 37
     },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
-    },
     "extra": {
       "router": {
         "origin": false

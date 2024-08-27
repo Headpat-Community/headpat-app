@@ -90,7 +90,7 @@ export default function AnnouncementsPage() {
             return (
               <Link
                 href={{
-                  pathname: '/announcements/[announcementId]',
+                  pathname: '/announcements/(stacks)/[announcementId]',
                   params: { announcementId: announcement.$id },
                 }}
                 asChild

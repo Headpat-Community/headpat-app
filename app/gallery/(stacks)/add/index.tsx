@@ -58,7 +58,7 @@ export default function GalleryAdd() {
   const handleClose = () => {
     setImage(null)
     setPage(1)
-    router.push('/gallery')
+    router.back()
   }
 
   const handleFinish = (galleryId: string) => {

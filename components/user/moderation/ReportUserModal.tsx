@@ -50,7 +50,6 @@ export default function ReportUserModal({
     } catch (e) {
       Sentry.captureException(e)
       showAlertModal('FAILED', 'Failed to report user. Please try again later.')
-      console.log(e)
     }
   }
 

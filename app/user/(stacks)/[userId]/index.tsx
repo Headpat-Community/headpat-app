@@ -36,6 +36,7 @@ import HTMLView from 'react-native-htmlview'
 import { Badge } from '~/components/ui/badge'
 import { Skeleton } from '~/components/ui/skeleton'
 import UserActions from '~/components/user/UserActions'
+import { Drawer } from '~/components/Drawer'
 
 export default function UserPage() {
   const { isDarkColorScheme } = useColorScheme()
@@ -52,7 +53,7 @@ export default function UserPage() {
   const fetchUser = async () => {
     try {
       setRefreshing(true)
-      const [dataUser, dataPrefs, isFollowing] = await Promise.all([
+      const [dataUser, dataPrefs] = await Promise.all([
         functions.createExecution(
           'user-endpoints',
           '',
@@ -67,21 +68,13 @@ export default function UserPage() {
           `/user/prefs?userId=${local?.userId}`,
           ExecutionMethod.GET
         ),
-        functions.createExecution(
-          'user-endpoints',
-          '',
-          false,
-          `/user/isFollowing?followerId=${local?.userId}`,
-          ExecutionMethod.GET
-        ),
       ])
       setUserData(JSON.parse(dataUser.responseBody))
       setUserPrefs(JSON.parse(dataPrefs.responseBody))
-      setIsFollowing(JSON.parse(isFollowing.responseBody).isFollowing)
+      setRefreshing(false)
     } catch (error) {
       Sentry.captureException(error)
     } finally {
-      setRefreshing(false)
     }
   }
 
@@ -216,15 +209,13 @@ export default function UserPage() {
         {/* Extra info section */}
         <View style={{ flexDirection: 'row' }}>
           <View style={{ flex: 1 }}>
-            <View
-              className={
-                'mx-10 my-4 flex-row justify-between items-center gap-4'
-              }
-            >
+            <View className={'mx-10 my-4 flex-row justify-between gap-4'}>
               <View>
-                <Muted className={'text-center mb-2'}>
+                <Muted className={'mb-2'}>
                   {!userData?.location ? null : (
-                    <>
+                    <View
+                      style={{ flexDirection: 'row', alignItems: 'center' }}
+                    >
                       <MapPinIcon
                         size={12}
                         title={'Location'}
@@ -233,14 +224,16 @@ export default function UserPage() {
                           marginRight: 4,
                         }}
                       />
-                      {userData?.location}
-                    </>
+                      <Muted>{userData?.location}</Muted>
+                    </View>
                   )}
                 </Muted>
-                <Muted className={'text-center mb-2'}>
+                <Muted className={'mb-2'}>
                   {/* If birthday includes 1900-01-01 then don't show */}
                   {userData?.birthday.includes('1900-01-01') ? null : (
-                    <>
+                    <View
+                      style={{ flexDirection: 'row', alignItems: 'center' }}
+                    >
                       <CakeIcon
                         size={12}
                         color={theme}
@@ -248,13 +241,17 @@ export default function UserPage() {
                           marginRight: 4,
                         }}
                       />
-                      {calculateBirthday(new Date(userData?.birthday))}
-                    </>
+                      <Muted>
+                        {calculateBirthday(new Date(userData?.birthday))}
+                      </Muted>
+                    </View>
                   )}
                 </Muted>
-                <Muted className={'text-center mb-2'}>
+                <Muted className={'mb-2'}>
                   {!userData?.pronouns ? null : (
-                    <>
+                    <View
+                      style={{ flexDirection: 'row', alignItems: 'center' }}
+                    >
                       <TagIcon
                         size={12}
                         color={theme}
@@ -263,8 +260,8 @@ export default function UserPage() {
                           marginRight: 4,
                         }}
                       />
-                      {userData?.pronouns}
-                    </>
+                      <Muted>{userData?.pronouns}</Muted>
+                    </View>
                   )}
                 </Muted>
                 <Muted className={'text-center mb-2'}>{/* For later */}</Muted>
@@ -272,35 +269,36 @@ export default function UserPage() {
             </View>
           </View>
           <View style={{ flex: 1 }}>
-            <View
-              className={
-                'mx-10 my-4 flex-row justify-between items-center gap-4'
-              }
-            >
+            <View className={'mx-10 my-4 flex-row justify-between gap-4'}>
               <View>
-                <Muted className={'text-center mb-2'}>
+                <Muted style={{ marginBottom: 8 }}>
                   <Link href={`/user/${userData?.$id}/relationships/followers`}>
-                    <EyeIcon
-                      size={12}
-                      title={'Location'}
-                      color={theme}
-                      style={{
-                        marginRight: 4,
-                      }}
-                    />
-                    {userData?.followersCount} Followers
+                    <View
+                      style={{ flexDirection: 'row', alignItems: 'center' }}
+                    >
+                      <EyeIcon
+                        size={12}
+                        title={'Location'}
+                        color={theme}
+                        style={{ marginRight: 4 }}
+                      />
+                      <Muted>{userData?.followersCount} Followers</Muted>
+                    </View>
                   </Link>
                 </Muted>
-                <Muted className={'text-center mb-2'}>
+
+                <Muted style={{ marginBottom: 8 }}>
                   <Link href={`/user/${userData?.$id}/relationships/following`}>
-                    <ScanEyeIcon
-                      size={12}
-                      color={theme}
-                      style={{
-                        marginRight: 4,
-                      }}
-                    />
-                    {userData?.followingCount} Following
+                    <View
+                      style={{ flexDirection: 'row', alignItems: 'center' }}
+                    >
+                      <ScanEyeIcon
+                        size={12}
+                        color={theme}
+                        style={{ marginRight: 4 }}
+                      />
+                      <Muted>{userData?.followingCount} Following</Muted>
+                    </View>
                   </Link>
                 </Muted>
               </View>
