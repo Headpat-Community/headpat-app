@@ -113,7 +113,17 @@ export const updatePushTargetWithAppwrite = async (fcmToken: string) => {
       await AsyncStorage.setItem('targetId', target.$id)
     } else {
       // Update the existing push target
-      await account.updatePushTarget(targetId, fcmToken)
+      try {
+        await account.updatePushTarget(targetId, fcmToken)
+      } catch (error) {
+        console.error('Failed to update push target:', error)
+        const target = await account.createPushTarget(
+          ID.unique(),
+          fcmToken,
+          '66bcfc3b0028d9fb7a68'
+        )
+        await AsyncStorage.setItem('targetId', target.$id)
+      }
     }
   } catch (error) {
     console.error('Failed to update push target in Appwrite:', error)

@@ -1,4 +1,6 @@
-import messaging from '@react-native-firebase/messaging'
+import messaging, {
+  FirebaseMessagingTypes,
+} from '@react-native-firebase/messaging'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Device from 'expo-device'
 import { Platform } from 'react-native'
@@ -10,7 +12,7 @@ export async function requestUserPermission() {
     return
   }
 
-  let authStatus = null
+  let authStatus: FirebaseMessagingTypes.AuthorizationStatus
   if (Platform.OS === 'android') {
     const result = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
@@ -35,6 +37,10 @@ export async function requestUserPermission() {
 }
 
 const getFcmToken = async () => {
+  !messaging().isDeviceRegisteredForRemoteMessages &&
+    (await messaging().registerDeviceForRemoteMessages())
+  // wait 500ms for the device to be registered
+  await new Promise((resolve) => setTimeout(resolve, 500))
   const fcmToken = await messaging().getToken()
   if (fcmToken) {
     await AsyncStorage.setItem('fcmToken', fcmToken)
