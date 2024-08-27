@@ -13,13 +13,18 @@ import { useColorScheme } from '~/lib/useColorScheme'
 import { TouchableOpacity } from '@gorhom/bottom-sheet'
 import { ArrowLeftIcon } from 'lucide-react-native'
 
-function HeaderSidebarBackButton() {
+function HeaderSidebarBackButton({ type }: { type?: string }) {
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
-  // TODO: will be fixed when we get active events on behalf of event status
   return (
     <View style={{ paddingLeft: 16 }}>
-      <TouchableOpacity onPress={() => router.navigate('/events/(tabs)/upcoming')}>
+      <TouchableOpacity
+        onPress={() => {
+          type === 'upcoming'
+            ? router.navigate(`/events/(tabs)/upcoming`)
+            : router.back()
+        }}
+      >
         <ArrowLeftIcon aria-label={'Go back'} size={20} color={theme} />
       </TouchableOpacity>
     </View>
@@ -116,7 +121,9 @@ export default function EventPage() {
       <Stack.Screen
         options={{
           headerTitle: 'Event',
-          headerLeft: () => <HeaderSidebarBackButton />,
+          headerLeft: () => (
+            <HeaderSidebarBackButton type={local.type as string} />
+          ),
         }}
       />
       <View className={'gap-4 mx-2 mt-4'}>

@@ -100,7 +100,7 @@ export default function EventsPage() {
               <Link
                 href={{
                   pathname: '/events/[eventId]',
-                  params: { eventId: event.$id },
+                  params: { eventId: event.$id, type: 'index' },
                 }}
                 asChild
                 key={index}

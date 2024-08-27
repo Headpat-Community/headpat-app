@@ -439,6 +439,7 @@ export default function RootLayout() {
               screenOptions={{
                 drawerStyle: {},
                 swipeEdgeWidth: 50,
+                headerShown: segments[2] === '[eventId]' ? false : true,
               }}
             >
               {/* <Image
