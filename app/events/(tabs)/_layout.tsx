@@ -24,6 +24,14 @@ export default function TabsLayout() {
           headerShown: false,
         }}
       />
+      <Tabs.Screen
+        name="[eventId]/index"
+        options={{
+          href: null,
+          title: 'Event Detail',
+          headerTitleAlign: 'left',
+        }}
+      />
     </Tabs>
   )
 }

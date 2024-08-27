@@ -1,6 +1,6 @@
 import { RefreshControl, ScrollView, View } from 'react-native'
 import { H1, H3, Muted } from '~/components/ui/typography'
-import { useLocalSearchParams } from 'expo-router'
+import { router, Stack, useLocalSearchParams } from 'expo-router'
 import { Events } from '~/lib/types/collections'
 import { database } from '~/lib/appwrite-client'
 import { useEffect, useState } from 'react'
@@ -9,6 +9,22 @@ import { Text } from '~/components/ui/text'
 import { formatDate } from '~/components/calculateTimeLeft'
 import { Separator } from '~/components/ui/separator'
 import { Badge } from '~/components/ui/badge'
+import { useColorScheme } from '~/lib/useColorScheme'
+import { TouchableOpacity } from '@gorhom/bottom-sheet'
+import { ArrowLeftIcon } from 'lucide-react-native'
+
+function HeaderSidebarBackButton() {
+  const { isDarkColorScheme } = useColorScheme()
+  const theme = isDarkColorScheme ? 'white' : 'black'
+  // TODO: will be fixed when we get active events on behalf of event status
+  return (
+    <View style={{ paddingLeft: 16 }}>
+      <TouchableOpacity onPress={() => router.navigate('/events/(tabs)/upcoming')}>
+        <ArrowLeftIcon aria-label={'Go back'} size={20} color={theme} />
+      </TouchableOpacity>
+    </View>
+  )
+}
 
 export default function EventPage() {
   const local = useLocalSearchParams()
@@ -51,6 +67,12 @@ export default function EventPage() {
         }
         contentContainerClassName={'flex-1 justify-center items-center h-full'}
       >
+        <Stack.Screen
+          options={{
+            headerTitle: 'Event',
+            headerLeft: () => <HeaderSidebarBackButton />,
+          }}
+        />
         <View className={'p-4 native:pb-24 max-w-md gap-6'}>
           <View className={'gap-1'}>
             <H1 className={'text-foreground text-center'}>Event</H1>
@@ -68,6 +90,12 @@ export default function EventPage() {
         }
         contentContainerClassName={'flex-1 justify-center items-center h-full'}
       >
+        <Stack.Screen
+          options={{
+            headerTitle: 'Event',
+            headerLeft: () => <HeaderSidebarBackButton />,
+          }}
+        />
         <View className={'p-4 native:pb-24 max-w-md gap-6'}>
           <View className={'gap-1'}>
             <H1 className={'text-foreground text-center'}>Event</H1>
@@ -85,6 +113,12 @@ export default function EventPage() {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
     >
+      <Stack.Screen
+        options={{
+          headerTitle: 'Event',
+          headerLeft: () => <HeaderSidebarBackButton />,
+        }}
+      />
       <View className={'gap-4 mx-2 mt-4'}>
         <H3 className={'text-foreground text-center'}>{event?.title}</H3>
         {event?.label && (

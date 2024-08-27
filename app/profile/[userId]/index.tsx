@@ -36,6 +36,7 @@ import HTMLView from 'react-native-htmlview'
 import { Badge } from '~/components/ui/badge'
 import { Skeleton } from '~/components/ui/skeleton'
 import UserActions from '~/components/user/UserActions'
+import { Drawer } from '~/components/Drawer'
 
 export default function UserPage() {
   const { isDarkColorScheme } = useColorScheme()

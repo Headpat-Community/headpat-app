@@ -207,7 +207,7 @@ function CustomDrawerContent() {
               </View>
             )
           }}
-          onPress={() => router.navigate('/announcements')}
+          onPress={() => router.navigate('/announcements/(stacks)')}
         />
 
         <DrawerItem
@@ -249,7 +249,7 @@ function CustomDrawerContent() {
               }}
               onPress={() => {
                 router.navigate({
-                  pathname: '/user/[userId]',
+                  pathname: '/profile/[userId]',
                   params: { userId: current.$id },
                 })
               }}
@@ -264,7 +264,7 @@ function CustomDrawerContent() {
                   </View>
                 )
               }}
-              onPress={() => router.navigate('/user/relationships/mutuals')}
+              onPress={() => router.navigate('/relationships/mutuals')}
             />
           </>
         )}

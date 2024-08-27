@@ -181,7 +181,7 @@ export default function HomeView() {
         </Card>
 
         <Card className={'w-3/4 mt-4'}>
-          <TouchableOpacity onPress={() => router.push('/announcements')}>
+          <TouchableOpacity onPress={() => router.push('/announcements/(stacks)')}>
             <CardContent className={'p-0'}>
               <CardFooter className={'mt-2 text-xl flex pb-4'}>
                 <MegaphoneIcon

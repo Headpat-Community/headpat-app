@@ -25,12 +25,11 @@ function GalleryAddButton() {
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
   const { current } = useUser()
-
   return (
     <>
       <View className={'items-center flex-row'}>
         {current && (
-          <TouchableOpacity onPress={() => router.push('/gallery/add')}>
+          <TouchableOpacity onPress={() => router.navigate('/gallery/add')}>
             <PlusIcon
               aria-label={'Add gallery item'}
               title={'Add gallery item'}
@@ -53,36 +52,20 @@ export const DrawerScreensData = [
     title: 'Home',
   },
   {
-    location: '+not-found',
-    title: 'Not Found',
-  },
-  {
-    location: 'announcements/index',
+    location: 'announcements/(stacks)',
     title: 'Announcements',
     headerLeft: <HeaderSidebarBackButton />,
   },
   {
-    location: 'announcements/[announcementId]/index',
-    title: 'Announcement',
+    location: 'gallery',
+    title: 'Gallery',
     headerLeft: <HeaderSidebarBackButton />,
-  },
-  {
-    location: 'gallery/index',
-    title: 'Gallery',
     headerRight: <GalleryAddButton />,
-  },
-  {
-    location: 'gallery/[galleryId]/index',
-    title: 'Gallery',
-    headerRight: <GalleryAddButton />,
-  },
-  {
-    location: 'gallery/add/index',
-    title: 'Gallery',
   },
   {
     location: 'locations',
     title: 'Locations',
+    headerLeft: <HeaderSidebarBackButton />,
   },
   {
     location: 'community/list/index',
@@ -91,36 +74,21 @@ export const DrawerScreensData = [
   {
     location: 'events/(tabs)',
     title: 'Events',
+    headerLeft: <HeaderSidebarBackButton />,
   },
   {
-    location: 'events/archived/index',
-    title: 'Archived Events',
-  },
-  {
-    location: 'events/[eventId]/index',
-    title: 'Event',
-  },
-  {
-    location: 'user/list/index',
+    location: 'user/(stacks)',
     title: 'Users',
     headerLeft: <HeaderSidebarBackButton />,
   },
   {
-    location: 'user/relationships',
-    title: 'Users',
-  },
-  {
-    location: 'user/[userId]/index',
-    title: 'Profile',
-  },
-  {
-    location: 'user/[userId]/relationships/followers/index',
-    title: 'Followers',
+    location: 'relationships',
+    title: 'Mutuals',
     headerLeft: <HeaderSidebarBackButton />,
   },
   {
-    location: 'user/[userId]/relationships/following/index',
-    title: 'Following',
+    location: 'profile',
+    title: 'My Profile',
     headerLeft: <HeaderSidebarBackButton />,
   },
   {
@@ -132,18 +100,8 @@ export const DrawerScreensData = [
     title: 'Register',
   },
   {
-    location: 'account/index',
+    location: 'account/(stacks)',
     title: 'My Account',
-    headerLeft: <HeaderSidebarBackButton />,
-  },
-  {
-    location: 'account/userprofile/index',
-    title: 'User Profile',
-    headerLeft: <HeaderSidebarBackButton />,
-  },
-  {
-    location: 'account/security/index',
-    title: 'Security',
     headerLeft: <HeaderSidebarBackButton />,
   },
   {
@@ -156,6 +114,6 @@ export const DrawerScreensData = [
   },
   {
     location: '+not-found',
-    title: 'Not Found',
+    title: 'Oops!',
   },
 ]
