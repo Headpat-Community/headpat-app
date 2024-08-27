@@ -154,4 +154,8 @@ export const DrawerScreensData = [
     location: 'material-top-tabs',
     title: 'Material Top Tabs',
   },
+  {
+    location: '+not-found',
+    title: 'Not Found',
+  },
 ]
