@@ -4,8 +4,15 @@ import { Image } from 'expo-image'
 import { Link } from 'expo-router'
 import { Badge } from '~/components/ui/badge'
 import { Text } from '~/components/ui/text'
+import { ImageFormat } from 'react-native-appwrite'
 
 const GalleryItem = React.memo(({ image, thumbnail, getGalleryUrl }: any) => {
+  const format = image.mimeType?.split('/').pop()
+  const imageFormat = format
+    ? (ImageFormat[
+        format.charAt(0).toUpperCase() + format.slice(1)
+      ] as ImageFormat)
+    : undefined
   return (
     <Link
       href={{
@@ -29,7 +36,7 @@ const GalleryItem = React.memo(({ image, thumbnail, getGalleryUrl }: any) => {
               image.mimeType.includes('video')
                 ? { uri: thumbnail }
                 : {
-                    uri: getGalleryUrl(image.$id),
+                    uri: getGalleryUrl(image.$id, imageFormat),
                   }
             }
             alt={image.name}

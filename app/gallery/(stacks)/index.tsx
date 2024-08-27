@@ -8,6 +8,7 @@ import { ImageFormat, Query } from 'react-native-appwrite'
 import * as VideoThumbnails from 'expo-video-thumbnails'
 import { useUser } from '~/components/contexts/UserContext'
 import GalleryItem from '~/components/gallery/GalleryItem'
+import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 
 export default function GalleryPage() {
   const { current } = useUser()
@@ -17,6 +18,7 @@ export default function GalleryPage() {
   const [thumbnails, setThumbnails] = useState<{ [key: string]: string }>({})
   const [offset, setOffset] = useState<number>(0)
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
+  const { hideLoadingModal, showLoadingModal, showAlertModal } = useAlertModal()
 
   const fetchGallery = useCallback(
     async (newOffset: number = 0, limit: number = 10) => {
@@ -48,7 +50,10 @@ export default function GalleryPage() {
           }
         })
       } catch (error) {
-        toast('Failed to fetch gallery. Please try again later.')
+        showAlertModal(
+          'FAILED',
+          'Failed to fetch gallery. Please try again later.'
+        )
         Sentry.captureException(error)
       }
     },
@@ -97,8 +102,10 @@ export default function GalleryPage() {
   }
 
   useEffect(() => {
+    showLoadingModal()
     fetchGallery(0, 8).then()
-  }, [current, fetchGallery])
+    hideLoadingModal()
+  }, [current, fetchGallery, hideLoadingModal, showLoadingModal])
 
   const generateThumbnail = useCallback(async (galleryId: string) => {
     try {
@@ -135,7 +142,7 @@ export default function GalleryPage() {
         onEndReached={loadMore}
         onEndReachedThreshold={0.5}
         ListFooterComponent={
-          loadingMore ? (
+          loadingMore && (
             <View
               style={{
                 padding: 10,
@@ -145,7 +152,7 @@ export default function GalleryPage() {
             >
               <Text>Loading...</Text>
             </View>
-          ) : null
+          )
         }
       />
     </View>
