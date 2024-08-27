@@ -8,6 +8,7 @@ import UserItem from '~/components/user/UserItem'
 import { FlatList, RefreshControl, ScrollView, Text, View } from 'react-native'
 import { H1, Muted } from '~/components/ui/typography'
 import { useLocalSearchParams } from 'expo-router'
+import { Skeleton } from '~/components/ui/skeleton'
 
 export default function FollowingPage() {
   const [users, setUsers] = useState<UserData.UserDataDocumentsType[]>(null)
@@ -27,23 +28,23 @@ export default function FollowingPage() {
     setRefreshing(true)
     setOffset(0)
     await fetchUsers(0)
-    setRefreshing(false)
   }
 
   const fetchUsers = useCallback(
-    async (newOffset: number = 0) => {
+    async (newOffset: number = 0, limit: number = 9) => {
       try {
         const data = await functions.createExecution(
           'user-endpoints',
           '',
           false,
-          `/user/following?userId=${local?.userId}&limit=20&offset=${newOffset}`,
+          `/user/following?userId=${local?.userId}&limit=${limit}&offset=${newOffset}`,
           ExecutionMethod.GET
         )
         const response: UserData.UserDataDocumentsType[] = JSON.parse(
           data.responseBody
         )
 
+        setRefreshing(false)
         if (newOffset === 0) {
           setUsers(response)
         } else {
@@ -73,44 +74,28 @@ export default function FollowingPage() {
 
   useEffect(() => {
     if (!local?.userId) return
-    fetchUsers().then()
+    setRefreshing(true)
+    fetchUsers(0, 8).then()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [local?.userId])
 
-  if (!local?.userId)
-    return (
-      <ScrollView
-        contentContainerClassName={'flex-1 justify-center items-center h-full'}
-      >
-        <View className={'p-4 native:pb-24 max-w-md gap-6'}>
-          <View className={'gap-1'}>
-            <H1 className={'text-foreground text-center'}>Following</H1>
-            <Muted className={'text-base text-center'}>
-              This user does not exist.
-            </Muted>
-          </View>
-        </View>
-      </ScrollView>
-    )
-
   if (refreshing)
     return (
-      <ScrollView
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        contentContainerClassName={'flex-1 justify-center items-center h-full'}
-      >
-        <View className={'p-4 native:pb-24 max-w-md gap-6'}>
-          <View className={'gap-1'}>
-            <H1 className={'text-foreground text-center'}>Following</H1>
-            <Muted className={'text-base text-center'}>Loading...</Muted>
-          </View>
+      <ScrollView>
+        <View className={'flex-row flex-wrap'}>
+          {Array.from({ length: 30 }).map((_, index) => (
+            <View
+              key={index}
+              className={'w-[30%] m-[1.66%] p-2.5 items-center'}
+            >
+              <Skeleton className="w-[100px] h-[100px] rounded-2xl" />
+            </View>
+          ))}
         </View>
       </ScrollView>
     )
 
-  if (refreshing && users && users.length === 0)
+  if (!refreshing && users && users.length === 0)
     return (
       <ScrollView
         refreshControl={
@@ -122,7 +107,7 @@ export default function FollowingPage() {
             <View className={'gap-1'}>
               <H1 className={'text-foreground text-center'}>Following</H1>
               <Muted className={'text-base text-center'}>
-                This user does not follow anyone.
+                This user does not follow anyone. Maybe you can be the first?
               </Muted>
             </View>
           </View>

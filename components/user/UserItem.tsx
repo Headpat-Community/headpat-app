@@ -21,14 +21,7 @@ const UserItem = React.memo(
         asChild
       >
         <TouchableWithoutFeedback>
-          <View
-            style={{
-              width: '30%',
-              margin: '1.66%',
-              padding: 10,
-              alignItems: 'center',
-            }}
-          >
+          <View className={'w-[30%] m-[1.66%] p-2.5 items-center'}>
             <Image
               source={
                 getUserAvatar(user?.avatarId) ||

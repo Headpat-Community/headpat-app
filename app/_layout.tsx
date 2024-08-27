@@ -49,6 +49,7 @@ import { database } from '~/lib/appwrite-client'
 import { toast } from '~/lib/toast'
 import messaging from '@react-native-firebase/messaging'
 import { requestUserPermission } from '~/components/system/pushNotifications'
+import { AlertModalProvider } from '~/components/contexts/AlertModalProvider'
 
 TaskManager.defineTask('background-location-task', async ({ data, error }) => {
   if (error) {
@@ -336,7 +337,7 @@ function CustomDrawerContent() {
             textAlign: 'center',
           }}
         >
-          Headpat App v0.5.4
+          Headpat App v0.6.0
         </Text>
       </ScrollView>
     </>
@@ -427,19 +428,20 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
       <UserProvider>
-        <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <Drawer
-            drawerContent={(props) => {
-              return <CustomDrawerContent />
-            }}
-            initialRouteName={'index'}
-            screenOptions={{
-              drawerStyle: {},
-              swipeEdgeWidth: 50,
-            }}
-          >
-            {/* <Image
+        <AlertModalProvider>
+          <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <Drawer
+              drawerContent={(props) => {
+                return <CustomDrawerContent />
+              }}
+              initialRouteName={'index'}
+              screenOptions={{
+                drawerStyle: {},
+                swipeEdgeWidth: 50,
+              }}
+            >
+              {/* <Image
                className=""
                source={require('assets/images/headpat_logo.png')}
                // placeholder={blurhash}
@@ -449,24 +451,26 @@ export default function RootLayout() {
                style={{ width: 200, height: 200, marginTop: 20 }}
                /> */}
 
-            {DrawerScreensData.map((screen) => (
-              <Drawer.Screen
-                key={screen.location}
-                name={screen.location}
-                options={{
-                  drawerLabel: screen.title,
-                  title: screen.title,
-                  headerTitleAlign: 'left',
-                  headerLeft: () => screen.headerLeft || <HeaderMenuSidebar />,
-                  headerRight: () =>
-                    screen.headerRight || <ProfileThemeToggle />,
-                }}
-              />
-            ))}
-          </Drawer>
-        </GestureHandlerRootView>
-        <PortalHost />
-        <ToastProvider />
+              {DrawerScreensData.map((screen) => (
+                <Drawer.Screen
+                  key={screen.location}
+                  name={screen.location}
+                  options={{
+                    drawerLabel: screen.title,
+                    title: screen.title,
+                    headerTitleAlign: 'left',
+                    headerLeft: () =>
+                      screen.headerLeft || <HeaderMenuSidebar />,
+                    headerRight: () =>
+                      screen.headerRight || <ProfileThemeToggle />,
+                  }}
+                />
+              ))}
+            </Drawer>
+          </GestureHandlerRootView>
+          <PortalHost />
+          <ToastProvider />
+        </AlertModalProvider>
       </UserProvider>
     </ThemeProvider>
   )

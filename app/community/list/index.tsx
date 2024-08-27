@@ -7,6 +7,7 @@ import { Community } from '~/lib/types/collections'
 import { ExecutionMethod } from 'react-native-appwrite'
 import CommunityItem from '~/components/community/CommunityItem'
 import { H1, Muted } from '~/components/ui/typography'
+import { Skeleton } from '~/components/ui/skeleton'
 
 export default function CommunitiesPage() {
   const [communities, setCommunities] = useState<
@@ -18,44 +19,47 @@ export default function CommunitiesPage() {
   const [hasMore, setHasMore] = useState<boolean>(true)
 
   // Fetch communities function
-  const fetchCommunities = useCallback(async (newOffset: number = 0) => {
-    try {
-      const data = await functions.createExecution(
-        'community-endpoints',
-        '',
-        false,
-        `/communities?limit=20&offset=${newOffset}`, // Fetch with pagination
-        ExecutionMethod.GET
-      )
-      const newCommunities: Community.CommunityDocumentsType[] = JSON.parse(
-        data.responseBody
-      )
+  const fetchCommunities = useCallback(
+    async (newOffset: number = 0, limit: number = 10) => {
+      try {
+        const data = await functions.createExecution(
+          'community-endpoints',
+          '',
+          false,
+          `/communities?limit=${limit}&offset=${newOffset}`, // Fetch with pagination
+          ExecutionMethod.GET
+        )
+        const newCommunities: Community.CommunityDocumentsType[] = JSON.parse(
+          data.responseBody
+        )
 
-      if (newOffset === 0) {
-        setCommunities(newCommunities)
-      } else {
-        setCommunities((prevCommunities) => [
-          ...prevCommunities,
-          ...newCommunities,
-        ])
+        if (newOffset === 0) {
+          setCommunities(newCommunities)
+        } else {
+          setCommunities((prevCommunities) => [
+            ...prevCommunities,
+            ...newCommunities,
+          ])
+        }
+
+        // Check if more communities are available
+        setHasMore(newCommunities.length === 20)
+      } catch (error) {
+        toast('Failed to fetch communities. Please try again later.')
+        Sentry.captureException(error)
+      } finally {
+        setRefreshing(false)
+        setLoadingMore(false)
       }
-
-      // Check if more communities are available
-      setHasMore(newCommunities.length === 20)
-    } catch (error) {
-      toast('Failed to fetch communities. Please try again later.')
-      Sentry.captureException(error)
-    } finally {
-      setRefreshing(false)
-      setLoadingMore(false)
-    }
-  }, [])
+    },
+    []
+  )
 
   // Handle refresh
   const onRefresh = async () => {
     setRefreshing(true)
     setOffset(0)
-    await fetchCommunities(0)
+    await fetchCommunities(0, 9)
   }
 
   // Handle loading more communities
@@ -70,35 +74,33 @@ export default function CommunitiesPage() {
 
   // Initial fetch when component mounts
   useEffect(() => {
-    fetchCommunities(0)
+    setRefreshing(true)
+    fetchCommunities(0).then()
   }, [fetchCommunities])
 
   const renderItem = ({ item }: { item: Community.CommunityDocumentsType }) => (
     <CommunityItem community={item} />
   )
 
-  if (refreshing && communities.length === 0)
+  if (refreshing || !communities.length)
     return (
-      <ScrollView
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        contentContainerStyle={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100%',
-        }}
-      >
-        <View
-          style={{ padding: 16, paddingBottom: 96, maxWidth: 400, gap: 16 }}
-        >
-          <View style={{ gap: 4 }}>
-            <H1 style={{ textAlign: 'center', color: '#000' }}>Communities</H1>
-            <Muted style={{ textAlign: 'center', fontSize: 16 }}>
-              Loading...
-            </Muted>
-          </View>
+      <ScrollView>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+          {Array.from({ length: 6 }).map((_, index) => (
+            <View className={'px-4 m-4 w-full flex flex-row items-center'}>
+              <Skeleton className="w-[100px] h-[100px] rounded-3xl" />
+              <View className={'flex flex-col gap-3 ml-6'}>
+                <Skeleton className="w-[150px] h-[20px] rounded" />
+                <Skeleton className="w-[100px] h-[20px] rounded" />
+                <View className={'flex flex-row items-center gap-4'}>
+                  <View className={'flex flex-row items-center gap-2'}>
+                    <Skeleton className="w-[20px] h-[20px] rounded-full" />
+                    <Skeleton className="w-[50px] h-[20px] rounded" />
+                  </View>
+                </View>
+              </View>
+            </View>
+          ))}
         </View>
       </ScrollView>
     )

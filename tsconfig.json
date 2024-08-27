@@ -3,6 +3,7 @@
   "compilerOptions": {
     "strict": false,
     "baseUrl": ".",
+    "module": "esnext",
     "paths": {
       "~/*": ["*"]
     }
