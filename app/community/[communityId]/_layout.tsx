@@ -1,8 +1,7 @@
 import { Stack } from 'expo-router'
 import React from 'react'
 
-function GalleryLayout() {
-  console.log('gallery layout')
+function Layout() {
   return (
     <Stack screenOptions={{ headerShown: false }} initialRouteName="index">
       <Stack.Screen name="index" />
@@ -10,4 +9,4 @@ function GalleryLayout() {
   )
 }
 
-export default GalleryLayout
+export default Layout

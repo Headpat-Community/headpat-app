@@ -3,7 +3,7 @@ import { H1, H3, Muted } from '~/components/ui/typography'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
 import { Events } from '~/lib/types/collections'
 import { database } from '~/lib/appwrite-client'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Card, CardContent } from '~/components/ui/card'
 import { Text } from '~/components/ui/text'
 import { formatDate } from '~/components/calculateTimeLeft'
@@ -12,6 +12,8 @@ import { Badge } from '~/components/ui/badge'
 import { useColorScheme } from '~/lib/useColorScheme'
 import { TouchableOpacity } from '@gorhom/bottom-sheet'
 import { ArrowLeftIcon } from 'lucide-react-native'
+import HTMLView from 'react-native-htmlview'
+import sanitizeHtml from 'sanitize-html'
 
 function HeaderSidebarBackButton({ type }: { type?: string }) {
   const { isDarkColorScheme } = useColorScheme()
@@ -35,6 +37,8 @@ export default function EventPage() {
   const local = useLocalSearchParams()
   const [event, setEvent] = useState<Events.EventsDocumentsType>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
+  const { isDarkColorScheme } = useColorScheme()
+  const theme = isDarkColorScheme ? 'white' : 'black'
 
   const fetchEvents = async () => {
     try {
@@ -112,6 +116,8 @@ export default function EventPage() {
       </ScrollView>
     )
 
+  const sanitizedDescription = sanitizeHtml(event.description)
+
   return (
     <ScrollView
       refreshControl={
@@ -154,11 +160,7 @@ export default function EventPage() {
           <Card className={'flex-1 p-0'}>
             <CardContent className={'p-6'}>
               <Text className={'font-bold'}>Location: </Text>
-              <Text>
-                {event?.locationZoneMethod === 'virtual'
-                  ? event?.location
-                  : 'Physical, check the map!'}
-              </Text>
+              <Text>{event?.location || 'No location given.'}</Text>
             </CardContent>
           </Card>
         </View>
@@ -166,7 +168,22 @@ export default function EventPage() {
         <View>
           <Card className={'flex-1 p-0'}>
             <CardContent className={'p-6'}>
-              <Text>{event?.description || 'No description given.'}</Text>
+              <HTMLView
+                value={sanitizedDescription}
+                stylesheet={{
+                  p: {
+                    color: theme,
+                  },
+                  a: {
+                    color: 'blue',
+                  },
+                }}
+                textComponentProps={{
+                  style: {
+                    color: theme,
+                  },
+                }}
+              />
             </CardContent>
           </Card>
         </View>

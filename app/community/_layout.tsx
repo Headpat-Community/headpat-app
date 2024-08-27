@@ -1,10 +1,11 @@
-import React from 'react'
 import { Stack } from 'expo-router'
+import React from 'react'
 
-const _layout = () => {
+function _layout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="[userId]/index" />
+      <Stack.Screen name="list/index" />
+      <Stack.Screen name="[communityId]" />
     </Stack>
   )
 }

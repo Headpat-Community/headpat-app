@@ -18,7 +18,7 @@ export function ProfileThemeToggle() {
           {({ pressed }) => (
             <View
               className={cn(
-                'flex-1 aspect-square justify-center items-end pt-0.5 web:pl-4',
+                'flex-1 aspect-square justify-center items-end pt-0.5',
                 pressed && 'opacity-70'
               )}
             >

@@ -88,7 +88,7 @@ export default function HomeView() {
   useFocusEffect(
     useCallback(() => {
       return () => {
-        player.pause()
+        //if (player.playing) player.pause()
       }
     }, [player])
   )

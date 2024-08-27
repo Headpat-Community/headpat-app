@@ -19,15 +19,16 @@ import { Events } from '~/lib/types/collections'
 import { H1, H3, Muted } from '~/components/ui/typography'
 import { ExecutionMethod } from 'react-native-appwrite'
 import { calculateTimeLeft, formatDate } from '~/components/calculateTimeLeft'
+import { toast } from '~/lib/toast'
 import { Link } from 'expo-router'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 
-export default function EventsPage() {
+export default function ArchivedEventsPage() {
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
   const [events, setEvents] = useState<Events.EventsDocumentsType[]>([])
   const [refreshing, setRefreshing] = useState<boolean>(false)
-  const { showLoadingModal, hideLoadingModal, showAlertModal } = useAlertModal()
+  const { showAlertModal, showLoadingModal, hideLoadingModal } = useAlertModal()
 
   const fetchEvents = async () => {
     try {
@@ -35,7 +36,7 @@ export default function EventsPage() {
         'event-endpoints',
         '',
         false,
-        '/getUpcomingEvents',
+        '/getArchivedEvents',
         ExecutionMethod.GET
       )
       const response: Events.EventsDocumentsType[] = JSON.parse(
@@ -78,7 +79,7 @@ export default function EventsPage() {
             <View className={'gap-1'}>
               <H1 className={'text-foreground text-center'}>Events</H1>
               <Muted className={'text-base text-center'}>
-                No upcoming events
+                No events available
               </Muted>
             </View>
           </View>
@@ -94,7 +95,7 @@ export default function EventsPage() {
       className={'mt-2'}
     >
       <View className={'gap-4 mx-2'}>
-        <H3 className={'text-foreground text-center'}>Upcoming Events</H3>
+        <H3 className={'text-foreground text-center'}>Active Events</H3>
 
         {events &&
           events?.map((event, index) => {
@@ -102,7 +103,7 @@ export default function EventsPage() {
               <Link
                 href={{
                   pathname: '/events/[eventId]',
-                  params: { eventId: event.$id, type: 'upcoming' },
+                  params: { eventId: event.$id, type: 'index' },
                 }}
                 asChild
                 key={index}
@@ -121,11 +122,11 @@ export default function EventsPage() {
                           {formatDate(new Date(event.date))}
                         </CardDescription>
                         <CardDescription>
-                          {calculateTimeLeft(event.date, event.dateUntil, true)}
+                          {calculateTimeLeft(event.date, event.dateUntil)}
                         </CardDescription>
                       </CardFooter>
 
-                      {event?.locationZoneMethod === 'virtual' && (
+                      {event.location && (
                         <CardFooter className={'p-0 mt-2 flex flex-wrap'}>
                           <CardDescription>
                             <MapPinIcon size={12} color={theme} />{' '}

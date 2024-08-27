@@ -18,10 +18,10 @@ import { useColorScheme } from '~/lib/useColorScheme'
 import { useUser } from '~/components/contexts/UserContext'
 import { useCallback, useEffect, useState } from 'react'
 import { Events, UserData } from '~/lib/types/collections'
-import { database } from '~/lib/appwrite-client'
+import { database, functions } from '~/lib/appwrite-client'
 import { H4 } from '~/components/ui/typography'
 import { Separator } from '~/components/ui/separator'
-import { Query } from 'react-native-appwrite'
+import { ExecutionMethod, Query } from 'react-native-appwrite'
 import { calculateTimeLeft } from '~/components/calculateTimeLeft'
 import { Image } from 'expo-image'
 import { router } from 'expo-router'
@@ -51,18 +51,17 @@ export default function HomeView() {
 
   const fetchNextEvent = async () => {
     try {
-      const data: Events.EventsType = await database.listDocuments(
-        'hp_db',
-        'events',
-        [
-          Query.orderAsc('date'),
-          Query.greaterThanEqual('date', new Date().toISOString()),
-          Query.limit(1),
-        ]
+      const data = await functions.createExecution(
+        'event-endpoints',
+        '',
+        false,
+        '/getNextEvent',
+        ExecutionMethod.GET
       )
+      const response: Events.EventsDocumentsType = JSON.parse(data.responseBody)
 
-      if (data?.documents?.length > 0) {
-        setNextEvent(data.documents[0])
+      if (response?.title) {
+        setNextEvent(response)
       } else {
         setNextEvent(null)
       }
@@ -130,7 +129,7 @@ export default function HomeView() {
         )}
 
         <Card className={'w-3/4 mt-8'}>
-          <TouchableOpacity onPress={() => router.push('/gallery')}>
+          <TouchableOpacity onPress={() => router.push('/gallery/(stacks)')}>
             <CardContent className={'p-0'}>
               <CardFooter className={'mt-2 text-xl flex pb-4'}>
                 <LayoutDashboardIcon
@@ -181,7 +180,9 @@ export default function HomeView() {
         </Card>
 
         <Card className={'w-3/4 mt-4'}>
-          <TouchableOpacity onPress={() => router.push('/announcements/(stacks)')}>
+          <TouchableOpacity
+            onPress={() => router.push('/announcements/(stacks)')}
+          >
             <CardContent className={'p-0'}>
               <CardFooter className={'mt-2 text-xl flex pb-4'}>
                 <MegaphoneIcon

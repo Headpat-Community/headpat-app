@@ -9,7 +9,7 @@ const GalleryItem = React.memo(({ image, thumbnail, getGalleryUrl }: any) => {
   return (
     <Link
       href={{
-        pathname: '/gallery/[galleryId]',
+        pathname: '/gallery/(stacks)/[galleryId]',
         params: { galleryId: image.$id },
       }}
       asChild

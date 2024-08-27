@@ -29,7 +29,9 @@ function GalleryAddButton() {
     <>
       <View className={'items-center flex-row'}>
         {current && (
-          <TouchableOpacity onPress={() => router.navigate('/gallery/add')}>
+          <TouchableOpacity
+            onPress={() => router.navigate('/gallery/(stacks)/add')}
+          >
             <PlusIcon
               aria-label={'Add gallery item'}
               title={'Add gallery item'}
@@ -57,7 +59,7 @@ export const DrawerScreensData = [
     headerLeft: <HeaderSidebarBackButton />,
   },
   {
-    location: 'gallery',
+    location: 'gallery/(stacks)',
     title: 'Gallery',
     headerLeft: <HeaderSidebarBackButton />,
     headerRight: <GalleryAddButton />,
@@ -68,7 +70,7 @@ export const DrawerScreensData = [
     headerLeft: <HeaderSidebarBackButton />,
   },
   {
-    location: 'community/list/index',
+    location: 'community',
     title: 'Communities',
   },
   {
@@ -84,11 +86,6 @@ export const DrawerScreensData = [
   {
     location: 'relationships',
     title: 'Mutuals',
-    headerLeft: <HeaderSidebarBackButton />,
-  },
-  {
-    location: 'profile',
-    title: 'My Profile',
     headerLeft: <HeaderSidebarBackButton />,
   },
   {

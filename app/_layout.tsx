@@ -188,7 +188,7 @@ function CustomDrawerContent() {
               </View>
             )
           }}
-          onPress={() => router.navigate('/gallery')}
+          onPress={() => router.navigate('/gallery/(stacks)')}
         />
 
         <DrawerItem
@@ -254,7 +254,7 @@ function CustomDrawerContent() {
               }}
               onPress={() => {
                 router.navigate({
-                  pathname: '/profile/[userId]',
+                  pathname: '/user/(stacks)/[userId]',
                   params: { userId: current.$id },
                 })
               }}

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { FlatList, Text } from 'react-native'
+import { FlatList, Text, View } from 'react-native'
 import { database, storage } from '~/lib/appwrite-client'
 import { toast } from '~/lib/toast'
 import * as Sentry from '@sentry/react-native'
@@ -7,8 +7,6 @@ import { Gallery } from '~/lib/types/collections'
 import { ImageFormat, Query } from 'react-native-appwrite'
 import * as VideoThumbnails from 'expo-video-thumbnails'
 import { useUser } from '~/components/contexts/UserContext'
-import { useBackHandler } from '@react-native-community/hooks'
-import { useNavigation } from '@react-navigation/native'
 import GalleryItem from '~/components/gallery/GalleryItem'
 
 export default function GalleryPage() {
@@ -116,16 +114,6 @@ export default function GalleryPage() {
     }
   }, [])
 
-  const navigation = useNavigation()
-
-  useBackHandler(() => {
-    if (navigation.canGoBack()) {
-      navigation.goBack()
-      return true
-    }
-    return false
-  })
-
   const renderItem = ({ item }) => (
     <GalleryItem
       image={item}
@@ -135,17 +123,31 @@ export default function GalleryPage() {
   )
 
   return (
-    <FlatList
-      data={images}
-      keyExtractor={(item) => item.$id}
-      renderItem={renderItem}
-      onRefresh={onRefresh}
-      refreshing={refreshing}
-      numColumns={2}
-      contentContainerStyle={{ justifyContent: 'space-between' }}
-      onEndReached={loadMore}
-      onEndReachedThreshold={0.5}
-      ListFooterComponent={loadingMore ? <Text>Loading...</Text> : null}
-    />
+    <View style={{ flex: 1 }}>
+      <FlatList
+        data={images}
+        keyExtractor={(item) => item.$id}
+        renderItem={renderItem}
+        onRefresh={onRefresh}
+        refreshing={refreshing}
+        numColumns={2}
+        contentContainerStyle={{ flexGrow: 1 }}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          loadingMore ? (
+            <View
+              style={{
+                padding: 10,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <Text>Loading...</Text>
+            </View>
+          ) : null
+        }
+      />
+    </View>
   )
 }
