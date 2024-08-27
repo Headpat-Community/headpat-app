@@ -76,7 +76,6 @@ export default function ShareLocationView() {
       distanceInterval: 10,
       timeInterval: 10000,
     })
-    console.log('Location updates started')
   }
 
   async function unregisterBackgroundFetchAsync() {
@@ -116,9 +115,6 @@ export default function ShareLocationView() {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel onPress={() => setModalOpen(false)}>
-                <Text>Cancel</Text>
-              </AlertDialogCancel>
               <AlertDialogAction
                 onPress={async () => {
                   let { status } =

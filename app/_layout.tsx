@@ -58,7 +58,6 @@ TaskManager.defineTask('background-location-task', async ({ data, error }) => {
 
   // Use the user data from the task
   const userId = await AsyncStorage.getItem('userId')
-  console.log('userId', userId)
 
   if (!userId) {
     return BackgroundFetch.BackgroundFetchResult.Failed
@@ -116,7 +115,13 @@ function HeaderMenuSidebar() {
 
   return (
     <View style={{ flexDirection: 'row' }}>
-      <TouchableOpacity onPress={openMenu} className={'p-5'}>
+      <TouchableOpacity
+        onPress={openMenu}
+        style={{
+          padding: 10,
+          marginLeft: 10,
+        }}
+      >
         <MenuIcon
           aria-label={'Menu'}
           size={20}
