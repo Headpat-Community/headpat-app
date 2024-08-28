@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 import { account } from '~/lib/appwrite-client'
 import { useUser } from '~/components/contexts/UserContext'
 import { router } from 'expo-router'
-import { Models, OAuthProvider } from 'react-native-appwrite'
+import { OAuthProvider } from 'react-native-appwrite'
 import { toast } from '~/lib/toast'
 import SocialLoginButton from '~/components/SocialLoginButton'
 import DiscordIcon from '~/components/icons/DiscordIcon'
@@ -20,23 +20,21 @@ import * as WebBrowser from 'expo-web-browser'
 import * as Sentry from '@sentry/react-native'
 
 export default function ModalScreen() {
-  const { loginOAuth, register, current } = useUser()
+  const { current, loginOAuth, register } = useUser()
 
   const [data, setData] = useState({
     email: '',
     password: '',
     username: '',
   })
-  const [currentData, setCurrentData] =
-    useState<Models.User<Models.Preferences> | null>(current)
 
   useEffect(() => {
-    setCurrentData(current)
-  }, [current])
-
-  useEffect(() => {
-    if (currentData) router.push('/account')
-  }, [currentData])
+    if (current) {
+      router.push('/account')
+    }
+    // Don't add current, as it will cause user to be redirected to account page twice after login
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleEmailLogin = async () => {
     if (data.username.length < 3) {

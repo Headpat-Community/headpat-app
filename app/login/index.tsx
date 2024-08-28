@@ -28,16 +28,14 @@ export default function ModalScreen() {
     email: '',
     password: '',
   })
-  const [currentData, setCurrentData] =
-    useState<Models.User<Models.Preferences> | null>(current)
 
   useEffect(() => {
-    setCurrentData(current)
-  }, [current])
-
-  useEffect(() => {
-    if (currentData) router.push('/account')
-  }, [currentData])
+    if (current) {
+      router.push('/account')
+    }
+    // Don't add current, as it will cause user to be redirected to account page twice after login
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleEmailLogin = async () => {
     if (data.email.length < 1) {

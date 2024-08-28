@@ -46,8 +46,12 @@ export function UserProvider(props: any) {
   }
 
   async function logout() {
-    await account.deleteSession('current')
-    setUser(null)
+    try {
+      await account.deleteSession('current')
+      setUser(null)
+    } catch (error) {
+      setUser(null)
+    }
   }
 
   async function register(email: string, password: string, username: string) {

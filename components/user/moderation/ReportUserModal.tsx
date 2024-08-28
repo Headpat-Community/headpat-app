@@ -105,15 +105,14 @@ export default function ReportUserModal({
             </RadioGroup>
           </View>
           <AlertDialogFooter>
-            <AlertDialogAction asChild>
-              <Button
-                onPress={reportUser}
-                disabled={
-                  !reportReason || (reportReason === 'Other' && !otherReason)
-                }
-              >
-                <Text>Report</Text>
-              </Button>
+            <AlertDialogAction
+              className={'bg-destructive'}
+              onPress={reportUser}
+              disabled={
+                !reportReason || (reportReason === 'Other' && !otherReason)
+              }
+            >
+              <Text className={'text-white'}>Report</Text>
             </AlertDialogAction>
             <AlertDialogCancel>
               <Text>Cancel</Text>
