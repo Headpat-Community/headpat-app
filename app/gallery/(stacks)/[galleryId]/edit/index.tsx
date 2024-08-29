@@ -8,23 +8,26 @@ import {
 import { database } from '~/lib/appwrite-client'
 import Gallery from 'react-native-awesome-gallery'
 import { ScrollView } from 'react-native-gesture-handler'
-import { Link, useLocalSearchParams } from 'expo-router'
+import { Link, router, useLocalSearchParams } from 'expo-router'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Gallery as GalleryType, UserData } from '~/lib/types/collections'
+import { Gallery as GalleryType } from '~/lib/types/collections'
 import { Image } from 'expo-image'
 import { Text } from '~/components/ui/text'
-import { H4, Muted } from '~/components/ui/typography'
-import { timeSince } from '~/components/calculateTimeLeft'
 import { useVideoPlayer, VideoView } from 'expo-video'
 import { useFocusEffect } from '@react-navigation/core'
 import { Skeleton } from '~/components/ui/skeleton'
-import { useUser } from '~/components/contexts/UserContext'
+import { Label } from '~/components/ui/label'
+import { Input } from '~/components/ui/input'
+import { Textarea } from '~/components/ui/textarea'
 import { Button } from '~/components/ui/button'
+import { useUser } from '~/components/contexts/UserContext'
+import { useAlertModal } from '~/components/contexts/AlertModalProvider'
+import * as Sentry from '@sentry/react-native'
+import { toast } from '~/lib/toast'
 
 export default function HomeView() {
   const local = useLocalSearchParams()
   const [image, setImage] = useState<GalleryType.GalleryDocumentsType>(null)
-  const [userData, setUserData] = useState<UserData.UserDataDocumentsType>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [modalVisible, setModalVisible] = useState(false)
   const ref = useRef(null)
@@ -40,21 +43,35 @@ export default function HomeView() {
       )
 
       setImage(data)
-
-      const userData: UserData.UserDataDocumentsType =
-        await database.getDocument('hp_db', 'userdata', data.userId)
-      setUserData(userData)
       setRefreshing(false)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
+      toast('Failed to fetch gallery data.')
       setRefreshing(false)
     }
   }
 
+  const saveGallery = async () => {
+    try {
+      await database.updateDocument(
+        'hp_db',
+        'gallery-images',
+        `${local.galleryId}`,
+        {
+          name: image.name,
+          longText: image.longText,
+        }
+      )
+
+      router.back()
+    } catch (error) {
+      toast('Failed to save gallery data.')
+      Sentry.captureException(error)
+    }
+  }
+
   const onRefresh = () => {
-    setRefreshing(true)
     fetchGallery().then()
-    setRefreshing(false)
   }
 
   useEffect(() => {
@@ -74,11 +91,6 @@ export default function HomeView() {
     ]
   }
 
-  const getUserAvatar = (userAvatarId: string) => {
-    if (!userAvatarId) return
-    return `https://api.headpat.place/v1/storage/buckets/avatars/files/${userAvatarId}/preview?project=hp-main&width=128&height=128`
-  }
-
   const player = useVideoPlayer(
     getGalleryUrl(`${local.galleryId}`),
     (player) => {
@@ -87,20 +99,37 @@ export default function HomeView() {
     }
   )
 
+  useEffect(() => {
+    if (current && image) {
+      if (current.$id !== image?.userId) {
+        router.push('/login')
+      }
+    }
+  }, [current, image])
+
   useFocusEffect(
     useCallback(() => {
       return () => {
         //if (player.playing) player.pause()
       }
-    }, [player])
+    }, [])
   )
+
+  if (!current) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>You need to be logged in to view this page!</Text>
+        <Link href={'/login'}>
+          <Text>Go to login</Text>
+        </Link>
+      </View>
+    )
+  }
 
   if (refreshing) {
     return (
       <View style={{ flex: 1 }}>
-        <TouchableOpacity onPress={() => setModalVisible(true)}>
-          <Skeleton className={'w-full'} />
-        </TouchableOpacity>
+        <Skeleton className={'w-full'} />
       </View>
     )
   }
@@ -130,58 +159,18 @@ export default function HomeView() {
           </TouchableOpacity>
         )}
 
-        {current?.$id === image?.userId && (
-          <View className={'items-center my-4'}>
-            <Link
-              href={{
-                pathname: '/gallery/(stacks)/[galleryId]/edit',
-                params: { galleryId: image?.$id },
-              }}
-              asChild
-            >
-              <Button>
-                <Text>Edit</Text>
-              </Button>
-            </Link>
-          </View>
-        )}
-
-        <H4 className={'text-center mx-8'}>{image?.name}</H4>
-        {image?.longText && (
-          <Text className={'mx-8 mt-4'}>{image?.longText}</Text>
-        )}
         <View className={'mt-8 px-8'}>
-          <Muted className={'pb-4'}>Uploaded by</Muted>
-          <View className={'flex-row flex-wrap items-center justify-between'}>
-            <Link
-              href={{
-                pathname: '/user/(stacks)/[userId]',
-                params: { userId: image?.userId },
-              }}
-              asChild
-            >
-              <TouchableOpacity>
-                <View className={'flex-row items-center gap-4'}>
-                  <Image
-                    source={
-                      getUserAvatar(userData?.avatarId) ||
-                      require('~/assets/pfp-placeholder.png')
-                    }
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 10,
-                    }}
-                  />
-                  <Text>{userData?.displayName}</Text>
-                </View>
-              </TouchableOpacity>
-            </Link>
-
-            <View>
-              <Text>{timeSince(image?.$createdAt)}</Text>
-            </View>
+          <View>
+            <Label nativeID={'gallery-name'}>Name</Label>
+            <Input defaultValue={image?.name || ''} />
           </View>
+          <View className={'mt-4'}>
+            <Label nativeID={'gallery-longText'}>Description</Label>
+            <Textarea defaultValue={image?.longText || ''} />
+          </View>
+          <Button className={'mt-8'} onPress={saveGallery}>
+            <Text>Save</Text>
+          </Button>
         </View>
 
         <Modal

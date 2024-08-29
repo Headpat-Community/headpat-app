@@ -96,7 +96,9 @@ export default function UserprofilePage() {
         showAlertModal('FAILED', 'Failed to save employee data')
         Sentry.captureException(error)
       }
+      setIsDisabled(false)
     } catch (error) {
+      setIsDisabled(false)
       console.error(error)
       Sentry.captureException(error)
       showAlertModal('FAILED', 'An error occurred. Please try again later.')

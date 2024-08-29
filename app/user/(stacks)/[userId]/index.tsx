@@ -53,7 +53,7 @@ export default function UserPage() {
   const fetchUser = async () => {
     try {
       setRefreshing(true)
-      const [dataUser, dataPrefs] = await Promise.all([
+      const [dataUser, dataPrefs, dataIsFollowing] = await Promise.all([
         functions.createExecution(
           'user-endpoints',
           '',
@@ -68,9 +68,17 @@ export default function UserPage() {
           `/user/prefs?userId=${local?.userId}`,
           ExecutionMethod.GET
         ),
+        functions.createExecution(
+          'user-endpoints',
+          '',
+          false,
+          `/user/isFollowing?userId=${local?.userId}`,
+          ExecutionMethod.GET
+        ),
       ])
       setUserData(JSON.parse(dataUser.responseBody))
       setUserPrefs(JSON.parse(dataPrefs.responseBody))
+      setIsFollowing(JSON.parse(dataIsFollowing.responseBody))
       setRefreshing(false)
     } catch (error) {
       Sentry.captureException(error)

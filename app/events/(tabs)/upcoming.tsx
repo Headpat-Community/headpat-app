@@ -30,6 +30,7 @@ export default function EventsPage() {
   const { showLoadingModal, hideLoadingModal, showAlertModal } = useAlertModal()
 
   const fetchEvents = async () => {
+    showLoadingModal()
     try {
       const data = await functions.createExecution(
         'event-endpoints',
@@ -56,12 +57,10 @@ export default function EventsPage() {
 
   const onRefresh = () => {
     setRefreshing(true)
-    showLoadingModal()
     fetchEvents().then()
   }
 
   useEffect(() => {
-    showLoadingModal()
     fetchEvents().then()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

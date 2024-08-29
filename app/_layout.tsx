@@ -432,31 +432,21 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-      <UserProvider>
-        <AlertModalProvider>
+      <AlertModalProvider>
+        <UserProvider>
           <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
           <GestureHandlerRootView style={{ flex: 1 }}>
             <Drawer
-              drawerContent={(props) => {
+              drawerContent={() => {
                 return <CustomDrawerContent />
               }}
               initialRouteName={'index'}
               screenOptions={{
                 drawerStyle: {},
                 swipeEdgeWidth: 50,
-                headerShown: segments[2] === '[eventId]' ? false : true,
+                headerShown: segments[2] !== '[eventId]',
               }}
             >
-              {/* <Image
-               className=""
-               source={require('assets/images/headpat_logo.png')}
-               // placeholder={blurhash}
-               contentFit="cover"
-               // transition={1000}
-               allowDownscaling={true}
-               style={{ width: 200, height: 200, marginTop: 20 }}
-               /> */}
-
               {DrawerScreensData.map((screen) => (
                 <Drawer.Screen
                   key={screen.location}
@@ -476,8 +466,8 @@ export default function RootLayout() {
           </GestureHandlerRootView>
           <PortalHost />
           <ToastProvider />
-        </AlertModalProvider>
-      </UserProvider>
+        </UserProvider>
+      </AlertModalProvider>
     </ThemeProvider>
   )
 }
