@@ -22,6 +22,7 @@ export default function GalleryPage() {
 
   const fetchGallery = useCallback(
     async (newOffset: number = 0, limit: number = 10) => {
+      showLoadingModal()
       try {
         const nsfwPreference = current?.prefs?.nsfw ?? false
         let query = nsfwPreference
@@ -49,6 +50,7 @@ export default function GalleryPage() {
             generateThumbnail(image.$id)
           }
         })
+        hideLoadingModal()
       } catch (error) {
         showAlertModal(
           'FAILED',

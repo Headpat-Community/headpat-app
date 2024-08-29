@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react'
 import { Announcements } from '~/lib/types/collections'
 import { database } from '~/lib/appwrite-client'
 import { Query } from 'react-native-appwrite'
-import { toast } from '~/lib/toast'
 import { Link } from 'expo-router'
 import {
   Card,
@@ -21,6 +20,8 @@ import {
 import { ClockIcon } from 'lucide-react-native'
 import { formatDate } from '~/components/calculateTimeLeft'
 import { useColorScheme } from '~/lib/useColorScheme'
+import { useAlertModal } from '~/components/contexts/AlertModalProvider'
+import * as Sentry from '@sentry/react-native'
 
 export default function AnnouncementsPage() {
   const { isDarkColorScheme } = useColorScheme()
@@ -28,8 +29,10 @@ export default function AnnouncementsPage() {
   const [announcements, setAnnouncements] =
     useState<Announcements.AnnouncementDataType>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
+  const { showLoadingModal, showAlertModal, hideLoadingModal } = useAlertModal()
 
   const fetchAnnouncements = async () => {
+    showLoadingModal()
     try {
       const currentDate = new Date()
 
@@ -40,9 +43,13 @@ export default function AnnouncementsPage() {
         ])
 
       setAnnouncements(data)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      hideLoadingModal()
     } catch (error) {
-      toast('Failed to fetch events. Please try again later.')
+      showAlertModal(
+        'FAILED',
+        'Failed to fetch events. Please try again later.'
+      )
+      Sentry.captureException(error)
     }
   }
 
