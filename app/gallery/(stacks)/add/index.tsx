@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import * as ImagePicker from 'expo-image-picker'
+import * as ImagePicker from 'react-native-image-crop-picker'
 import { toast } from '~/lib/toast'
 import { Keyboard, TouchableWithoutFeedback, View } from 'react-native'
 import { Text } from '~/components/ui/text'
@@ -16,10 +16,9 @@ import { ID } from 'react-native-appwrite'
 import { Progress } from '~/components/ui/progress'
 import { useUser } from '~/components/contexts/UserContext'
 import * as Sentry from '@sentry/react-native'
-import * as ImageManipulator from 'expo-image-manipulator'
 
 export default function GalleryAdd() {
-  const [image, setImage] = useState<ImagePicker.ImagePickerAsset>(null)
+  const [image, setImage] = useState<ImagePicker.ImageOrVideo>(null)
   const [page, setPage] = useState(1)
   const [title, setTitle] = useState('')
   const [nsfw, setNsfw] = useState(false)
@@ -29,28 +28,27 @@ export default function GalleryAdd() {
   const { current } = useUser()
 
   const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+    let result = await ImagePicker.openPicker({
+      mediaType: 'any',
     })
 
-    if (!result.canceled) {
-      const image = result.assets[0]
+    if (result) {
       const maxResolution = 5000 * 5000
       const maxFileSize = 8 * 1024 * 1024 // 8MB in bytes
 
-      if (image.width * image.height > maxResolution) {
+      if (result.width * result.height > maxResolution) {
         toast('Image resolution is too large')
       }
 
-      if (image.fileSize > maxFileSize) {
+      if (result.size > maxFileSize) {
         toast('Image file size is too large')
       }
 
       if (
-        image.width * image.height <= maxResolution &&
-        image.fileSize <= maxFileSize
+        result.width * result.height <= maxResolution &&
+        result.size <= maxFileSize
       ) {
-        setImage(image)
+        setImage(result)
         setPage(2)
       }
     }
@@ -69,16 +67,17 @@ export default function GalleryAdd() {
   }
 
   async function compressImage(uri: string) {
-    const manipResult = await ImageManipulator.manipulateAsync(
-      uri,
-      [{ resize: { width: 800 } }],
-      { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
-    )
-    return manipResult
+    const compressedImage = await ImagePicker.openCropper({
+      path: uri,
+      width: 800,
+      height: 800,
+      compressImageQuality: 0.7,
+    })
+    return compressedImage
   }
 
   async function uploadImageAsync() {
-    if (!image.uri) {
+    if (!image.path) {
       toast('Please select an image to upload')
       return
     }
@@ -88,12 +87,11 @@ export default function GalleryAdd() {
     }
 
     try {
-      const compressedImage = await compressImage(image.uri)
+      const compressedImage = await compressImage(image.path)
       const fileData = {
-        name: image.fileName,
-        type: image.mimeType,
-        size: compressedImage.size,
-        uri: compressedImage.uri,
+        name: image.filename,
+        type: image.mime,
+        uri: compressedImage.path,
       }
       setUploading(true)
       const storageData = await storage.createFile(
@@ -113,7 +111,7 @@ export default function GalleryAdd() {
           longText: description,
           nsfw: nsfw,
           userId: current.$id,
-          mimeType: image.mimeType,
+          mimeType: image.mime,
           galleryId: storageData.$id,
         }
       )
