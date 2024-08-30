@@ -8,9 +8,9 @@
     "scheme": "headpatapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/headpat_logo.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "image": "./assets/images/headpat_splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#000"
     },
     "assetBundlePatterns": [
       "**/*"

@@ -13,8 +13,14 @@ function HeaderSidebarBackButton() {
   const theme = isDarkColorScheme ? 'white' : 'black'
 
   return (
-    <View style={{ paddingLeft: 16 }}>
-      <TouchableOpacity onPress={() => router.back()}>
+    <View style={{ flexDirection: 'row' }}>
+      <TouchableOpacity
+        onPress={() => router.back()}
+        style={{
+          padding: 10,
+          marginLeft: 10,
+        }}
+      >
         <ArrowLeftIcon aria-label={'Go back'} size={20} color={theme} />
       </TouchableOpacity>
     </View>

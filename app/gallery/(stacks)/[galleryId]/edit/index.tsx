@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import { database } from '~/lib/appwrite-client'
+import { database, storage } from '~/lib/appwrite-client'
 import Gallery from 'react-native-awesome-gallery'
 import { ScrollView } from 'react-native-gesture-handler'
 import { Link, router, useLocalSearchParams } from 'expo-router'
@@ -23,7 +23,6 @@ import { Button } from '~/components/ui/button'
 import { useUser } from '~/components/contexts/UserContext'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import * as Sentry from '@sentry/react-native'
-import { toast } from '~/lib/toast'
 
 export default function HomeView() {
   const local = useLocalSearchParams()
@@ -31,11 +30,13 @@ export default function HomeView() {
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [modalVisible, setModalVisible] = useState(false)
   const ref = useRef(null)
+  const { hideLoadingModal, showLoadingModal, showAlertModal } = useAlertModal()
   const { current } = useUser()
 
   const fetchGallery = async () => {
     try {
       setRefreshing(true)
+      showLoadingModal()
       const data: GalleryType.GalleryDocumentsType = await database.getDocument(
         'hp_db',
         'gallery-images',
@@ -44,9 +45,10 @@ export default function HomeView() {
 
       setImage(data)
       setRefreshing(false)
+      hideLoadingModal()
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      toast('Failed to fetch gallery data.')
+      showAlertModal('FAILED', 'Failed to fetch gallery data.')
       setRefreshing(false)
     }
   }
@@ -63,9 +65,25 @@ export default function HomeView() {
         }
       )
 
+      showAlertModal('SUCCESS', 'Gallery data saved successfully.')
       router.back()
     } catch (error) {
-      toast('Failed to save gallery data.')
+      showAlertModal('FAILED', 'Failed to save gallery data.')
+      Sentry.captureException(error)
+    }
+  }
+
+  const deleteGalleryImage = async () => {
+    try {
+      await database.deleteDocument(
+        'hp_db',
+        'gallery-images',
+        `${local.galleryId}`
+      )
+      await storage.deleteFile('gallery-images', `${local.galleryId}`)
+      router.navigate('/gallery/(stacks)/')
+    } catch (error) {
+      showAlertModal('FAILED', 'Failed to delete gallery data.')
       Sentry.captureException(error)
     }
   }
@@ -168,8 +186,15 @@ export default function HomeView() {
             <Label nativeID={'gallery-longText'}>Description</Label>
             <Textarea defaultValue={image?.longText || ''} />
           </View>
-          <Button className={'mt-8'} onPress={saveGallery}>
+          <Button className={'mt-8'} onPress={deleteGalleryImage}>
             <Text>Save</Text>
+          </Button>
+          <Button
+            variant={'destructive'}
+            className={'mt-8'}
+            onPress={saveGallery}
+          >
+            <Text>Delete</Text>
           </Button>
         </View>
 
