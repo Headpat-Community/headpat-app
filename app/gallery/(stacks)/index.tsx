@@ -110,6 +110,7 @@ export default function GalleryPage() {
     showLoadingModal()
     fetchGallery(0, 8).then()
     hideLoadingModal()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current])
 
   const generateThumbnail = useCallback(async (galleryId: string) => {
