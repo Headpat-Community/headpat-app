@@ -109,7 +109,8 @@
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8",
     "zustand": "^4.5.5",
-    "lottie-react-native": "6.7.0"
+    "lottie-react-native": "6.7.0",
+    "expo-image-manipulator": "~11.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

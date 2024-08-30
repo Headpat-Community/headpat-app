@@ -16,6 +16,7 @@ import { ID } from 'react-native-appwrite'
 import { Progress } from '~/components/ui/progress'
 import { useUser } from '~/components/contexts/UserContext'
 import * as Sentry from '@sentry/react-native'
+import * as ImageManipulator from 'expo-image-manipulator'
 
 export default function GalleryAdd() {
   const [image, setImage] = useState<ImagePicker.ImagePickerAsset>(null)
@@ -67,6 +68,15 @@ export default function GalleryAdd() {
     router.push(`/gallery/${galleryId}`)
   }
 
+  async function compressImage(uri: string) {
+    const manipResult = await ImageManipulator.manipulateAsync(
+      uri,
+      [{ resize: { width: 800 } }],
+      { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+    )
+    return manipResult
+  }
+
   async function uploadImageAsync() {
     if (!image.uri) {
       toast('Please select an image to upload')
@@ -78,11 +88,12 @@ export default function GalleryAdd() {
     }
 
     try {
+      const compressedImage = await compressImage(image.uri)
       const fileData = {
         name: image.fileName,
         type: image.mimeType,
-        size: image.fileSize,
-        uri: image.uri,
+        size: compressedImage.size,
+        uri: compressedImage.uri,
       }
       setUploading(true)
       const storageData = await storage.createFile(
