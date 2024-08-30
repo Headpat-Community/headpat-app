@@ -74,6 +74,7 @@ export default function HomeView() {
   }
 
   const deleteGalleryImage = async () => {
+    showLoadingModal()
     try {
       await database.deleteDocument(
         'hp_db',
@@ -81,6 +82,7 @@ export default function HomeView() {
         `${local.galleryId}`
       )
       await storage.deleteFile('gallery-images', `${local.galleryId}`)
+      showAlertModal('SUCCESS', 'Gallery data deleted successfully.')
       router.navigate('/gallery/(stacks)/')
     } catch (error) {
       showAlertModal('FAILED', 'Failed to delete gallery data.')
@@ -93,7 +95,9 @@ export default function HomeView() {
   }
 
   useEffect(() => {
+    showLoadingModal()
     fetchGallery().then()
+    hideLoadingModal()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [local.galleryId])
 

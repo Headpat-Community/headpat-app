@@ -81,6 +81,7 @@
     "expo-video-thumbnails": "~8.0.0",
     "expo-web-browser": "~13.0.3",
     "i18next": "^23.12.2",
+    "lottie-react-native": "6.7.0",
     "lucide-react-native": "^0.427.0",
     "nativewind": "^4.0.36",
     "react": "18.2.0",
@@ -108,8 +109,7 @@
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8",
-    "zustand": "^4.5.5",
-    "lottie-react-native": "6.7.0"
+    "zustand": "^4.5.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
