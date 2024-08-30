@@ -81,9 +81,12 @@ export default function HomeView() {
         'gallery-images',
         `${local.galleryId}`
       )
-      await storage.deleteFile('gallery-images', `${local.galleryId}`)
+      await storage.deleteFile('gallery', `${local.galleryId}`)
       showAlertModal('SUCCESS', 'Gallery data deleted successfully.')
-      router.navigate('/gallery/(stacks)/')
+      // I have no clue how to go back 3 times...
+      router.back()
+      router.back()
+      router.back()
     } catch (error) {
       showAlertModal('FAILED', 'Failed to delete gallery data.')
       Sentry.captureException(error)

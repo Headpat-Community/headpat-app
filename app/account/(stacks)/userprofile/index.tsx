@@ -20,6 +20,7 @@ import { useFocusEffect } from '@react-navigation/core'
 import { Checkbox } from '~/components/ui/checkbox'
 import { z } from 'zod'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
+import { router } from 'expo-router'
 
 export default function UserprofilePage() {
   const [isDisabled, setIsDisabled] = useState(false)
@@ -144,6 +145,26 @@ export default function UserprofilePage() {
     <ScrollView>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <View className="mx-4 gap-4 mt-4 mb-8">
+          <View className={'flex-row gap-8'}>
+            <View className={'w-full gap-4'}>
+              <View>
+                <H4>Change avatar</H4>
+                <Muted>Want to change your looks?</Muted>
+              </View>
+              <Separator className={'w-[100px]'} />
+              <View>
+                <Button
+                  onPress={() =>
+                    router.push('/account/(stacks)/userprofile/avatarAdd')
+                  }
+                  disabled={isDisabled}
+                >
+                  <Text>Upload new</Text>
+                </Button>
+              </View>
+            </View>
+          </View>
+          <Separator />
           <View className={'flex-row gap-8'}>
             <View className={'w-full gap-4'}>
               <View>

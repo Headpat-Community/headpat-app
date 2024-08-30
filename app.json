@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/images/headpat_splash.png",
       "resizeMode": "cover",
-      "backgroundColor": "#000"
+      "backgroundColor": "#000000"
     },
     "assetBundlePatterns": [
       "**/*"

@@ -37,7 +37,7 @@ export default function GalleryAdd() {
       const maxResolution = 5000 * 5000
       const maxFileSize = 8 * 1024 * 1024 // 8MB in bytes
 
-      if (image.width * image.height > maxResolution) {
+      if (image.width + image.height > maxResolution) {
         toast('Image resolution is too large')
       }
 
@@ -46,7 +46,7 @@ export default function GalleryAdd() {
       }
 
       if (
-        image.width * image.height <= maxResolution &&
+        image.width + image.height <= maxResolution &&
         image.fileSize <= maxFileSize
       ) {
         setImage(image)
