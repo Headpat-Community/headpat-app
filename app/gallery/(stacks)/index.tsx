@@ -18,6 +18,7 @@ export default function GalleryPage() {
   const [thumbnails, setThumbnails] = useState<{ [key: string]: string }>({})
   const [offset, setOffset] = useState<number>(0)
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
+  const [allDataLoaded, setAllDataLoaded] = useState(false)
   const { hideLoadingModal, showLoadingModal, showAlertModal } = useAlertModal()
 
   const fetchGallery = useCallback(
@@ -38,7 +39,9 @@ export default function GalleryPage() {
           'gallery-images',
           query
         )
-
+        if (!data.documents.length) {
+          setAllDataLoaded(true)
+        }
         if (newOffset === 0) {
           setImages(data.documents)
         } else {
@@ -94,7 +97,7 @@ export default function GalleryPage() {
   }
 
   const loadMore = async () => {
-    if (!loadingMore) {
+    if (!loadingMore && !allDataLoaded) {
       setLoadingMore(true)
       const newOffset = offset + 10
       setOffset(newOffset)
@@ -107,7 +110,7 @@ export default function GalleryPage() {
     showLoadingModal()
     fetchGallery(0, 8).then()
     hideLoadingModal()
-  }, [current, fetchGallery, hideLoadingModal, showLoadingModal])
+  }, [current])
 
   const generateThumbnail = useCallback(async (galleryId: string) => {
     try {
