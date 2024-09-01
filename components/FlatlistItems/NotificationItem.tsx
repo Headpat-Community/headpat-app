@@ -41,18 +41,27 @@ const CommunityItem = React.memo(
           <Card>
             <CardContent className={'pb-0'}>
               <View className={'flex flex-row items-center my-4'}>
-                <Avatar alt={'User Avatar'}>
-                  <AvatarImage
-                    src={getUserAvatar(notification.userData.avatarId) || null}
-                  />
-                  <AvatarFallback>
-                    {notification.userData.displayName.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <Muted className={'ml-4'}>
-                  {notification?.userData?.displayName || 'Someone'} followed
-                  you! 🎉
-                </Muted>
+                <View className={''}>
+                  <Avatar alt={'User Avatar'}>
+                    <AvatarImage
+                      src={
+                        getUserAvatar(notification.userData.avatarId) || null
+                      }
+                    />
+                    <AvatarFallback>
+                      {notification.userData.displayName
+                        .charAt(0)
+                        .toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                </View>
+                <View className={'ml-4'}>
+                  <Text>
+                    {notification?.userData?.displayName || 'Someone'} followed
+                    you! 🎉
+                  </Text>
+                  <Muted>{formatDate(new Date(notification.$createdAt))}</Muted>
+                </View>
               </View>
             </CardContent>
           </Card>
