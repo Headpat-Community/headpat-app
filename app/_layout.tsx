@@ -51,16 +51,18 @@ import messaging from '@react-native-firebase/messaging'
 import { requestUserPermission } from '~/components/system/pushNotifications'
 import { AlertModalProvider } from '~/components/contexts/AlertModalProvider'
 import { Image } from 'react-native'
+import * as Sentry from '@sentry/react-native'
 
 async function bootstrap() {
   const initialNotification = await messaging().getInitialNotification()
-  console.log('initialNotification', initialNotification)
+  //console.log('initialNotification', initialNotification)
 
   if (initialNotification) {
     console.log(
       'Notification caused application to open',
       initialNotification.notification
     )
+    Sentry.captureException('Notification caused application to open')
   }
 }
 
@@ -435,7 +437,7 @@ export default function RootLayout() {
   useEffect(() => {
     return messaging().onMessage(async (remoteMessage) => {
       //Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage))
-      console.log(remoteMessage)
+      //console.log(remoteMessage)
     })
   }, [])
 
@@ -444,7 +446,7 @@ export default function RootLayout() {
   }, [])
 
   messaging().setBackgroundMessageHandler(async (remoteMessage) => {
-    console.log('Message handled in the background!', remoteMessage)
+    //console.log('Message handled in the background!', remoteMessage)
   })
 
   messaging().onNotificationOpenedApp(async (remoteMessage) => {

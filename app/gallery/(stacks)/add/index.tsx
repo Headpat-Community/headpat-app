@@ -110,7 +110,7 @@ export default function GalleryAdd() {
       handleFinish(storageData.$id)
     } catch (error) {
       setUploading(false)
-      console.log(error)
+      //console.log(error)
       toast('Error uploading image')
       Sentry.captureException(error)
     }

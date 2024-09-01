@@ -18,7 +18,11 @@ import { functions } from '~/lib/appwrite-client'
 import { Events } from '~/lib/types/collections'
 import { H1, H3, Muted } from '~/components/ui/typography'
 import { ExecutionMethod } from 'react-native-appwrite'
-import { calculateTimeLeft, formatDate } from '~/components/calculateTimeLeft'
+import {
+  calculateTimeLeft,
+  formatDate,
+  formatDateLocale,
+} from '~/components/calculateTimeLeft'
 import { toast } from '~/lib/toast'
 import { Link } from 'expo-router'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
@@ -119,7 +123,7 @@ export default function ArchivedEventsPage() {
                       >
                         <CardDescription>
                           <ClockIcon size={12} color={theme} />{' '}
-                          {formatDate(new Date(event.date))}
+                          {formatDateLocale(new Date(event.date))}
                         </CardDescription>
                         <CardDescription>
                           {calculateTimeLeft(event.date, event.dateUntil)}

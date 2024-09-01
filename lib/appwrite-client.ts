@@ -4,6 +4,7 @@ import {
   Databases,
   Functions,
   Storage,
+  Locale,
 } from 'react-native-appwrite'
 
 export const client = new Client()
@@ -17,3 +18,4 @@ export const account = new Account(client)
 export const database = new Databases(client)
 export const functions = new Functions(client)
 export const storage = new Storage(client)
+export const locale = new Locale(client)

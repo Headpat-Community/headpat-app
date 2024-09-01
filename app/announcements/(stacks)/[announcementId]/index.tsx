@@ -9,6 +9,7 @@ import { Text } from '~/components/ui/text'
 import { formatDate } from '~/components/calculateTimeLeft'
 import { Separator } from '~/components/ui/separator'
 import { Badge } from '~/components/ui/badge'
+import sanitizeHtml from 'sanitize-html'
 
 export default function AnnouncementSinglePage() {
   const local = useLocalSearchParams()
@@ -83,6 +84,8 @@ export default function AnnouncementSinglePage() {
       </ScrollView>
     )
 
+  const sanitizedDescription = sanitizeHtml(announcement.description)
+
   return (
     <ScrollView
       refreshControl={
@@ -111,9 +114,7 @@ export default function AnnouncementSinglePage() {
         <View>
           <Card className={'flex-1 p-0'}>
             <CardContent className={'p-6'}>
-              <Text>
-                {announcement?.description || 'No description given.'}
-              </Text>
+              <Text>{sanitizedDescription || 'No description given.'}</Text>
             </CardContent>
           </Card>
         </View>

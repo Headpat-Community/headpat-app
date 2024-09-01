@@ -57,6 +57,26 @@ export const formatDate = (date: Date) => {
   return `${day}.${month}.${year} @ ${hours}:${minutes}`
 }
 
+export const formatDateLocale = (date: Date) => {
+  // Format the date
+  const day = date.getDate().toString().padStart(2, '0')
+  const month = (date.getMonth() + 1).toString().padStart(2, '0') // Months are 0-based in JavaScript
+  const year = date.getFullYear()
+  const hours = date.getHours().toString().padStart(2, '0')
+  const minutes = date.getMinutes().toString().padStart(2, '0')
+
+  // Get the timezone offset in hours and minutes
+  const timezoneOffset = -date.getTimezoneOffset() // In minutes
+  const offsetHours = Math.floor(timezoneOffset / 60)
+    .toString()
+    .padStart(2, '0')
+  const offsetMinutes = (timezoneOffset % 60).toString().padStart(2, '0')
+  const offsetSign = timezoneOffset >= 0 ? '+' : '-'
+
+  // Combine the formatted date with the timezone offset
+  return `${day}.${month}.${year} @ ${hours}:${minutes} GMT${offsetSign}${offsetHours}:${offsetMinutes}`
+}
+
 export const timeSince = (date: string) => {
   const now = new Date()
   const past = new Date(date)

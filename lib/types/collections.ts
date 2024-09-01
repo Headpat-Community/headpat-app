@@ -177,6 +177,9 @@ export namespace Location {
   export interface LocationDocumentsType extends Models.Document {
     lat: number
     long: number
+    status: string
+    statusColor: string
+    timeUntilEnd: string
     userData: UserData.UserDataDocumentsType
   }
 }

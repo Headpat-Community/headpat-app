@@ -54,10 +54,8 @@ export default function ModalScreen() {
       await register(data.email, data.password, data.username)
       router.push('/account')
     } catch (error) {
-      Sentry.captureException(
-        `Error registering: ${error.type} ${error.message} ${error.code}`
-      )
-      console.log(error.type, error.message, error.code)
+      Sentry.captureException(error)
+
       if (error.type === 'general_argument_invalid') {
         toast('Invalid E-Mail or password.')
       } else if (error.type === 'user_blocked') {

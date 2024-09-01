@@ -1,13 +1,12 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react'
 import MapView, {
   Marker,
   Polygon,
-  Circle,
   PROVIDER_DEFAULT,
   PROVIDER_GOOGLE,
 } from 'react-native-maps'
 import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native'
-import { FilterIcon, LocateIcon } from 'lucide-react-native'
+import { FilterIcon, LocateIcon, SettingsIcon } from 'lucide-react-native'
 import * as Location from 'expo-location'
 import {
   Events,
@@ -27,35 +26,36 @@ import {
   DialogTrigger,
 } from '~/components/ui/dialog'
 import * as Sentry from '@sentry/react-native'
-import { formatDate } from '~/components/calculateTimeLeft'
+import { formatDateLocale } from '~/components/calculateTimeLeft'
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '~/components/ui/alert-dialog'
 import { useUser } from '~/components/contexts/UserContext'
+import HTMLView from 'react-native-htmlview'
+import { useColorScheme } from '~/lib/useColorScheme'
+import FiltersModal from '~/components/locations/FiltersModal'
+import SettingsModal from '~/components/locations/SettingsModal'
+import LocationPermissionModal from '~/components/locations/LocationPermissionModal'
 
 export default function MutualLocationsPage() {
   const { current } = useUser()
+  const { isDarkColorScheme } = useColorScheme()
+  const theme = isDarkColorScheme ? 'white' : 'black'
 
   const mapRef = useRef(null)
   const [userLocation, setUserLocation] = useState(null)
+  const [userStatus, setUserStatus] =
+    useState<LocationType.LocationDocumentsType>(null)
+
+  const [modalOpen, setModalOpen] = useState<boolean>(false)
+  const [filtersOpen, setFiltersOpen] = useState<boolean>(false)
+  const [settingsOpen, setSettingsOpen] = useState<boolean>(false)
 
   const [events, setEvents] = useState<Events.EventsType>(null)
   const [friendsLocations, setFriendsLocations] = useState(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [currentEvent, setCurrentEvent] = useState(null)
-  const [modalOpen, setModalOpen] = useState<boolean>(false)
-  const [modalAccepted, setModalAccepted] = useState<boolean>(false)
   const [filters, setFilters] = useState({
     showEvents: true,
-    showMutuals: true,
-    showCommunity: true,
+    showUsers: true,
   })
 
   const fetchEvents = async () => {
@@ -85,9 +85,11 @@ export default function MutualLocationsPage() {
   const fetchUserLocations = async () => {
     try {
       let query = []
-      if (current?.$id) {
-        query = [Query.notEqual('$id', current?.$id)]
-      }
+      /*
+       if (current?.$id) {
+       query = [Query.notEqual('$id', current?.$id)]
+       }
+       */
 
       const data: LocationType.LocationType = await database.listDocuments(
         'hp_db',
@@ -96,6 +98,10 @@ export default function MutualLocationsPage() {
       )
 
       const promises = data.documents.map(async (doc) => {
+        if (current.$id === doc.$id) {
+          setUserStatus(doc)
+          return
+        }
         const userData: UserData.UserDataDocumentsType =
           await database.getDocument('hp_db', 'userdata', doc.$id)
         return { ...doc, userData }
@@ -126,7 +132,7 @@ export default function MutualLocationsPage() {
         watcher = await Location.watchPositionAsync(
           {
             accuracy: Location.Accuracy.High,
-            timeInterval: 1000,
+            timeInterval: 2000,
             distanceInterval: 1,
           },
           (location) => {
@@ -135,15 +141,13 @@ export default function MutualLocationsPage() {
         )
       }
     }
-    //if (modalAccepted) {
     startWatching().then()
-    //}
     return () => {
       if (watcher) {
         watcher.remove()
       }
     }
-  }, [modalAccepted])
+  }, [])
 
   const handleLocationButtonPress = () => {
     if (userLocation) {
@@ -157,7 +161,6 @@ export default function MutualLocationsPage() {
   }
 
   const getUserAvatar = (avatarId: string) => {
-    if (!avatarId) return
     return `https://api.headpat.place/v1/storage/buckets/avatars/files/${avatarId}/preview?project=hp-main&width=100&height=100`
   }
 
@@ -169,9 +172,11 @@ export default function MutualLocationsPage() {
       handleSubscribedEvents()
       return () => {
         // Remove the event listener when the component is unmounted
+        setUserStatus(null)
         locationsSubscribed()
       }
-    }, [])
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [current])
   )
 
   function handleSubscribedEvents() {
@@ -183,28 +188,52 @@ export default function MutualLocationsPage() {
 
         switch (eventType) {
           case 'update':
+            if (updatedDocument.$id === current.$id) {
+              setUserStatus(updatedDocument)
+              return
+            }
+
             setFriendsLocations(
               (prevLocations: LocationType.LocationDocumentsType[]) => {
-                return prevLocations.map((location) => {
-                  if (location.$id === updatedDocument.$id) {
-                    return updatedDocument
-                  } else {
-                    return location
-                  }
-                })
+                const existingLocation = prevLocations.find(
+                  (location) => location?.$id === updatedDocument.$id
+                )
+                if (existingLocation) {
+                  // Merge updated document with existing one, preserving userData
+                  return prevLocations.map((location) =>
+                    location?.$id === updatedDocument.$id
+                      ? {
+                          ...location,
+                          ...updatedDocument,
+                          userData: location.userData,
+                        }
+                      : location
+                  )
+                } else {
+                  return [...prevLocations, updatedDocument]
+                }
               }
             )
             break
           case 'delete':
+            if (updatedDocument.$id === current.$id) {
+              setUserStatus(null)
+              return
+            }
             setFriendsLocations(
               (prevLocations: LocationType.LocationDocumentsType[]) => {
                 return prevLocations.filter(
-                  (location) => location.$id !== updatedDocument.$id
+                  (location) => location?.$id !== updatedDocument.$id
                 )
               }
             )
             break
           case 'create':
+            if (updatedDocument.$id === current.$id) {
+              setUserStatus(updatedDocument)
+              return
+            }
+
             // Fetch userData for the updated or created document
             const userData: UserData.UserDataDocumentsType =
               await database.getDocument(
@@ -214,22 +243,24 @@ export default function MutualLocationsPage() {
               )
             const updatedLocationWithUserData = { ...updatedDocument, userData }
 
-            setFriendsLocations((prevLocations) => {
-              const locationExists = prevLocations.some(
-                (location) => location.$id === updatedDocument.$id
-              )
-              if (locationExists) {
-                // Update existing location
-                return prevLocations.map((location) =>
-                  location.$id === updatedDocument.$id
-                    ? updatedLocationWithUserData
-                    : location
+            setFriendsLocations(
+              (prevLocations: LocationType.LocationDocumentsType[]) => {
+                const locationExists = prevLocations.some(
+                  (location) => location?.$id === updatedDocument.$id
                 )
-              } else {
-                // Add new location
-                return [...prevLocations, updatedLocationWithUserData]
+                if (locationExists) {
+                  // Update existing location
+                  return prevLocations.map((location) =>
+                    location.$id === updatedDocument.$id
+                      ? updatedLocationWithUserData
+                      : location
+                  )
+                } else {
+                  // Add new location
+                  return [...prevLocations, updatedLocationWithUserData]
+                }
               }
-            })
+            )
             break
           default:
             Sentry.captureException('Unknown event type:', updatedDocument)
@@ -238,6 +269,33 @@ export default function MutualLocationsPage() {
     )
   }
 
+  /**
+   * Generate polygon coordinates for a circle... don't ask why
+   */
+  const generatePolygonCoords = (
+    centerLatitude: number,
+    centerLongitude: number,
+    radius: number,
+    sides = 32
+  ) => {
+    const coords = []
+    for (let i = 0; i < sides; i++) {
+      const angle = (i * 2 * Math.PI) / sides
+      const latitude = centerLatitude + (radius / 111320) * Math.cos(angle) // 111320 meters = 1 degree
+      const longitude =
+        centerLongitude +
+        (radius / (111320 * Math.cos(centerLatitude * (Math.PI / 180)))) *
+          Math.sin(angle)
+      coords.push({ latitude, longitude })
+    }
+    return coords
+  }
+
+  const sanitizedDescription = useMemo(() => {
+    if (!currentEvent?.description) return ''
+    return currentEvent.description.replace(/<[^>]*>?/gm, '')
+  }, [currentEvent])
+
   return (
     <View style={styles.container}>
       {refreshing && (
@@ -245,40 +303,54 @@ export default function MutualLocationsPage() {
           <Text>Loading...</Text>
         </View>
       )}
-      {modalOpen && (
-        <AlertDialog onOpenChange={setModalOpen} open={modalOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Headpat needs permission</AlertDialogTitle>
-              <AlertDialogDescription>
-                Headpat requires your location to show you on the map. You can
-                always change this later in your settings.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogAction
-                onPress={async () => {
-                  let { status } =
-                    await Location.requestForegroundPermissionsAsync()
-                  if (status === 'granted') {
-                    setModalAccepted(true)
-                  }
-                  setModalOpen(false)
-                }}
-              >
-                <Text>Continue</Text>
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      )}
+
+      {/* Location permission dialog */}
+      <LocationPermissionModal
+        openModal={modalOpen}
+        setOpenModal={setModalOpen}
+      />
+
+      {/* Filters dialog */}
+      <FiltersModal
+        openModal={filtersOpen}
+        setOpenModal={setFiltersOpen}
+        filters={filters}
+        setFilters={setFilters}
+      />
+
+      {/* Settings dialog */}
+      <SettingsModal
+        openModal={settingsOpen}
+        setOpenModal={setSettingsOpen}
+        userStatus={userStatus}
+        setUserStatus={setUserStatus}
+        current={current}
+      />
+
       <Dialog>
         <DialogContent>
           <DialogTitle>{currentEvent?.title}</DialogTitle>
-          <Text>{currentEvent?.description}</Text>
+          <HTMLView
+            value={sanitizedDescription}
+            stylesheet={{
+              p: {
+                color: theme,
+              },
+              a: {
+                color: 'blue',
+              },
+            }}
+            textComponentProps={{
+              style: {
+                color: theme,
+              },
+            }}
+          />
           <DialogFooter>
-            <Text>Until: {formatDate(new Date(currentEvent?.dateUntil))}</Text>
-            <Text>Start: {formatDate(new Date(currentEvent?.date))}</Text>
+            <Text>
+              Until: {formatDateLocale(new Date(currentEvent?.dateUntil))}
+            </Text>
+            <Text>Start: {formatDateLocale(new Date(currentEvent?.date))}</Text>
           </DialogFooter>
         </DialogContent>
 
@@ -290,88 +362,119 @@ export default function MutualLocationsPage() {
           }
           showsUserLocation={true}
         >
-          {friendsLocations?.map((user, index) => {
-            return (
-              <Marker
-                key={index}
-                coordinate={{
-                  latitude: user.lat,
-                  longitude: user.long,
-                }}
-                title={user?.userData?.displayName}
-                description={'No peeking!'}
-              >
-                <TouchableOpacity>
-                  <Avatar
-                    alt={user?.userData?.displayName}
-                    className={'rounded-xl'}
-                  >
-                    <AvatarImage
-                      source={
-                        { uri: getUserAvatar(user?.userData?.avatarId) } ||
-                        require('~/assets/pfp-placeholder.png')
-                      }
-                    />
-                    <AvatarFallback>HP</AvatarFallback>
-                  </Avatar>
-                </TouchableOpacity>
-              </Marker>
-            )
-          })}
-          {events?.documents.map((event, index) => {
-            if (event?.locationZoneMethod === 'polygon') {
-              const coords = event?.coordinates.map((coord) => {
-                const [latitude, longitude] = coord.split(',').map(Number)
-                return { latitude, longitude }
-              })
-              if (coords?.length)
-                return (
-                  <DialogTrigger key={index} asChild>
-                    <Polygon
-                      key={index}
-                      coordinates={coords}
-                      tappable={true}
-                      onPress={() => {
-                        setCurrentEvent(event)
-                      }}
-                      fillColor="rgba(100, 200, 200, 0.5)" // optional, fill color of the polygon
-                      strokeColor="rgba(255,0,0,0.5)" // optional, border color of the polygon
-                    />
-                  </DialogTrigger>
+          {filters.showUsers &&
+            friendsLocations?.map((user, index: number) => {
+              return (
+                <Marker
+                  key={index}
+                  coordinate={{
+                    latitude: user?.lat,
+                    longitude: user?.long,
+                  }}
+                  title={user?.userData?.displayName || 'Unknown'}
+                  description={user?.status || user?.userData?.status || ''}
+                >
+                  <TouchableOpacity>
+                    <Avatar
+                      alt={user?.userData?.displayName || 'Unknown'}
+                      className={'rounded-xl'}
+                      style={{
+                        borderWidth: 2,
+                        borderColor: user?.statusColor,
+                      }} // Apply border based on statusColor
+                    >
+                      <AvatarImage
+                        source={{
+                          uri: getUserAvatar(user?.userData?.avatarId),
+                        }}
+                      />
+                      <AvatarFallback className={'rounded-xl'}>
+                        <Text>
+                          {user?.userData?.displayName
+                            ? user?.userData?.displayName.charAt(0)
+                            : 'U'}
+                        </Text>
+                      </AvatarFallback>
+                    </Avatar>
+                  </TouchableOpacity>
+                </Marker>
+              )
+            })}
+
+          {filters.showEvents &&
+            events?.documents.map((event, index) => {
+              if (event?.locationZoneMethod === 'polygon') {
+                const coords = event?.coordinates.map((coord) => {
+                  const [latitude, longitude] = coord.split(',').map(Number)
+                  return { latitude, longitude }
+                })
+                if (coords?.length)
+                  return (
+                    <DialogTrigger key={index} asChild>
+                      <Polygon
+                        key={index}
+                        coordinates={coords}
+                        tappable={true}
+                        onPress={() => {
+                          setCurrentEvent(event)
+                        }}
+                        fillColor="rgba(100, 200, 200, 0.5)"
+                        strokeColor="rgba(255,0,0,0.5)"
+                      />
+                    </DialogTrigger>
+                  )
+              } else if (event?.locationZoneMethod === 'circle') {
+                const [centerLatitude, centerLongitude] = event?.coordinates[0]
+                  .split(',')
+                  .map(Number)
+
+                const polygonCoords = generatePolygonCoords(
+                  centerLatitude,
+                  centerLongitude,
+                  event?.circleRadius
                 )
-            } else if (event?.locationZoneMethod === 'circle') {
-              // Assuming the first coordinate is the center of the circle
-              const [centerLatitude, centerLongitude] = event?.coordinates[0]
-                .split(',')
-                .map(Number)
-              if (centerLatitude && centerLongitude)
-                return (
-                  <DialogTrigger key={index} asChild>
-                    <Circle
-                      key={index}
-                      center={{
-                        latitude: centerLatitude,
-                        longitude: centerLongitude,
-                      }}
-                      radius={event?.circleRadius} // specify the radius here
-                      fillColor="rgba(100, 200, 200, 0.5)" // optional, fill color of the circle
-                      strokeColor="rgba(255,0,0,0.5)" // optional, border color of the circle
-                    />
-                  </DialogTrigger>
-                )
-            }
-          })}
+
+                if (polygonCoords.length)
+                  return (
+                    <DialogTrigger key={index} asChild>
+                      <Polygon
+                        key={index}
+                        coordinates={polygonCoords}
+                        tappable={true}
+                        onPress={() => {
+                          setCurrentEvent(event)
+                        }}
+                        fillColor="rgba(100, 200, 200, 0.5)"
+                        strokeColor="rgba(255,0,0,0.5)"
+                      />
+                    </DialogTrigger>
+                  )
+              }
+            })}
         </MapView>
         <View style={styles.filterButton}>
           <TouchableOpacity
             className={
               'justify-center items-center bg-white h-14 w-14 rounded-full shadow'
             }
-            onPress={() => toast('This button is still useless.')}
+            onPress={() => setFiltersOpen(true)}
           >
             <FilterIcon size={24} color={'black'} />
           </TouchableOpacity>
         </View>
+        {/* Don't show if there is no friendsLocation of current user */}
+        {userStatus && (
+          <View style={styles.settingsButton}>
+            <TouchableOpacity
+              className={
+                'justify-center items-center bg-white h-14 w-14 rounded-full shadow'
+              }
+              onPress={() => setSettingsOpen(true)}
+            >
+              <SettingsIcon size={24} color={'black'} />
+            </TouchableOpacity>
+          </View>
+        )}
         {userLocation && Platform.OS === 'ios' && (
           <View style={styles.locationButton}>
             <TouchableOpacity
@@ -388,38 +491,6 @@ export default function MutualLocationsPage() {
     </View>
   )
 }
-
-// Examples:
-/*
- Users:
-
- {users.map((user, index) => (
- <Marker
- key={index}
- coordinate={user.coordinate}
- title={user.name}
- description={'No peeking!'}
- >
- <TouchableOpacity onPress={() => handleUserClick(user)}>
- <Image
- source={{ uri: user.avatar }}
- style={{ width: 50, height: 50, borderRadius: 25 }}
- />
- </TouchableOpacity>
- </Marker>
- ))}
- */
-
-/*
- Circle markers:
-
- <Circle
- center={{ latitude: 37.78825, longitude: -122.4324 }}
- radius={10000} // specify the radius here
- fillColor="rgba(100, 200, 200, 0.5)" // optional, fill color of the circle
- strokeColor="rgba(255,0,0,0.5)" // optional, border color of the circle
- />
- */
 
 const styles = StyleSheet.create({
   container: {
@@ -439,6 +510,13 @@ const styles = StyleSheet.create({
   filterButton: {
     position: 'absolute',
     top: 60,
+    right: 10,
+    borderRadius: 50,
+    overflow: 'hidden',
+  },
+  settingsButton: {
+    position: 'absolute',
+    top: 120,
     right: 10,
     borderRadius: 50,
     overflow: 'hidden',
