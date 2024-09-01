@@ -101,12 +101,15 @@ export const updatePushTargetWithAppwrite = async (fcmToken: string) => {
   // If is simulator, don't update push target
   const targetId = await AsyncStorage.getItem('targetId')
   if (!fcmToken) return
-
   try {
     const session = await account.get()
-
     if (!session.$id) return // User is not logged in
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (error) {
+    return
+  }
 
+  try {
     if (!targetId) {
       // Create a new push target
       const target = await account.createPushTarget(

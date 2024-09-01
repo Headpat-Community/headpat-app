@@ -98,7 +98,7 @@ export default function MutualLocationsPage() {
       )
 
       const promises = data.documents.map(async (doc) => {
-        if (current.$id === doc.$id) {
+        if (current?.$id === doc.$id) {
           setUserStatus(doc)
           return
         }
@@ -188,7 +188,7 @@ export default function MutualLocationsPage() {
 
         switch (eventType) {
           case 'update':
-            if (updatedDocument.$id === current.$id) {
+            if (current && updatedDocument.$id === current.$id) {
               setUserStatus(updatedDocument)
               return
             }
@@ -216,7 +216,7 @@ export default function MutualLocationsPage() {
             )
             break
           case 'delete':
-            if (updatedDocument.$id === current.$id) {
+            if (current && updatedDocument.$id === current.$id) {
               setUserStatus(null)
               return
             }
@@ -229,12 +229,11 @@ export default function MutualLocationsPage() {
             )
             break
           case 'create':
-            if (updatedDocument.$id === current.$id) {
+            if (current && updatedDocument.$id === current.$id) {
               setUserStatus(updatedDocument)
               return
             }
 
-            // Fetch userData for the updated or created document
             const userData: UserData.UserDataDocumentsType =
               await database.getDocument(
                 'hp_db',
@@ -328,7 +327,7 @@ export default function MutualLocationsPage() {
       />
 
       <Dialog>
-        <DialogContent>
+        <DialogContent className={'sm:w-[1500px]'}>
           <DialogTitle>{currentEvent?.title}</DialogTitle>
           <HTMLView
             value={sanitizedDescription}
@@ -347,10 +346,14 @@ export default function MutualLocationsPage() {
             }}
           />
           <DialogFooter>
-            <Text>
-              Until: {formatDateLocale(new Date(currentEvent?.dateUntil))}
-            </Text>
-            <Text>Start: {formatDateLocale(new Date(currentEvent?.date))}</Text>
+            <View>
+              <Text>
+                Until: {formatDateLocale(new Date(currentEvent?.dateUntil))}
+              </Text>
+              <Text>
+                Start: {formatDateLocale(new Date(currentEvent?.date))}
+              </Text>
+            </View>
           </DialogFooter>
         </DialogContent>
 
@@ -360,7 +363,7 @@ export default function MutualLocationsPage() {
           provider={
             Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
           }
-          showsUserLocation={true}
+          showsUserLocation={false}
         >
           {filters.showUsers &&
             friendsLocations?.map((user, index: number) => {

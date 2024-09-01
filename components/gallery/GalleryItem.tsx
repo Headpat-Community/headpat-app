@@ -1,5 +1,5 @@
 import React from 'react'
-import { TouchableWithoutFeedback, View } from 'react-native'
+import { Dimensions, TouchableWithoutFeedback, View } from 'react-native'
 import { Image } from 'expo-image'
 import { Link } from 'expo-router'
 import { Badge } from '~/components/ui/badge'
@@ -13,6 +13,13 @@ const GalleryItem = React.memo(({ image, thumbnail, getGalleryUrl }: any) => {
         format.charAt(0).toUpperCase() + format.slice(1)
       ] as ImageFormat)
     : undefined
+
+  // Get device dimensions
+  const { width } = Dimensions.get('window')
+
+  // Define height based on device size
+  const widthColumns = width > 600 ? '24%' : '48%'
+
   return (
     <Link
       href={{
@@ -25,7 +32,7 @@ const GalleryItem = React.memo(({ image, thumbnail, getGalleryUrl }: any) => {
         <View
           style={{
             position: 'relative',
-            width: '48%',
+            width: widthColumns,
             height: 200,
             marginBottom: 10,
             margin: 5,

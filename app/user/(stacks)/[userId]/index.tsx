@@ -36,7 +36,7 @@ import HTMLView from 'react-native-htmlview'
 import { Badge } from '~/components/ui/badge'
 import { Skeleton } from '~/components/ui/skeleton'
 import UserActions from '~/components/user/UserActions'
-import { Drawer } from '~/components/Drawer'
+import { Dimensions } from 'react-native'
 
 export default function UserPage() {
   const { isDarkColorScheme } = useColorScheme()
@@ -159,6 +159,12 @@ export default function UserPage() {
 
   const sanitizedBio = sanitizeHtml(userData.bio)
 
+  // Get device dimensions
+  const { width } = Dimensions.get('window')
+
+  // Define height based on device size
+  const bannerHeight = width > 600 ? 250 : 100
+
   return (
     <>
       <ScrollView
@@ -177,7 +183,7 @@ export default function UserPage() {
             <Image
               source={getUserBanner(userData?.profileBannerId)}
               alt={`${userData?.displayName}'s banner`}
-              style={{ width: '100%', height: 100 }}
+              style={{ width: '100%', height: bannerHeight }}
               contentFit={'contain'}
             />
           </View>

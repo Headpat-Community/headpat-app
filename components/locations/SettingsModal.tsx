@@ -26,6 +26,7 @@ export default function SettingsModal({
     try {
       await database.updateDocument('hp_db', 'locations', current.$id, {
         status: userStatus.status,
+        statusColor: userStatus.statusColor,
       })
     } catch (e) {
       console.error(e)
@@ -49,6 +50,7 @@ export default function SettingsModal({
               nativeID={'status'}
               value={userStatus?.status}
               onChange={(e) => setUserStatus({ status: e.nativeEvent.text })}
+              maxLength={40}
             />
           </View>
           <View className="flex-row items-center gap-2">

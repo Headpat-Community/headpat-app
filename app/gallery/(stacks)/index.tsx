@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { FlatList, Text, View } from 'react-native'
+import { Dimensions, FlatList, Text, View } from 'react-native'
 import { database, storage } from '~/lib/appwrite-client'
 import { toast } from '~/lib/toast'
 import * as Sentry from '@sentry/react-native'
@@ -19,6 +19,12 @@ export default function GalleryPage() {
   const [offset, setOffset] = useState<number>(0)
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
   const { hideLoadingModal, showLoadingModal, showAlertModal } = useAlertModal()
+  // Get device dimensions
+  const { width } = Dimensions.get('window')
+
+  // Define height based on device size
+  const maxColumns = width > 600 ? 4 : 2
+  const startCount = width > 600 ? 27 : 9
 
   const fetchGallery = useCallback(
     async (newOffset: number = 0, limit: number = 10) => {
@@ -103,10 +109,10 @@ export default function GalleryPage() {
 
   useEffect(() => {
     showLoadingModal()
-    fetchGallery(0, 9).then()
+    fetchGallery(0, startCount).then()
     hideLoadingModal()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [current])
+  }, [current, startCount])
 
   const generateThumbnail = useCallback(async (galleryId: string) => {
     try {
@@ -138,7 +144,7 @@ export default function GalleryPage() {
         renderItem={renderItem}
         onRefresh={onRefresh}
         refreshing={refreshing}
-        numColumns={2}
+        numColumns={maxColumns}
         contentContainerStyle={{ flexGrow: 1 }}
         onEndReached={loadMore}
         onEndReachedThreshold={0.5}
