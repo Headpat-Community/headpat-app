@@ -364,41 +364,46 @@ export default function MutualLocationsPage() {
         >
           {filters.showUsers &&
             friendsLocations?.map((user, index: number) => {
-              return (
-                <Marker
-                  key={index}
-                  coordinate={{
-                    latitude: user?.lat,
-                    longitude: user?.long,
-                  }}
-                  title={user?.userData?.displayName || 'Unknown'}
-                  description={user?.status || user?.userData?.status || ''}
-                >
-                  <TouchableOpacity>
-                    <Avatar
-                      alt={user?.userData?.displayName || 'Unknown'}
-                      className={'rounded-xl'}
-                      style={{
-                        borderWidth: 2,
-                        borderColor: user?.statusColor,
-                      }} // Apply border based on statusColor
-                    >
-                      <AvatarImage
-                        source={{
-                          uri: getUserAvatar(user?.userData?.avatarId),
-                        }}
-                      />
-                      <AvatarFallback className={'rounded-xl'}>
-                        <Text>
-                          {user?.userData?.displayName
-                            ? user?.userData?.displayName.charAt(0)
-                            : 'U'}
-                        </Text>
-                      </AvatarFallback>
-                    </Avatar>
-                  </TouchableOpacity>
-                </Marker>
-              )
+              const latitude = user?.lat
+              const longitude = user?.long
+              if (latitude && longitude) {
+                return (
+                  <Marker
+                    key={index}
+                    coordinate={{
+                      latitude: latitude,
+                      longitude: longitude,
+                    }}
+                    title={user?.userData?.displayName || 'Unknown'}
+                    description={user?.status || user?.userData?.status || ''}
+                  >
+                    <TouchableOpacity>
+                      <Avatar
+                        alt={user?.userData?.displayName || 'Unknown'}
+                        className={'rounded-xl'}
+                        style={{
+                          borderWidth: 2,
+                          borderColor: user?.statusColor,
+                        }} // Apply border based on statusColor
+                      >
+                        <AvatarImage
+                          source={{
+                            uri: getUserAvatar(user?.userData?.avatarId),
+                          }}
+                        />
+                        <AvatarFallback className={'rounded-xl'}>
+                          <Text>
+                            {user?.userData?.displayName
+                              ? user?.userData?.displayName.charAt(0)
+                              : 'U'}
+                          </Text>
+                        </AvatarFallback>
+                      </Avatar>
+                    </TouchableOpacity>
+                  </Marker>
+                )
+              }
+              return null
             })}
 
           {filters.showEvents &&
