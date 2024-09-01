@@ -363,7 +363,7 @@ export default function MutualLocationsPage() {
           provider={
             Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
           }
-          showsUserLocation={false}
+          showsUserLocation={true}
         >
           {filters.showUsers &&
             friendsLocations?.map((user, index: number) => {
