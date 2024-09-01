@@ -72,7 +72,7 @@ export default function UserPage() {
           'user-endpoints',
           '',
           false,
-          `/user/isFollowing?userId=${local?.userId}`,
+          `/user/isFollowing?followerId=${local?.userId}`,
           ExecutionMethod.GET
         ),
       ])

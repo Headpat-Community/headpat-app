@@ -11,17 +11,16 @@ import * as Sentry from '@sentry/react-native'
 import * as ImagePicker from 'react-native-image-crop-picker'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 
-export default function AvatarAdd() {
+export default function BannerAdd() {
   const [image, setImage] = useState<ImagePicker.ImageOrVideo>(null)
   const { showLoadingModal, hideLoadingModal, showAlertModal } = useAlertModal()
-  const maxFileSize = 1.5 * 1024 * 1024 // 1.5 MB in bytes
+  const maxFileSize = 5 * 1024 * 1024 // 1.5 MB in bytes
   const maxResolution = 8 * 1024 * 1024
 
   const pickImage = async () => {
     try {
       let result = await ImagePicker.openPicker({
         mediaType: 'photo',
-        writeTempFile: true,
       })
 
       if (!result || !result?.path) {
@@ -59,9 +58,9 @@ export default function AvatarAdd() {
     return await ImagePicker.openCropper({
       path: uri,
       mediaType: 'photo',
-      width: 512,
-      height: 512,
-      compressImageQuality: 0.7,
+      width: 2400,
+      height: 500,
+      compressImageQuality: 0.8,
     })
   }
 
@@ -90,7 +89,7 @@ export default function AvatarAdd() {
       }
       showLoadingModal()
       const storageData = await storage.createFile(
-        'avatars',
+        'banners',
         ID.unique(),
         fileData
       )
@@ -99,15 +98,16 @@ export default function AvatarAdd() {
         'user-endpoints',
         '',
         false,
-        `/user/uploadAvatar?avatarId=${storageData.$id}`,
+        `/user/uploadBanner?profileBannerId=${storageData.$id}`,
         ExecutionMethod.POST
       )
 
       hideLoadingModal()
       handleFinish()
     } catch (error) {
-      showAlertModal('FAILED', 'Error uploading image.')
-      Sentry.captureException(error)
+      console.log(error)
+      //showAlertModal('FAILED', 'Error picking image.')
+      //Sentry.captureException(error)
     }
   }
 
@@ -117,10 +117,10 @@ export default function AvatarAdd() {
         <View className={'mx-8 flex-1'}>
           <View className={'flex-1'}>
             <View className={'mt-8'}>
-              <H2>Want to upload an avatar?</H2>
+              <H2>Want to upload a banner?</H2>
               <Muted>
                 You can select an image from your camera roll to upload as your
-                avatar.
+                banner.
               </Muted>
             </View>
             <View className={'items-center justify-center py-8'}>

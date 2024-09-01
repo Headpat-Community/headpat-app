@@ -11,7 +11,7 @@ import { router, SplashScreen, useRouter, useSegments } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import * as React from 'react'
 import { useEffect, useState } from 'react'
-import { Alert, BackHandler, ScrollView, Text, View } from 'react-native'
+import { BackHandler, ScrollView, Text, View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { ProfileThemeToggle } from '~/components/ThemeToggle'
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar'
@@ -20,8 +20,8 @@ import { useColorScheme } from '~/lib/useColorScheme'
 import { Drawer } from '~/components/Drawer'
 import { DrawerItem } from '@react-navigation/drawer'
 import { TouchableOpacity } from '@gorhom/bottom-sheet'
-import { Image } from 'expo-image'
 import {
+  BellIcon,
   BoxesIcon,
   CalendarIcon,
   HomeIcon,
@@ -50,6 +50,19 @@ import { toast } from '~/lib/toast'
 import messaging from '@react-native-firebase/messaging'
 import { requestUserPermission } from '~/components/system/pushNotifications'
 import { AlertModalProvider } from '~/components/contexts/AlertModalProvider'
+import { Image } from 'react-native'
+
+async function bootstrap() {
+  const initialNotification = await messaging().getInitialNotification()
+  console.log('initialNotification', initialNotification)
+
+  if (initialNotification) {
+    console.log(
+      'Notification caused application to open',
+      initialNotification.notification
+    )
+  }
+}
 
 TaskManager.defineTask('background-location-task', async ({ data, error }) => {
   if (error) {
@@ -247,6 +260,20 @@ function CustomDrawerContent() {
               label={() => {
                 return (
                   <View className="flex-row items-center gap-3 pl-3">
+                    <BellIcon size={20} color={theme} />
+                    <Text style={{ color: theme }}>Notifications</Text>
+                  </View>
+                )
+              }}
+              onPress={() => {
+                router.navigate('/notifications')
+              }}
+            />
+
+            <DrawerItem
+              label={() => {
+                return (
+                  <View className="flex-row items-center gap-3 pl-3">
                     <UserIcon size={20} color={theme} />
                     <Text style={{ color: theme }}>My Profile</Text>
                   </View>
@@ -342,7 +369,7 @@ function CustomDrawerContent() {
             textAlign: 'center',
           }}
         >
-          Headpat App v0.6.0
+          Headpat App v0.7.0
         </Text>
       </ScrollView>
     </>
@@ -407,12 +434,23 @@ export default function RootLayout() {
 
   useEffect(() => {
     return messaging().onMessage(async (remoteMessage) => {
-      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage))
+      //Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage))
+      console.log(remoteMessage)
     })
+  }, [])
+
+  useEffect(() => {
+    bootstrap().catch(console.error)
   }, [])
 
   messaging().setBackgroundMessageHandler(async (remoteMessage) => {
     console.log('Message handled in the background!', remoteMessage)
+  })
+
+  messaging().onNotificationOpenedApp(async (remoteMessage) => {
+    if (remoteMessage?.data?.type === 'newFollower') {
+      router.navigate(`/user/(stacks)/${remoteMessage.data.userId}`)
+    }
   })
 
   useEffect(() => {

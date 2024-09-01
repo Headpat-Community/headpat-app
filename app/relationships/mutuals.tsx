@@ -1,23 +1,29 @@
 import { toast } from '~/lib/toast'
-import { database } from '~/lib/appwrite-client'
-import { Query } from 'react-native-appwrite'
+import { functions } from '~/lib/appwrite-client'
+import { ExecutionMethod } from 'react-native-appwrite'
 import { useUser } from '~/components/contexts/UserContext'
 import React, { useCallback, useEffect, useState } from 'react'
-import { UserData, Followers } from '~/lib/types/collections'
+import { UserData } from '~/lib/types/collections'
 import * as Sentry from '@sentry/react-native'
 import UserItem from '~/components/user/UserItem'
 import { FlatList, RefreshControl, ScrollView, Text, View } from 'react-native'
 import { H1, Muted } from '~/components/ui/typography'
+import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 
 export default function FollowersPage() {
-  const [mutuals, setMutuals] = useState<Followers.FollowerType | null>(null)
-  const [mutualData, setMutualData] = useState<
-    UserData.UserDataDocumentsType[] | null
-  >(null)
+  const [users, setUsers] = useState<UserData.UserDataDocumentsType[]>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
   const [offset, setOffset] = useState<number>(0)
+  const [hasMore, setHasMore] = useState<boolean>(true)
+  const { showAlertModal, showLoadingModal, hideLoadingModal } = useAlertModal()
   const { current } = useUser()
+
+  useEffect(() => {
+    setUsers([]) // Clear the old users
+    setOffset(0) // Reset the offset
+    setHasMore(true) // Reset hasMore
+  }, [current?.$id])
 
   const onRefresh = async () => {
     setRefreshing(true)
@@ -29,48 +35,32 @@ export default function FollowersPage() {
   const fetchUsers = useCallback(
     async (newOffset: number = 0) => {
       try {
-        const data: Followers.FollowerType = await database.listDocuments(
-          'hp_db',
-          'followers'
+        const data = await functions.createExecution(
+          'user-endpoints',
+          '',
+          false,
+          `/user/mutuals?limit=20&offset=${newOffset}`,
+          ExecutionMethod.GET
+        )
+        const response: UserData.UserDataDocumentsType[] = JSON.parse(
+          data.responseBody
         )
 
-        // Filtering to find mutuals
-        const mutualsList = data.documents.filter((follower) => {
-          const followsYou = data.documents.some(
-            (otherFollower) =>
-              otherFollower.userId === follower.followerId && // They follow you
-              otherFollower.followerId === current.$id // Current user is followed by them
-          )
-          const youFollow = data.documents.some(
-            (otherFollower) =>
-              otherFollower.userId === current.$id && // Current user follows
-              otherFollower.followerId === follower.userId // Follower is followed by you
-          )
-
-          return followsYou && youFollow
-        })
-
-        // Remove duplicates based on `userId`
-        const uniqueMutualsList = mutualsList.filter(
-          (mutual, index, self) =>
-            index === self.findIndex((m) => m.followerId === mutual.followerId)
-        )
-
-        //setMutuals({ ...data, documents: uniqueMutualsList })
         if (newOffset === 0) {
-          setMutuals({ ...data, documents: uniqueMutualsList })
+          setUsers(response)
         } else {
-          setMutuals({
-            ...data,
-            documents: [...(mutuals?.documents || []), ...uniqueMutualsList],
-          })
+          setUsers((prevUsers) => [...prevUsers, ...response])
         }
+
+        // Update hasMore based on the response length
+        setHasMore(response.length === 20)
       } catch (error) {
         toast('Failed to fetch users. Please try again later.')
         Sentry.captureException(error)
       }
     },
-    [current]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [current?.$id]
   )
 
   const loadMore = async () => {
@@ -83,39 +73,32 @@ export default function FollowersPage() {
     }
   }
 
-  const fetchUserdataForId = async (userId: string) => {
-    try {
-      const result = await database.listDocuments('hp_db', 'userdata', [
-        Query.equal('$id', userId),
-      ])
-      return result.documents[0]
-    } catch (error) {
-      toast('Failed to fetch userdata for mutuals. Please try again later.')
-      Sentry.captureException(error)
-    }
-  }
-
   useEffect(() => {
-    const fetchAllMutualData = async () => {
-      if (mutuals && mutuals.documents) {
-        const allMutualData: any = await Promise.all(
-          mutuals.documents.map((mutual: any) =>
-            fetchUserdataForId(mutual.followerId)
-          )
-        )
-        setMutualData(allMutualData)
-      }
-    }
+    showLoadingModal()
+    if (!current?.$id) return showAlertModal('FAILED', 'You are not logged in.')
+    fetchUsers(0).then()
+    hideLoadingModal()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [current.$id])
 
-    fetchAllMutualData().then()
-  }, [mutuals])
+  if (refreshing)
+    return (
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        contentContainerClassName={'flex-1 justify-center items-center h-full'}
+      >
+        <View className={'p-4 native:pb-24 max-w-md gap-6'}>
+          <View className={'gap-1'}>
+            <H1 className={'text-foreground text-center'}>Mutuals</H1>
+            <Muted className={'text-base text-center'}>Loading...</Muted>
+          </View>
+        </View>
+      </ScrollView>
+    )
 
-  useEffect(() => {
-    if (!current?.$id) return
-    fetchUsers().then()
-  }, [current, fetchUsers])
-
-  if (!current?.$id)
+  if (!refreshing && users && users.length === 0)
     return (
       <ScrollView
         refreshControl={
@@ -127,7 +110,7 @@ export default function FollowersPage() {
             <View className={'gap-1'}>
               <H1 className={'text-foreground text-center'}>Mutuals</H1>
               <Muted className={'text-base text-center'}>
-                You need to be logged in to see your mutuals.
+                You have no mutuals yet. Follow someone to see them here.
               </Muted>
             </View>
           </View>
@@ -141,7 +124,7 @@ export default function FollowersPage() {
 
   return (
     <FlatList
-      data={mutualData}
+      data={users}
       keyExtractor={(item) => item.$id}
       renderItem={renderItem}
       onRefresh={onRefresh}
@@ -150,7 +133,9 @@ export default function FollowersPage() {
       contentContainerStyle={{ justifyContent: 'space-between' }}
       onEndReached={loadMore}
       onEndReachedThreshold={0.5}
-      ListFooterComponent={loadingMore ? <Text>Loading...</Text> : null}
+      ListFooterComponent={
+        loadingMore && hasMore ? <Text>Loading...</Text> : null
+      }
     />
   )
 }

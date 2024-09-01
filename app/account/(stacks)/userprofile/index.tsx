@@ -149,13 +149,33 @@ export default function UserprofilePage() {
             <View className={'w-full gap-4'}>
               <View>
                 <H4>Change avatar</H4>
-                <Muted>Want to change your looks?</Muted>
+                <Muted>Want to change your looks? Upload a new avatar.</Muted>
               </View>
               <Separator className={'w-[100px]'} />
               <View>
                 <Button
                   onPress={() =>
                     router.push('/account/(stacks)/userprofile/avatarAdd')
+                  }
+                  disabled={isDisabled}
+                >
+                  <Text>Upload new</Text>
+                </Button>
+              </View>
+            </View>
+          </View>
+          <Separator />
+          <View className={'flex-row gap-8'}>
+            <View className={'w-full gap-4'}>
+              <View>
+                <H4>Change banner</H4>
+                <Muted>Change the top banner on your profile page!</Muted>
+              </View>
+              <Separator className={'w-[100px]'} />
+              <View>
+                <Button
+                  onPress={() =>
+                    router.push('/account/(stacks)/userprofile/bannerAdd')
                   }
                   disabled={isDisabled}
                 >

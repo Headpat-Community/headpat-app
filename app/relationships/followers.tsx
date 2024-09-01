@@ -8,6 +8,7 @@ import UserItem from '~/components/user/UserItem'
 import { FlatList, RefreshControl, ScrollView, Text, View } from 'react-native'
 import { H1, Muted } from '~/components/ui/typography'
 import { useUser } from '~/components/contexts/UserContext'
+import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 
 export default function FollowersPage() {
   const [users, setUsers] = useState<UserData.UserDataDocumentsType[]>(null)
@@ -15,6 +16,7 @@ export default function FollowersPage() {
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
   const [offset, setOffset] = useState<number>(0)
   const [hasMore, setHasMore] = useState<boolean>(true)
+  const { showAlertModal, showLoadingModal, hideLoadingModal } = useAlertModal()
   const { current } = useUser()
 
   useEffect(() => {
@@ -72,26 +74,12 @@ export default function FollowersPage() {
   }
 
   useEffect(() => {
-    if (!current?.$id) return
-    fetchUsers().then()
+    showLoadingModal()
+    if (!current?.$id) return showAlertModal('FAILED', 'You are not logged in.')
+    fetchUsers(0).then()
+    hideLoadingModal()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current?.$id])
-
-  if (!current?.$id)
-    return (
-      <ScrollView
-        contentContainerClassName={'flex-1 justify-center items-center h-full'}
-      >
-        <View className={'p-4 native:pb-24 max-w-md gap-6'}>
-          <View className={'gap-1'}>
-            <H1 className={'text-foreground text-center'}>Followers</H1>
-            <Muted className={'text-base text-center'}>
-              This user does not exist.
-            </Muted>
-          </View>
-        </View>
-      </ScrollView>
-    )
 
   if (refreshing)
     return (
@@ -110,7 +98,7 @@ export default function FollowersPage() {
       </ScrollView>
     )
 
-  if (refreshing && users && users.length === 0)
+  if (!refreshing && users && users.length === 0)
     return (
       <ScrollView
         refreshControl={

@@ -18,12 +18,10 @@ export default function GalleryPage() {
   const [thumbnails, setThumbnails] = useState<{ [key: string]: string }>({})
   const [offset, setOffset] = useState<number>(0)
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
-  const [allDataLoaded, setAllDataLoaded] = useState(false)
   const { hideLoadingModal, showLoadingModal, showAlertModal } = useAlertModal()
 
   const fetchGallery = useCallback(
     async (newOffset: number = 0, limit: number = 10) => {
-      showLoadingModal()
       try {
         const nsfwPreference = current?.prefs?.nsfw ?? false
         let query = nsfwPreference
@@ -39,9 +37,7 @@ export default function GalleryPage() {
           'gallery-images',
           query
         )
-        if (!data.documents.length) {
-          setAllDataLoaded(true)
-        }
+
         if (newOffset === 0) {
           setImages(data.documents)
         } else {
@@ -53,7 +49,6 @@ export default function GalleryPage() {
             generateThumbnail(image.$id)
           }
         })
-        hideLoadingModal()
       } catch (error) {
         showAlertModal(
           'FAILED',
@@ -92,12 +87,12 @@ export default function GalleryPage() {
   const onRefresh = async () => {
     setRefreshing(true)
     setOffset(0)
-    await fetchGallery(0, 8)
+    await fetchGallery(0, 9)
     setRefreshing(false)
   }
 
   const loadMore = async () => {
-    if (!loadingMore && !allDataLoaded) {
+    if (!loadingMore) {
       setLoadingMore(true)
       const newOffset = offset + 10
       setOffset(newOffset)
@@ -108,7 +103,7 @@ export default function GalleryPage() {
 
   useEffect(() => {
     showLoadingModal()
-    fetchGallery(0, 8).then()
+    fetchGallery(0, 9).then()
     hideLoadingModal()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current])

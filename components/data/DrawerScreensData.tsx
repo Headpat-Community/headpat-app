@@ -90,8 +90,13 @@ export const DrawerScreensData = [
     headerLeft: <HeaderSidebarBackButton />,
   },
   {
+    location: 'notifications/index',
+    title: 'Notifications',
+    headerLeft: <HeaderSidebarBackButton />,
+  },
+  {
     location: 'relationships',
-    title: 'Mutuals',
+    title: 'Connections',
     headerLeft: <HeaderSidebarBackButton />,
   },
   {

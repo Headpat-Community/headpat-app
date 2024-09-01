@@ -2,7 +2,7 @@
   "expo": {
     "name": "Headpat",
     "slug": "headpat-app",
-    "version": "0.6.0",
+    "version": "0.7.0",
     "orientation": "portrait",
     "icon": "./assets/images/headpat_logo.png",
     "scheme": "headpatapp",
@@ -12,6 +12,11 @@
       "resizeMode": "cover",
       "backgroundColor": "#000000"
     },
+    "notification": {
+      "icon": "./assets/images/headpat_logo.png",
+      "iosDisplayInForeground": true
+    },
+    "githubUrl": "https://github.com/Headpat-Community/headpat-app",
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -27,6 +32,7 @@
         "usesNonExemptEncryption": false,
         "googleMapsApiKey": "AIzaSyBlqdKEHTabryf5Et0bZQAtxO10VJMf1go"
       },
+      "appStoreUrl": "https://apps.apple.com/app/headpat/id6502715063",
       "infoPlist": {
         "UIBackgroundModes": [
           "location",
@@ -60,6 +66,10 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/headpat_logo.png",
         "backgroundColor": "#ffffff"
+      },
+      "notification": {
+        "icon": "./assets/images/headpat_logo.png",
+        "color": "#000000"
       },
       "config": {
         "googleMaps": {
