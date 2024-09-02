@@ -53,7 +53,7 @@
         "applinks:headpat.place",
         "applinks:api.headpat.place"
       ],
-      "buildNumber": "56"
+      "buildNumber": "63"
     },
     "android": {
       "permissions": [
@@ -66,10 +66,6 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/headpat_logo.png",
         "backgroundColor": "#ffffff"
-      },
-      "notification": {
-        "icon": "./assets/images/headpat_logo.png",
-        "color": "#000000"
       },
       "config": {
         "googleMaps": {
@@ -106,7 +102,7 @@
         "expo-task-manager",
         {
           "ios": {
-            "minimumOSVersion": "15"
+            "minimumOSVersion": "13"
           }
         }
       ],
@@ -114,7 +110,7 @@
         "expo-background-fetch",
         {
           "ios": {
-            "minimumOSVersion": "15"
+            "minimumOSVersion": "13"
           }
         }
       ],
@@ -138,7 +134,8 @@
         "expo-build-properties",
         {
           "ios": {
-            "useFrameworks": "static"
+            "useFrameworks": "static",
+            "deploymentTarget": "13.4"
           }
         }
       ],

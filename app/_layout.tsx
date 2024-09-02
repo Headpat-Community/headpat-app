@@ -7,11 +7,11 @@ import {
 } from '@react-navigation/native'
 import { PortalHost } from '~/components/primitives/portal'
 import { ToastProvider } from '~/components/primitives/deprecated-ui/toast'
-import { router, SplashScreen, useRouter, useSegments } from 'expo-router'
+import { Link, router, SplashScreen, useRouter, useSegments } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import * as React from 'react'
 import { useEffect, useState } from 'react'
-import { BackHandler, ScrollView, Text, View } from 'react-native'
+import { BackHandler, ScrollView, View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { ProfileThemeToggle } from '~/components/ThemeToggle'
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar'
@@ -52,6 +52,10 @@ import { requestUserPermission } from '~/components/system/pushNotifications'
 import { AlertModalProvider } from '~/components/contexts/AlertModalProvider'
 import { Image } from 'react-native'
 import * as Sentry from '@sentry/react-native'
+import { Button } from '~/components/ui/button'
+import { SiDiscord } from '@icons-pack/react-simple-icons'
+import { Text } from '~/components/ui/text'
+import DiscordIcon from '~/components/icons/DiscordIcon'
 
 async function bootstrap() {
   const initialNotification = await messaging().getInitialNotification()
@@ -362,6 +366,20 @@ function CustomDrawerContent() {
             current ? router.navigate('/account') : router.navigate('/login')
           }}
         />
+        <Separator />
+        <Link href={'#'} target={'_blank'} asChild>
+          <Button className={'bg-transparent flex flex-row items-center'}>
+            <DiscordIcon size={20} color={theme} />
+            <Text
+              style={{
+                color: theme,
+                marginLeft: 8, // Add some space between the icon and the text
+              }}
+            >
+              Discord
+            </Text>
+          </Button>
+        </Link>
         <Separator />
         <Text
           style={{

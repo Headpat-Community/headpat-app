@@ -66,11 +66,6 @@ export default function AvatarAdd() {
   }
 
   async function uploadImageAsync() {
-    if (!image.path) {
-      showAlertModal('FAILED', 'Please select an image to upload')
-      return
-    }
-
     try {
       const compressedImage = await compressImage(image.path)
 
