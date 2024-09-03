@@ -9,7 +9,7 @@ import { database } from '~/lib/appwrite-client'
 import Gallery from 'react-native-awesome-gallery'
 import { ScrollView } from 'react-native-gesture-handler'
 import { Link, useLocalSearchParams } from 'expo-router'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Gallery as GalleryType, UserData } from '~/lib/types/collections'
 import { Image } from 'expo-image'
 import { Text } from '~/components/ui/text'
@@ -20,6 +20,18 @@ import { useFocusEffect } from '@react-navigation/core'
 import { Skeleton } from '~/components/ui/skeleton'
 import { useUser } from '~/components/contexts/UserContext'
 import { Button } from '~/components/ui/button'
+import ReportGalleryModal from '~/components/gallery/moderation/ReportGalleryModal'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '~/components/ui/alert-dialog'
+import { ShieldAlertIcon } from 'lucide-react-native'
 
 export default function HomeView() {
   const local = useLocalSearchParams()
@@ -27,6 +39,8 @@ export default function HomeView() {
   const [userData, setUserData] = useState<UserData.UserDataDocumentsType>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [modalVisible, setModalVisible] = useState(false)
+  const [moderationModalOpen, setModerationModalOpen] = useState(false)
+  const [reportGalleryModalOpen, setReportGalleryModalOpen] = useState(false)
   const ref = useRef(null)
   const { current } = useUser()
 
@@ -95,6 +109,11 @@ export default function HomeView() {
     }, [player])
   )
 
+  const handleReport = useCallback(() => {
+    setModerationModalOpen(false)
+    setReportGalleryModalOpen(true)
+  }, [])
+
   if (refreshing) {
     return (
       <View style={{ flex: 1 }}>
@@ -130,8 +149,8 @@ export default function HomeView() {
           </TouchableOpacity>
         )}
 
-        {current?.$id === image?.userId && (
-          <View className={'items-center my-4'}>
+        <View className={'flex-row justify-center items-center my-4 gap-x-4'}>
+          {current?.$id === image?.userId && (
             <Link
               href={{
                 pathname: '/gallery/(stacks)/[galleryId]/edit',
@@ -143,8 +162,45 @@ export default function HomeView() {
                 <Text>Edit</Text>
               </Button>
             </Link>
-          </View>
-        )}
+          )}
+          <ReportGalleryModal
+            image={image}
+            open={reportGalleryModalOpen}
+            setOpen={setReportGalleryModalOpen}
+          />
+          <AlertDialog
+            onOpenChange={setModerationModalOpen}
+            open={moderationModalOpen}
+          >
+            <AlertDialogTrigger asChild>
+              <Button className={'text-center'} variant={'destructive'}>
+                <ShieldAlertIcon color={'white'} />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className={'w-full'}>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Moderation</AlertDialogTitle>
+                <AlertDialogDescription>
+                  What would you like to do?
+                </AlertDialogDescription>
+                <View className={'gap-4'}>
+                  <Button
+                    className={'text-center flex flex-row items-center'}
+                    variant={'destructive'}
+                    onPress={handleReport}
+                  >
+                    <Text>Report</Text>
+                  </Button>
+                </View>
+              </AlertDialogHeader>
+              <AlertDialogFooter className={'mt-8'}>
+                <AlertDialogAction>
+                  <Text>Cancel</Text>
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </View>
 
         <H4 className={'text-center mx-8'}>{image?.name}</H4>
         {image?.longText && (

@@ -11,22 +11,23 @@ import {
 import { Text } from '~/components/ui/text'
 import React, { useState } from 'react'
 import { reportUserProfile } from '~/components/user/api/reportUserProfile'
-import { UserData } from '~/lib/types/collections'
+import { Gallery } from '~/lib/types/collections'
 import { View } from 'react-native'
 import { RadioGroup, RadioGroupItem } from '~/components/ui/radio-group'
 import { Label } from '~/components/ui/label'
 import { Input } from '~/components/ui/input'
 import * as Sentry from '@sentry/react-native'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
+import { reportGalleryImage } from '~/components/gallery/api/reportGalleryImage'
 
-export default function ReportUserModal({
+export default function ReportGalleryModal({
   open,
   setOpen,
-  user,
+  image,
 }: {
   open: boolean
   setOpen: (open: boolean) => void
-  user: UserData.UserDataDocumentsType
+  image: Gallery.GalleryDocumentsType
 }) {
   const [reportReason, setReportReason] = useState<string>('')
   const [otherReason, setOtherReason] = useState<string>('')
@@ -35,8 +36,8 @@ export default function ReportUserModal({
   const reportUser = async () => {
     showLoadingModal()
     try {
-      const data = await reportUserProfile({
-        reportedUserId: user.$id,
+      const data = await reportGalleryImage({
+        reportedGalleryId: image.$id,
         reason: reportReason === 'Other' ? otherReason : reportReason,
       })
       setOpen(false)
@@ -63,10 +64,10 @@ export default function ReportUserModal({
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent className={'w-full'}>
           <AlertDialogHeader>
-            <AlertDialogTitle>Report {user?.displayName}</AlertDialogTitle>
+            <AlertDialogTitle>Report Image</AlertDialogTitle>
           </AlertDialogHeader>
           <AlertDialogDescription>
-            What is the reason for reporting this user?
+            What is the reason for reporting this image?
           </AlertDialogDescription>
           <View className={'z-50'}>
             <RadioGroup
