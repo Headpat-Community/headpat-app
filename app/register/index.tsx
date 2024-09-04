@@ -18,6 +18,8 @@ import SpotifyIcon from '~/components/icons/SpotifyIcon'
 import { makeRedirectUri } from 'expo-auth-session'
 import * as WebBrowser from 'expo-web-browser'
 import * as Sentry from '@sentry/react-native'
+import MicrosoftIcon from '~/components/icons/MicrosoftIcon'
+import TwitchIcon from '~/components/icons/TwitchIcon'
 
 export default function ModalScreen() {
   const { current, loginOAuth, register } = useUser()
@@ -153,19 +155,20 @@ export default function ModalScreen() {
             title="Discord"
           />
           <SocialLoginButton
-            provider={OAuthProvider.Apple}
-            color="#000000"
-            onPress={() => handleOAuth2Login(OAuthProvider.Apple)}
-            Icon={AppleIcon}
-            title="Apple"
-          />
-          <SocialLoginButton
             provider={OAuthProvider.Github}
             color="#24292F"
             onPress={() => handleOAuth2Login(OAuthProvider.Github)}
             Icon={GithubIcon}
             title="GitHub"
           />
+          <SocialLoginButton
+            provider={OAuthProvider.Apple}
+            color="#000000"
+            onPress={() => handleOAuth2Login(OAuthProvider.Apple)}
+            Icon={AppleIcon}
+            title="Apple"
+          />
+
           <SocialLoginButton
             provider={OAuthProvider.Google}
             color="#131314"
@@ -179,6 +182,20 @@ export default function ModalScreen() {
             onPress={() => handleOAuth2Login(OAuthProvider.Spotify)}
             Icon={SpotifyIcon}
             title="Spotify"
+          />
+          <SocialLoginButton
+            provider={OAuthProvider.Microsoft}
+            color="#01A6F0"
+            onPress={() => handleOAuth2Login(OAuthProvider.Microsoft)}
+            Icon={MicrosoftIcon}
+            title="Microsoft"
+          />
+          <SocialLoginButton
+            provider={OAuthProvider.Twitch}
+            color="#6441A5"
+            onPress={() => handleOAuth2Login(OAuthProvider.Twitch)}
+            Icon={TwitchIcon}
+            title="Twitch"
           />
         </View>
         <View>
@@ -198,7 +215,7 @@ export default function ModalScreen() {
             <Muted
               className="underline"
               onPress={() =>
-                Linking.openURL('https://headpat.place/legal/privacypolicy.pdf')
+                Linking.openURL('https://headpat.place/legal/privacypolicy')
               }
             >
               Privacy Policy

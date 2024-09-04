@@ -56,6 +56,8 @@ import { Button } from '~/components/ui/button'
 import { SiDiscord } from '@icons-pack/react-simple-icons'
 import { Text } from '~/components/ui/text'
 import DiscordIcon from '~/components/icons/DiscordIcon'
+import { AlertDialog } from '~/components/ui/alert-dialog'
+import EulaModal from '~/components/EulaModal'
 
 async function bootstrap() {
   const initialNotification = await messaging().getInitialNotification()
@@ -400,6 +402,8 @@ export default function RootLayout() {
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme()
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = useState(false)
   const [lastBackPressed, setLastBackPressed] = useState(0)
+  const [openEulaModal, setOpenEulaModal] = useState(false)
+  const [versionData, setVersionData] = useState(null)
 
   useEffect(() => {
     ;(async () => {
@@ -484,6 +488,31 @@ export default function RootLayout() {
     })
   }, [])
 
+  useEffect(() => {
+    const getEulaVersion = async () => {
+      try {
+        // Get EULA version
+        const data = await database.getDocument('config', 'legal', 'eula')
+        // Get EULA cookie
+        AsyncStorage.getItem(`eula`).then(async (eula) => {
+          if (eula !== data.version) {
+            console.log(eula)
+            const allKeys = await AsyncStorage.getAllKeys()
+            const eulaKeys = allKeys.filter((key) => key.startsWith('eula'))
+            await AsyncStorage.multiRemove(eulaKeys)
+            setVersionData(data)
+            setOpenEulaModal(true)
+          }
+        })
+      } catch (error) {
+        console.log(error)
+        Sentry.captureException(error)
+      }
+    }
+
+    getEulaVersion().then()
+  }, [])
+
   if (!isColorSchemeLoaded) {
     return null
   }
@@ -493,6 +522,11 @@ export default function RootLayout() {
       <AlertModalProvider>
         <UserProvider>
           <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
+          <EulaModal
+            isOpen={openEulaModal}
+            setOpen={setOpenEulaModal}
+            versionData={versionData}
+          />
           <GestureHandlerRootView style={{ flex: 1 }}>
             <Drawer
               drawerContent={() => {
