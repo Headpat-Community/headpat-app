@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Dimensions, FlatList, Text, View } from 'react-native'
-import { database, storage } from '~/lib/appwrite-client'
-import { toast } from '~/lib/toast'
+import { database, functions, storage } from '~/lib/appwrite-client'
 import * as Sentry from '@sentry/react-native'
 import { Gallery } from '~/lib/types/collections'
-import { ImageFormat, Query } from 'react-native-appwrite'
+import { ExecutionMethod, ImageFormat, Query } from 'react-native-appwrite'
 import * as VideoThumbnails from 'expo-video-thumbnails'
 import { useUser } from '~/components/contexts/UserContext'
 import GalleryItem from '~/components/gallery/GalleryItem'
@@ -14,15 +13,13 @@ export default function GalleryPage() {
   const { current } = useUser()
 
   const [images, setImages] = useState<Gallery.GalleryDocumentsType[]>([])
+  const [imagePrefs, setImagePrefs] = useState<{ [key: string]: any }>({})
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [thumbnails, setThumbnails] = useState<{ [key: string]: string }>({})
   const [offset, setOffset] = useState<number>(0)
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
   const { hideLoadingModal, showLoadingModal, showAlertModal } = useAlertModal()
-  // Get device dimensions
   const { width } = Dimensions.get('window')
-
-  // Define height based on device size
   const maxColumns = width > 600 ? 4 : 2
   const startCount = width > 600 ? 27 : 9
 
@@ -38,19 +35,33 @@ export default function GalleryPage() {
               Query.equal('nsfw', false),
             ]
 
-        const data: Gallery.GalleryType = await database.listDocuments(
-          'hp_db',
-          'gallery-images',
-          query
-        )
+        const [imageData, imagePrefsData]: any = await Promise.all([
+          database.listDocuments('hp_db', 'gallery-images', query),
+          functions.createExecution(
+            'gallery-endpoints',
+            '',
+            false,
+            `/gallery/prefs/all`,
+            ExecutionMethod.GET
+          ),
+        ])
+
+        const parsedImagePrefs = JSON.parse(
+          imagePrefsData.responseBody
+        ).documents.reduce((acc, pref) => {
+          acc[pref.galleryId] = pref
+          return acc
+        }, {})
+
+        setImagePrefs(parsedImagePrefs)
 
         if (newOffset === 0) {
-          setImages(data.documents)
+          setImages(imageData.documents)
         } else {
-          setImages((prevImages) => [...prevImages, ...data.documents])
+          setImages((prevImages) => [...prevImages, ...imageData.documents])
         }
 
-        data.documents.forEach((image) => {
+        imageData.documents.forEach((image) => {
           if (image.mimeType.includes('video')) {
             generateThumbnail(image.$id)
           }
@@ -128,13 +139,17 @@ export default function GalleryPage() {
     }
   }, [])
 
-  const renderItem = ({ item }) => (
-    <GalleryItem
-      image={item}
-      thumbnail={thumbnails[item.$id]}
-      getGalleryUrl={getGalleryUrl}
-    />
-  )
+  const renderItem = ({ item }) => {
+    const pref = imagePrefs[item.$id]
+    return (
+      <GalleryItem
+        image={item}
+        thumbnail={thumbnails[item.$id]}
+        getGalleryUrl={getGalleryUrl}
+        isHidden={pref?.isHidden}
+      />
+    )
+  }
 
   return (
     <View style={{ flex: 1 }}>

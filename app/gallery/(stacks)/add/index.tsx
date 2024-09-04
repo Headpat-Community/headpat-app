@@ -16,6 +16,7 @@ import { ID } from 'react-native-appwrite'
 import { Progress } from '~/components/ui/progress'
 import { useUser } from '~/components/contexts/UserContext'
 import * as Sentry from '@sentry/react-native'
+import * as WebBrowser from 'expo-web-browser'
 
 export default function GalleryAdd() {
   const [image, setImage] = useState<ImagePicker.ImagePickerAsset>(null)
@@ -26,6 +27,10 @@ export default function GalleryAdd() {
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress] = useState(0)
   const { current } = useUser()
+
+  const openBrowser = async (url: string) => {
+    await WebBrowser.openBrowserAsync(url)
+  }
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -144,11 +149,23 @@ export default function GalleryAdd() {
               )}
             </View>
             {page === 1 && (
-              <View className={'items-center justify-center py-8'}>
-                <Button onPress={pickImage}>
-                  <Text>Pick an image from camera roll</Text>
-                </Button>
-              </View>
+              <>
+                <View className={'items-center justify-center py-8'}>
+                  <Button onPress={pickImage}>
+                    <Text>Pick an image from camera roll</Text>
+                  </Button>
+                </View>
+
+                <View className={'items-center'}>
+                  <Muted
+                    onPress={() =>
+                      openBrowser('https://headpat.place/legal/eula')
+                    }
+                  >
+                    Please make sure to follow the EULA.
+                  </Muted>
+                </View>
+              </>
             )}
 
             {page === 2 && (

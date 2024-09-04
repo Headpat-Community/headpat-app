@@ -15,7 +15,7 @@ import { Button } from '~/components/ui/button'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export default function EulaModal({ isOpen, setOpen, versionData }) {
-  const openBrowser = async (url) => {
+  const openBrowser = async (url: string) => {
     await WebBrowser.openBrowserAsync(url)
   }
 

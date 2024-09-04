@@ -1,14 +1,15 @@
 import {
+  Dimensions,
   Modal,
   RefreshControl,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native'
-import { database } from '~/lib/appwrite-client'
+import { database, functions } from '~/lib/appwrite-client'
 import Gallery from 'react-native-awesome-gallery'
 import { ScrollView } from 'react-native-gesture-handler'
-import { Link, useLocalSearchParams } from 'expo-router'
+import { Link, router, useLocalSearchParams } from 'expo-router'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Gallery as GalleryType, UserData } from '~/lib/types/collections'
 import { Image } from 'expo-image'
@@ -32,31 +33,49 @@ import {
   AlertDialogTrigger,
 } from '~/components/ui/alert-dialog'
 import { ShieldAlertIcon } from 'lucide-react-native'
+import { ExecutionMethod } from 'react-native-appwrite'
+import * as Sentry from '@sentry/react-native'
+import { Badge } from '~/components/ui/badge'
+import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 
 export default function HomeView() {
   const local = useLocalSearchParams()
   const [image, setImage] = useState<GalleryType.GalleryDocumentsType>(null)
+  const [imagePrefs, setImagePrefs] = useState(null)
   const [userData, setUserData] = useState<UserData.UserDataDocumentsType>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [modalVisible, setModalVisible] = useState(false)
   const [moderationModalOpen, setModerationModalOpen] = useState(false)
   const [reportGalleryModalOpen, setReportGalleryModalOpen] = useState(false)
   const ref = useRef(null)
+  const { showAlertModal, showLoadingModal, hideLoadingModal } = useAlertModal()
   const { current } = useUser()
+
+  // Get device dimensions
+  const { width } = Dimensions.get('window')
+
+  // Define height based on device size
+  const imageHeight = width > 600 ? 600 : 300
 
   const fetchGallery = async () => {
     try {
       setRefreshing(true)
-      const data: GalleryType.GalleryDocumentsType = await database.getDocument(
-        'hp_db',
-        'gallery-images',
-        `${local.galleryId}`
-      )
+      const [imageData, imagePrefs]: any = await Promise.all([
+        database.getDocument('hp_db', 'gallery-images', `${local.galleryId}`),
+        functions.createExecution(
+          'gallery-endpoints',
+          '',
+          false,
+          `/gallery/prefs?galleryId=${local?.galleryId}`,
+          ExecutionMethod.GET
+        ),
+      ])
 
-      setImage(data)
+      setImage(imageData)
+      setImagePrefs(JSON.parse(imagePrefs.responseBody))
 
       const userData: UserData.UserDataDocumentsType =
-        await database.getDocument('hp_db', 'userdata', data.userId)
+        await database.getDocument('hp_db', 'userdata', imageData.userId)
       setUserData(userData)
       setRefreshing(false)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -114,6 +133,48 @@ export default function HomeView() {
     setReportGalleryModalOpen(true)
   }, [])
 
+  const handleHide = useCallback(async () => {
+    setModerationModalOpen(false)
+    showLoadingModal()
+    console.log(!imagePrefs?.isHidden)
+    try {
+      const data = await functions.createExecution(
+        'gallery-endpoints',
+        JSON.stringify({
+          galleryId: image.$id,
+          isHidden: !imagePrefs?.isHidden,
+        }),
+        false,
+        `/gallery/prefs`,
+        ExecutionMethod.PUT
+      )
+      const response = JSON.parse(data.responseBody)
+      if (response.code === 200) {
+        hideLoadingModal()
+        showAlertModal(
+          'SUCCESS',
+          `${imagePrefs?.isHidden ? 'Unhidden' : 'Hidden'} image successfully`
+        )
+        setImagePrefs({ ...imagePrefs, isHidden: !imagePrefs?.isHidden })
+        //router.back()
+      } else {
+        showAlertModal(
+          'FAILED',
+          'Failed to hide image. Please try again later.'
+        )
+      }
+    } catch (error) {
+      showAlertModal(
+        'FAILED',
+        `Failed to ${
+          imagePrefs?.isHidden ? 'unhide' : 'hide'
+        } image. Please try again later.`
+      )
+      Sentry.captureException(error)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [image, imagePrefs])
+
   if (refreshing) {
     return (
       <View style={{ flex: 1 }}>
@@ -130,8 +191,15 @@ export default function HomeView() {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
     >
+      {imagePrefs?.isHidden && (
+        <Badge variant={'destructive'}>
+          <Text>Image is hidden</Text>
+        </Badge>
+      )}
       <View style={{ flex: 1 }}>
-        {image?.mimeType.includes('video') ? (
+        {imagePrefs?.isHidden ? (
+          <Skeleton className={'h-72'} />
+        ) : image?.mimeType.includes('video') ? (
           <VideoView
             ref={ref}
             style={styles.video}
@@ -143,7 +211,7 @@ export default function HomeView() {
           <TouchableOpacity onPress={() => setModalVisible(true)}>
             <Image
               source={{ uri: getGalleryUrl(image?.galleryId) }}
-              style={{ height: 300 }}
+              style={{ height: imageHeight }}
               contentFit={'contain'}
             />
           </TouchableOpacity>
@@ -190,6 +258,13 @@ export default function HomeView() {
                     onPress={handleReport}
                   >
                     <Text>Report</Text>
+                  </Button>
+                  <Button
+                    className={'text-center flex flex-row items-center'}
+                    variant={'destructive'}
+                    onPress={handleHide}
+                  >
+                    <Text>{imagePrefs?.isHidden ? 'Unhide' : 'Hide'}</Text>
                   </Button>
                 </View>
               </AlertDialogHeader>
