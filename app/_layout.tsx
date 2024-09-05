@@ -372,7 +372,11 @@ function CustomDrawerContent() {
           }}
         />
         <Separator />
-        <Link href={'#'} target={'_blank'} asChild>
+        <Link
+          href={'https://discord.com/invite/EaQTEKRg2A'}
+          target={'_blank'}
+          asChild
+        >
           <Button className={'bg-transparent flex flex-row items-center'}>
             <DiscordIcon size={20} color={theme} />
             <Text
@@ -417,6 +421,7 @@ export default function RootLayout() {
         await Updates.reloadAsync()
       }
     } catch (error) {
+      Sentry.captureException(error)
       alert(`Error fetching latest update: ${error}`)
     }
   }

@@ -172,7 +172,9 @@ export default function HomeView() {
                   <Text>Find your mutuals!</Text>
                 </CardDescription>
                 <CardDescription>
-                  <Text>a</Text>
+                  <Text>
+                    {/* Amount of location users sharing with user */}
+                  </Text>
                 </CardDescription>
               </CardFooter>
             </CardContent>
