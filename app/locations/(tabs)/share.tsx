@@ -144,6 +144,11 @@ export default function ShareLocationView() {
       <Button onPress={toggleFetchTask}>
         <Text>{isRegistered ? 'Disable sharing' : 'Enable sharing'}</Text>
       </Button>
+      <Muted className={'p-4'}>
+        NOTE: Please only enable this for conventions or other kinds of events.
+        In the future you will be able to properly select users to share your
+        location with. For now, it will be shared with all users.
+      </Muted>
     </View>
   )
 }
