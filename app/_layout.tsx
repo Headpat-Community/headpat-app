@@ -58,6 +58,7 @@ import { Text } from '~/components/ui/text'
 import DiscordIcon from '~/components/icons/DiscordIcon'
 import { AlertDialog } from '~/components/ui/alert-dialog'
 import EulaModal from '~/components/EulaModal'
+import { Muted } from '~/components/ui/typography'
 
 async function bootstrap() {
   const initialNotification = await messaging().getInitialNotification()
@@ -387,12 +388,12 @@ function CustomDrawerContent() {
           style={{
             color: theme,
             padding: 10,
-            paddingBottom: 16,
             textAlign: 'center',
           }}
         >
           Headpat App v0.7.0
         </Text>
+        <Muted className={'text-center pb-4'}>BETA</Muted>
       </ScrollView>
     </>
   )

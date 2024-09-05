@@ -4,7 +4,7 @@
     "slug": "headpat-app",
     "version": "0.7.0",
     "orientation": "portrait",
-    "icon": "./assets/images/headpat_logo.png",
+    "icon": "./assets/images/icon.png",
     "scheme": "headpatapp",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -52,7 +52,7 @@
         "applinks:headpat.place",
         "applinks:api.headpat.place"
       ],
-      "buildNumber": "69"
+      "buildNumber": "71"
     },
     "android": {
       "permissions": [
@@ -72,7 +72,7 @@
         }
       },
       "package": "com.headpat.app",
-      "versionCode": 47
+      "versionCode": 48
     },
     "extra": {
       "router": {

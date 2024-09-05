@@ -1,5 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { Dimensions, FlatList, Text, View } from 'react-native'
+import {
+  Dimensions,
+  FlatList,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native'
 import { database, functions, storage } from '~/lib/appwrite-client'
 import * as Sentry from '@sentry/react-native'
 import { Gallery } from '~/lib/types/collections'
@@ -8,6 +14,7 @@ import * as VideoThumbnails from 'expo-video-thumbnails'
 import { useUser } from '~/components/contexts/UserContext'
 import GalleryItem from '~/components/gallery/GalleryItem'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
+import { Skeleton } from '~/components/ui/skeleton'
 
 export default function GalleryPage() {
   const { current } = useUser()
@@ -22,6 +29,8 @@ export default function GalleryPage() {
   const { width } = Dimensions.get('window')
   const maxColumns = width > 600 ? 4 : 2
   const startCount = width > 600 ? 27 : 9
+  // Define height based on device size
+  const widthColumns = width > 600 ? '24%' : '48%'
 
   const fetchGallery = useCallback(
     async (newOffset: number = 0, limit: number = 10) => {
@@ -50,15 +59,18 @@ export default function GalleryPage() {
             ExecutionMethod.GET
           ),
         ])
+        const prefs = JSON.parse(imagePrefsData.responseBody)
 
-        const parsedImagePrefs = JSON.parse(
-          imagePrefsData.responseBody
-        ).documents.reduce((acc, pref) => {
-          acc[pref.galleryId] = pref
-          return acc
-        }, {})
+        if (prefs.type !== 'prefs_unauthorized') {
+          const parsedImagePrefs = JSON.parse(
+            imagePrefsData.responseBody
+          ).documents.reduce((acc, pref) => {
+            acc[pref.galleryId] = pref
+            return acc
+          }, {})
 
-        setImagePrefs(parsedImagePrefs)
+          setImagePrefs(parsedImagePrefs)
+        }
 
         if (newOffset === 0) {
           setImages(imageData.documents)
@@ -72,6 +84,7 @@ export default function GalleryPage() {
           }
         })
       } catch (error) {
+        console.log(error)
         showAlertModal(
           'FAILED',
           'Failed to fetch gallery. Please try again later.'
@@ -124,9 +137,7 @@ export default function GalleryPage() {
   }
 
   useEffect(() => {
-    showLoadingModal()
     fetchGallery(0, startCount).then()
-    hideLoadingModal()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current, startCount])
 
@@ -143,6 +154,37 @@ export default function GalleryPage() {
       console.warn(e)
     }
   }, [])
+
+  if (!images || images.length === 0) {
+    return (
+      <View style={{ flex: 1 }}>
+        {Array.from({ length: 16 }).map((_, index) => (
+          <View
+            key={index}
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginBottom: 10,
+            }}
+          >
+            {[...Array(2)].map((_, i) => (
+              <View
+                key={i}
+                style={{
+                  position: 'relative',
+                  width: widthColumns,
+                  height: 200,
+                  margin: 5,
+                }}
+              >
+                <Skeleton className={'w-full h-full'} />
+              </View>
+            ))}
+          </View>
+        ))}
+      </View>
+    )
+  }
 
   const renderItem = ({ item }) => {
     const pref = imagePrefs[item.$id]
