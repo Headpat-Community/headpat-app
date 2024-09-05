@@ -57,6 +57,7 @@ import { Text } from '~/components/ui/text'
 import DiscordIcon from '~/components/icons/DiscordIcon'
 import EulaModal from '~/components/EulaModal'
 import { Muted } from '~/components/ui/typography'
+import * as Updates from 'expo-updates'
 
 async function bootstrap() {
   const initialNotification = await messaging().getInitialNotification()
@@ -407,6 +408,19 @@ export default function RootLayout() {
   const [openEulaModal, setOpenEulaModal] = useState(false)
   const [versionData, setVersionData] = useState(null)
 
+  async function onFetchUpdateAsync() {
+    try {
+      const update = await Updates.checkForUpdateAsync()
+
+      if (update.isAvailable) {
+        await Updates.fetchUpdateAsync()
+        await Updates.reloadAsync()
+      }
+    } catch (error) {
+      alert(`Error fetching latest update: ${error}`)
+    }
+  }
+
   useEffect(() => {
     ;(async () => {
       const theme = await AsyncStorage.getItem('theme')
@@ -466,6 +480,7 @@ export default function RootLayout() {
   }, [])
 
   useEffect(() => {
+    onFetchUpdateAsync().then()
     bootstrap().catch(console.error)
   }, [])
 
