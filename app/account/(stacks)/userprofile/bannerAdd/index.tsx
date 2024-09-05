@@ -35,7 +35,6 @@ export default function BannerAdd() {
 
       if (result.width + result.height <= maxResolution) {
         setImage(result)
-        await uploadImageAsync()
       }
     } catch (error) {
       console.log(error)
@@ -43,6 +42,17 @@ export default function BannerAdd() {
       //Sentry.captureException(error)
     }
   }
+
+  async function upload() {
+    await uploadImageAsync()
+  }
+
+  React.useEffect(() => {
+    if (image) {
+      upload().then()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [image])
 
   const handleClose = () => {
     setImage(null)

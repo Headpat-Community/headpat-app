@@ -4,10 +4,10 @@ import { ExecutionMethod } from 'react-native-appwrite'
 export async function reportUserProfile(body: any) {
   try {
     const data = await functions.createExecution(
-      'user-endpoints',
+      'moderation-endpoints',
       JSON.stringify(body),
       false,
-      `/user/moderation/report/profile`,
+      `/moderation/report/profile`,
       ExecutionMethod.POST
     )
     return JSON.parse(data.responseBody)

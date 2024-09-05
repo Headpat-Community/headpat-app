@@ -45,14 +45,16 @@ export default function AvatarAdd() {
   }
 
   async function upload() {
-    console.log({ image })
     await uploadImageAsync()
   }
+
   React.useEffect(() => {
     if (image) {
-      upload()
+      upload().then()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [image])
+
   const handleClose = () => {
     setImage(null)
     router.back()
