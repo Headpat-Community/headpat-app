@@ -84,9 +84,7 @@ export default function HomeView() {
       await storage.deleteFile('gallery', `${local.galleryId}`)
       showAlertModal('SUCCESS', 'Gallery data deleted successfully.')
       // I have no clue how to go back 3 times...
-      router.back()
-      router.back()
-      router.back()
+      router.navigate('/')
     } catch (error) {
       showAlertModal('FAILED', 'Failed to delete gallery data.')
       Sentry.captureException(error)
@@ -193,13 +191,13 @@ export default function HomeView() {
             <Label nativeID={'gallery-longText'}>Description</Label>
             <Textarea defaultValue={image?.longText || ''} />
           </View>
-          <Button className={'mt-8'} onPress={deleteGalleryImage}>
+          <Button className={'mt-8'} onPress={saveGallery}>
             <Text>Save</Text>
           </Button>
           <Button
             variant={'destructive'}
             className={'mt-8'}
-            onPress={saveGallery}
+            onPress={deleteGalleryImage}
           >
             <Text>Delete</Text>
           </Button>

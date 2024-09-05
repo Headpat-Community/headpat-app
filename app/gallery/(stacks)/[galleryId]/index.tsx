@@ -9,7 +9,7 @@ import {
 import { database, functions } from '~/lib/appwrite-client'
 import Gallery from 'react-native-awesome-gallery'
 import { ScrollView } from 'react-native-gesture-handler'
-import { Link, router, useLocalSearchParams } from 'expo-router'
+import { Link, useLocalSearchParams } from 'expo-router'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Gallery as GalleryType, UserData } from '~/lib/types/collections'
 import { Image } from 'expo-image'

@@ -28,11 +28,16 @@ export default function GalleryPage() {
       try {
         const nsfwPreference = current?.prefs?.nsfw ?? false
         let query = nsfwPreference
-          ? [Query.limit(limit), Query.offset(newOffset)]
+          ? [
+              Query.limit(limit),
+              Query.offset(newOffset),
+              Query.orderDesc('$createdAt'),
+            ]
           : [
               Query.limit(limit),
               Query.offset(newOffset),
               Query.equal('nsfw', false),
+              Query.orderDesc('$createdAt'),
             ]
 
         const [imageData, imagePrefsData]: any = await Promise.all([

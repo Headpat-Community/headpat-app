@@ -35,7 +35,6 @@
       "appStoreUrl": "https://apps.apple.com/app/headpat/id6502715063",
       "infoPlist": {
         "UIBackgroundModes": [
-          "location",
           "fetch",
           "remote-notification",
           "processing"
