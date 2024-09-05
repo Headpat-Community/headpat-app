@@ -36,7 +36,6 @@ export default function AvatarAdd() {
 
       if (result.width + result.height <= maxResolution) {
         setImage(result)
-        await uploadImageAsync()
       }
     } catch (error) {
       console.log(error)
@@ -45,6 +44,15 @@ export default function AvatarAdd() {
     }
   }
 
+  async function upload() {
+    console.log({ image })
+    await uploadImageAsync()
+  }
+  React.useEffect(() => {
+    if (image) {
+      upload()
+    }
+  }, [image])
   const handleClose = () => {
     setImage(null)
     router.back()
