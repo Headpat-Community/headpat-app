@@ -49,7 +49,9 @@ export default function SettingsModal({
             <Input
               nativeID={'status'}
               value={userStatus?.status}
-              onChange={(e) => setUserStatus({ status: e.nativeEvent.text })}
+              onChange={(e) =>
+                setUserStatus({ ...userStatus, status: e.nativeEvent.text })
+              }
               maxLength={40}
             />
           </View>
