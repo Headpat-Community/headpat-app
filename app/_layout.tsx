@@ -53,10 +53,8 @@ import { AlertModalProvider } from '~/components/contexts/AlertModalProvider'
 import { Image } from 'react-native'
 import * as Sentry from '@sentry/react-native'
 import { Button } from '~/components/ui/button'
-import { SiDiscord } from '@icons-pack/react-simple-icons'
 import { Text } from '~/components/ui/text'
 import DiscordIcon from '~/components/icons/DiscordIcon'
-import { AlertDialog } from '~/components/ui/alert-dialog'
 import EulaModal from '~/components/EulaModal'
 import { Muted } from '~/components/ui/typography'
 
@@ -74,7 +72,10 @@ async function bootstrap() {
 }
 
 TaskManager.defineTask('background-location-task', async ({ data, error }) => {
+  console.log(data)
+  Sentry.captureException(data)
   if (error) {
+    Sentry.captureException(error)
     return BackgroundFetch.BackgroundFetchResult.Failed
   }
 
@@ -86,7 +87,7 @@ TaskManager.defineTask('background-location-task', async ({ data, error }) => {
   }
 
   // Get current location
-  const location = await Location.getCurrentPositionAsync({})
+  const location = await Location.getCurrentPositionAsync()
 
   // Make API calls to update or create location document
   await database

@@ -59,7 +59,7 @@ export default function FiltersModal({
               onCheckedChange={() =>
                 setFilters((prev) => ({
                   ...prev,
-                  showMutuals: !prev.showUsers,
+                  showUsers: !prev.showUsers,
                 }))
               }
             />
@@ -68,11 +68,11 @@ export default function FiltersModal({
               onPress={() =>
                 setFilters((prev) => ({
                   ...prev,
-                  showMutuals: !prev.showUsers,
+                  showUsers: !prev.showUsers,
                 }))
               }
             >
-              Show mutuals
+              Show Users
             </Label>
           </View>
         </View>
