@@ -111,6 +111,7 @@ export default function AvatarAdd() {
       hideLoadingModal()
       handleFinish()
     } catch (error) {
+      console.log(error)
       showAlertModal('FAILED', 'Error uploading image.')
       Sentry.captureException(error)
     }
