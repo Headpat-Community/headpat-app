@@ -35,7 +35,7 @@ export default function AlertModal({
 
   useEffect(() => {
     if (isVisible) {
-      const timer = setTimeout(onClose, 4000) // Hide modal after 4 seconds
+      const timer = setTimeout(onClose, 3000) // Hide modal after 4 seconds
       return () => clearTimeout(timer)
     }
   }, [isVisible, onClose])

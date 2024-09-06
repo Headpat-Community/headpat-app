@@ -35,54 +35,41 @@ import sanitizeHtml from 'sanitize-html'
 import HTMLView from 'react-native-htmlview'
 import { Badge } from '~/components/ui/badge'
 import { Skeleton } from '~/components/ui/skeleton'
-import UserActions from '~/components/user/UserActions'
 import { Dimensions } from 'react-native'
+const UserActions = React.lazy(() => import('~/components/user/UserActions'))
 
 export default function UserPage() {
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
 
   const local = useLocalSearchParams()
-  const [userData, setUserData] = useState<UserData.UserDataDocumentsType>(null)
-  const [userPrefs, setUserPrefs] =
-    useState<UserData.UserPrefsDocumentsType>(null)
-  const [isFollowing, setIsFollowing] = useState<boolean>(false)
+  const [userData, setUserData] =
+    useState<UserData.UserProfileDocumentsType>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const { current } = useUser()
 
   const fetchUser = async () => {
+    setRefreshing(true)
     try {
-      setRefreshing(true)
-      const [dataUser, dataPrefs, dataIsFollowing] = await Promise.all([
-        functions.createExecution(
-          'user-endpoints',
-          '',
-          false,
-          `/user?userId=${local?.userId}`,
-          ExecutionMethod.GET
-        ),
-        functions.createExecution(
-          'user-endpoints',
-          '',
-          false,
-          `/user/prefs?userId=${local?.userId}`,
-          ExecutionMethod.GET
-        ),
-        functions.createExecution(
-          'user-endpoints',
-          '',
-          false,
-          `/user/isFollowing?followerId=${local?.userId}`,
-          ExecutionMethod.GET
-        ),
-      ])
-      setUserData(JSON.parse(dataUser.responseBody))
-      setUserPrefs(JSON.parse(dataPrefs.responseBody))
-      setIsFollowing(JSON.parse(dataIsFollowing.responseBody))
-      setRefreshing(false)
+      const dataUser = await functions.createExecution(
+        'user-endpoints',
+        '',
+        false,
+        `/user/profile?userId=${local?.userId}`,
+        ExecutionMethod.GET
+      )
+      const dataUserJson = JSON.parse(dataUser.responseBody)
+      setUserData((prevData) => {
+        if (JSON.stringify(prevData) !== JSON.stringify(dataUserJson)) {
+          return dataUserJson
+        }
+        return prevData
+      })
+      console.log(dataUserJson)
     } catch (error) {
       Sentry.captureException(error)
     } finally {
+      setRefreshing(false)
     }
   }
 
@@ -172,7 +159,7 @@ export default function UserPage() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        {userPrefs?.isBlocked && (
+        {userData.prefs?.isBlocked && (
           <Badge variant={'destructive'}>
             <Text>User is blocked</Text>
           </Badge>
@@ -210,10 +197,7 @@ export default function UserPage() {
               <Suspense>
                 <UserActions
                   userData={userData}
-                  userPrefs={userPrefs}
-                  setUserPrefs={setUserPrefs}
-                  isFollowing={isFollowing}
-                  setIsFollowing={setIsFollowing}
+                  setUserData={setUserData}
                   current={current}
                 />
               </Suspense>

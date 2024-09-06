@@ -43,7 +43,7 @@ export default function LoadingModal({
             loop={true}
             style={styles.lottie}
             source={require('~/assets/json/loading.json')}
-            speed={0.5}
+            speed={0.6}
           />
           <Text style={[styles.text, { color: themeInverted }]}>
             Please wait...

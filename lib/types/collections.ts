@@ -158,6 +158,18 @@ export namespace UserData {
      */
     nickName: string
   }
+
+  /**
+   * This data is returned from the API within the `documents` array.
+   * @see UserPrefsType
+   */
+  export interface UserProfileDocumentsType extends UserDataDocumentsType {
+    /**
+     * The user ID of the user.
+     */
+    prefs: UserPrefsDocumentsType
+    isFollowing: boolean
+  }
 }
 
 export namespace Location {
@@ -272,6 +284,32 @@ export namespace Gallery {
      * The file extension/mimetype of the gallery item.
      */
     mimeType: string
+  }
+
+  /**
+   * This data is returned from the API by calling the gallery-prefs endpoint.
+   * @see GalleryPrefsDocumentsType
+   * @interface
+   * @since 2.0.0
+   */
+  export interface GalleryPrefsType {
+    total: number
+    documents: GalleryPrefsDocumentsType[]
+  }
+
+  export interface GalleryPrefsDocumentsType extends Models.Document {
+    /**
+     * The user ID.
+     */
+    userId: string
+    /**
+     * The gallery ID.
+     */
+    galleryId: string
+    /**
+     * If user has hidden the gallery item.
+     */
+    isHidden: boolean
   }
 }
 

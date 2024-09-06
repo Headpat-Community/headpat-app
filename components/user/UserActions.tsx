@@ -31,24 +31,14 @@ const ReportUserModal = React.lazy(
 
 interface UserActionsProps {
   userData: UserData.UserDataDocumentsType
-  userPrefs: UserData.UserPrefsDocumentsType
-  setUserPrefs: React.Dispatch<
-    React.SetStateAction<UserData.UserPrefsDocumentsType>
+  setUserData: React.Dispatch<
+    React.SetStateAction<UserData.UserProfileDocumentsType>
   >
-  isFollowing: boolean
-  setIsFollowing: React.Dispatch<React.SetStateAction<boolean>>
   current: Account.AccountType | null
 }
 
 const UserActions: React.FC<UserActionsProps> = React.memo(
-  ({
-    userData,
-    userPrefs,
-    setUserPrefs,
-    isFollowing,
-    setIsFollowing,
-    current,
-  }) => {
+  ({ userData, setUserData, current }) => {
     const [moderationModalOpen, setModerationModalOpen] = useState(false)
     const [reportUserModalOpen, setReportUserModalOpen] = useState(false)
     const { isDarkColorScheme } = useColorScheme()
@@ -57,11 +47,11 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
       useAlertModal()
 
     const handleFollow = useCallback(() => {
-      if (isFollowing) {
+      if (userData.isFollowing) {
         showLoadingModal()
         removeFollow(userData?.$id).then(() => {
           hideLoadingModal()
-          setIsFollowing(false)
+          setUserData((prev) => ({ ...prev, isFollowing: false }))
           showAlertModal(
             'SUCCESS',
             `You have unfollowed ${userData?.displayName}.`
@@ -71,20 +61,15 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
         showLoadingModal()
         addFollow(userData?.$id).then(() => {
           hideLoadingModal()
-          setIsFollowing(true)
+          setUserData((prev) => ({ ...prev, isFollowing: true }))
           showAlertModal(
             'SUCCESS',
             `You are now following ${userData?.displayName}.`
           )
         })
       }
-    }, [
-      isFollowing,
-      setIsFollowing,
-      showAlertModal,
-      userData?.$id,
-      userData?.displayName,
-    ])
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [userData])
 
     const handleMessage = useCallback(() => {
       toast('Ha! You thought this was a real button!')
@@ -100,26 +85,19 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
       showLoadingModal()
       blockUser({
         userId: userData?.$id,
-        isBlocked: !userPrefs?.isBlocked,
+        isBlocked: !userData?.prefs?.isBlocked,
       }).then((response) => {
         hideLoadingModal()
-        setUserPrefs(response)
+        setUserData((prev) => ({ ...prev, prefs: response }))
         showAlertModal(
           'SUCCESS',
-          userPrefs?.isBlocked
+          userData?.prefs?.isBlocked
             ? `You have unblocked ${userData?.displayName}.`
             : `You have blocked ${userData?.displayName}.`
         )
       })
-    }, [
-      showLoadingModal,
-      userData?.$id,
-      userData?.displayName,
-      userPrefs?.isBlocked,
-      hideLoadingModal,
-      setUserPrefs,
-      showAlertModal,
-    ])
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [userData])
 
     if (current?.$id === userData?.$id) return null
 
@@ -133,7 +111,7 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
           />
         </Suspense>
         <Button className={'text-center'} onPress={handleFollow}>
-          {isFollowing ? (
+          {userData.isFollowing ? (
             <UserMinusIcon color={themeButtons} />
           ) : (
             <UserPlusIcon color={themeButtons} />
@@ -171,7 +149,9 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
                   variant={'destructive'}
                   onPress={handleBlockClick}
                 >
-                  <Text>{userPrefs?.isBlocked ? 'Unblock' : 'Block'}</Text>
+                  <Text>
+                    {userData?.prefs?.isBlocked ? 'Unblock' : 'Block'}
+                  </Text>
                 </Button>
               </View>
             </AlertDialogHeader>

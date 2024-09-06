@@ -1,15 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import {
-  Dimensions,
-  FlatList,
-  Text,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native'
-import { database, functions, storage } from '~/lib/appwrite-client'
+import { Dimensions, FlatList, Text, View } from 'react-native'
+import { database, storage } from '~/lib/appwrite-client'
 import * as Sentry from '@sentry/react-native'
 import { Gallery } from '~/lib/types/collections'
-import { ExecutionMethod, ImageFormat, Query } from 'react-native-appwrite'
+import { ImageFormat, Query } from 'react-native-appwrite'
 import * as VideoThumbnails from 'expo-video-thumbnails'
 import { useUser } from '~/components/contexts/UserContext'
 import GalleryItem from '~/components/gallery/GalleryItem'
@@ -25,7 +19,7 @@ export default function GalleryPage() {
   const [thumbnails, setThumbnails] = useState<{ [key: string]: string }>({})
   const [offset, setOffset] = useState<number>(0)
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
-  const { hideLoadingModal, showLoadingModal, showAlertModal } = useAlertModal()
+  const { showAlertModal } = useAlertModal()
   const { width } = Dimensions.get('window')
   const maxColumns = width > 600 ? 4 : 2
   const startCount = width > 600 ? 27 : 9
@@ -51,26 +45,21 @@ export default function GalleryPage() {
 
         const [imageData, imagePrefsData]: any = await Promise.all([
           database.listDocuments('hp_db', 'gallery-images', query),
-          functions.createExecution(
-            'gallery-endpoints',
-            '',
-            false,
-            `/gallery/prefs/all`,
-            ExecutionMethod.GET
-          ),
+          database.listDocuments('hp_db', 'gallery-prefs', [Query.limit(5000)]),
         ])
-        const prefs = JSON.parse(imagePrefsData.responseBody)
 
-        if (prefs.type !== 'prefs_unauthorized') {
-          const parsedImagePrefs = JSON.parse(
-            imagePrefsData.responseBody
-          ).documents.reduce((acc, pref) => {
+        const parsedImagePrefs = imagePrefsData.documents.reduce(
+          (
+            acc: Gallery.GalleryDocumentsType,
+            pref: Gallery.GalleryPrefsDocumentsType
+          ) => {
             acc[pref.galleryId] = pref
             return acc
-          }, {})
+          },
+          {}
+        )
 
-          setImagePrefs(parsedImagePrefs)
-        }
+        setImagePrefs(parsedImagePrefs)
 
         if (newOffset === 0) {
           setImages(imageData.documents)
