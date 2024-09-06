@@ -28,7 +28,9 @@ export default function AccountPage() {
 
   return (
     <View className="mx-4 gap-4 mt-4">
-      <TouchableOpacity onPress={() => router.push('/account/userprofile')}>
+      <TouchableOpacity
+        onPress={() => router.push('/account/userprofile/(tabs)')}
+      >
         <Card>
           <CardContent className={'py-8'}>
             <CardFooter className={'p-0 justify-between flex flex-wrap'}>

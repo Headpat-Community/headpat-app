@@ -8,6 +8,7 @@ import UserItem from '~/components/user/UserItem'
 import { FlatList, RefreshControl, ScrollView, Text, View } from 'react-native'
 import { H1, Muted } from '~/components/ui/typography'
 import { useLocalSearchParams } from 'expo-router'
+import { Skeleton } from '~/components/ui/skeleton'
 
 export default function FollowingPage() {
   const [users, setUsers] = useState<UserData.UserDataDocumentsType[]>(null)
@@ -34,7 +35,7 @@ export default function FollowingPage() {
     async (newOffset: number = 0) => {
       try {
         const data = await functions.createExecution(
-          '65e2126d9e431eb3c473',
+          'user-endpoints',
           '',
           false,
           `/user/followers?userId=${local?.userId}&limit=20&offset=${newOffset}`,
@@ -93,22 +94,34 @@ export default function FollowingPage() {
       </ScrollView>
     )
 
-  if (refreshing)
+  if (refreshing && !users) {
     return (
-      <ScrollView
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        contentContainerClassName={'flex-1 justify-center items-center h-full'}
-      >
-        <View className={'p-4 native:pb-24 max-w-md gap-6'}>
-          <View className={'gap-1'}>
-            <H1 className={'text-foreground text-center'}>Followers</H1>
-            <Muted className={'text-base text-center'}>Loading...</Muted>
+      <View style={{ flex: 1 }}>
+        {Array.from({ length: 16 }).map((_, index) => (
+          <View
+            key={index}
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              margin: 10,
+            }}
+          >
+            {[...Array(3)].map((_, i) => (
+              <View
+                key={i}
+                style={{
+                  width: 100,
+                  height: 100,
+                }}
+              >
+                <Skeleton className={'w-full h-full rounded-3xl'} />
+              </View>
+            ))}
           </View>
-        </View>
-      </ScrollView>
+        ))}
+      </View>
     )
+  }
 
   if (refreshing && users && users.length === 0)
     return (

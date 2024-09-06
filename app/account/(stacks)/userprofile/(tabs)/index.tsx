@@ -155,7 +155,9 @@ export default function UserprofilePage() {
               <View>
                 <Button
                   onPress={() =>
-                    router.push('/account/(stacks)/userprofile/avatarAdd')
+                    router.push(
+                      '/account/(stacks)/userprofile/(tabs)/avatarAdd'
+                    )
                   }
                   disabled={isDisabled}
                 >
@@ -175,7 +177,9 @@ export default function UserprofilePage() {
               <View>
                 <Button
                   onPress={() =>
-                    router.push('/account/(stacks)/userprofile/bannerAdd')
+                    router.push(
+                      '/account/(stacks)/userprofile/(tabs)/bannerAdd'
+                    )
                   }
                   disabled={isDisabled}
                 >
@@ -222,7 +226,7 @@ export default function UserprofilePage() {
                 <Label nativeID={'profileUrl'}>New URL</Label>
                 <View
                   className={
-                    'flex-row items-center web:flex h-10 native:h-12 web:w-full rounded-md border border-input bg-background px-3 web:py-2 text-base lg:text-sm native:text-lg native:leading-[1.25] text-foreground placeholder:text-muted-foreground web:ring-offset-background file:border-0 file:bg-transparent file:font-medium web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2'
+                    'flex-row items-center h-10 native:h-12 rounded-md border border-input bg-background px-3 text-base lg:text-sm native:text-lg native:leading-[1.25] text-foreground placeholder:text-muted-foreground file:border-0 file:bg-transparent file:font-medium'
                   }
                 >
                   <Text style={{ color: '#A0A0A0' }}>headpat.place/user/</Text>
@@ -304,7 +308,7 @@ export default function UserprofilePage() {
               </View>
               <View>
                 <Button
-                  onPress={() => handleUpdate('status', status)}
+                  onPress={() => handleUpdate('status', userData.status)}
                   disabled={isDisabled}
                 >
                   <Text>Save</Text>
