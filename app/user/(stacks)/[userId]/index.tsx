@@ -65,7 +65,6 @@ export default function UserPage() {
         }
         return prevData
       })
-      console.log(dataUserJson)
     } catch (error) {
       Sentry.captureException(error)
     } finally {

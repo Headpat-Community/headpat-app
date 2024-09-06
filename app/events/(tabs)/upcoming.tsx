@@ -20,7 +20,6 @@ import { H1, H3, Muted } from '~/components/ui/typography'
 import { ExecutionMethod } from 'react-native-appwrite'
 import {
   calculateTimeLeft,
-  formatDate,
   formatDateLocale,
 } from '~/components/calculateTimeLeft'
 import { Link } from 'expo-router'
