@@ -87,19 +87,20 @@ export default function AvatarAdd() {
         return
       }
 
+      // change this to any string of your choice for optonal naming if file name is undefined
       const fileData = {
-        name: image.filename,
+        name: image.filename || 'upload' + Math.random().toString(16) + '.jpg',
         type: compressedImage.mime,
         size: compressedImage.size,
         uri: compressedImage.path,
       }
+
       showLoadingModal()
       const storageData = await storage.createFile(
         'avatars',
         ID.unique(),
         fileData
       )
-
       await functions.createExecution(
         'user-endpoints',
         '',
@@ -111,7 +112,7 @@ export default function AvatarAdd() {
       hideLoadingModal()
       handleFinish()
     } catch (error) {
-      console.log(error)
+      console.log('error', error)
       showAlertModal('FAILED', 'Error uploading image.')
       Sentry.captureException(error)
     }

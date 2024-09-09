@@ -92,7 +92,7 @@ export default function BannerAdd() {
       }
 
       const fileData = {
-        name: image.filename,
+        name: image.filename || 'upload' + Math.random().toString(16) + '.jpg',
         type: compressedImage.mime,
         size: compressedImage.size,
         uri: compressedImage.path,
@@ -116,8 +116,8 @@ export default function BannerAdd() {
       handleFinish()
     } catch (error) {
       console.log(error)
-      //showAlertModal('FAILED', 'Error picking image.')
-      //Sentry.captureException(error)
+      showAlertModal('FAILED', 'Error picking image.')
+      Sentry.captureException(error)
     }
   }
 
