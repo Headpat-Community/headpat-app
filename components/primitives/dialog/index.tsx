@@ -138,6 +138,7 @@ const Content = React.forwardRef<ViewRef, SlottableViewProps & DialogContentProp
         return () => {
           backHandler.remove();
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
       }, []);
 
       if (!forceMount) {

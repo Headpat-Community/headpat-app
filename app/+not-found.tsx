@@ -1,4 +1,4 @@
-import { Link, Stack } from 'expo-router'
+import { Link } from 'expo-router'
 import { View } from 'react-native'
 import { Text } from '~/components/ui/text'
 import { Image } from 'expo-image'

@@ -7,6 +7,7 @@ import { Text } from '~/components/ui/text'
 import { ImageFormat } from 'react-native-appwrite'
 import { Skeleton } from '~/components/ui/skeleton'
 
+// eslint-disable-next-line react/display-name
 const GalleryItem = React.memo(
   ({ image, thumbnail, getGalleryUrl, isHidden }: any) => {
     const format = image.mimeType?.split('/').pop()

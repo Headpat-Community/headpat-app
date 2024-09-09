@@ -57,6 +57,7 @@ const Image = React.forwardRef<
             onLoadingStatusChange?.('loaded');
             onLoadProps?.(e);
           },
+          // eslint-disable-next-line react-hooks/exhaustive-deps
           [onLoadProps]
       );
 
@@ -66,6 +67,7 @@ const Image = React.forwardRef<
             onLoadingStatusChange?.('error');
             onErrorProps?.(e);
           },
+          // eslint-disable-next-line react-hooks/exhaustive-deps
           [onErrorProps]
       );
 

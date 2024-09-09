@@ -61,6 +61,7 @@ export default function AnnouncementsPage() {
 
   useEffect(() => {
     fetchAnnouncements().then()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   if (announcements?.total === 0 || !announcements)

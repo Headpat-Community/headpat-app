@@ -1,11 +1,9 @@
 import React from 'react'
 import { View, Text } from 'react-native'
 import { Button } from '~/components/ui/button'
-import { OAuthProvider } from 'react-native-appwrite'
 import { IconType } from '~/lib/types/IconTypes'
 
 type SocialLoginButtonProps = {
-  provider: OAuthProvider
   color: string
   onPress: () => void
   Icon: IconType
@@ -13,7 +11,6 @@ type SocialLoginButtonProps = {
 }
 
 const SocialLoginButton: React.FC<SocialLoginButtonProps> = ({
-  provider,
   color,
   onPress,
   Icon,

@@ -7,6 +7,7 @@ import { Community } from '~/lib/types/collections'
 import { UserIcon } from 'lucide-react-native'
 import { useColorScheme } from '~/lib/useColorScheme'
 
+// eslint-disable-next-line react/display-name
 const CommunityItem = React.memo(
   ({ community }: { community: Community.CommunityDocumentsType }) => {
     const getUserAvatar = (avatarId: string) => {

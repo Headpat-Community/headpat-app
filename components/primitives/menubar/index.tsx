@@ -121,6 +121,7 @@ const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
             }
             return triggerRef.current;
           },
+          // eslint-disable-next-line react-hooks/exhaustive-deps
           [triggerRef.current]
       );
 
@@ -249,6 +250,7 @@ const Content = React.forwardRef<ViewRef, SlottableViewProps & PositionedContent
           setContentLayout(null);
           backHandler.remove();
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
       }, []);
 
       const positionStyle = useRelativePosition({
@@ -347,6 +349,7 @@ type FormItemContext =
   onValueChange: (value: string) => void;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 const FormItemContext = React.createContext<FormItemContext | null>(null);
 
 const CheckboxItem = React.forwardRef<

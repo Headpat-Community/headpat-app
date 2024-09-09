@@ -5,6 +5,7 @@ import { Link } from 'expo-router'
 import { Text } from '~/components/ui/text'
 import { UserData } from '~/lib/types/collections'
 
+// eslint-disable-next-line react/display-name
 const UserItem = React.memo(
   ({ user }: { user: UserData.UserDataDocumentsType }) => {
     const getUserAvatar = (avatarId: string) => {

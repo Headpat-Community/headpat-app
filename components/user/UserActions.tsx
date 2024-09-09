@@ -37,6 +37,7 @@ interface UserActionsProps {
   current: Account.AccountType | null
 }
 
+// eslint-disable-next-line react/display-name
 const UserActions: React.FC<UserActionsProps> = React.memo(
   ({ userData, setUserData, current }) => {
     const [moderationModalOpen, setModerationModalOpen] = useState(false)

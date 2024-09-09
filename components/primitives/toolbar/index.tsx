@@ -115,6 +115,7 @@ const Link = React.forwardRef<PressableRef, SlottablePressableProps>(
 
 Link.displayName = 'LinkNativeToolbar';
 
+// eslint-disable-next-line react/display-name
 const Button = React.forwardRef<PressableRef, SlottablePressableProps>(
     ({ asChild, ...props }, ref) => {
       const Component = asChild ? Slot.Pressable : Pressable;

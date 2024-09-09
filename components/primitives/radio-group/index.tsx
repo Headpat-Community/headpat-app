@@ -45,6 +45,7 @@ interface RadioItemContext {
   itemValue: string | undefined;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 const RadioItemContext = React.createContext<RadioItemContext | null>(null);
 
 const Item = React.forwardRef<PressableRef, SlottablePressableProps & RadioGroupItemProps>(

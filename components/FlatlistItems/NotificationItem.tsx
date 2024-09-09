@@ -2,20 +2,13 @@ import React from 'react'
 import { TouchableOpacity, View } from 'react-native'
 import { Link } from 'expo-router'
 import { Notifications } from '~/lib/types/collections'
-import { ClockIcon } from 'lucide-react-native'
-import { useColorScheme } from '~/lib/useColorScheme'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardTitle,
-} from '~/components/ui/card'
+import { Card, CardContent } from '~/components/ui/card'
 import { Muted } from '~/components/ui/typography'
 import { formatDate } from '~/components/calculateTimeLeft'
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
 import { Text } from '~/components/ui/text'
 
+// eslint-disable-next-line react/display-name
 const CommunityItem = React.memo(
   ({
     notification,
@@ -26,8 +19,6 @@ const CommunityItem = React.memo(
       if (!avatarId) return require('~/assets/pfp-placeholder.png')
       return `https://api.headpat.place/v1/storage/buckets/avatars/files/${avatarId}/preview?project=hp-main&width=250&height=250`
     }
-    const { isDarkColorScheme } = useColorScheme()
-    const theme = isDarkColorScheme ? 'white' : 'black'
 
     return (
       <Link

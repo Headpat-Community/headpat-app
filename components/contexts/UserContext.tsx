@@ -49,6 +49,7 @@ export function UserProvider(props: any) {
     try {
       await account.deleteSession('current')
       setUser(null)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setUser(null)
     }

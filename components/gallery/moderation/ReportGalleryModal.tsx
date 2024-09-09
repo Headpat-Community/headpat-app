@@ -10,7 +10,6 @@ import {
 } from '~/components/ui/alert-dialog'
 import { Text } from '~/components/ui/text'
 import React, { useState } from 'react'
-import { reportUserProfile } from '~/components/user/api/reportUserProfile'
 import { Gallery } from '~/lib/types/collections'
 import { View } from 'react-native'
 import { RadioGroup, RadioGroupItem } from '~/components/ui/radio-group'

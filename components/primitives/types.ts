@@ -77,7 +77,7 @@ interface PositionedContentProps {
   /**
    * Platform: WEB ONLY
    */
-  collisionBoundary?: Element | null | Array<Element | null>;
+  collisionBoundary?: Element | null | (Element | null)[];
   /**
    * Platform: WEB ONLY
    */

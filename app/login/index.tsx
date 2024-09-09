@@ -131,21 +131,18 @@ export default function ModalScreen() {
           className={'flex flex-row flex-wrap gap-2 mx-auto justify-center'}
         >
           <SocialLoginButton
-            provider={OAuthProvider.Discord}
             color="#5865F2"
             onPress={() => handleOAuth2Login(OAuthProvider.Discord)}
             Icon={DiscordIcon}
             title="Discord"
           />
           <SocialLoginButton
-            provider={OAuthProvider.Github}
             color="#24292F"
             onPress={() => handleOAuth2Login(OAuthProvider.Github)}
             Icon={GithubIcon}
             title="GitHub"
           />
           <SocialLoginButton
-            provider={OAuthProvider.Apple}
             color="#000000"
             onPress={() => handleOAuth2Login(OAuthProvider.Apple)}
             Icon={AppleIcon}
@@ -153,28 +150,24 @@ export default function ModalScreen() {
           />
 
           <SocialLoginButton
-            provider={OAuthProvider.Google}
             color="#131314"
             onPress={() => handleOAuth2Login(OAuthProvider.Google)}
             Icon={GoogleIcon}
             title="Google"
           />
           <SocialLoginButton
-            provider={OAuthProvider.Spotify}
             color="#1DB954"
             onPress={() => handleOAuth2Login(OAuthProvider.Spotify)}
             Icon={SpotifyIcon}
             title="Spotify"
           />
           <SocialLoginButton
-            provider={OAuthProvider.Microsoft}
             color="#01A6F0"
             onPress={() => handleOAuth2Login(OAuthProvider.Microsoft)}
             Icon={MicrosoftIcon}
             title="Microsoft"
           />
           <SocialLoginButton
-            provider={OAuthProvider.Twitch}
             color="#6441A5"
             onPress={() => handleOAuth2Login(OAuthProvider.Twitch)}
             Icon={TwitchIcon}

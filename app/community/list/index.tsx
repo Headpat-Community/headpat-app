@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { FlatList, Text, View, ScrollView, RefreshControl } from 'react-native'
+import { FlatList, Text, View, ScrollView } from 'react-native'
 import { functions } from '~/lib/appwrite-client'
 import { toast } from '~/lib/toast'
 import * as Sentry from '@sentry/react-native'

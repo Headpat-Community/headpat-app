@@ -107,6 +107,7 @@ const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
             }
             return triggerRef.current;
           },
+          // eslint-disable-next-line react-hooks/exhaustive-deps
           [triggerRef.current]
       );
 
@@ -252,6 +253,7 @@ const Content = React.forwardRef<ViewRef, SlottableViewProps & PositionedContent
           setContentLayout(null);
           backHandler.remove();
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
       }, []);
 
       const positionStyle = useRelativePosition({
@@ -350,6 +352,7 @@ type FormItemContext =
   onValueChange: (value: string) => void;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 const FormItemContext = React.createContext<FormItemContext | null>(null);
 
 const CheckboxItem = React.forwardRef<
@@ -583,6 +586,7 @@ const SubTrigger = React.forwardRef<
 
 SubTrigger.displayName = 'SubTriggerNativeContextMenu';
 
+// eslint-disable-next-line react/display-name
 const SubContent = React.forwardRef<PressableRef, SlottablePressableProps & ForceMountable>(
     ({ asChild = false, forceMount, ...props }, ref) => {
       const { open, nativeID } = useSubContext();

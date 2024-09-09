@@ -5,7 +5,7 @@ import {
   type ScaledSize,
   type ViewStyle,
 } from 'react-native';
-import type { Insets } from '@rnr/types';
+import {Insets} from "~/components/primitives/types";
 
 const POSITION_ABSOLUTE: ViewStyle = {
   position: 'absolute',
@@ -56,6 +56,7 @@ export function useRelativePosition({
       sideOffset,
       dimensions,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [triggerPosition, contentLayout, dimensions.width, dimensions.height]);
 }
 

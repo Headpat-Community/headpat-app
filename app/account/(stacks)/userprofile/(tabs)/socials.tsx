@@ -5,10 +5,9 @@ import {
   View,
 } from 'react-native'
 import { Text } from '~/components/ui/text'
-import { Label } from '~/components/ui/label'
 import { Input } from '~/components/ui/input'
 import { Button } from '~/components/ui/button'
-import { account, database } from '~/lib/appwrite-client'
+import { database } from '~/lib/appwrite-client'
 import { Separator } from '~/components/ui/separator'
 import { H1, H4, Muted } from '~/components/ui/typography'
 import React, { useCallback, useState } from 'react'
@@ -17,10 +16,8 @@ import { useUser } from '~/components/contexts/UserContext'
 import * as Sentry from '@sentry/react-native'
 import { UserData } from '~/lib/types/collections'
 import { useFocusEffect } from '@react-navigation/core'
-import { Checkbox } from '~/components/ui/checkbox'
 import { z } from 'zod'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
-import { router } from 'expo-router'
 
 export default function UserprofilePage() {
   const [isDisabled, setIsDisabled] = useState(false)

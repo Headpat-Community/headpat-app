@@ -125,6 +125,7 @@ export default function HomeView() {
       return () => {
         //if (player.playing) player.pause()
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [player])
   )
 

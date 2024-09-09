@@ -480,7 +480,7 @@ export default function RootLayout() {
   useEffect(() => {
     return messaging().onMessage(async (remoteMessage) => {
       //Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage))
-      //console.log(remoteMessage)
+      console.log(remoteMessage)
     })
   }, [])
 
@@ -490,7 +490,7 @@ export default function RootLayout() {
   }, [])
 
   messaging().setBackgroundMessageHandler(async (remoteMessage) => {
-    //console.log('Message handled in the background!', remoteMessage)
+    console.log('Message handled in the background!', remoteMessage)
   })
 
   messaging().onNotificationOpenedApp(async (remoteMessage) => {

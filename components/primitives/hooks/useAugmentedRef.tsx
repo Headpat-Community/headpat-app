@@ -23,6 +23,7 @@ export function useAugmentedRef<T>({
         ...methods,
       };
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     deps
   );
   return augmentedRef;
