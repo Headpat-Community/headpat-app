@@ -26,6 +26,14 @@ export default function GalleryPage() {
   // Define height based on device size
   const widthColumns = width > 600 ? '24%' : '48%'
 
+  const shuffleArray = (array: any) => {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[array[i], array[j]] = [array[j], array[i]]
+    }
+    return array
+  }
+
   const fetchGallery = useCallback(
     async (newOffset: number = 0, limit: number = 10) => {
       try {
@@ -61,13 +69,15 @@ export default function GalleryPage() {
 
         setImagePrefs(parsedImagePrefs)
 
+        const shuffledImages = shuffleArray(imageData.documents)
+
         if (newOffset === 0) {
-          setImages(imageData.documents)
+          setImages(shuffledImages)
         } else {
-          setImages((prevImages) => [...prevImages, ...imageData.documents])
+          setImages((prevImages) => [...prevImages, ...shuffledImages])
         }
 
-        imageData.documents.forEach((image) => {
+        shuffledImages.forEach((image) => {
           if (image.mimeType.includes('video')) {
             generateThumbnail(image.$id)
           }
@@ -126,7 +136,9 @@ export default function GalleryPage() {
   }
 
   useEffect(() => {
-    fetchGallery(0, startCount).then()
+    // TODO: Use this in the future
+    //fetchGallery(0, startCount).then()
+    fetchGallery(0, 5000).then()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current, startCount])
 
