@@ -61,9 +61,10 @@
         "FOREGROUND_SERVICE_LOCATION",
         "ACCESS_BACKGROUND_LOCATION"
       ],
+      "icon": "./assets/images/headpat_logo.png",
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/icon.png",
+        "foregroundImage": "./assets/images/headpat_logo.png",
         "backgroundColor": "#ffffff"
       },
       "config": {
@@ -72,7 +73,7 @@
         }
       },
       "package": "com.headpat.app",
-      "versionCode": 55
+      "versionCode": 56
     },
     "extra": {
       "router": {

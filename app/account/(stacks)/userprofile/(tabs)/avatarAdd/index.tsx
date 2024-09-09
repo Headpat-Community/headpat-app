@@ -90,7 +90,7 @@ export default function AvatarAdd() {
       // change this to any string of your choice for optonal naming if file name is undefined
       const fileData = {
         name: image.filename || 'upload' + Math.random().toString(16) + '.jpg',
-        type: compressedImage?.mime,
+        type: compressedImage.mime,
         size: compressedImage.size,
         uri: compressedImage.path,
       }
