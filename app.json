@@ -52,7 +52,7 @@
         "applinks:headpat.place",
         "applinks:api.headpat.place"
       ],
-      "buildNumber": "80"
+      "buildNumber": "81"
     },
     "android": {
       "permissions": [
