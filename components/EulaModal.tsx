@@ -20,7 +20,7 @@ export default function EulaModal({ isOpen, setOpen, versionData }) {
   }
 
   const acceptEula = () => {
-    AsyncStorage.setItem(`eula`, `${versionData.version}`)
+    AsyncStorage.setItem(`eula`, `${versionData.version}`).then()
     setOpen(false)
   }
 

@@ -22,6 +22,7 @@ function HeaderSidebarBackButton({ type }: { type?: string }) {
     <View style={{ paddingLeft: 16 }}>
       <TouchableOpacity
         onPress={() => {
+          // eslint-disable-next-line no-unused-expressions
           type === 'upcoming'
             ? router.navigate(`/events/(tabs)/upcoming`)
             : router.back()

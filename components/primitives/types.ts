@@ -1,7 +1,7 @@
 import type { Pressable, Text, View, ViewStyle } from 'react-native';
 import React from "react";
 
-type ComponentPropsWithAsChild<T extends React.ElementType<any>> =
+type ComponentPropsWithAsChild<T extends React.ElementType> =
     React.ComponentPropsWithoutRef<T> & { asChild?: boolean };
 
 type ViewRef = React.ElementRef<typeof View>;
