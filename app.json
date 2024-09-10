@@ -3,6 +3,7 @@
     "name": "Headpat",
     "slug": "headpat-app",
     "version": "0.7.3",
+    "runtimeVersion": "0.7.3",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "headpatapp",
@@ -52,7 +53,7 @@
         "applinks:headpat.place",
         "applinks:api.headpat.place"
       ],
-      "buildNumber": "83"
+      "buildNumber": "84"
     },
     "android": {
       "permissions": [
@@ -84,9 +85,6 @@
       }
     },
     "owner": "expo-headpat",
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
     "updates": {
       "url": "https://u.expo.dev/904378a3-321c-4abe-9c08-48274d5f6267",
       "enabled": true,
