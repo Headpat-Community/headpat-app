@@ -397,7 +397,7 @@ function CustomDrawerContent() {
             textAlign: 'center',
           }}
         >
-          Headpat App v0.7.2
+          Headpat App v0.7.3
         </Text>
         <Muted className={'text-center pb-4'}>BETA</Muted>
       </ScrollView>
@@ -415,14 +415,19 @@ export default function RootLayout() {
   async function onFetchUpdateAsync() {
     try {
       const update = await Updates.checkForUpdateAsync()
+      toast(update.isAvailable ? 'Update available' : 'No updates available')
 
       if (update.isAvailable) {
-        await Updates.fetchUpdateAsync()
+        toast('Downloading update...')
+        const test1 = await Updates.fetchUpdateAsync()
+        Sentry.captureException(test1)
+
+        toast('Update downloaded. Restarting...')
         await Updates.reloadAsync()
       }
     } catch (error) {
       Sentry.captureException(error)
-      alert(`Error fetching latest update: ${error}`)
+      toast(`Error fetching latest update: ${error}`)
     }
   }
 
