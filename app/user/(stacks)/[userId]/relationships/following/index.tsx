@@ -96,7 +96,7 @@ export default function FollowingPage() {
       </ScrollView>
     )
 
-  if (refreshing || !users) {
+  if (refreshing) {
     return (
       <View style={{ flex: 1 }}>
         {Array.from({ length: 16 }).map((_, index) => (
