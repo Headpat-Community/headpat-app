@@ -7,7 +7,7 @@ import {
 } from 'react-native'
 import { H3, Muted } from '~/components/ui/typography'
 import { Link, useLocalSearchParams } from 'expo-router'
-import React, { Suspense, useCallback, useEffect, useState } from 'react'
+import React, { Suspense, useEffect, useState } from 'react'
 import { UserData } from '~/lib/types/collections'
 import { functions } from '~/lib/appwrite-client'
 import { Image } from 'expo-image'
@@ -67,17 +67,17 @@ export default function UserPage() {
     }
   }
 
-  const getUserAvatar = useCallback((avatarId: string) => {
+  const getUserAvatar = (avatarId: string) => {
     return avatarId
       ? `https://api.headpat.place/v1/storage/buckets/avatars/files/${avatarId}/view?project=hp-main`
       : null
-  }, [])
+  }
 
-  const getUserBanner = useCallback((bannerId: string) => {
+  const getUserBanner = (bannerId: string) => {
     return bannerId
       ? `https://api.headpat.place/v1/storage/buckets/banners/files/${bannerId}/preview?project=hp-main&width=1200&height=250&output=webp`
       : null
-  }, [])
+  }
 
   useEffect(() => {
     fetchUser().then()

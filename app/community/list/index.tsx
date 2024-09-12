@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FlatList, Text, View, ScrollView } from 'react-native'
 import { functions } from '~/lib/appwrite-client'
 import { toast } from '~/lib/toast'
@@ -18,41 +18,41 @@ export default function CommunitiesPage() {
   const [hasMore, setHasMore] = useState<boolean>(true)
 
   // Fetch communities function
-  const fetchCommunities = useCallback(
-    async (newOffset: number = 0, limit: number = 10) => {
-      try {
-        const data = await functions.createExecution(
-          'community-endpoints',
-          '',
-          false,
-          `/communities?limit=${limit}&offset=${newOffset}`, // Fetch with pagination
-          ExecutionMethod.GET
-        )
-        const newCommunities: Community.CommunityDocumentsType[] = JSON.parse(
-          data.responseBody
-        )
+  const fetchCommunities = async (
+    newOffset: number = 0,
+    limit: number = 10
+  ) => {
+    try {
+      const data = await functions.createExecution(
+        'community-endpoints',
+        '',
+        false,
+        `/communities?limit=${limit}&offset=${newOffset}`, // Fetch with pagination
+        ExecutionMethod.GET
+      )
+      const newCommunities: Community.CommunityDocumentsType[] = JSON.parse(
+        data.responseBody
+      )
 
-        if (newOffset === 0) {
-          setCommunities(newCommunities)
-        } else {
-          setCommunities((prevCommunities) => [
-            ...prevCommunities,
-            ...newCommunities,
-          ])
-        }
-
-        // Check if more communities are available
-        setHasMore(newCommunities.length === 20)
-      } catch (error) {
-        toast('Failed to fetch communities. Please try again later.')
-        Sentry.captureException(error)
-      } finally {
-        setRefreshing(false)
-        setLoadingMore(false)
+      if (newOffset === 0) {
+        setCommunities(newCommunities)
+      } else {
+        setCommunities((prevCommunities) => [
+          ...prevCommunities,
+          ...newCommunities,
+        ])
       }
-    },
-    []
-  )
+
+      // Check if more communities are available
+      setHasMore(newCommunities.length === 20)
+    } catch (error) {
+      toast('Failed to fetch communities. Please try again later.')
+      Sentry.captureException(error)
+    } finally {
+      setRefreshing(false)
+      setLoadingMore(false)
+    }
+  }
 
   // Handle refresh
   const onRefresh = async () => {

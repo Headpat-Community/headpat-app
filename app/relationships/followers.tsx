@@ -1,7 +1,7 @@
 import { toast } from '~/lib/toast'
 import { functions } from '~/lib/appwrite-client'
 import { ExecutionMethod } from 'react-native-appwrite'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { UserData } from '~/lib/types/collections'
 import * as Sentry from '@sentry/react-native'
 import UserItem from '~/components/user/UserItem'
@@ -34,36 +34,32 @@ export default function FollowersPage() {
     setRefreshing(false)
   }
 
-  const fetchUsers = useCallback(
-    async (newOffset: number = 0) => {
-      try {
-        const data = await functions.createExecution(
-          'user-endpoints',
-          '',
-          false,
-          `/user/followers?userId=${current?.$id}&limit=20&offset=${newOffset}`,
-          ExecutionMethod.GET
-        )
-        const response: UserData.UserDataDocumentsType[] = JSON.parse(
-          data.responseBody
-        )
+  const fetchUsers = async (newOffset: number = 0) => {
+    try {
+      const data = await functions.createExecution(
+        'user-endpoints',
+        '',
+        false,
+        `/user/followers?userId=${current?.$id}&limit=20&offset=${newOffset}`,
+        ExecutionMethod.GET
+      )
+      const response: UserData.UserDataDocumentsType[] = JSON.parse(
+        data.responseBody
+      )
 
-        if (newOffset === 0) {
-          setUsers(response)
-        } else {
-          setUsers((prevUsers) => [...prevUsers, ...response])
-        }
-
-        // Update hasMore based on the response length
-        setHasMore(response.length === 20)
-      } catch (error) {
-        toast('Failed to fetch users. Please try again later.')
-        Sentry.captureException(error)
+      if (newOffset === 0) {
+        setUsers(response)
+      } else {
+        setUsers((prevUsers) => [...prevUsers, ...response])
       }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  )
+
+      // Update hasMore based on the response length
+      setHasMore(response.length === 20)
+    } catch (error) {
+      toast('Failed to fetch users. Please try again later.')
+      Sentry.captureException(error)
+    }
+  }
 
   const loadMore = async () => {
     if (!loadingMore && hasMore) {

@@ -1,14 +1,15 @@
 import { toast } from '~/lib/toast'
 import { functions } from '~/lib/appwrite-client'
 import { ExecutionMethod } from 'react-native-appwrite'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { UserData } from '~/lib/types/collections'
 import * as Sentry from '@sentry/react-native'
 import UserItem from '~/components/user/UserItem'
 import { FlatList, RefreshControl, ScrollView, Text, View } from 'react-native'
 import { H1, Muted } from '~/components/ui/typography'
-import { useLocalSearchParams } from 'expo-router'
+import { router, useLocalSearchParams } from 'expo-router'
 import { Skeleton } from '~/components/ui/skeleton'
+import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 
 export default function FollowingPage() {
   const [users, setUsers] = useState<UserData.UserDataDocumentsType[]>(null)
@@ -17,6 +18,7 @@ export default function FollowingPage() {
   const [offset, setOffset] = useState<number>(0)
   const [hasMore, setHasMore] = useState<boolean>(true)
   const local = useLocalSearchParams()
+  const { showAlertModal } = useAlertModal()
 
   useEffect(() => {
     setUsers([]) // Clear the old users
@@ -31,36 +33,32 @@ export default function FollowingPage() {
     setRefreshing(false)
   }
 
-  const fetchUsers = useCallback(
-    async (newOffset: number = 0) => {
-      try {
-        const data = await functions.createExecution(
-          'user-endpoints',
-          '',
-          false,
-          `/user/followers?userId=${local?.userId}&limit=20&offset=${newOffset}`,
-          ExecutionMethod.GET
-        )
-        const response: UserData.UserDataDocumentsType[] = JSON.parse(
-          data.responseBody
-        )
+  const fetchUsers = async (newOffset: number = 0) => {
+    try {
+      const data = await functions.createExecution(
+        'user-endpoints',
+        '',
+        false,
+        `/user/followers?userId=${local?.userId}&limit=20&offset=${newOffset}`,
+        ExecutionMethod.GET
+      )
+      const response: UserData.UserDataDocumentsType[] = JSON.parse(
+        data.responseBody
+      )
 
-        if (newOffset === 0) {
-          setUsers(response)
-        } else {
-          setUsers((prevUsers) => [...prevUsers, ...response])
-        }
-
-        // Update hasMore based on the response length
-        setHasMore(response.length === 20)
-      } catch (error) {
-        toast('Failed to fetch users. Please try again later.')
-        Sentry.captureException(error)
+      if (newOffset === 0) {
+        setUsers(response)
+      } else {
+        setUsers((prevUsers) => [...prevUsers, ...response])
       }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [local?.userId]
-  )
+
+      // Update hasMore based on the response length
+      setHasMore(response.length === 20)
+    } catch (error) {
+      toast('Failed to fetch users. Please try again later.')
+      Sentry.captureException(error)
+    }
+  }
 
   const loadMore = async () => {
     if (!loadingMore && hasMore) {
@@ -74,7 +72,11 @@ export default function FollowingPage() {
 
   useEffect(() => {
     setRefreshing(true)
-    if (!local?.userId) return
+    if (!local?.userId) {
+      showAlertModal('FAILED', 'Does this user exist?')
+      router.back()
+      return
+    }
     fetchUsers().then()
     setRefreshing(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
