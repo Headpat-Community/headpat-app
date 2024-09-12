@@ -73,8 +73,10 @@ export default function FollowingPage() {
   }
 
   useEffect(() => {
+    setRefreshing(true)
     if (!local?.userId) return
     fetchUsers().then()
+    setRefreshing(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [local?.userId])
 
@@ -94,7 +96,7 @@ export default function FollowingPage() {
       </ScrollView>
     )
 
-  if (refreshing && !users) {
+  if (refreshing) {
     return (
       <View style={{ flex: 1 }}>
         {Array.from({ length: 16 }).map((_, index) => (

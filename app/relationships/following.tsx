@@ -9,6 +9,8 @@ import { FlatList, RefreshControl, ScrollView, Text, View } from 'react-native'
 import { H1, Muted } from '~/components/ui/typography'
 import { useUser } from '~/components/contexts/UserContext'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
+import { router } from 'expo-router'
+import { Skeleton } from '~/components/ui/skeleton'
 
 export default function FollowersPage() {
   const [users, setUsers] = useState<UserData.UserDataDocumentsType[]>(null)
@@ -16,14 +18,14 @@ export default function FollowersPage() {
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
   const [offset, setOffset] = useState<number>(0)
   const [hasMore, setHasMore] = useState<boolean>(true)
-  const { showAlertModal, showLoadingModal, hideLoadingModal } = useAlertModal()
+  const { showAlertModal } = useAlertModal()
   const { current } = useUser()
 
   useEffect(() => {
     setUsers([]) // Clear the old users
     setOffset(0) // Reset the offset
     setHasMore(true) // Reset hasMore
-  }, [current?.$id])
+  }, [current])
 
   const onRefresh = async () => {
     setRefreshing(true)
@@ -60,7 +62,7 @@ export default function FollowersPage() {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [current?.$id]
+    []
   )
 
   const loadMore = async () => {
@@ -74,29 +76,44 @@ export default function FollowersPage() {
   }
 
   useEffect(() => {
-    showLoadingModal()
-    if (!current?.$id) return showAlertModal('FAILED', 'You are not logged in.')
-    fetchUsers(0).then()
-    hideLoadingModal()
+    setRefreshing(true)
+    if (!current.$id) {
+      showAlertModal('FAILED', 'You are not logged in.')
+      router.back()
+      return
+    }
+    fetchUsers(0).then(() => setRefreshing(false))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [current?.$id])
+  }, [current])
 
-  if (refreshing)
+  if (refreshing) {
     return (
-      <ScrollView
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        contentContainerClassName={'flex-1 justify-center items-center h-full'}
-      >
-        <View className={'p-4 native:pb-24 max-w-md gap-6'}>
-          <View className={'gap-1'}>
-            <H1 className={'text-foreground text-center'}>Following</H1>
-            <Muted className={'text-base text-center'}>Loading...</Muted>
+      <View style={{ flex: 1 }}>
+        {Array.from({ length: 30 }).map((_, index) => (
+          <View
+            key={index}
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              margin: 10,
+            }}
+          >
+            {[...Array(3)].map((_, i) => (
+              <View
+                key={i}
+                style={{
+                  width: 100,
+                  height: 100,
+                }}
+              >
+                <Skeleton className={'w-full h-full rounded-3xl'} />
+              </View>
+            ))}
           </View>
-        </View>
-      </ScrollView>
+        ))}
+      </View>
     )
+  }
 
   if (!refreshing && users && users.length === 0)
     return (

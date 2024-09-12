@@ -76,7 +76,8 @@ export default function CommunitiesPage() {
     setRefreshing(true)
     fetchCommunities(0).then()
     setRefreshing(false)
-  }, [fetchCommunities])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const renderItem = ({ item }: { item: Community.CommunityDocumentsType }) => (
     <CommunityItem community={item} />
