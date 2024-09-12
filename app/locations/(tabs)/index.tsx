@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import MapView, {
   Marker,
   Polygon,
@@ -34,6 +34,7 @@ import { useColorScheme } from '~/lib/useColorScheme'
 import FiltersModal from '~/components/locations/FiltersModal'
 import SettingsModal from '~/components/locations/SettingsModal'
 import LocationPermissionModal from '~/components/locations/LocationPermissionModal'
+import sanitizeHtml from "sanitize-html";
 
 export default function MutualLocationsPage() {
   const { current } = useUser()
@@ -290,10 +291,7 @@ export default function MutualLocationsPage() {
     return coords
   }
 
-  const sanitizedDescription = useMemo(() => {
-    if (!currentEvent?.description) return ''
-    return currentEvent.description.replace(/<[^>]*>?/gm, '')
-  }, [currentEvent])
+  const sanitizedDescription = sanitizeHtml(currentEvent?.description)
 
   return (
     <View style={styles.container}>
