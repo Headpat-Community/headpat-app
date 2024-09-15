@@ -1,4 +1,4 @@
-import { ScrollView, View } from 'react-native'
+import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native'
 import { Text } from '~/components/ui/text'
 import { Label } from '~/components/ui/label'
 import { Input } from '~/components/ui/input'
@@ -80,154 +80,160 @@ export default function SecurityPage() {
   }
 
   return (
-    <ScrollView>
-      <View className="mx-4 gap-4 mt-4 mb-8">
-        <View className={'flex-row gap-8'}>
-          <View className={'w-full gap-4'}>
-            <View>
-              <H4>Change E-Mail</H4>
-              <Muted>You can change your E-Mail here.</Muted>
-            </View>
-            <Separator className={'w-[100px]'} />
-            <View>
-              <Label nativeID={'email'}>New E-Mail</Label>
-              <Input
-                nativeID={'email'}
-                onChange={(e) => setEmail(e.nativeEvent.text)}
-                textContentType={'emailAddress'}
-                value={email}
-              />
-            </View>
-            <View>
-              <Label nativeID={'email'}>Current Password</Label>
-              <Input
-                nativeID={'email'}
-                textContentType={'password'}
-                passwordRules={'minlength: 8'}
-                secureTextEntry
-                onChange={(e) => setEmailPassword(e.nativeEvent.text)}
-                value={emailPassword}
-              />
-            </View>
-            <View>
-              <Button onPress={changeEmail}>
-                <Text>Save</Text>
-              </Button>
-            </View>
-          </View>
-        </View>
-        <Separator />
-        <View className={'flex-row gap-8'}>
-          <View className={'w-full gap-4'}>
-            <View>
-              <H4>Change password</H4>
-              <Muted>You can change your password here.</Muted>
-            </View>
-            <Separator className={'w-[100px]'} />
-            <View>
-              <Label nativeID={'email'}>Current password</Label>
-              <Input
-                nativeID={'email'}
-                textContentType={'password'}
-                secureTextEntry
-                passwordRules={'minlength: 8'}
-                onChange={(e) => setOldPassword(e.nativeEvent.text)}
-                value={oldPassword}
-              />
-            </View>
-            <View>
-              <Label nativeID={'email'}>New Password</Label>
-              <Input
-                nativeID={'email'}
-                textContentType={'newPassword'}
-                secureTextEntry
-                passwordRules={'minlength: 8'}
-                onChange={(e) => setNewPassword(e.nativeEvent.text)}
-                value={newPassword}
-              />
-            </View>
-            <View>
-              <Button onPress={changePassword}>
-                <Text>Save</Text>
-              </Button>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+    >
+      <ScrollView>
+        <View className="mx-4 gap-4 mt-4 mb-8">
+          <View className={'flex-row gap-8'}>
+            <View className={'w-full gap-4'}>
+              <View>
+                <H4>Change E-Mail</H4>
+                <Muted>You can change your E-Mail here.</Muted>
+              </View>
+              <Separator className={'w-[100px]'} />
+              <View>
+                <Label nativeID={'email'}>New E-Mail</Label>
+                <Input
+                  nativeID={'email'}
+                  onChange={(e) => setEmail(e.nativeEvent.text)}
+                  textContentType={'emailAddress'}
+                  value={email}
+                />
+              </View>
+              <View>
+                <Label nativeID={'email'}>Current Password</Label>
+                <Input
+                  nativeID={'email'}
+                  textContentType={'password'}
+                  passwordRules={'minlength: 8'}
+                  secureTextEntry
+                  onChange={(e) => setEmailPassword(e.nativeEvent.text)}
+                  value={emailPassword}
+                />
+              </View>
+              <View>
+                <Button onPress={changeEmail}>
+                  <Text>Save</Text>
+                </Button>
+              </View>
             </View>
           </View>
-        </View>
-        <Separator />
-        <View className={'flex-row gap-8'}>
-          <View className={'w-full gap-4'}>
-            <View>
-              <H4>Delete account</H4>
-              <Muted>
-                This action is irreversible. All your data will be lost.
-              </Muted>
+          <Separator />
+          <View className={'flex-row gap-8'}>
+            <View className={'w-full gap-4'}>
+              <View>
+                <H4>Change password</H4>
+                <Muted>You can change your password here.</Muted>
+              </View>
+              <Separator className={'w-[100px]'} />
+              <View>
+                <Label nativeID={'email'}>Current password</Label>
+                <Input
+                  nativeID={'email'}
+                  textContentType={'password'}
+                  secureTextEntry
+                  passwordRules={'minlength: 8'}
+                  onChange={(e) => setOldPassword(e.nativeEvent.text)}
+                  value={oldPassword}
+                />
+              </View>
+              <View>
+                <Label nativeID={'email'}>New Password</Label>
+                <Input
+                  nativeID={'email'}
+                  textContentType={'newPassword'}
+                  secureTextEntry
+                  passwordRules={'minlength: 8'}
+                  onChange={(e) => setNewPassword(e.nativeEvent.text)}
+                  value={newPassword}
+                />
+              </View>
+              <View>
+                <Button onPress={changePassword}>
+                  <Text>Save</Text>
+                </Button>
+              </View>
             </View>
-            <View>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant={'destructive'}>
-                    <Text>Delete Account</Text>
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <H4>Are you sure?</H4>
-                  </AlertDialogHeader>
-                  <AlertDialogDescription>
-                    <Text>
-                      <Text className={'text-destructive'}>Warning:</Text> This
-                      action is irreversible. All your data will be lost.
-                    </Text>
-                  </AlertDialogDescription>
-                  <View className={'flex-col'}>
-                    <View style={{ marginBottom: 8 }}>
-                      <Text>The following will be deleted:</Text>
+          </View>
+          <Separator />
+          <View className={'flex-row gap-8'}>
+            <View className={'w-full gap-4'}>
+              <View>
+                <H4>Delete account</H4>
+                <Muted>
+                  This action is irreversible. All your data will be lost.
+                </Muted>
+              </View>
+              <View>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant={'destructive'}>
+                      <Text>Delete Account</Text>
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <H4>Are you sure?</H4>
+                    </AlertDialogHeader>
+                    <AlertDialogDescription>
                       <Text>
-                        <Text className={'text-destructive'}>•</Text> Your
-                        account
+                        <Text className={'text-destructive'}>Warning:</Text>{' '}
+                        This action is irreversible. All your data will be lost.
                       </Text>
-                      <Text>
-                        <Text className={'text-destructive'}>•</Text> Your
-                        public profile
-                      </Text>
-                      <Text>
-                        <Text className={'text-destructive'}>•</Text> Your
-                        preferences
-                      </Text>
-                      <Text>
-                        <Text className={'text-destructive'}>•</Text> Your
-                        sessions
-                      </Text>
-                      <Text>
-                        <Text className={'text-destructive'}>•</Text> Your
-                        gallery images
-                      </Text>
-                      <Text></Text>
+                    </AlertDialogDescription>
+                    <View className={'flex-col'}>
+                      <View style={{ marginBottom: 8 }}>
+                        <Text>The following will be deleted:</Text>
+                        <Text>
+                          <Text className={'text-destructive'}>•</Text> Your
+                          account
+                        </Text>
+                        <Text>
+                          <Text className={'text-destructive'}>•</Text> Your
+                          public profile
+                        </Text>
+                        <Text>
+                          <Text className={'text-destructive'}>•</Text> Your
+                          preferences
+                        </Text>
+                        <Text>
+                          <Text className={'text-destructive'}>•</Text> Your
+                          sessions
+                        </Text>
+                        <Text>
+                          <Text className={'text-destructive'}>•</Text> Your
+                          gallery images
+                        </Text>
+                        <Text></Text>
+                      </View>
+                      <View style={{ marginBottom: 8 }}>
+                        <Text>
+                          If you are sure you want to delete your account,
+                          please confirm below.
+                        </Text>
+                      </View>
                     </View>
-                    <View style={{ marginBottom: 8 }}>
-                      <Text>
-                        If you are sure you want to delete your account, please
-                        confirm below.
-                      </Text>
-                    </View>
-                  </View>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>
-                      <Text>Cancel</Text>
-                    </AlertDialogCancel>
-                    <AlertDialogAction
-                      className={'bg-destructive'}
-                      onPress={deleteAccount}
-                    >
-                      <Text className={'text-white'}>Confirm deletion</Text>
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>
+                        <Text>Cancel</Text>
+                      </AlertDialogCancel>
+                      <AlertDialogAction
+                        className={'bg-destructive'}
+                        onPress={deleteAccount}
+                      >
+                        <Text className={'text-white'}>Confirm deletion</Text>
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </View>
             </View>
           </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   )
 }

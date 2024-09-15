@@ -1,5 +1,7 @@
 import {
   Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   TouchableWithoutFeedback,
   View,
@@ -111,13 +113,55 @@ export default function UserprofilePage() {
     )
 
   return (
-    <ScrollView>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View className="mx-4 gap-4 mt-4 mb-8">
-          <View className={'flex-row gap-8'}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+    >
+      <ScrollView>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+          <View className="mx-4 gap-4 mt-4 mb-8">
+            <View className={'flex-row gap-8'}>
+              <View className={'w-full gap-4'}>
+                <View>
+                  <H4>Discord</H4>
+                </View>
+                <Separator className={'w-[100px]'} />
+                <View>
+                  <View
+                    className={
+                      'flex-row items-center h-10 native:h-12 rounded-md border border-input bg-background px-3 text-base lg:text-sm native:text-lg native:leading-[1.25] text-foreground placeholder:text-muted-foreground file:border-0 file:bg-transparent file:font-medium'
+                    }
+                  >
+                    <Text style={{ color: '#A0A0A0' }}>@</Text>
+                    <Input
+                      style={{ flex: 1 }}
+                      nativeID={'discordname'}
+                      className={'border-0 bg-transparent'}
+                      textContentType={'name'}
+                      onChangeText={(text) =>
+                        setUserData({ ...userData, discordname: text })
+                      }
+                      value={userData.discordname}
+                    />
+                  </View>
+                </View>
+                <View>
+                  <Button
+                    onPress={() =>
+                      handleUpdate('discordname', userData.discordname)
+                    }
+                    disabled={isDisabled}
+                  >
+                    <Text>Save</Text>
+                  </Button>
+                </View>
+              </View>
+            </View>
+            <Separator />
             <View className={'w-full gap-4'}>
               <View>
-                <H4>Discord</H4>
+                <H4>Telegram</H4>
               </View>
               <Separator className={'w-[100px]'} />
               <View>
@@ -129,20 +173,126 @@ export default function UserprofilePage() {
                   <Text style={{ color: '#A0A0A0' }}>@</Text>
                   <Input
                     style={{ flex: 1 }}
-                    nativeID={'discordname'}
+                    nativeID={'telegramname'}
                     className={'border-0 bg-transparent'}
                     textContentType={'name'}
                     onChangeText={(text) =>
-                      setUserData({ ...userData, discordname: text })
+                      setUserData({ ...userData, telegramname: text })
                     }
-                    value={userData.discordname}
+                    value={userData.telegramname}
                   />
                 </View>
               </View>
               <View>
                 <Button
                   onPress={() =>
-                    handleUpdate('discordname', userData.discordname)
+                    handleUpdate('telegramname', userData.telegramname)
+                  }
+                  disabled={isDisabled}
+                >
+                  <Text>Save</Text>
+                </Button>
+              </View>
+            </View>
+            <Separator />
+            <View className={'w-full gap-4'}>
+              <View>
+                <H4>Furaffinity</H4>
+              </View>
+              <Separator className={'w-[100px]'} />
+              <View>
+                <View
+                  className={
+                    'flex-row items-center h-10 native:h-12 rounded-md border border-input bg-background px-3 text-base lg:text-sm native:text-lg native:leading-[1.25] text-foreground placeholder:text-muted-foreground file:border-0 file:bg-transparent file:font-medium'
+                  }
+                >
+                  <Text style={{ color: '#A0A0A0' }}>@</Text>
+                  <Input
+                    style={{ flex: 1 }}
+                    nativeID={'furaffinity'}
+                    className={'border-0 bg-transparent'}
+                    textContentType={'name'}
+                    onChangeText={(text) =>
+                      setUserData({ ...userData, furaffinityname: text })
+                    }
+                    value={userData.furaffinityname}
+                  />
+                </View>
+              </View>
+              <View>
+                <Button
+                  onPress={() =>
+                    handleUpdate('furaffinityname', userData.furaffinityname)
+                  }
+                  disabled={isDisabled}
+                >
+                  <Text>Save</Text>
+                </Button>
+              </View>
+            </View>
+            <Separator />
+            <View className={'w-full gap-4'}>
+              <View>
+                <H4>X/Twitter</H4>
+              </View>
+              <Separator className={'w-[100px]'} />
+              <View>
+                <View
+                  className={
+                    'flex-row items-center h-10 native:h-12 rounded-md border border-input bg-background px-3 text-base lg:text-sm native:text-lg native:leading-[1.25] text-foreground placeholder:text-muted-foreground file:border-0 file:bg-transparent file:font-medium'
+                  }
+                >
+                  <Text style={{ color: '#A0A0A0' }}>@</Text>
+                  <Input
+                    style={{ flex: 1 }}
+                    nativeID={'xname'}
+                    className={'border-0 bg-transparent'}
+                    textContentType={'name'}
+                    onChangeText={(text) =>
+                      setUserData({ ...userData, X_name: text })
+                    }
+                    value={userData.X_name}
+                  />
+                </View>
+              </View>
+              <View>
+                <Button
+                  onPress={() => handleUpdate('X_name', userData.X_name)}
+                  disabled={isDisabled}
+                >
+                  <Text>Save</Text>
+                </Button>
+              </View>
+            </View>
+            <Separator />
+            <View className={'w-full gap-4'}>
+              <View>
+                <H4>Twitch</H4>
+              </View>
+              <Separator className={'w-[100px]'} />
+              <View>
+                <View
+                  className={
+                    'flex-row items-center h-10 native:h-12 rounded-md border border-input bg-background px-3 text-base lg:text-sm native:text-lg native:leading-[1.25] text-foreground placeholder:text-muted-foreground file:border-0 file:bg-transparent file:font-medium'
+                  }
+                >
+                  <Text style={{ color: '#A0A0A0' }}>@</Text>
+                  <Input
+                    style={{ flex: 1 }}
+                    nativeID={'twitchname'}
+                    className={'border-0 bg-transparent'}
+                    textContentType={'name'}
+                    onChangeText={(text) =>
+                      setUserData({ ...userData, twitchname: text })
+                    }
+                    value={userData.twitchname}
+                  />
+                </View>
+              </View>
+              <View>
+                <Button
+                  onPress={() =>
+                    handleUpdate('twitchname', userData.twitchname)
                   }
                   disabled={isDisabled}
                 >
@@ -151,148 +301,8 @@ export default function UserprofilePage() {
               </View>
             </View>
           </View>
-          <Separator />
-          <View className={'w-full gap-4'}>
-            <View>
-              <H4>Telegram</H4>
-            </View>
-            <Separator className={'w-[100px]'} />
-            <View>
-              <View
-                className={
-                  'flex-row items-center h-10 native:h-12 rounded-md border border-input bg-background px-3 text-base lg:text-sm native:text-lg native:leading-[1.25] text-foreground placeholder:text-muted-foreground file:border-0 file:bg-transparent file:font-medium'
-                }
-              >
-                <Text style={{ color: '#A0A0A0' }}>@</Text>
-                <Input
-                  style={{ flex: 1 }}
-                  nativeID={'telegramname'}
-                  className={'border-0 bg-transparent'}
-                  textContentType={'name'}
-                  onChangeText={(text) =>
-                    setUserData({ ...userData, telegramname: text })
-                  }
-                  value={userData.telegramname}
-                />
-              </View>
-            </View>
-            <View>
-              <Button
-                onPress={() =>
-                  handleUpdate('telegramname', userData.telegramname)
-                }
-                disabled={isDisabled}
-              >
-                <Text>Save</Text>
-              </Button>
-            </View>
-          </View>
-          <Separator />
-          <View className={'w-full gap-4'}>
-            <View>
-              <H4>Furaffinity</H4>
-            </View>
-            <Separator className={'w-[100px]'} />
-            <View>
-              <View
-                className={
-                  'flex-row items-center h-10 native:h-12 rounded-md border border-input bg-background px-3 text-base lg:text-sm native:text-lg native:leading-[1.25] text-foreground placeholder:text-muted-foreground file:border-0 file:bg-transparent file:font-medium'
-                }
-              >
-                <Text style={{ color: '#A0A0A0' }}>@</Text>
-                <Input
-                  style={{ flex: 1 }}
-                  nativeID={'furaffinity'}
-                  className={'border-0 bg-transparent'}
-                  textContentType={'name'}
-                  onChangeText={(text) =>
-                    setUserData({ ...userData, furaffinityname: text })
-                  }
-                  value={userData.furaffinityname}
-                />
-              </View>
-            </View>
-            <View>
-              <Button
-                onPress={() =>
-                  handleUpdate('furaffinityname', userData.furaffinityname)
-                }
-                disabled={isDisabled}
-              >
-                <Text>Save</Text>
-              </Button>
-            </View>
-          </View>
-          <Separator />
-          <View className={'w-full gap-4'}>
-            <View>
-              <H4>X/Twitter</H4>
-            </View>
-            <Separator className={'w-[100px]'} />
-            <View>
-              <View
-                className={
-                  'flex-row items-center h-10 native:h-12 rounded-md border border-input bg-background px-3 text-base lg:text-sm native:text-lg native:leading-[1.25] text-foreground placeholder:text-muted-foreground file:border-0 file:bg-transparent file:font-medium'
-                }
-              >
-                <Text style={{ color: '#A0A0A0' }}>@</Text>
-                <Input
-                  style={{ flex: 1 }}
-                  nativeID={'xname'}
-                  className={'border-0 bg-transparent'}
-                  textContentType={'name'}
-                  onChangeText={(text) =>
-                    setUserData({ ...userData, X_name: text })
-                  }
-                  value={userData.X_name}
-                />
-              </View>
-            </View>
-            <View>
-              <Button
-                onPress={() => handleUpdate('X_name', userData.X_name)}
-                disabled={isDisabled}
-              >
-                <Text>Save</Text>
-              </Button>
-            </View>
-          </View>
-          <Separator />
-          <View className={'w-full gap-4'}>
-            <View>
-              <H4>Twitch</H4>
-            </View>
-            <Separator className={'w-[100px]'} />
-            <View>
-              <View
-                className={
-                  'flex-row items-center h-10 native:h-12 rounded-md border border-input bg-background px-3 text-base lg:text-sm native:text-lg native:leading-[1.25] text-foreground placeholder:text-muted-foreground file:border-0 file:bg-transparent file:font-medium'
-                }
-              >
-                <Text style={{ color: '#A0A0A0' }}>@</Text>
-                <Input
-                  style={{ flex: 1 }}
-                  nativeID={'twitchname'}
-                  className={'border-0 bg-transparent'}
-                  textContentType={'name'}
-                  onChangeText={(text) =>
-                    setUserData({ ...userData, twitchname: text })
-                  }
-                  value={userData.twitchname}
-                />
-              </View>
-            </View>
-            <View>
-              <Button
-                onPress={() => handleUpdate('twitchname', userData.twitchname)}
-                disabled={isDisabled}
-              >
-                <Text>Save</Text>
-              </Button>
-            </View>
-          </View>
-        </View>
-      </TouchableWithoutFeedback>
-    </ScrollView>
+        </TouchableWithoutFeedback>
+      </ScrollView>
+    </KeyboardAvoidingView>
   )
 }
