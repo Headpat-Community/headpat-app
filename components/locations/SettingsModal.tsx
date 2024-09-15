@@ -1,3 +1,4 @@
+import React, { useEffect, useRef } from 'react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,7 +11,6 @@ import {
 import { View } from 'react-native'
 import { Label } from '~/components/ui/label'
 import { Text } from '~/components/ui/text'
-import React from 'react'
 import { Input } from '~/components/ui/input'
 import { database } from '~/lib/appwrite-client'
 import { Switch } from '~/components/ui/switch'
@@ -22,12 +22,23 @@ export default function SettingsModal({
   setUserStatus,
   current,
 }) {
+  const [currentStatus, setCurrentStatus] = React.useState(userStatus)
+  const prevOpenModal = useRef(openModal)
+
+  useEffect(() => {
+    if (openModal && !prevOpenModal.current) {
+      setCurrentStatus(userStatus)
+    }
+    prevOpenModal.current = openModal
+  }, [openModal, userStatus])
+
   const saveStatus = async () => {
     try {
       await database.updateDocument('hp_db', 'locations', current.$id, {
-        status: userStatus.status,
-        statusColor: userStatus.statusColor,
+        status: currentStatus.status,
+        statusColor: currentStatus.statusColor,
       })
+      setUserStatus(currentStatus)
     } catch (e) {
       console.error(e)
     }
@@ -48,9 +59,12 @@ export default function SettingsModal({
             <Label nativeID={'status'}>Status</Label>
             <Input
               nativeID={'status'}
-              value={userStatus?.status}
+              value={currentStatus?.status}
               onChange={(e) =>
-                setUserStatus({ ...userStatus, status: e.nativeEvent.text })
+                setCurrentStatus({
+                  ...currentStatus,
+                  status: e.nativeEvent.text,
+                })
               }
               maxLength={40}
             />
@@ -58,9 +72,9 @@ export default function SettingsModal({
           <View className="flex-row items-center gap-2">
             <Switch
               nativeID={'doNotDisturb'}
-              checked={userStatus?.statusColor === 'red'}
+              checked={currentStatus?.statusColor === 'red'}
               onCheckedChange={() =>
-                setUserStatus((prev) => ({
+                setCurrentStatus((prev) => ({
                   ...prev,
                   statusColor: prev.statusColor === 'red' ? 'green' : 'red',
                 }))
@@ -69,7 +83,7 @@ export default function SettingsModal({
             <Label
               nativeID={'doNotDisturb'}
               onPress={() => {
-                setUserStatus((prev) => ({
+                setCurrentStatus((prev) => ({
                   ...prev,
                   statusColor: prev.statusColor === 'red' ? 'green' : 'red',
                 }))

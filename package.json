@@ -87,6 +87,7 @@
     "react-native-appwrite": "^0.4.0",
     "react-native-awesome-gallery": "^0.3.9",
     "react-native-calendars": "^1.1304.1",
+    "react-native-date-picker": "^5.0.7",
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "~2.16.1",
     "react-native-htmlview": "^0.17.0",

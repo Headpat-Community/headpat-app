@@ -67,7 +67,7 @@ export default function HomeView() {
         setNextEvent(null)
       }
     } catch (error) {
-      //console.error(error)
+      console.error(error)
       Sentry.captureException(error)
     }
   }

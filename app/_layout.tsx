@@ -64,6 +64,9 @@ async function bootstrap() {
   //console.log('initialNotification', initialNotification)
 
   if (initialNotification) {
+    if (initialNotification?.data?.type === 'newFollower') {
+      router.navigate(`/user/(stacks)/${initialNotification.data.userId}`)
+    }
     console.log(
       'Notification caused application to open',
       initialNotification.notification
@@ -73,9 +76,8 @@ async function bootstrap() {
 }
 
 TaskManager.defineTask('background-location-task', async ({ data, error }) => {
-  console.log(data)
-  Sentry.captureException(data)
   if (error) {
+    console.error(error)
     Sentry.captureException(error)
     return BackgroundFetch.BackgroundFetchResult.Failed
   }
@@ -397,7 +399,7 @@ function CustomDrawerContent() {
             textAlign: 'center',
           }}
         >
-          Headpat App v0.7.4
+          Headpat App v0.7.5
         </Text>
         <Muted className={'text-center pb-4'}>BETA</Muted>
       </ScrollView>
@@ -490,7 +492,7 @@ export default function RootLayout() {
   }, [])
 
   messaging().setBackgroundMessageHandler(async (remoteMessage) => {
-    console.log('Message handled in the background!', remoteMessage)
+    //console.log('Message handled in the background!', remoteMessage)
   })
 
   messaging().onNotificationOpenedApp(async (remoteMessage) => {
