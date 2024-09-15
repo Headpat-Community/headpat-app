@@ -20,9 +20,11 @@ import * as WebBrowser from 'expo-web-browser'
 import * as Sentry from '@sentry/react-native'
 import TwitchIcon from '~/components/icons/TwitchIcon'
 import MicrosoftIcon from '~/components/icons/MicrosoftIcon'
+import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 
 export default function ModalScreen() {
-  const { current, login, loginOAuth } = useUser()
+  const { current, isLoadingUser, login, loginOAuth } = useUser()
+  const { showLoadingModal, hideLoadingModal } = useAlertModal()
 
   const [data, setData] = useState({
     email: '',
@@ -30,12 +32,15 @@ export default function ModalScreen() {
   })
 
   useEffect(() => {
-    if (current) {
+    if (isLoadingUser) {
+      showLoadingModal()
+    } else if (current) {
+      hideLoadingModal()
       router.push('/account')
     }
     // Don't add current, as it will cause user to be redirected to account page twice after login
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [isLoadingUser])
 
   const handleEmailLogin = async () => {
     if (data.email.length < 1) {

@@ -34,7 +34,8 @@ import { useColorScheme } from '~/lib/useColorScheme'
 import FiltersModal from '~/components/locations/FiltersModal'
 import SettingsModal from '~/components/locations/SettingsModal'
 import LocationPermissionModal from '~/components/locations/LocationPermissionModal'
-import sanitizeHtml from "sanitize-html";
+import sanitizeHtml from 'sanitize-html'
+import { generatePolygonCoords } from '~/components/locations/generatePolygonCoords'
 
 export default function MutualLocationsPage() {
   const { current } = useUser()
@@ -101,7 +102,6 @@ export default function MutualLocationsPage() {
       const promises = data.documents.map(async (doc) => {
         if (current?.$id === doc.$id) {
           setUserStatus(doc)
-          return
         }
         const userData: UserData.UserDataDocumentsType =
           await database.getDocument('hp_db', 'userdata', doc.$id)
@@ -191,7 +191,6 @@ export default function MutualLocationsPage() {
           case 'update':
             if (current && updatedDocument.$id === current.$id) {
               setUserStatus(updatedDocument)
-              return
             }
 
             setFriendsLocations(
@@ -219,7 +218,6 @@ export default function MutualLocationsPage() {
           case 'delete':
             if (current && updatedDocument.$id === current.$id) {
               setUserStatus(null)
-              return
             }
             setFriendsLocations(
               (prevLocations: LocationType.LocationDocumentsType[]) => {
@@ -232,7 +230,6 @@ export default function MutualLocationsPage() {
           case 'create':
             if (current && updatedDocument.$id === current.$id) {
               setUserStatus(updatedDocument)
-              return
             }
 
             const userData: UserData.UserDataDocumentsType =
@@ -267,28 +264,6 @@ export default function MutualLocationsPage() {
         }
       }
     )
-  }
-
-  /**
-   * Generate polygon coordinates for a circle... don't ask why
-   */
-  const generatePolygonCoords = (
-    centerLatitude: number,
-    centerLongitude: number,
-    radius: number,
-    sides = 32
-  ) => {
-    const coords = []
-    for (let i = 0; i < sides; i++) {
-      const angle = (i * 2 * Math.PI) / sides
-      const latitude = centerLatitude + (radius / 111320) * Math.cos(angle) // 111320 meters = 1 degree
-      const longitude =
-        centerLongitude +
-        (radius / (111320 * Math.cos(centerLatitude * (Math.PI / 180)))) *
-          Math.sin(angle)
-      coords.push({ latitude, longitude })
-    }
-    return coords
   }
 
   const sanitizedDescription = sanitizeHtml(currentEvent?.description)
@@ -361,7 +336,7 @@ export default function MutualLocationsPage() {
           provider={
             Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
           }
-          showsUserLocation={true}
+          showsUserLocation={!userStatus} // Disable if userStatus is set
         >
           {filters.showUsers &&
             friendsLocations?.map((user, index: number) => {

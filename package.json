@@ -42,7 +42,7 @@
     "@react-navigation/drawer": "^6.6.15",
     "@react-navigation/material-top-tabs": "^6.6.5",
     "@react-navigation/native": "^6.0.2",
-    "@sentry/react-native": "^5.22.2",
+    "@sentry/react-native": "~5.22.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "expo": "~51.0.31",

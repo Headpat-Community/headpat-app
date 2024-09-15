@@ -9,6 +9,7 @@ import * as Sentry from '@sentry/react-native'
 interface UserContextValue {
   current: Account.AccountType | null
   setUser: React.Dispatch<React.SetStateAction<Account.AccountType | null>>
+  isLoadingUser: boolean
   login: (email: string, password: string) => Promise<void>
   loginOAuth: (userId: string, secret: string) => Promise<void>
   logout: () => Promise<void>
@@ -30,6 +31,7 @@ export function useUser(): UserContextValue {
 
 export function UserProvider(props: any) {
   const [user, setUser] = useState(null)
+  const [isLoadingUser, setIsLoadingUser] = useState(false)
 
   async function login(email: string, password: string) {
     await account.createEmailPasswordSession(email, password)
@@ -62,12 +64,15 @@ export function UserProvider(props: any) {
 
   async function init() {
     try {
+      setIsLoadingUser(true)
       const loggedIn = await account.get()
       setUser(loggedIn)
+      setIsLoadingUser(false)
       await loggedInPushNotifications()
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setUser(null)
+      setIsLoadingUser(false)
     }
   }
 
@@ -80,6 +85,7 @@ export function UserProvider(props: any) {
       value={{
         current: user,
         setUser,
+        isLoadingUser,
         login,
         loginOAuth,
         logout,
@@ -116,7 +122,7 @@ export const updatePushTargetWithAppwrite = async (fcmToken: string) => {
       const target = await account.createPushTarget(
         ID.unique(),
         fcmToken,
-        '66bcfc3b0028d9fb7a68'
+        '66bcfc3b0028d9fb7a68' // FCM Appwrite Provider ID
       )
       await AsyncStorage.setItem('targetId', target.$id)
     } else {

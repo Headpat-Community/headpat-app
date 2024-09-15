@@ -28,6 +28,7 @@ import { router } from 'expo-router'
 import { TouchableOpacity } from '@gorhom/bottom-sheet'
 import { useFocusEffect } from '@react-navigation/core'
 import * as Sentry from '@sentry/react-native'
+import { Skeleton } from '~/components/ui/skeleton'
 
 export default function HomeView() {
   const [userData, setUserData] = useState<UserData.UserDataDocumentsType>(null)
@@ -35,7 +36,7 @@ export default function HomeView() {
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
-  const { current } = useUser()
+  const { current, isLoadingUser } = useUser()
 
   const onRefresh = () => {
     setRefreshing(true)
@@ -104,7 +105,12 @@ export default function HomeView() {
       }
     >
       <View className="justify-center items-center">
-        {current ? (
+        {isLoadingUser ? (
+          <View className={'px-4 m-4 w-full flex flex-col items-center'}>
+            <Skeleton className="w-[100px] h-[100px] rounded-3xl mt-4" />
+            <Skeleton className="w-[150px] h-[20px] rounded mt-2" />
+          </View>
+        ) : current ? (
           <>
             <Image
               source={
