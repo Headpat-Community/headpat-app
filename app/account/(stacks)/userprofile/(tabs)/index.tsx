@@ -7,7 +7,6 @@ import {
   View,
 } from 'react-native'
 import { Text } from '~/components/ui/text'
-import { Label } from '~/components/ui/label'
 import { Input } from '~/components/ui/input'
 import { Button } from '~/components/ui/button'
 import { account, database } from '~/lib/appwrite-client'
@@ -155,6 +154,7 @@ export default function UserprofilePage() {
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={{ flex: 1 }}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
     >
       <ScrollView>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
