@@ -262,7 +262,7 @@ function CustomDrawerContent() {
               </View>
             )
           }}
-          onPress={() => router.navigate('/user/list')}
+          onPress={() => router.navigate('/user')}
         />
 
         <Separator />

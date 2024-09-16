@@ -110,7 +110,7 @@ export default function ModalScreen() {
           <Muted className="text-base text-center">
             Already have an account?
           </Muted>
-          <Button variant={'ghost'} onPress={() => router.push('/login')}>
+          <Button variant={'outline'} onPress={() => router.push('/login')}>
             <Text>Login</Text>
           </Button>
         </View>

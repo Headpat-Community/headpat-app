@@ -23,7 +23,7 @@ export default function ShareLocationView() {
   const [isRegistered, setIsRegistered] = React.useState(false)
   const [status, setStatus] = React.useState(null)
   const [modalOpen, setModalOpen] = React.useState(false)
-  const user = useUser()
+  const { current } = useUser()
 
   React.useEffect(() => {
     checkStatusAsync().then()
@@ -81,20 +81,25 @@ export default function ShareLocationView() {
     const userId = await AsyncStorage.getItem('userId')
     await Location.stopLocationUpdatesAsync('background-location-task')
 
-    await database.deleteDocument('hp_db', 'locations', userId).catch(() => {
+    try {
+      await database.deleteDocument('hp_db', 'locations', userId)
       return
-    })
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e) {
+      return
+    }
   }
 
   const toggleFetchTask = async () => {
+    if (!current) {
+      Alert.alert('Error', 'Please log in to share location')
+      return
+    }
+
     if (isRegistered) {
       await unregisterBackgroundFetchAsync()
     } else {
-      if (user?.current) {
-        await registerBackgroundFetchAsync(user.current.$id)
-      } else {
-        Alert.alert('Error', 'Please log in to share location')
-      }
+      await registerBackgroundFetchAsync(current.$id)
     }
 
     await checkStatusAsync()

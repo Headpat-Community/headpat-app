@@ -106,7 +106,7 @@ export default function ModalScreen() {
             Enter you data below to register your account
           </Muted>
           <Muted className="text-base text-center">No account yet?</Muted>
-          <Button variant={'ghost'} onPress={() => router.push('/register')}>
+          <Button variant={'outline'} onPress={() => router.push('/register')}>
             <Text>Register</Text>
           </Button>
         </View>

@@ -3,19 +3,23 @@ import { H1, H3, Muted } from '~/components/ui/typography'
 import { useLocalSearchParams } from 'expo-router'
 import { Announcements } from '~/lib/types/collections'
 import { database } from '~/lib/appwrite-client'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Card, CardContent } from '~/components/ui/card'
 import { Text } from '~/components/ui/text'
 import { formatDate } from '~/components/calculateTimeLeft'
 import { Separator } from '~/components/ui/separator'
 import { Badge } from '~/components/ui/badge'
 import sanitizeHtml from 'sanitize-html'
+import HTMLView from 'react-native-htmlview'
+import { useColorScheme } from '~/lib/useColorScheme'
 
 export default function AnnouncementSinglePage() {
   const local = useLocalSearchParams()
   const [announcement, setAnnouncement] =
     useState<Announcements.AnnouncementDocumentsType>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
+  const { isDarkColorScheme } = useColorScheme()
+  const theme = isDarkColorScheme ? 'white' : 'black'
 
   const fetchAnnouncement = async () => {
     try {
@@ -114,7 +118,22 @@ export default function AnnouncementSinglePage() {
         <View>
           <Card className={'flex-1 p-0'}>
             <CardContent className={'p-6'}>
-              <Text>{sanitizedDescription || 'No description given.'}</Text>
+              <HTMLView
+                value={sanitizedDescription}
+                stylesheet={{
+                  p: {
+                    color: theme,
+                  },
+                  a: {
+                    color: 'blue',
+                  },
+                }}
+                textComponentProps={{
+                  style: {
+                    color: theme,
+                  },
+                }}
+              />
             </CardContent>
           </Card>
         </View>
