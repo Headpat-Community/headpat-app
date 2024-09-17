@@ -58,7 +58,6 @@ import DiscordIcon from '~/components/icons/DiscordIcon'
 import EulaModal from '~/components/EulaModal'
 import { Muted } from '~/components/ui/typography'
 import * as Updates from 'expo-updates'
-import { LocationObject } from 'expo-location'
 
 async function bootstrap() {
   const initialNotification = await messaging().getInitialNotification()

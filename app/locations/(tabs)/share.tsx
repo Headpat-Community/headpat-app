@@ -19,33 +19,19 @@ import {
   AlertDialogTitle,
 } from '~/components/ui/alert-dialog'
 import { useFocusEffect } from '@react-navigation/native'
-import { Switch } from '~/components/ui/switch'
-import { Label } from '~/components/ui/label'
 import { Separator } from '~/components/ui/separator'
 
 export default function ShareLocationView() {
   const [isRegistered, setIsRegistered] = React.useState(false)
   const [status, setStatus] = React.useState(null)
   const [modalOpen, setModalOpen] = React.useState(false)
-  const [preciseLocation, setPreciseLocation] = React.useState(false)
   const { current } = useUser()
 
   useFocusEffect(
     React.useCallback(() => {
       checkStatusAsync().then()
-      checkPreciseStatus().then()
     }, [])
   )
-
-  const checkPreciseStatus = async () => {
-    const preciseLocation = await AsyncStorage.getItem('preciseLocation')
-    if (!preciseLocation) {
-      await AsyncStorage.setItem('preciseLocation', 'true')
-      setPreciseLocation(true)
-    } else {
-      setPreciseLocation(preciseLocation === 'true')
-    }
-  }
 
   const checkStatusAsync = async () => {
     const status = await BackgroundFetch.getStatusAsync()
@@ -91,21 +77,12 @@ export default function ShareLocationView() {
       setModalOpen(true)
       return
     }
-    /*
+
     await Location.startLocationUpdatesAsync('background-location-task', {
-      accuracy:
-        preciseLocationItem === 'true'
-          ? Location.Accuracy.High
-          : Location.Accuracy.Low,
-      showsBackgroundLocationIndicator: true,
-      distanceInterval: 10,
-      timeInterval: 10000,
-    })
- */
-    await Location.startLocationUpdatesAsync('background-location-task', {
-      accuracy: Location.Accuracy.High,
+      accuracy: Location.Accuracy.Balanced,
       showsBackgroundLocationIndicator: false,
-      pausesUpdatesAutomatically: true,
+      //pausesUpdatesAutomatically: true,
+      //activityType: Location.ActivityType.Other,
       distanceInterval: 10,
       timeInterval: 10000,
     })
@@ -132,39 +109,15 @@ export default function ShareLocationView() {
     if (isRegistered) {
       await unregisterBackgroundFetchAsync()
     } else {
-      await registerBackgroundFetchAsync(current.$id)
+      if (current) {
+        await registerBackgroundFetchAsync(current.$id)
+      } else {
+        Alert.alert('Error', 'Please log in to share location')
+      }
     }
 
     await checkStatusAsync()
   }
-  /*
-  const updateLocationAccuracy = async () => {
-    AsyncStorage.setItem(
-      'preciseLocation',
-      preciseLocation ? 'false' : 'true'
-    ).then(() => {
-      setPreciseLocation(!preciseLocation)
-    })
-
-    const preciseLocationItem = await AsyncStorage.getItem('preciseLocation')
-    const isRegistered = await TaskManager.isTaskRegisteredAsync(
-      'background-location-task'
-    )
-
-    if (isRegistered) {
-      await Location.stopLocationUpdatesAsync('background-location-task')
-      await Location.startLocationUpdatesAsync('background-location-task', {
-        accuracy:
-          preciseLocationItem === 'true'
-            ? Location.Accuracy.High
-            : Location.Accuracy.Low,
-        showsBackgroundLocationIndicator: true,
-        distanceInterval: 10,
-        timeInterval: 10000,
-      })
-    }
-  }
- */
 
   return (
     <View style={styles.screen}>
@@ -210,18 +163,6 @@ export default function ShareLocationView() {
         <Text>{isRegistered ? 'Disable sharing' : 'Enable sharing'}</Text>
       </Button>
       <Separator className={'my-4'} />
-      {/* TODO: Implement this feature
-      <View className="flex-row items-center gap-2">
-        <Switch
-          nativeID={'preciseLocation'}
-          checked={preciseLocation}
-          onCheckedChange={updateLocationAccuracy}
-        />
-        <Label nativeID={'preciseLocation'} onPress={updateLocationAccuracy}>
-          Use Precise location
-        </Label>
-      </View>
-      */}
       <Muted className={'p-4'}>
         NOTE: Please only enable this for conventions or other kinds of events.
         In the future you will be able to properly select users to share your
