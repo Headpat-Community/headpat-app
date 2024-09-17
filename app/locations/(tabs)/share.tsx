@@ -104,7 +104,8 @@ export default function ShareLocationView() {
  */
     await Location.startLocationUpdatesAsync('background-location-task', {
       accuracy: Location.Accuracy.High,
-      showsBackgroundLocationIndicator: true,
+      showsBackgroundLocationIndicator: false,
+      pausesUpdatesAutomatically: true,
       distanceInterval: 10,
       timeInterval: 10000,
     })
