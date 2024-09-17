@@ -82,7 +82,7 @@ TaskManager.defineTask(
     data,
     error,
   }: {
-    data: { locations: LocationObject[] }
+    data: { locations: LocationObject }
     error: any
   }) => {
     if (error) {
@@ -93,30 +93,22 @@ TaskManager.defineTask(
 
     // Use the user data from the task
     const userId = await AsyncStorage.getItem('userId')
-    const preciseLocation = await AsyncStorage.getItem('preciseLocation')
+    //const preciseLocation = await AsyncStorage.getItem('preciseLocation')
 
     if (!userId) {
       return Location.stopLocationUpdatesAsync('background-location-task')
     }
 
-    // Get current location
-    const location = await Location.getCurrentPositionAsync({
-      accuracy:
-        preciseLocation === 'true'
-          ? Location.Accuracy.High
-          : Location.Accuracy.Low,
-    })
-
     // Make API calls to update or create location document
     await database
       .updateDocument('hp_db', 'locations', userId, {
-        long: location.coords.longitude,
-        lat: location.coords.latitude,
+        long: data.locations.coords.longitude,
+        lat: data.locations.coords.latitude,
       })
       .catch(async () => {
         await database.createDocument('hp_db', 'locations', userId, {
-          long: location.coords.longitude,
-          lat: location.coords.latitude,
+          long: data.locations.coords.longitude,
+          lat: data.locations.coords.latitude,
           timeUntilEnd: new Date(
             Date.now() + 24 * 60 * 60 * 1000
           ).toISOString(),
