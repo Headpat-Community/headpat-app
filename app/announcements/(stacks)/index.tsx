@@ -5,7 +5,7 @@ import {
   View,
 } from 'react-native'
 import { H1, H3, Muted } from '~/components/ui/typography'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Announcements } from '~/lib/types/collections'
 import { database } from '~/lib/appwrite-client'
 import { Query } from 'react-native-appwrite'
@@ -22,6 +22,7 @@ import { formatDate } from '~/components/calculateTimeLeft'
 import { useColorScheme } from '~/lib/useColorScheme'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import * as Sentry from '@sentry/react-native'
+import { useFocusEffect } from '@react-navigation/core'
 
 export default function AnnouncementsPage() {
   const { isDarkColorScheme } = useColorScheme()
@@ -59,8 +60,15 @@ export default function AnnouncementsPage() {
     setRefreshing(false)
   }
 
+  useFocusEffect(
+    useCallback(() => {
+      onRefresh()
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+  )
+
   useEffect(() => {
-    fetchAnnouncements().then()
+    showLoadingModal()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

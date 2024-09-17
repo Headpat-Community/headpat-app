@@ -1,5 +1,12 @@
 import React, { useEffect } from 'react'
-import { View, Text, StyleSheet, Modal, PanResponder } from 'react-native'
+import {
+  View,
+  Text,
+  StyleSheet,
+  Modal,
+  PanResponder,
+  TouchableWithoutFeedback,
+} from 'react-native'
 import LottieView from 'lottie-react-native'
 import { useColorScheme } from '~/lib/useColorScheme'
 import { AlertModalTypes } from '~/components/contexts/AlertModalProvider'
@@ -53,23 +60,29 @@ export default function AlertModal({
 
   return (
     <Modal visible={isVisible} transparent={true} onRequestClose={onClose}>
-      <View style={styles.backdrop} {...panResponder.panHandlers}>
-        <View
-          style={[
-            styles.container,
-            { backgroundColor: isDarkColorScheme ? '#CCCCCC' : '#333333' },
-          ]}
-        >
-          <LottieView
-            autoPlay
-            loop={false}
-            style={styles.lottie}
-            source={typeSource()}
-            speed={type === 'FAILED' ? 0.5 : 1}
-          />
-          <Text style={[styles.text, { color: themeInverted }]}>{text}</Text>
+      <TouchableWithoutFeedback onPress={onClose}>
+        <View style={styles.backdrop} {...panResponder.panHandlers}>
+          <TouchableWithoutFeedback>
+            <View
+              style={[
+                styles.container,
+                { backgroundColor: isDarkColorScheme ? '#CCCCCC' : '#333333' },
+              ]}
+            >
+              <LottieView
+                autoPlay
+                loop={false}
+                style={styles.lottie}
+                source={typeSource()}
+                speed={type === 'FAILED' ? 0.5 : 1}
+              />
+              <Text style={[styles.text, { color: themeInverted }]}>
+                {text}
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     </Modal>
   )
 }

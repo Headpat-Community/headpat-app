@@ -52,7 +52,8 @@ export default function MutualLocationsPage() {
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false)
 
   const [events, setEvents] = useState<Events.EventsType>(null)
-  const [friendsLocations, setFriendsLocations] = useState(null)
+  const [friendsLocations, setFriendsLocations] =
+    useState<LocationType.LocationDocumentsType[]>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [currentEvent, setCurrentEvent] = useState(null)
   const [filters, setFilters] = useState({
@@ -187,39 +188,35 @@ export default function MutualLocationsPage() {
               setUserStatus(updatedDocument)
             }
 
-            setFriendsLocations(
-              (prevLocations: LocationType.LocationDocumentsType[]) => {
-                const existingLocation = prevLocations.find(
-                  (location) => location?.$id === updatedDocument.$id
+            setFriendsLocations((prevLocations) => {
+              const existingLocation = prevLocations.find(
+                (location) => location?.$id === updatedDocument.$id
+              )
+              if (existingLocation) {
+                // Merge updated document with existing one, preserving userData
+                return prevLocations.map((location) =>
+                  location?.$id === updatedDocument.$id
+                    ? {
+                        ...location,
+                        ...updatedDocument,
+                        userData: location.userData,
+                      }
+                    : location
                 )
-                if (existingLocation) {
-                  // Merge updated document with existing one, preserving userData
-                  return prevLocations.map((location) =>
-                    location?.$id === updatedDocument.$id
-                      ? {
-                          ...location,
-                          ...updatedDocument,
-                          userData: location.userData,
-                        }
-                      : location
-                  )
-                } else {
-                  return [...prevLocations, updatedDocument]
-                }
+              } else {
+                return [...prevLocations, updatedDocument]
               }
-            )
+            })
             break
           case 'delete':
             if (current && updatedDocument.$id === current.$id) {
               setUserStatus(null)
             }
-            setFriendsLocations(
-              (prevLocations: LocationType.LocationDocumentsType[]) => {
-                return prevLocations.filter(
-                  (location) => location?.$id !== updatedDocument.$id
-                )
-              }
-            )
+            setFriendsLocations((prevLocations) => {
+              return prevLocations.filter(
+                (location) => location?.$id !== updatedDocument.$id
+              )
+            })
             break
           case 'create':
             if (current && updatedDocument.$id === current.$id) {
@@ -234,24 +231,22 @@ export default function MutualLocationsPage() {
               )
             const updatedLocationWithUserData = { ...updatedDocument, userData }
 
-            setFriendsLocations(
-              (prevLocations: LocationType.LocationDocumentsType[]) => {
-                const locationExists = prevLocations.some(
-                  (location) => location?.$id === updatedDocument.$id
+            setFriendsLocations((prevLocations) => {
+              const locationExists = prevLocations.some(
+                (location) => location?.$id === updatedDocument.$id
+              )
+              if (locationExists) {
+                // Update existing location
+                return prevLocations.map((location) =>
+                  location.$id === updatedDocument.$id
+                    ? updatedLocationWithUserData
+                    : location
                 )
-                if (locationExists) {
-                  // Update existing location
-                  return prevLocations.map((location) =>
-                    location.$id === updatedDocument.$id
-                      ? updatedLocationWithUserData
-                      : location
-                  )
-                } else {
-                  // Add new location
-                  return [...prevLocations, updatedLocationWithUserData]
-                }
+              } else {
+                // Add new location
+                return [...prevLocations, updatedLocationWithUserData]
               }
-            )
+            })
             break
           default:
             Sentry.captureException('Unknown event type:', updatedDocument)

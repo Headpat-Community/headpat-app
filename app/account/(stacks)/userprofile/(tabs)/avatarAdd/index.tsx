@@ -15,7 +15,6 @@ export default function AvatarAdd() {
   const [image, setImage] = useState<ImagePicker.ImageOrVideo>(null)
   const { showLoadingModal, hideLoadingModal, showAlertModal } = useAlertModal()
   const maxFileSize = 1.5 * 1024 * 1024 // 1.5 MB in bytes
-  const maxResolution = 8 * 1024 * 1024
 
   const pickImage = async () => {
     try {
@@ -29,16 +28,10 @@ export default function AvatarAdd() {
         return
       }
 
-      if (result.width + result.height > maxResolution) {
-        showAlertModal('FAILED', 'Image resolution is too large.')
-        return
-      }
-
-      if (result.width + result.height <= maxResolution) {
-        setImage(result)
-      }
+      setImage(result)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.log(error)
+      //console.log(error)
       //showAlertModal('FAILED', 'Error picking image.')
       //Sentry.captureException(error)
     }
@@ -114,7 +107,7 @@ export default function AvatarAdd() {
     } catch (error) {
       console.log('error', error)
       showAlertModal('FAILED', 'Error uploading image.')
-      Sentry.captureException(error)
+      Sentry.captureMessage(error, 'log')
     }
   }
 

@@ -58,6 +58,7 @@ import DiscordIcon from '~/components/icons/DiscordIcon'
 import EulaModal from '~/components/EulaModal'
 import { Muted } from '~/components/ui/typography'
 import * as Updates from 'expo-updates'
+import { LocationObject } from 'expo-location'
 
 async function bootstrap() {
   const initialNotification = await messaging().getInitialNotification()
@@ -75,37 +76,54 @@ async function bootstrap() {
   }
 }
 
-TaskManager.defineTask('background-location-task', async ({ data, error }) => {
-  if (error) {
-    console.error(error)
-    Sentry.captureException(error)
-    return BackgroundFetch.BackgroundFetchResult.Failed
-  }
+TaskManager.defineTask(
+  'background-location-task',
+  async ({
+    data,
+    error,
+  }: {
+    data: { locations: LocationObject[] }
+    error: any
+  }) => {
+    if (error) {
+      console.error(error)
+      Sentry.captureException(error)
+      return BackgroundFetch.BackgroundFetchResult.Failed
+    }
 
-  // Use the user data from the task
-  const userId = await AsyncStorage.getItem('userId')
+    // Use the user data from the task
+    const userId = await AsyncStorage.getItem('userId')
+    const preciseLocation = await AsyncStorage.getItem('preciseLocation')
 
-  if (!userId) {
-    return BackgroundFetch.BackgroundFetchResult.Failed
-  }
+    if (!userId) {
+      return Location.stopLocationUpdatesAsync('background-location-task')
+    }
 
-  // Get current location
-  const location = await Location.getCurrentPositionAsync()
-
-  // Make API calls to update or create location document
-  await database
-    .updateDocument('hp_db', 'locations', userId, {
-      long: location.coords.longitude,
-      lat: location.coords.latitude,
+    // Get current location
+    const location = await Location.getCurrentPositionAsync({
+      accuracy:
+        preciseLocation === 'true'
+          ? Location.Accuracy.High
+          : Location.Accuracy.Low,
     })
-    .catch(async () => {
-      await database.createDocument('hp_db', 'locations', userId, {
+
+    // Make API calls to update or create location document
+    await database
+      .updateDocument('hp_db', 'locations', userId, {
         long: location.coords.longitude,
         lat: location.coords.latitude,
-        timeUntilEnd: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
       })
-    })
-})
+      .catch(async () => {
+        await database.createDocument('hp_db', 'locations', userId, {
+          long: location.coords.longitude,
+          lat: location.coords.latitude,
+          timeUntilEnd: new Date(
+            Date.now() + 24 * 60 * 60 * 1000
+          ).toISOString(),
+        })
+      })
+  }
+)
 
 const LIGHT_THEME: Theme = {
   dark: false,
@@ -323,7 +341,7 @@ function CustomDrawerContent() {
               </View>
             )
           }}
-          onPress={() => router.navigate('/community/list')}
+          onPress={() => router.navigate('/community')}
         />
 
         <View style={{ flex: 1, flexGrow: 1 }}></View>

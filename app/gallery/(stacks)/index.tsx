@@ -209,8 +209,9 @@ export default function GalleryPage() {
         refreshing={refreshing}
         numColumns={maxColumns}
         contentContainerStyle={{ flexGrow: 1 }}
-        onEndReached={loadMore}
-        onEndReachedThreshold={0.5}
+        // TODO: Implement this in the future
+        //onEndReached={loadMore}
+        //onEndReachedThreshold={0.5}
         ListFooterComponent={
           loadingMore && (
             <View

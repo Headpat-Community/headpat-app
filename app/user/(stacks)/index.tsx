@@ -14,7 +14,7 @@ export default function UserListPage() {
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
   const [offset, setOffset] = useState<number>(0)
 
-  const fetchUsers = useCallback(async (newOffset: number = 0) => {
+  const fetchUsers = async (newOffset: number = 0) => {
     try {
       const data: UserData.UserDataType = await database.listDocuments(
         'hp_db',
@@ -37,7 +37,7 @@ export default function UserListPage() {
       toast('Failed to fetch users. Please try again later.')
       Sentry.captureException(error)
     }
-  }, [])
+  }
 
   const onRefresh = async () => {
     setRefreshing(true)
@@ -58,7 +58,7 @@ export default function UserListPage() {
 
   useEffect(() => {
     fetchUsers(0).then()
-  }, [fetchUsers])
+  }, [])
 
   const renderItem = ({ item }: { item: UserData.UserDataDocumentsType }) => (
     <UserItem user={item} />

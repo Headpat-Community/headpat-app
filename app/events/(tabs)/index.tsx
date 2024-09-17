@@ -13,7 +13,7 @@ import {
 } from '~/components/ui/card'
 import { ClockIcon, MapPinIcon } from 'lucide-react-native'
 import { useColorScheme } from '~/lib/useColorScheme'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { functions } from '~/lib/appwrite-client'
 import { Events } from '~/lib/types/collections'
 import { H1, H3, Muted } from '~/components/ui/typography'
@@ -24,6 +24,7 @@ import {
 } from '~/components/calculateTimeLeft'
 import { Link } from 'expo-router'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
+import { useFocusEffect } from '@react-navigation/core'
 
 export default function EventsPage() {
   const { isDarkColorScheme } = useColorScheme()
@@ -59,13 +60,18 @@ export default function EventsPage() {
 
   const onRefresh = () => {
     setRefreshing(true)
-    showLoadingModal()
     fetchEvents().then()
   }
 
+  useFocusEffect(
+    useCallback(() => {
+      onRefresh()
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+  )
+
   useEffect(() => {
     showLoadingModal()
-    fetchEvents().then()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -79,7 +85,7 @@ export default function EventsPage() {
         <View className={'flex-1 justify-center items-center'}>
           <View className={'p-4 native:pb-24 max-w-md gap-6'}>
             <View className={'gap-1'}>
-              <H1 className={'text-foreground text-center'}>Events</H1>
+              <H1 className={'text-foreground text-center'}>Active</H1>
               <Muted className={'text-base text-center'}>
                 No events available
               </Muted>

@@ -14,6 +14,7 @@ import { Text } from '~/components/ui/text'
 import { Input } from '~/components/ui/input'
 import { database } from '~/lib/appwrite-client'
 import { Switch } from '~/components/ui/switch'
+import { Separator } from '~/components/ui/separator'
 
 export default function SettingsModal({
   openModal,
@@ -69,6 +70,7 @@ export default function SettingsModal({
               maxLength={40}
             />
           </View>
+          <Separator />
           <View className="flex-row items-center gap-2">
             <Switch
               nativeID={'doNotDisturb'}

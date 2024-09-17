@@ -18,16 +18,34 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '~/components/ui/alert-dialog'
+import { useFocusEffect } from '@react-navigation/native'
+import { Switch } from '~/components/ui/switch'
+import { Label } from '~/components/ui/label'
+import { Separator } from '~/components/ui/separator'
 
 export default function ShareLocationView() {
   const [isRegistered, setIsRegistered] = React.useState(false)
   const [status, setStatus] = React.useState(null)
   const [modalOpen, setModalOpen] = React.useState(false)
+  const [preciseLocation, setPreciseLocation] = React.useState(false)
   const { current } = useUser()
 
-  React.useEffect(() => {
-    checkStatusAsync().then()
-  }, [])
+  useFocusEffect(
+    React.useCallback(() => {
+      checkStatusAsync().then()
+      checkPreciseStatus().then()
+    }, [])
+  )
+
+  const checkPreciseStatus = async () => {
+    const preciseLocation = await AsyncStorage.getItem('preciseLocation')
+    if (!preciseLocation) {
+      await AsyncStorage.setItem('preciseLocation', 'true')
+      setPreciseLocation(true)
+    } else {
+      setPreciseLocation(preciseLocation === 'true')
+    }
+  }
 
   const checkStatusAsync = async () => {
     const status = await BackgroundFetch.getStatusAsync()
@@ -60,15 +78,30 @@ export default function ShareLocationView() {
   }
 
   async function registerBackgroundFetchAsync(userId: string) {
+    if (!userId) {
+      setIsRegistered(false)
+      return Alert.alert('Error', 'No user ID found. Are you logged in?')
+    }
     await AsyncStorage.setItem('userId', userId)
-    //await requestPermissions()
+    //const preciseLocationItem = await AsyncStorage.getItem('preciseLocation')
+
     let foreground = await Location.getForegroundPermissionsAsync()
     let background = await Location.getBackgroundPermissionsAsync()
     if (foreground.status !== 'granted' || background.status !== 'granted') {
       setModalOpen(true)
       return
     }
-
+    /*
+    await Location.startLocationUpdatesAsync('background-location-task', {
+      accuracy:
+        preciseLocationItem === 'true'
+          ? Location.Accuracy.High
+          : Location.Accuracy.Low,
+      showsBackgroundLocationIndicator: true,
+      distanceInterval: 10,
+      timeInterval: 10000,
+    })
+ */
     await Location.startLocationUpdatesAsync('background-location-task', {
       accuracy: Location.Accuracy.High,
       showsBackgroundLocationIndicator: true,
@@ -82,8 +115,7 @@ export default function ShareLocationView() {
     await Location.stopLocationUpdatesAsync('background-location-task')
 
     try {
-      await database.deleteDocument('hp_db', 'locations', userId)
-      return
+      return await database.deleteDocument('hp_db', 'locations', userId)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       return
@@ -104,6 +136,34 @@ export default function ShareLocationView() {
 
     await checkStatusAsync()
   }
+  /*
+  const updateLocationAccuracy = async () => {
+    AsyncStorage.setItem(
+      'preciseLocation',
+      preciseLocation ? 'false' : 'true'
+    ).then(() => {
+      setPreciseLocation(!preciseLocation)
+    })
+
+    const preciseLocationItem = await AsyncStorage.getItem('preciseLocation')
+    const isRegistered = await TaskManager.isTaskRegisteredAsync(
+      'background-location-task'
+    )
+
+    if (isRegistered) {
+      await Location.stopLocationUpdatesAsync('background-location-task')
+      await Location.startLocationUpdatesAsync('background-location-task', {
+        accuracy:
+          preciseLocationItem === 'true'
+            ? Location.Accuracy.High
+            : Location.Accuracy.Low,
+        showsBackgroundLocationIndicator: true,
+        distanceInterval: 10,
+        timeInterval: 10000,
+      })
+    }
+  }
+ */
 
   return (
     <View style={styles.screen}>
@@ -148,6 +208,19 @@ export default function ShareLocationView() {
       <Button onPress={toggleFetchTask}>
         <Text>{isRegistered ? 'Disable sharing' : 'Enable sharing'}</Text>
       </Button>
+      <Separator className={'my-4'} />
+      {/* TODO: Implement this feature
+      <View className="flex-row items-center gap-2">
+        <Switch
+          nativeID={'preciseLocation'}
+          checked={preciseLocation}
+          onCheckedChange={updateLocationAccuracy}
+        />
+        <Label nativeID={'preciseLocation'} onPress={updateLocationAccuracy}>
+          Use Precise location
+        </Label>
+      </View>
+      */}
       <Muted className={'p-4'}>
         NOTE: Please only enable this for conventions or other kinds of events.
         In the future you will be able to properly select users to share your

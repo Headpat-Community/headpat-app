@@ -4,7 +4,7 @@ import React from 'react'
 function _layout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="list/index" />
+      <Stack.Screen name="index" />
       <Stack.Screen name="[communityId]" />
     </Stack>
   )
