@@ -73,7 +73,7 @@
         }
       },
       "package": "com.headpat.app",
-      "versionCode": 72
+      "versionCode": 73
     },
     "extra": {
       "router": {
