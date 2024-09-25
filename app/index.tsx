@@ -226,14 +226,16 @@ export default function HomeView() {
                 />
                 <Text>Events</Text>
               </CardFooter>
-              <CardFooter className={'p-0 justify-between flex flex-wrap ml-7'}>
+              <CardFooter
+                className={'p-0 justify-between flex flex-wrap ml-7 pb-2'}
+              >
                 <CardDescription>
                   <Text>Looking for fun?</Text>
                 </CardDescription>
               </CardFooter>
               {nextEvent && (
                 <>
-                  <CardFooter className={'mt-4'}>
+                  <CardFooter className={'pt-2'}>
                     <Separator />
                   </CardFooter>
                   <CardFooter className={'p-0 flex flex-wrap ml-7 mb-2'}>

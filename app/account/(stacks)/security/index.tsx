@@ -22,6 +22,10 @@ import {
   AlertDialogTrigger,
 } from '~/components/ui/alert-dialog'
 import { useUser } from '~/components/contexts/UserContext'
+import { z } from 'zod'
+
+const emailSchema = z.string().email()
+const passwordSchema = z.string().min(8)
 
 export default function SecurityPage() {
   const [email, setEmail] = useState('')
@@ -32,6 +36,18 @@ export default function SecurityPage() {
   const { setUser } = useUser()
 
   const changeEmail = async () => {
+    const emailValidation = emailSchema.safeParse(email)
+    const passwordValidation = passwordSchema.safeParse(emailPassword)
+
+    if (!emailValidation.success) {
+      showAlertModal('FAILED', 'Invalid email format')
+      return
+    }
+    if (!passwordValidation.success) {
+      showAlertModal('FAILED', 'Password must be at least 8 characters long')
+      return
+    }
+
     showLoadingModal()
     try {
       await account.updateEmail(email, emailPassword)
@@ -39,12 +55,20 @@ export default function SecurityPage() {
       setEmail('')
       setEmailPassword('')
     } catch (error) {
-      showAlertModal('FAILED', error.message)
+      showAlertModal('FAILED', 'Failed to change email')
       console.error(error)
     }
   }
 
   const changePassword = async () => {
+    const oldPasswordValidation = passwordSchema.safeParse(oldPassword)
+    const newPasswordValidation = passwordSchema.safeParse(newPassword)
+
+    if (!oldPasswordValidation.success || !newPasswordValidation.success) {
+      showAlertModal('FAILED', 'Password must be at least 8 characters long')
+      return
+    }
+
     showLoadingModal()
     try {
       await account.updatePassword(newPassword, oldPassword)
@@ -52,7 +76,7 @@ export default function SecurityPage() {
       setOldPassword('')
       setNewPassword('')
     } catch (error) {
-      showAlertModal('FAILED', error.message)
+      showAlertModal('FAILED', 'Failed to change password')
       console.error(error)
     }
   }
@@ -74,7 +98,7 @@ export default function SecurityPage() {
       )
       setUser(null)
     } catch (error) {
-      showAlertModal('FAILED', error.message)
+      showAlertModal('FAILED', 'Failed to delete account')
       Sentry.captureException(error)
     }
   }
@@ -98,19 +122,19 @@ export default function SecurityPage() {
                 <Label nativeID={'email'}>New E-Mail</Label>
                 <Input
                   nativeID={'email'}
-                  onChange={(e) => setEmail(e.nativeEvent.text)}
+                  onChange={(e) => setEmail(e.nativeEvent.text.trim())}
                   textContentType={'emailAddress'}
                   value={email}
                 />
               </View>
               <View>
-                <Label nativeID={'email'}>Current Password</Label>
+                <Label nativeID={'password'}>Current Password</Label>
                 <Input
-                  nativeID={'email'}
+                  nativeID={'password'}
                   textContentType={'password'}
                   passwordRules={'minlength: 8'}
                   secureTextEntry
-                  onChange={(e) => setEmailPassword(e.nativeEvent.text)}
+                  onChange={(e) => setEmailPassword(e.nativeEvent.text.trim())}
                   value={emailPassword}
                 />
               </View>
@@ -130,24 +154,24 @@ export default function SecurityPage() {
               </View>
               <Separator className={'w-[100px]'} />
               <View>
-                <Label nativeID={'email'}>Current password</Label>
+                <Label nativeID={'oldPassword'}>Current password</Label>
                 <Input
-                  nativeID={'email'}
+                  nativeID={'oldPassword'}
                   textContentType={'password'}
                   secureTextEntry
                   passwordRules={'minlength: 8'}
-                  onChange={(e) => setOldPassword(e.nativeEvent.text)}
+                  onChange={(e) => setOldPassword(e.nativeEvent.text.trim())}
                   value={oldPassword}
                 />
               </View>
               <View>
-                <Label nativeID={'email'}>New Password</Label>
+                <Label nativeID={'newPassword'}>New Password</Label>
                 <Input
-                  nativeID={'email'}
+                  nativeID={'newPassword'}
                   textContentType={'newPassword'}
                   secureTextEntry
                   passwordRules={'minlength: 8'}
-                  onChange={(e) => setNewPassword(e.nativeEvent.text)}
+                  onChange={(e) => setNewPassword(e.nativeEvent.text.trim())}
                   value={newPassword}
                 />
               </View>

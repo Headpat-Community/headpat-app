@@ -59,22 +59,6 @@ import EulaModal from '~/components/EulaModal'
 import { Muted } from '~/components/ui/typography'
 import * as Updates from 'expo-updates'
 
-async function bootstrap() {
-  const initialNotification = await messaging().getInitialNotification()
-  //console.log('initialNotification', initialNotification)
-
-  if (initialNotification) {
-    if (initialNotification?.data?.type === 'newFollower') {
-      router.navigate(`/user/(stacks)/${initialNotification.data.userId}`)
-    }
-    console.log(
-      'Notification caused application to open',
-      initialNotification.notification
-    )
-    Sentry.captureException('Notification caused application to open')
-  }
-}
-
 TaskManager.defineTask('background-location-task', async ({ data, error }) => {
   if (error) {
     console.error(error)
@@ -402,7 +386,7 @@ function CustomDrawerContent() {
             textAlign: 'center',
           }}
         >
-          Headpat App v0.7.8
+          Headpat App v0.7.9
         </Text>
         <Muted className={'text-center pb-4'}>BETA</Muted>
       </ScrollView>
@@ -410,12 +394,14 @@ function CustomDrawerContent() {
   )
 }
 
+// Update the RootLayout component
 export default function RootLayout() {
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme()
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = useState(false)
   const [lastBackPressed, setLastBackPressed] = useState(0)
   const [openEulaModal, setOpenEulaModal] = useState(false)
   const [versionData, setVersionData] = useState(null)
+  const [isMounted, setIsMounted] = useState(false)
 
   async function onFetchUpdateAsync() {
     try {
@@ -451,6 +437,7 @@ export default function RootLayout() {
       setIsColorSchemeLoaded(true)
     })().finally(() => {
       SplashScreen.hideAsync()
+      setIsMounted(true) // Set the mounted state to true
     })
   }, [colorScheme, setColorScheme])
 
@@ -490,9 +477,11 @@ export default function RootLayout() {
   }, [])
 
   useEffect(() => {
-    onFetchUpdateAsync().then()
-    bootstrap().catch(console.error)
-  }, [])
+    if (isMounted) {
+      onFetchUpdateAsync().then()
+      bootstrap().catch(console.error)
+    }
+  }, [isMounted]) // Add isMounted as a dependency
 
   messaging().setBackgroundMessageHandler(async (remoteMessage) => {
     //console.log('Message handled in the background!', remoteMessage)
@@ -589,4 +578,15 @@ export default function RootLayout() {
       </AlertModalProvider>
     </ThemeProvider>
   )
+}
+
+// Update the bootstrap function
+async function bootstrap() {
+  const initialNotification = await messaging().getInitialNotification()
+
+  if (initialNotification) {
+    if (initialNotification?.data?.type === 'newFollower') {
+      router.navigate(`/user/(stacks)/${initialNotification.data.userId}`)
+    }
+  }
 }
