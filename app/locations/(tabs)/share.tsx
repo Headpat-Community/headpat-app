@@ -7,8 +7,7 @@ import * as Location from 'expo-location'
 import * as BackgroundFetch from 'expo-background-fetch'
 import * as TaskManager from 'expo-task-manager'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { H1, Muted } from '~/components/ui/typography'
-import { Button } from '~/components/ui/button'
+import { H1, H3, Muted } from '~/components/ui/typography'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,8 +28,13 @@ export default function ShareLocationView() {
 
   useFocusEffect(
     React.useCallback(() => {
-      checkStatusAsync().then()
-    }, [])
+      // TODO: Remove this when permissions are properly implemented
+      checkStatusAsync().then(() => {
+        if (current && status?.available && isRegistered) {
+          unregisterBackgroundFetchAsync().then()
+        }
+      })
+    }, [current, isRegistered, status])
   )
 
   const checkStatusAsync = async () => {
@@ -152,22 +156,29 @@ export default function ShareLocationView() {
       <H1>Location Sharing</H1>
       <Muted>BETA</Muted>
       <View style={styles.textContainer}>
-        <Text>
-          Background status:{' '}
-          <Text style={styles.boldText}>
-            {status && BackgroundFetch.BackgroundFetchStatus[status]}
-          </Text>
-        </Text>
+        <Muted>
+          {isRegistered
+            ? 'You are currently sharing your location with other users.'
+            : 'You are not sharing your location with other users.'}
+        </Muted>
+        <Muted>
+          {status?.available
+            ? 'Background fetch is available.'
+            : 'Background fetch is not available.'}
+        </Muted>
       </View>
+      <Separator className={'my-4'} />
+      <H3>Thanks for trying out sharing!</H3>
+      <Muted className={'p-4 px-7'}>
+        For now, location sharing is turned off due to privacy. It will be
+        turned back on when permissions have been properly implemented!
+      </Muted>
+      {/*
       <Button onPress={toggleFetchTask}>
         <Text>{isRegistered ? 'Disable sharing' : 'Enable sharing'}</Text>
       </Button>
+      */}
       <Separator className={'my-4'} />
-      <Muted className={'p-4'}>
-        NOTE: Please only enable this for conventions or other kinds of events.
-        In the future you will be able to properly select users to share your
-        location with. For now, it will be shared with all users.
-      </Muted>
     </View>
   )
 }

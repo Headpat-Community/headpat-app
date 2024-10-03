@@ -103,7 +103,7 @@ export default function ArchivedEventsPage() {
       className={'mt-2'}
     >
       <View className={'gap-4 mx-2'}>
-        <H3 className={'text-foreground text-center'}>Active Events</H3>
+        <H3 className={'text-foreground text-center'}>Archived Events</H3>
 
         {events &&
           events?.map((event, index) => {

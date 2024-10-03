@@ -78,6 +78,7 @@ export const DrawerScreensData = [
   {
     location: 'community',
     title: 'Communities',
+    headerLeft: <HeaderSidebarBackButton />,
   },
   {
     location: 'events/(tabs)',

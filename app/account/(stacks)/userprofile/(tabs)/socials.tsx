@@ -86,7 +86,7 @@ export default function UserprofilePage() {
         })
         showAlertModal('SUCCESS', 'User data updated successfully.')
       } catch (error) {
-        showAlertModal('FAILED', 'Failed to save employee data')
+        showAlertModal('FAILED', 'Failed to save social data')
         Sentry.captureException(error)
       }
       setIsDisabled(false)

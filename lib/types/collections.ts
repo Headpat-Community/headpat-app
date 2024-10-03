@@ -1,9 +1,13 @@
-import { type AppwriteException, Models } from 'react-native-appwrite'
+import { Models } from 'react-native-appwrite'
+
+export interface HeadpatException {
+  error: string
+  type: string
+  code: number
+}
 
 export namespace Account {
-  export interface AccountType
-    extends Models.User<Models.Preferences>,
-      AppwriteException {}
+  export interface AccountType extends Models.User<Models.Preferences> {}
 
   /**
    * This data is returned from the API by calling their own account data.
@@ -110,6 +114,10 @@ export namespace UserData {
      */
     location: string | null
     /**
+     * The user's badges.
+     */
+    badges: string[]
+    /**
      * The user's followers count.
      */
     followersCount: number
@@ -183,15 +191,12 @@ export namespace Location {
   }
 
   /**
-   * This data is returned in the mutuals/map view.
+   * This data is returned in the friends/map view.
    * @see UserDataDocumentsType
    */
   export interface LocationDocumentsType extends Models.Document {
     lat: number
     long: number
-    status: string
-    statusColor: string
-    timeUntilEnd: string
     userData: UserData.UserDataDocumentsType
   }
 }
@@ -447,11 +452,6 @@ export namespace Community {
      */
     description: string
     /**
-     * If the community is nsfw.
-     * @default false
-     */
-    nsfw: boolean
-    /**
      * The tags of the community for searching.
      */
     tags: string[]
@@ -471,6 +471,26 @@ export namespace Community {
      * The amount of followers the community has.
      */
     followersCount: number
+  }
+
+  export interface CommunitySettingsType {
+    total: number
+    documents: CommunitySettingsDocumentsType[]
+  }
+
+  export interface CommunitySettingsDocumentsType extends Models.Document {
+    /**
+     * If the community is indexed by search engines and findable.
+     */
+    isFindable: boolean
+    /**
+     * If the community is publicly accessible.
+     */
+    hasPublicPage: boolean
+    /**
+     * If the community is nsfw.
+     */
+    nsfw: boolean
   }
 
   export interface CommunityFollowersType {

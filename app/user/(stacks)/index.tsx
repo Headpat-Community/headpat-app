@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FlatList } from 'react-native'
 import { database } from '~/lib/appwrite-client'
 import { toast } from '~/lib/toast'

@@ -12,12 +12,12 @@ import { Text } from '~/components/ui/text'
 import React, { useState } from 'react'
 import { Gallery } from '~/lib/types/collections'
 import { View } from 'react-native'
-import { RadioGroup, RadioGroupItem } from '~/components/ui/radio-group'
-import { Label } from '~/components/ui/label'
+import { RadioGroup } from '~/components/ui/radio-group'
 import { Input } from '~/components/ui/input'
 import * as Sentry from '@sentry/react-native'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { reportGalleryImage } from '~/components/gallery/api/reportGalleryImage'
+import { RadioGroupItemWithLabel } from '~/components/RadioGroupItemWithLabel'
 
 export default function ReportGalleryModal({
   open,
@@ -120,22 +120,5 @@ export default function ReportGalleryModal({
         </AlertDialogContent>
       </AlertDialog>
     </>
-  )
-}
-
-function RadioGroupItemWithLabel({
-  value,
-  onLabelPress,
-}: {
-  value: string
-  onLabelPress: () => void
-}) {
-  return (
-    <View className={'flex-row gap-2 items-center'}>
-      <RadioGroupItem aria-labelledby={`label-for-${value}`} value={value} />
-      <Label nativeID={`label-for-${value}`} onPress={onLabelPress}>
-        {value}
-      </Label>
-    </View>
   )
 }
