@@ -110,8 +110,6 @@ export default function Page() {
         ExecutionMethod.DELETE
       )
       const response = JSON.parse(data.responseBody)
-      // TODO: 500 error?
-      console.log(response)
 
       if (response.type === 'community_delete_missing_id') {
         showAlertModal('FAILED', 'Community ID is missing')
