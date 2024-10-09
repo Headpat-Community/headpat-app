@@ -6,8 +6,9 @@ import * as React from 'react'
 import { router } from 'expo-router'
 import { ProfileThemeToggle } from '~/components/ThemeToggle'
 import { useUser } from '~/components/contexts/UserContext'
+import { DrawerProps } from '~/app/_layout'
 
-function HeaderSidebarBackButton() {
+export function HeaderSidebarBackButton() {
   // Back button to go back to the previous screen
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
@@ -18,7 +19,6 @@ function HeaderSidebarBackButton() {
         onPress={() => router.back()}
         style={{
           padding: 10,
-          marginLeft: 10,
         }}
       >
         <ArrowLeftIcon aria-label={'Go back'} size={20} color={theme} />
@@ -54,10 +54,11 @@ function GalleryAddButton() {
   )
 }
 
-export const DrawerScreensData = [
+export const DrawerScreensData: DrawerProps[] = [
   {
     location: 'index',
     title: 'Home',
+    headerShown: true,
   },
   {
     location: 'announcements/(stacks)',
@@ -78,7 +79,7 @@ export const DrawerScreensData = [
   {
     location: 'community',
     title: 'Communities',
-    headerLeft: <HeaderSidebarBackButton />,
+    headerShown: false,
   },
   {
     location: 'events/(tabs)',

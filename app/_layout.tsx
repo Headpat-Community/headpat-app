@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
   DrawerActions,
+  NavigationContainer,
   Theme,
   ThemeProvider,
   useNavigation,
@@ -58,6 +59,7 @@ import DiscordIcon from '~/components/icons/DiscordIcon'
 import EulaModal from '~/components/EulaModal'
 import { Muted } from '~/components/ui/typography'
 import * as Updates from 'expo-updates'
+import DrawerNavigator from '@react-navigation/drawer/src/navigators/createDrawerNavigator'
 
 TaskManager.defineTask('background-location-task', async ({ data, error }) => {
   if (error) {
@@ -550,23 +552,26 @@ export default function RootLayout() {
               }}
               initialRouteName={'index'}
               screenOptions={{
-                drawerStyle: {},
-                swipeEdgeWidth: 50,
-                headerShown: segments[2] !== '[eventId]',
+                headerShown: true,
               }}
             >
-              {DrawerScreensData.map((screen) => (
+              {DrawerScreensData.map((screen: DrawerProps) => (
                 <Drawer.Screen
                   key={screen.location}
                   name={screen.location}
                   options={{
                     drawerLabel: screen.title,
-                    title: screen.title,
                     headerTitleAlign: 'left',
+                    headerShown: screen.headerShown,
+                    headerTitle: screen.title,
                     headerLeft: () =>
                       screen.headerLeft || <HeaderMenuSidebar />,
                     headerRight: () =>
                       screen.headerRight || <ProfileThemeToggle />,
+                    headerRightContainerStyle: {
+                      paddingRight: 16,
+                    },
+                    swipeEnabled: screen.swipeEnabled,
                   }}
                 />
               ))}
@@ -589,4 +594,13 @@ async function bootstrap() {
       router.navigate(`/user/(stacks)/${initialNotification.data.userId}`)
     }
   }
+}
+
+export interface DrawerProps {
+  location: string
+  title: string
+  swipeEnabled?: boolean
+  headerShown?: boolean
+  headerLeft?: React.ReactNode
+  headerRight?: React.ReactNode
 }

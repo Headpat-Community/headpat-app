@@ -5,7 +5,6 @@ function _layout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
-      <Stack.Screen name="add/index" />
       <Stack.Screen name="[galleryId]" />
     </Stack>
   )

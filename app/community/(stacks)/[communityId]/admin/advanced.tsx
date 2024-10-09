@@ -12,14 +12,25 @@ import { Separator } from '~/components/ui/separator'
 import { Button } from '~/components/ui/button'
 import React, { useCallback, useState } from 'react'
 import { Switch } from '~/components/ui/switch'
-import { useGlobalSearchParams } from 'expo-router'
-import { database } from '~/lib/appwrite-client'
-import { Community } from '~/lib/types/collections'
+import { router, useGlobalSearchParams } from 'expo-router'
+import { database, functions } from '~/lib/appwrite-client'
+import { Community, Events } from '~/lib/types/collections'
 import { useFocusEffect } from '@react-navigation/core'
 import { z } from 'zod'
 import { toast } from '~/lib/toast'
 import * as Sentry from '@sentry/react-native'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
+import { ExecutionMethod } from 'react-native-appwrite'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTrigger,
+} from '~/components/ui/alert-dialog'
 
 const schema = z.object({
   isFindable: z.boolean(),
@@ -85,6 +96,45 @@ export default function Page() {
       console.error(error)
       Sentry.captureException(error)
       showAlertModal('FAILED', 'An error occurred. Please try again later.')
+    }
+  }
+
+  const handleDelete = async () => {
+    showLoadingModal()
+    try {
+      const data = await functions.createExecution(
+        'community-endpoints',
+        '',
+        false,
+        `/community?communityId=${local.communityId}`,
+        ExecutionMethod.DELETE
+      )
+      const response = JSON.parse(data.responseBody)
+      // TODO: 500 error?
+      console.log(response)
+
+      if (response.type === 'community_delete_missing_id') {
+        showAlertModal('FAILED', 'Community ID is missing')
+        return
+      } else if (response.type === 'unauthorized') {
+        showAlertModal('FAILED', 'Unauthorized')
+        return
+      } else if (response.type === 'community_delete_no_permission') {
+        showAlertModal('FAILED', 'No permission')
+        return
+      } else if (response.type === 'community_delete_error') {
+        showAlertModal(
+          'FAILED',
+          'Failed to delete community, please try again later'
+        )
+        return
+      } else if (response.type === 'community_delete_success') {
+        showAlertModal('SUCCESS', 'Community deleted successfully')
+        return router.navigate('/community')
+      }
+    } catch (error) {
+      showAlertModal('FAILED', 'Failed to delete community')
+      Sentry.captureException(error)
     }
   }
 
@@ -195,6 +245,75 @@ export default function Page() {
             <Button onPress={handleUpdate}>
               <Text>Save</Text>
             </Button>
+            <Muted>
+              <Text>
+                <Text className={'font-bold'}>Note:</Text> Changes will be
+                reflected immediately.
+              </Text>
+            </Muted>
+            <Separator />
+            <View>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant={'destructive'}>
+                    <Text>Delete community</Text>
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <H4>Are you sure?</H4>
+                  </AlertDialogHeader>
+                  <AlertDialogDescription>
+                    <Text>
+                      <Text className={'text-destructive'}>Warning:</Text> This
+                      action is irreversible. All data will be lost.
+                    </Text>
+                  </AlertDialogDescription>
+                  <View className={'flex-col'}>
+                    <View style={{ marginBottom: 8 }}>
+                      <Text>The following will be deleted:</Text>
+                      <Text>
+                        <Text className={'text-destructive'}>•</Text> Your
+                        community
+                      </Text>
+                      <Text>
+                        <Text className={'text-destructive'}>•</Text> Community
+                        posts
+                      </Text>
+                      <Text>
+                        <Text className={'text-destructive'}>•</Text> Community
+                        followers
+                      </Text>
+                      <Text>
+                        <Text className={'text-destructive'}>•</Text> Community
+                        settings
+                      </Text>
+                      <Text>
+                        <Text className={'text-destructive'}>•</Text> Everything
+                        else that is associated with your community
+                      </Text>
+                    </View>
+                    <View style={{ marginBottom: 8 }}>
+                      <Text>
+                        If you are sure you want to delete your community,
+                        please confirm below.
+                      </Text>
+                    </View>
+                  </View>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>
+                      <Text>Cancel</Text>
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      className={'bg-destructive'}
+                      onPress={handleDelete}
+                    >
+                      <Text className={'text-white'}>Confirm deletion</Text>
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </View>
           </View>
         </TouchableWithoutFeedback>
       </ScrollView>

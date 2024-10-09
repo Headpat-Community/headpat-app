@@ -85,7 +85,7 @@ export default function CommunitiesPage() {
 
   if (refreshing || !communities.length)
     return (
-      <ScrollView>
+      <ScrollView contentInsetAdjustmentBehavior={'automatic'}>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
           {Array.from({ length: 8 }).map((_, index) => (
             <View
@@ -123,6 +123,7 @@ export default function CommunitiesPage() {
       ListFooterComponent={
         loadingMore && hasMore ? <Text>Loading...</Text> : null
       }
+      contentInsetAdjustmentBehavior={'automatic'}
     />
   )
 }

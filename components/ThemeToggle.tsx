@@ -12,13 +12,13 @@ export function ProfileThemeToggle() {
   const { current } = useUser()
 
   return (
-    <View className={'flex-wrap items-center'}>
+    <View className={'flex-row items-center'}>
       <Link href={current ? '/account' : '/login'} asChild>
         <Pressable>
           {({ pressed }) => (
             <View
               className={cn(
-                'flex-1 aspect-square justify-center items-end pt-0.5',
+                'flex aspect-square justify-center items-end pt-0.5',
                 pressed && 'opacity-70'
               )}
             >
