@@ -1,11 +1,25 @@
 import React from 'react'
 import { Stack } from 'expo-router'
+import { HeaderSidebarBackButton } from '~/components/data/DrawerScreensData'
 
-const _layout = () => {
+function _layout() {
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="index" />
-      <Stack.Screen name="[userId]/index" />
+    <Stack initialRouteName={'index'}>
+      <Stack.Screen
+        name="index"
+        options={{
+          headerTitle: 'Users',
+          headerLargeTitle: true,
+          headerLeft: () => <HeaderSidebarBackButton />,
+        }}
+      />
+      <Stack.Screen
+        name="[userId]/index"
+        options={{
+          headerTitle: '',
+          headerLeft: () => <HeaderSidebarBackButton />,
+        }}
+      />
       <Stack.Screen name="[userId]/relationships/followers/index" />
       <Stack.Screen name="[userId]/relationships/following/index" />
     </Stack>

@@ -89,7 +89,7 @@ export const DrawerScreensData: DrawerProps[] = [
   {
     location: 'user/(stacks)',
     title: 'Users',
-    headerLeft: <HeaderSidebarBackButton />,
+    headerShown: false,
   },
   {
     location: 'notifications/index',

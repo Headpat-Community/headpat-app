@@ -76,6 +76,7 @@ export default function UserListPage() {
       onEndReached={loadMore}
       onEndReachedThreshold={0.5}
       ListFooterComponent={loadingMore ? <Text>Loading...</Text> : null}
+      contentInsetAdjustmentBehavior={'automatic'}
     />
   )
 }
