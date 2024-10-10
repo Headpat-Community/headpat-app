@@ -17,7 +17,6 @@ import { ProfileThemeToggle } from '~/components/ThemeToggle'
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar'
 import { NAV_THEME } from '~/lib/constants'
 import { useColorScheme } from '~/lib/useColorScheme'
-import { Drawer } from '~/components/Drawer'
 import { DrawerItem } from '@react-navigation/drawer'
 import { TouchableOpacity } from '@gorhom/bottom-sheet'
 import {
@@ -55,9 +54,10 @@ import * as Sentry from '@sentry/react-native'
 import { Button } from '~/components/ui/button'
 import { Text } from '~/components/ui/text'
 import DiscordIcon from '~/components/icons/DiscordIcon'
-import EulaModal from '~/components/EulaModal'
+import EulaModal from '~/components/system/EulaModal'
 import { Muted } from '~/components/ui/typography'
 import * as Updates from 'expo-updates'
+import { Drawer } from 'expo-router/drawer'
 
 TaskManager.defineTask('background-location-task', async ({ data, error }) => {
   if (error) {
