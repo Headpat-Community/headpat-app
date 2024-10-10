@@ -1,7 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
   DrawerActions,
-  NavigationContainer,
   Theme,
   ThemeProvider,
   useNavigation,
@@ -59,7 +58,6 @@ import DiscordIcon from '~/components/icons/DiscordIcon'
 import EulaModal from '~/components/EulaModal'
 import { Muted } from '~/components/ui/typography'
 import * as Updates from 'expo-updates'
-import DrawerNavigator from '@react-navigation/drawer/src/navigators/createDrawerNavigator'
 
 TaskManager.defineTask('background-location-task', async ({ data, error }) => {
   if (error) {
@@ -485,10 +483,6 @@ export default function RootLayout() {
     }
   }, [isMounted]) // Add isMounted as a dependency
 
-  messaging().setBackgroundMessageHandler(async (remoteMessage) => {
-    //console.log('Message handled in the background!', remoteMessage)
-  })
-
   messaging().onNotificationOpenedApp(async (remoteMessage) => {
     if (remoteMessage?.data?.type === 'newFollower') {
       router.navigate(`/user/(stacks)/${remoteMessage.data.userId}`)
@@ -514,7 +508,6 @@ export default function RootLayout() {
         // Get EULA cookie
         AsyncStorage.getItem(`eula`).then(async (eula) => {
           if (eula !== data.version) {
-            console.log(eula)
             const allKeys = await AsyncStorage.getAllKeys()
             const eulaKeys = allKeys.filter((key) => key.startsWith('eula'))
             await AsyncStorage.multiRemove(eulaKeys)
@@ -523,13 +516,12 @@ export default function RootLayout() {
           }
         })
       } catch (error) {
-        console.log(error)
         Sentry.captureException(error)
       }
     }
 
     getEulaVersion().then()
-  }, [])
+  }, [isMounted])
 
   if (!isColorSchemeLoaded) {
     return null

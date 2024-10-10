@@ -32,7 +32,6 @@ export default function AvatarAdd() {
       setImage(result)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      //console.log(error)
       //showAlertModal('FAILED', 'Error picking image.')
       //Sentry.captureException(error)
     }
@@ -177,7 +176,6 @@ export default function AvatarAdd() {
         }
       )
     } catch (error) {
-      console.log('error', error)
       showAlertModal('FAILED', 'Error uploading image.')
       Sentry.captureMessage(error, 'log')
     }

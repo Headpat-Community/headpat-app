@@ -45,38 +45,53 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
     const { showLoadingModal, showAlertModal } = useAlertModal()
 
     const handleFollow = async () => {
-      const dataResponse = await functions.createExecution(
-        'community-endpoints',
-        '',
-        false,
-        `/community/follow?communityId=${data.$id}`,
-        ExecutionMethod.POST
-      )
-      const response = JSON.parse(dataResponse.responseBody)
+      showLoadingModal()
+      try {
+        const dataResponse = await functions.createExecution(
+          'community-endpoints',
+          '',
+          false,
+          `/community/follow?communityId=${data.$id}`,
+          ExecutionMethod.POST
+        )
+        const response = JSON.parse(dataResponse.responseBody)
 
-      if (response.code === 400) {
-        return showAlertModal(
+        if (response.type === 'unauthorized') {
+          return showAlertModal(
+            'FAILED',
+            'You must be logged in to follow a community'
+          )
+        } else if (response.type === 'community_follow_missing_id') {
+          return showAlertModal(
+            'FAILED',
+            'Community ID is missing. Please try again later.'
+          )
+        } else if (response.type === 'community_follow_already_following') {
+          setData((prev) => ({ ...prev, isFollowing: true }))
+          return showAlertModal(
+            'FAILED',
+            'You are already following this community'
+          )
+        } else if (response.type === 'community_follow_error') {
+          return showAlertModal(
+            'FAILED',
+            'An error occurred while following this community'
+          )
+        } else if (response.type === 'community_followed') {
+          showAlertModal('SUCCESS', `You have joined ${data.name}`)
+          setData((prev) => ({ ...prev, isFollowing: true }))
+        }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error) {
+        showAlertModal(
           'FAILED',
-          'Community ID is missing. Please try again later.'
+          'An error occurred while following this community'
         )
-      } else if (response.code === 401) {
-        return showAlertModal(
-          'FAILED',
-          'You must be logged in to follow a community'
-        )
-      } else if (response.code === 403) {
-        setData((prev) => ({ ...prev, isFollowing: true }))
-        return showAlertModal(
-          'FAILED',
-          'You are already following this community'
-        )
-      } else {
-        showAlertModal('SUCCESS', `You have joined ${data.name}`)
-        setData((prev) => ({ ...prev, isFollowing: true }))
       }
     }
 
     const handleUnfollow = async () => {
+      showLoadingModal()
       const dataResponse = await functions.createExecution(
         'community-endpoints',
         '',

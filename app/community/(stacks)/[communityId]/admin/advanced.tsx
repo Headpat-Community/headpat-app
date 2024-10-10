@@ -14,7 +14,7 @@ import React, { useCallback, useState } from 'react'
 import { Switch } from '~/components/ui/switch'
 import { router, useGlobalSearchParams } from 'expo-router'
 import { database, functions } from '~/lib/appwrite-client'
-import { Community, Events } from '~/lib/types/collections'
+import { Community } from '~/lib/types/collections'
 import { useFocusEffect } from '@react-navigation/core'
 import { z } from 'zod'
 import { toast } from '~/lib/toast'
@@ -77,23 +77,35 @@ export default function Page() {
       }
 
       try {
-        await database.updateDocument(
-          'hp_db',
-          'community-settings',
-          `${local?.communityId}`,
-          {
-            isFindable: communitySettings.isFindable,
-            hasPublicPage: communitySettings.hasPublicPage,
-            nsfw: communitySettings.nsfw,
-          }
+        const data = await functions.createExecution(
+          'community-endpoints',
+          JSON.stringify(communitySettings),
+          false,
+          `/community/settings?communityId=${local?.communityId}`,
+          ExecutionMethod.PUT
         )
-        showAlertModal('SUCCESS', 'Community settings updated successfully.')
+        const response = JSON.parse(data.responseBody)
+
+        if (response.type === 'unauthorized') {
+          return showAlertModal('FAILED', 'Unauthorized')
+        } else if (response.type === 'community_settings_update_missing_id') {
+          return showAlertModal('FAILED', 'Community ID is missing')
+        } else if (response.type === 'community_settings_update_error') {
+          return showAlertModal(
+            'FAILED',
+            'Failed to update community settings, please try again later'
+          )
+        } else if (response.type === 'success') {
+          return showAlertModal(
+            'SUCCESS',
+            'Community settings updated successfully.'
+          )
+        }
       } catch (error) {
         showAlertModal('FAILED', 'Failed to save community settings')
         Sentry.captureException(error)
       }
     } catch (error) {
-      console.error(error)
       Sentry.captureException(error)
       showAlertModal('FAILED', 'An error occurred. Please try again later.')
     }
@@ -126,9 +138,10 @@ export default function Page() {
           'Failed to delete community, please try again later'
         )
         return
-      } else if (response.type === 'community_delete_success') {
+      } else if (response.type === 'community_deleted') {
+        router.push('/')
         showAlertModal('SUCCESS', 'Community deleted successfully')
-        return router.navigate('/community')
+        return
       }
     } catch (error) {
       showAlertModal('FAILED', 'Failed to delete community')

@@ -31,7 +31,6 @@ export default function BannerAdd() {
       setImage(result)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      //console.log(error)
       //showAlertModal('FAILED', 'Error picking image.')
       //Sentry.captureException(error)
     }
