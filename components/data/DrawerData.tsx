@@ -145,7 +145,7 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
               theme={theme}
             />
           )}
-          onPress={() => handleNavigation({ route: '/announcements/(stacks)' })}
+          onPress={() => handleNavigation({ route: '/announcements' })}
         />
         <DrawerItem
           label={() => (

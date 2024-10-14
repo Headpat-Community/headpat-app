@@ -63,15 +63,20 @@ function GalleryAddButton() {
   )
 }
 
-export const DrawerScreensData = [
+export const DrawerScreensData: DrawerProps[] = [
   {
     location: 'index',
     title: 'Home',
-    headerShown: true,
   },
   {
-    location: 'announcements/(stacks)',
+    location: 'announcements/index',
     title: 'Announcements',
+    headerLargeTitle: true,
+    headerLeft: <HeaderSidebarBackButton />,
+  },
+  {
+    location: 'announcements/[announcementId]/index',
+    title: '',
     headerLeft: <HeaderSidebarBackButton />,
   },
   {

@@ -253,6 +253,7 @@ export default function RootLayout() {
                       headerTitleAlign: 'left',
                       headerShown: screen.headerShown,
                       headerTitle: screen.title,
+                      headerLargeTitle: screen.headerLargeTitle,
                       headerLeft: () =>
                         screen.headerLeft || <HeaderMenuSidebar />,
                       headerRight: () =>
@@ -318,6 +319,7 @@ export interface DrawerProps {
   title: string
   swipeEnabled?: boolean
   headerShown?: boolean
+  headerLargeTitle?: boolean
   headerLeft?: React.ReactNode
   headerRight?: React.ReactNode
 }

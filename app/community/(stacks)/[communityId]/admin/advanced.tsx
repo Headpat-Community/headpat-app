@@ -31,6 +31,7 @@ import {
   AlertDialogHeader,
   AlertDialogTrigger,
 } from '~/components/ui/alert-dialog'
+import SlowInternet from '~/components/views/SlowInternet'
 
 const schema = z.object({
   isFindable: z.boolean(),
@@ -149,19 +150,7 @@ export default function Page() {
     }
   }
 
-  if (!communitySettings)
-    return (
-      <View className={'flex-1 justify-center items-center'}>
-        <View className={'p-4 native:pb-24 max-w-md gap-6'}>
-          <View className={'gap-1'}>
-            <H1 className={'text-foreground text-center'}>Loading...</H1>
-            <Muted className={'text-base text-center'}>
-              Looks like you have some slow internet.. Please wait.
-            </Muted>
-          </View>
-        </View>
-      </View>
-    )
+  if (!communitySettings) return <SlowInternet />
 
   return (
     <KeyboardAvoidingView

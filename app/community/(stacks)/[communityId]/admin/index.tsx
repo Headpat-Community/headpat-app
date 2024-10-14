@@ -21,6 +21,7 @@ import * as Sentry from '@sentry/react-native'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { Input } from '~/components/ui/input'
 import { Textarea } from '~/components/ui/textarea'
+import SlowInternet from '~/components/views/SlowInternet'
 
 const schema = z.object({
   name: z
@@ -97,19 +98,7 @@ export default function Page() {
     }
   }
 
-  if (!community)
-    return (
-      <View className={'flex-1 justify-center items-center'}>
-        <View className={'p-4 native:pb-24 max-w-md gap-6'}>
-          <View className={'gap-1'}>
-            <H1 className={'text-foreground text-center'}>Loading...</H1>
-            <Muted className={'text-base text-center'}>
-              Looks like you have some slow internet.. Please wait.
-            </Muted>
-          </View>
-        </View>
-      </View>
-    )
+  if (!community) return <SlowInternet />
 
   return (
     <KeyboardAvoidingView

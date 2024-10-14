@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
 import { Text } from '~/components/ui/text'
 
 // eslint-disable-next-line react/display-name
-const CommunityItem = React.memo(
+const NotificationItem = React.memo(
   ({
     notification,
   }: {
@@ -78,4 +78,4 @@ const CommunityItem = React.memo(
   }
 )
 
-export default CommunityItem
+export default NotificationItem
