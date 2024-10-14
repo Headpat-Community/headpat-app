@@ -258,7 +258,10 @@ export default function UserPage() {
       <View className={'mx-10 mb-4'}>
         <HTMLView
           value={sanitizedBio}
-          stylesheet={{ p: { color: theme }, a: { color: 'blue' } }}
+          stylesheet={{
+            p: { color: theme },
+            a: { color: 'hsl(208, 100%, 50%)' },
+          }}
           textComponentProps={{ style: { color: theme } }}
         />
       </View>

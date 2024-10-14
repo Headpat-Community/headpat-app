@@ -31,7 +31,6 @@ export default function FollowersPage() {
     setRefreshing(true)
     setOffset(0)
     await fetchUsers(0)
-    setRefreshing(false)
   }
 
   const fetchUsers = async (newOffset: number = 0) => {
@@ -58,6 +57,9 @@ export default function FollowersPage() {
     } catch (error) {
       toast('Failed to fetch users. Please try again later.')
       Sentry.captureException(error)
+    } finally {
+      setRefreshing(false)
+      setLoadingMore(false)
     }
   }
 
@@ -67,7 +69,6 @@ export default function FollowersPage() {
       const newOffset = offset + 20
       setOffset(newOffset)
       await fetchUsers(newOffset)
-      setLoadingMore(false)
     }
   }
 

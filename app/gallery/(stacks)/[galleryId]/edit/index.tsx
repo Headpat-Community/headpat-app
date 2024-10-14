@@ -8,7 +8,7 @@ import {
 import { database, storage } from '~/lib/appwrite-client'
 import Gallery from 'react-native-awesome-gallery'
 import { ScrollView } from 'react-native-gesture-handler'
-import { Link, router, useLocalSearchParams } from 'expo-router'
+import { Link, router, useGlobalSearchParams } from 'expo-router'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Gallery as GalleryType } from '~/lib/types/collections'
 import { Image } from 'expo-image'
@@ -25,7 +25,7 @@ import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import * as Sentry from '@sentry/react-native'
 
 export default function HomeView() {
-  const local = useLocalSearchParams()
+  const local = useGlobalSearchParams()
   const [image, setImage] = useState<GalleryType.GalleryDocumentsType>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [modalVisible, setModalVisible] = useState(false)
@@ -40,7 +40,7 @@ export default function HomeView() {
       const data: GalleryType.GalleryDocumentsType = await database.getDocument(
         'hp_db',
         'gallery-images',
-        `${local.galleryId}`
+        `${local?.galleryId}`
       )
 
       setImage(data)
@@ -48,7 +48,7 @@ export default function HomeView() {
       hideLoadingModal()
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      showAlertModal('FAILED', 'Failed to fetch gallery data.')
+      showAlertModal('FAILED', 'Failed to fetch gallery data. Does it exist?')
       setRefreshing(false)
     }
   }

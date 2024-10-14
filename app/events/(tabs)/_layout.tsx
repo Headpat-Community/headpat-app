@@ -1,9 +1,13 @@
 import { Tabs } from 'expo-router'
-import { CalendarClockIcon, CalendarIcon } from 'lucide-react-native'
+import {
+  CalendarCheck2Icon,
+  CalendarClockIcon,
+  CalendarIcon,
+} from 'lucide-react-native'
 
 export default function TabsLayout() {
   return (
-    <Tabs>
+    <Tabs backBehavior={'history'}>
       <Tabs.Screen
         name="index"
         options={{
@@ -11,7 +15,6 @@ export default function TabsLayout() {
           tabBarIcon({ color, size }) {
             return <CalendarIcon color={color} size={size} />
           },
-          headerShown: false,
         }}
       />
       <Tabs.Screen
@@ -21,7 +24,6 @@ export default function TabsLayout() {
           tabBarIcon({ color, size }) {
             return <CalendarClockIcon color={color} size={size} />
           },
-          headerShown: false,
         }}
       />
       <Tabs.Screen
@@ -29,9 +31,8 @@ export default function TabsLayout() {
         options={{
           title: 'Archived',
           tabBarIcon({ color, size }) {
-            return <CalendarClockIcon color={color} size={size} />
+            return <CalendarCheck2Icon color={color} size={size} />
           },
-          headerShown: false,
         }}
       />
       <Tabs.Screen
@@ -39,7 +40,6 @@ export default function TabsLayout() {
         options={{
           href: null,
           title: 'Event Detail',
-          headerTitleAlign: 'left',
         }}
       />
     </Tabs>

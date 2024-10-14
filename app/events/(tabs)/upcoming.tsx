@@ -16,7 +16,7 @@ import { useColorScheme } from '~/lib/useColorScheme'
 import { useCallback, useEffect, useState } from 'react'
 import { functions } from '~/lib/appwrite-client'
 import { Events } from '~/lib/types/collections'
-import { H1, H3, Muted } from '~/components/ui/typography'
+import { Muted } from '~/components/ui/typography'
 import { ExecutionMethod } from 'react-native-appwrite'
 import {
   calculateTimeLeft,
@@ -39,7 +39,7 @@ export default function EventsPage() {
         'event-endpoints',
         '',
         false,
-        '/getUpcomingEvents',
+        '/events/upcoming',
         ExecutionMethod.GET
       )
       const response: Events.EventsDocumentsType[] = JSON.parse(
@@ -48,13 +48,13 @@ export default function EventsPage() {
 
       setEvents(response)
       hideLoadingModal()
-      setRefreshing(false)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
+    } catch {
       showAlertModal(
         'FAILED',
         'Failed to fetch events. Please try again later.'
       )
+    } finally {
+      setRefreshing(false)
     }
   }
 
@@ -85,7 +85,6 @@ export default function EventsPage() {
         <View className={'flex-1 justify-center items-center'}>
           <View className={'p-4 native:pb-24 max-w-md gap-6'}>
             <View className={'gap-1'}>
-              <H1 className={'text-foreground text-center'}>Upcoming</H1>
               <Muted className={'text-base text-center'}>
                 No upcoming events
               </Muted>
@@ -103,8 +102,6 @@ export default function EventsPage() {
       className={'mt-2'}
     >
       <View className={'gap-4 mx-2'}>
-        <H3 className={'text-foreground text-center'}>Upcoming Events</H3>
-
         {events &&
           events?.map((event, index) => {
             return (

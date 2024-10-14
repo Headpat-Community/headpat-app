@@ -1,4 +1,4 @@
-import './global.css'
+import './globals.css'
 import 'react-native-url-polyfill/auto'
 import * as Sentry from '@sentry/react-native'
 

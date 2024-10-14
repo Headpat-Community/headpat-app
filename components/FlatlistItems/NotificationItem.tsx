@@ -20,7 +20,7 @@ const CommunityItem = React.memo(
       return `https://api.headpat.place/v1/storage/buckets/avatars/files/${avatarId}/preview?project=hp-main&width=250&height=250`
     }
 
-    return (
+    return notification.userData ? (
       <Link
         href={{
           pathname: '/user/(stacks)/[userId]',
@@ -29,7 +29,7 @@ const CommunityItem = React.memo(
         asChild
       >
         <TouchableOpacity>
-          <Card>
+          <Card className={'my-2'}>
             <CardContent className={'pb-0'}>
               <View className={'flex flex-row items-center my-4'}>
                 <View className={''}>
@@ -42,7 +42,7 @@ const CommunityItem = React.memo(
                     <AvatarFallback>
                       {notification.userData.displayName
                         .charAt(0)
-                        .toUpperCase()}
+                        .toUpperCase() || 'U'}
                     </AvatarFallback>
                   </Avatar>
                 </View>
@@ -58,6 +58,22 @@ const CommunityItem = React.memo(
           </Card>
         </TouchableOpacity>
       </Link>
+    ) : (
+      <Card className={'my-2'}>
+        <CardContent className={'pb-0'}>
+          <View className={'flex flex-row items-center my-4'}>
+            <View className={''}>
+              <Avatar alt={'User Avatar'}>
+                <AvatarFallback>{'U'}</AvatarFallback>
+              </Avatar>
+            </View>
+            <View className={'ml-4'}>
+              <Text>Deleted User followed you! 🎉</Text>
+              <Muted>{formatDate(new Date(notification.$createdAt))}</Muted>
+            </View>
+          </View>
+        </CardContent>
+      </Card>
     )
   }
 )

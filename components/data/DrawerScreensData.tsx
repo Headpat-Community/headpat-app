@@ -1,7 +1,7 @@
 import { useColorScheme } from '~/lib/useColorScheme'
 import { View } from 'react-native'
 import { TouchableOpacity } from '@gorhom/bottom-sheet'
-import { ArrowLeftIcon, PlusIcon } from 'lucide-react-native'
+import { ArrowLeftIcon, HomeIcon, PlusIcon } from 'lucide-react-native'
 import * as React from 'react'
 import { router } from 'expo-router'
 import { ProfileThemeToggle } from '~/components/ThemeToggle'
@@ -23,6 +23,14 @@ export function HeaderSidebarBackButton() {
       >
         <ArrowLeftIcon aria-label={'Go back'} size={20} color={theme} />
       </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => router.navigate('/')}
+        style={{
+          padding: 10,
+        }}
+      >
+        <HomeIcon aria-label={'Home'} size={20} color={theme} />
+      </TouchableOpacity>
     </View>
   )
 }
@@ -37,6 +45,7 @@ function GalleryAddButton() {
         {current && (
           <TouchableOpacity
             onPress={() => router.navigate('/gallery/(stacks)/add')}
+            className={'mr-4'}
           >
             <PlusIcon
               aria-label={'Add gallery item'}
@@ -54,7 +63,7 @@ function GalleryAddButton() {
   )
 }
 
-export const DrawerScreensData: DrawerProps[] = [
+export const DrawerScreensData = [
   {
     location: 'index',
     title: 'Home',
@@ -66,10 +75,28 @@ export const DrawerScreensData: DrawerProps[] = [
     headerLeft: <HeaderSidebarBackButton />,
   },
   {
-    location: 'gallery/(stacks)',
+    location: 'gallery/(stacks)/index',
     title: 'Gallery',
     headerLeft: <HeaderSidebarBackButton />,
     headerRight: <GalleryAddButton />,
+  },
+  {
+    location: 'gallery/(stacks)/add/index',
+    title: 'Gallery',
+    headerLeft: <HeaderSidebarBackButton />,
+    headerRight: <GalleryAddButton />,
+  },
+  {
+    location: 'gallery/(stacks)/[galleryId]/index',
+    title: 'Gallery',
+    headerLeft: <HeaderSidebarBackButton />,
+    headerRight: <GalleryAddButton />,
+  },
+  {
+    location: 'gallery/(stacks)/[galleryId]/edit',
+    title: 'Gallery',
+    headerLeft: <HeaderSidebarBackButton />,
+    headerRight: <ProfileThemeToggle />,
   },
   {
     location: 'locations/(tabs)',
@@ -87,27 +114,46 @@ export const DrawerScreensData: DrawerProps[] = [
     headerLeft: <HeaderSidebarBackButton />,
   },
   {
-    location: 'user/(stacks)',
+    location: 'user/(stacks)/index',
     title: 'Users',
-    headerShown: false,
+    headerLeft: <HeaderSidebarBackButton />,
+    headerRight: <ProfileThemeToggle />,
+  },
+  {
+    location: 'user/(stacks)/[userId]/index',
+    title: '',
+    headerLeft: <HeaderSidebarBackButton />,
+    headerRight: <ProfileThemeToggle />,
+  },
+  {
+    location: 'user/(stacks)/[userId]/relationships/followers/index',
+    title: 'Followers',
+    headerLeft: <HeaderSidebarBackButton />,
+    headerRight: <ProfileThemeToggle />,
+  },
+  {
+    location: 'user/(stacks)/[userId]/relationships/following/index',
+    title: 'Following',
+    headerLeft: <HeaderSidebarBackButton />,
+    headerRight: <ProfileThemeToggle />,
   },
   {
     location: 'notifications/index',
     title: 'Notifications',
     headerLeft: <HeaderSidebarBackButton />,
-  },
-  {
-    location: 'relationships',
-    title: 'Connections',
-    headerLeft: <HeaderSidebarBackButton />,
+    headerRight: <ProfileThemeToggle />,
   },
   {
     location: 'login/index',
     title: 'Login',
+    headerLeft: <HeaderSidebarBackButton />,
+    headerRight: <ProfileThemeToggle />,
   },
   {
     location: 'register/index',
     title: 'Register',
+    headerLeft: <HeaderSidebarBackButton />,
+    headerRight: <ProfileThemeToggle />,
   },
   {
     location: 'account/(stacks)',
@@ -115,15 +161,27 @@ export const DrawerScreensData: DrawerProps[] = [
     headerLeft: <HeaderSidebarBackButton />,
   },
   {
-    location: '(tabs)',
-    title: 'Tabs',
+    location: 'relationships',
+    title: 'Connections',
+    headerShown: false,
   },
   {
-    location: 'material-top-tabs',
-    title: 'Material Top Tabs',
+    location: 'changelog/index',
+    title: 'Changelog',
+    headerLeft: <HeaderSidebarBackButton />,
   },
   {
     location: '+not-found',
     title: 'Oops!',
+    headerLeft: <HeaderSidebarBackButton />,
+    headerRight: <ProfileThemeToggle />,
+  },
+]
+
+export const DrawerScreensTabsData: DrawerProps[] = [
+  {
+    location: 'relationships/mutuals',
+    title: 'Connections',
+    headerShown: true,
   },
 ]

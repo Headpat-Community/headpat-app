@@ -2,6 +2,7 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  RefreshControl,
   ScrollView,
   TouchableWithoutFeedback,
   View,
@@ -23,14 +24,14 @@ import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 
 export default function UserprofilePage() {
   const [isDisabled, setIsDisabled] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
   const { current } = useUser()
 
   const [userData, setUserData] =
     useState<UserData.UserDataDocumentsType | null>(null)
-  const { showLoadingModal, showAlertModal, hideLoadingModal } = useAlertModal()
+  const { showLoadingModal, showAlertModal } = useAlertModal()
 
   const fetchUserData = async () => {
-    showLoadingModal()
     try {
       const data: UserData.UserDataDocumentsType = await database.getDocument(
         'hp_db',
@@ -38,17 +39,19 @@ export default function UserprofilePage() {
         current.$id
       )
       setUserData(data)
-      hideLoadingModal()
     } catch (error) {
       showAlertModal(
         'FAILED',
         'Failed to fetch user data. Please try again later.'
       )
       Sentry.captureException(error)
+    } finally {
+      setRefreshing(false)
     }
   }
 
   const memoizedCallback = useCallback(() => {
+    setRefreshing(true)
     if (current) fetchUserData().then()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current])
@@ -98,6 +101,12 @@ export default function UserprofilePage() {
     }
   }
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true)
+    fetchUserData().then()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   if (!userData)
     return (
       <View className={'flex-1 justify-center items-center'}>
@@ -118,7 +127,11 @@ export default function UserprofilePage() {
       style={{ flex: 1 }}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
     >
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
           <View className="mx-4 gap-4 mt-4 mb-8">
             <View className={'flex-row gap-8'}>

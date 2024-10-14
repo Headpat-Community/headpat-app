@@ -3,7 +3,7 @@ import { CogIcon, ServerCogIcon } from 'lucide-react-native'
 
 export default function TabsLayout() {
   return (
-    <Tabs>
+    <Tabs backBehavior={'history'} initialRouteName="index">
       <Tabs.Screen
         name="index"
         options={{

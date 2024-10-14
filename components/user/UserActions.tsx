@@ -113,13 +113,13 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
         </Suspense>
         <Button className={'text-center'} onPress={handleFollow}>
           {userData.isFollowing ? (
-            <UserMinusIcon color={themeButtons} />
+            <UserMinusIcon color={'white'} />
           ) : (
-            <UserPlusIcon color={themeButtons} />
+            <UserPlusIcon color={'white'} />
           )}
         </Button>
         <Button className={'text-center'} onPress={handleMessage}>
-          <MailIcon color={themeButtons} />
+          <MailIcon color={'white'} />
         </Button>
 
         <AlertDialog

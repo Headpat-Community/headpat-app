@@ -48,6 +48,9 @@ export default function CommunitiesPage() {
           'Failed to fetch notifications. Please try again later.'
         )
         Sentry.captureException(error)
+      } finally {
+        setRefreshing(false)
+        setLoadingMore(false)
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -76,7 +79,6 @@ export default function CommunitiesPage() {
     showLoadingModal()
     setRefreshing(true)
     fetchNotifications(0).then()
-    setRefreshing(false)
     hideLoadingModal()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current.$id])

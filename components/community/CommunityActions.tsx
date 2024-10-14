@@ -164,11 +164,11 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
           }
         >
           {hasPermissions ? (
-            <CogIcon color={themeButtons} />
+            <CogIcon color={'white'} />
           ) : data.isFollowing ? (
-            <UserMinusIcon color={themeButtons} />
+            <UserMinusIcon color={'white'} />
           ) : (
-            <UserPlusIcon color={themeButtons} />
+            <UserPlusIcon color={'white'} />
           )}
         </Button>
 

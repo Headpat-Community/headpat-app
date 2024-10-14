@@ -533,3 +533,57 @@ export namespace Notifications {
     userData: UserData.UserDataDocumentsType
   }
 }
+
+export namespace Changelog {
+  export interface ChangelogType {
+    total: number
+    documents: ChangelogDocumentsType[]
+  }
+
+  export interface ChangelogDocumentsType extends Models.Document {
+    /**
+     * The title of the change
+     */
+    title: string
+    /**
+     * The version of the change
+     */
+    version: string
+    /**
+     * The date the change was made
+     */
+    date: string
+    /**
+     * The description of the change
+     */
+    description: string
+    /**
+     * List of improvements made in the web version
+     */
+    improvementsWeb: string[]
+    /**
+     * List of bugfixes made in the web version
+     */
+    bugfixesWeb: string[]
+    /**
+     * List of new features made in the web version
+     */
+    featuresWeb: string[]
+    /**
+     * List of improvements made in the mobile version
+     */
+    improvementsApp: string[]
+    /**
+     * List of bugfixes made in the mobile version
+     */
+    bugfixesApp: string[]
+    /**
+     * List of new features made in the mobile version
+     */
+    featuresApp: string[]
+    /**
+     * If the change is a draft
+     */
+    draft: boolean
+  }
+}

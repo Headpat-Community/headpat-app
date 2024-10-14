@@ -137,7 +137,6 @@ export default function HomeView() {
   const handleHide = useCallback(async () => {
     setModerationModalOpen(false)
     showLoadingModal()
-    console.log(!imagePrefs?.isHidden)
     try {
       const data = await functions.createExecution(
         'gallery-endpoints',
@@ -178,10 +177,26 @@ export default function HomeView() {
 
   if (refreshing) {
     return (
-      <View style={{ flex: 1 }}>
-        <TouchableOpacity onPress={() => setModalVisible(true)}>
-          <Skeleton className={'w-full'} />
-        </TouchableOpacity>
+      <View className={'mt-4'}>
+        <View className={'gap-y-4 justify-center items-center mx-6'}>
+          <Skeleton className={'w-full h-96'} />
+          <Skeleton className={'w-[200px] h-8'} />
+        </View>
+        <View className={'mt-4 mx-6'}>
+          <Skeleton className={'w-full h-24'} />
+        </View>
+        <View className={'mt-8 px-8'}>
+          <Muted className={'pb-4'}>Uploaded by</Muted>
+          <View className={'flex-row flex-wrap items-center justify-between'}>
+            <View className={'flex-row items-center gap-4'}>
+              <Skeleton className={'w-10 h-10 rounded-[10px]'} />
+              <Skeleton className={'w-24 h-4'} />
+            </View>
+            <View>
+              <Skeleton className={'w-24 h-4'} />
+            </View>
+          </View>
+        </View>
       </View>
     )
   }

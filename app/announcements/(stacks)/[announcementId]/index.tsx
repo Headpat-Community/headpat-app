@@ -125,7 +125,7 @@ export default function AnnouncementSinglePage() {
                     color: theme,
                   },
                   a: {
-                    color: 'blue',
+                    color: 'hsl(208, 100%, 50%)',
                   },
                 }}
                 textComponentProps={{

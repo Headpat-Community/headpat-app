@@ -5,7 +5,7 @@ import { useUser } from '~/components/contexts/UserContext'
 export default function TabsLayout() {
   const { current } = useUser()
   return (
-    <Tabs>
+    <Tabs backBehavior={'history'}>
       <Tabs.Screen
         name="index"
         options={{

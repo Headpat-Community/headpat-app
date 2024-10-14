@@ -245,12 +245,6 @@ export default function MutualLocationsPage() {
 
   return (
     <View style={styles.container}>
-      {refreshing && (
-        <View>
-          <Text>Loading...</Text>
-        </View>
-      )}
-
       <LocationPermissionModal
         openModal={modalOpen}
         setOpenModal={setModalOpen}
@@ -276,7 +270,7 @@ export default function MutualLocationsPage() {
             value={sanitizedDescription}
             stylesheet={{
               p: { color: theme },
-              a: { color: 'blue' },
+              a: { color: 'hsl(208, 100%, 50%)' },
             }}
             textComponentProps={{ style: { color: theme } }}
           />
