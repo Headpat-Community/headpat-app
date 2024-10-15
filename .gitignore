@@ -48,3 +48,6 @@ ios/
 # Allow custom sounds folders
 !android/app/src/main/res/raw/custom_sounds/
 !ios/CustomSounds/
+
+# Appwrite
+appwrite.json
