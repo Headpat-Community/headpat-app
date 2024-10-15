@@ -3,11 +3,9 @@ import { Theme, ThemeProvider } from '@react-navigation/native'
 import { PortalHost } from '~/components/primitives/portal'
 import { ToastProvider } from '~/components/primitives/deprecated-ui/toast'
 import {
-  Link,
   router,
   SplashScreen,
   Stack,
-  Tabs,
   useRouter,
   useSegments,
 } from 'expo-router'
@@ -26,7 +24,6 @@ import {
 } from '~/components/contexts/UserContext'
 import {
   DrawerScreensData,
-  DrawerScreensTabsData,
 } from '~/components/data/DrawerScreensData'
 import * as TaskManager from 'expo-task-manager'
 import * as BackgroundFetch from 'expo-background-fetch'
@@ -263,37 +260,6 @@ export default function RootLayout() {
                 ))}
               </Stack>
             </BottomSheetModalProvider>
-            {/*
-            <Drawer
-              drawerContent={() => {
-                return <CustomDrawerContent />
-              }}
-              initialRouteName={'index'}
-              screenOptions={{
-                headerShown: true,
-              }}
-            >
-              {DrawerScreensData.map((screen: DrawerProps) => (
-                <Drawer.Screen
-                  key={screen.location}
-                  name={screen.location}
-                  options={{
-                    headerTitleAlign: 'left',
-                    headerShown: screen.headerShown,
-                    headerTitle: screen.title,
-                    headerLeft: () =>
-                      screen.headerLeft || <HeaderMenuSidebar />,
-                    headerRight: () =>
-                      screen.headerRight || <ProfileThemeToggle />,
-                    headerRightContainerStyle: {
-                      paddingRight: 16,
-                    },
-                    swipeEnabled: screen.swipeEnabled ?? false,
-                  }}
-                />
-              ))}
-            </Drawer>
-            */}
           </GestureHandlerRootView>
           <PortalHost />
           <ToastProvider />
