@@ -23,9 +23,6 @@ import {
   UserProvider,
 } from '~/components/contexts/UserContext'
 import { DrawerScreensData } from '~/components/data/DrawerScreensData'
-import * as TaskManager from 'expo-task-manager'
-import * as BackgroundFetch from 'expo-background-fetch'
-import * as Location from 'expo-location'
 import { database } from '~/lib/appwrite-client'
 import { toast } from '~/lib/toast'
 import messaging from '@react-native-firebase/messaging'
@@ -36,34 +33,8 @@ import EulaModal from '~/components/system/EulaModal'
 import * as Updates from 'expo-updates'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { HeaderMenuSidebar } from '~/components/data/DrawerData'
-
-TaskManager.defineTask(
-  'background-location-task',
-  // @ts-ignore
-  async ({ data: { locations }, error }) => {
-    console.log(locations)
-    Sentry.captureException(error)
-    if (error) {
-      console.error(error)
-      Sentry.captureException(error)
-      return BackgroundFetch.BackgroundFetchResult.Failed
-    }
-
-    // Use the user data from the task
-    const userId = await AsyncStorage.getItem('userId')
-    //const preciseLocation = await AsyncStorage.getItem('preciseLocation')
-
-    if (!userId) {
-      return Location.stopLocationUpdatesAsync('background-location-task')
-    }
-
-    // Make API calls to update or create location document
-    await database.updateDocument('hp_db', 'locations', userId, {
-      long: locations.coords.longitude,
-      lat: locations.coords.latitude,
-    })
-  }
-)
+import { LocationProvider } from '~/components/contexts/SharingContext'
+import '../components/system/backgroundTasks'
 
 const LIGHT_THEME: Theme = {
   dark: false,
@@ -79,6 +50,10 @@ export {
   ErrorBoundary,
 } from 'expo-router'
 
+/**
+ * Deleting this line will break the app.
+ * It's literally unstable.
+ */
 export const unstable_settings = {
   initialRouteName: 'index',
 }
@@ -229,28 +204,30 @@ export default function RootLayout() {
             setOpen={setOpenEulaModal}
             versionData={versionData}
           />
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <BottomSheetModalProvider>
-              <Stack>
-                {DrawerScreensData.map((screen: DrawerProps) => (
-                  <Stack.Screen
-                    key={screen.location}
-                    name={screen.location}
-                    options={{
-                      headerTitleAlign: 'left',
-                      headerShown: screen.headerShown,
-                      headerTitle: screen.title,
-                      headerLargeTitle: screen.headerLargeTitle,
-                      headerLeft: () =>
-                        screen.headerLeft || <HeaderMenuSidebar />,
-                      headerRight: () =>
-                        screen.headerRight || <ProfileThemeToggle />,
-                    }}
-                  />
-                ))}
-              </Stack>
-            </BottomSheetModalProvider>
-          </GestureHandlerRootView>
+          <LocationProvider>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+              <BottomSheetModalProvider>
+                <Stack>
+                  {DrawerScreensData.map((screen: DrawerProps) => (
+                    <Stack.Screen
+                      key={screen.location}
+                      name={screen.location}
+                      options={{
+                        headerTitleAlign: 'left',
+                        headerShown: screen.headerShown,
+                        headerTitle: screen.title,
+                        headerLargeTitle: screen.headerLargeTitle,
+                        headerLeft: () =>
+                          screen.headerLeft || <HeaderMenuSidebar />,
+                        headerRight: () =>
+                          screen.headerRight || <ProfileThemeToggle />,
+                      }}
+                    />
+                  ))}
+                </Stack>
+              </BottomSheetModalProvider>
+            </GestureHandlerRootView>
+          </LocationProvider>
           <PortalHost />
           <ToastProvider />
         </UserProvider>

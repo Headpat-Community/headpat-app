@@ -33,7 +33,7 @@ import HTMLView from 'react-native-htmlview'
 import { useColorScheme } from '~/lib/useColorScheme'
 import FiltersModal from '~/components/locations/FiltersModal'
 import SettingsModal from '~/components/locations/SettingsModal'
-import LocationPermissionModal from '~/components/locations/LocationPermissionModal'
+import { LocationFrontPermissionModal } from '~/components/locations/LocationPermissionModal'
 import sanitizeHtml from 'sanitize-html'
 import { generatePolygonCoords } from '~/components/locations/generatePolygonCoords'
 
@@ -53,7 +53,6 @@ export default function MutualLocationsPage() {
   const [friendsLocations, setFriendsLocations] = useState<
     LocationType.LocationDocumentsType[]
   >([])
-  const [refreshing, setRefreshing] = useState<boolean>(false)
   const [currentEvent, setCurrentEvent] = useState(null)
   const [filters, setFilters] = useState({ showEvents: true, showUsers: true })
 
@@ -103,18 +102,17 @@ export default function MutualLocationsPage() {
   }, [current])
 
   const onRefresh = useCallback(() => {
-    setRefreshing(true)
-    fetchUserLocations().then(() =>
-      fetchEvents().then(() => setRefreshing(false))
-    )
-  }, [fetchEvents, fetchUserLocations])
+    fetchUserLocations().then(() => fetchEvents().then())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     let watcher = null
     const startWatching = async () => {
       let { status } = await Location.getForegroundPermissionsAsync()
       if (status !== 'granted') {
-        setModalOpen(true)
+        //setModalOpen(true)
+        return
       } else {
         watcher = await Location.watchPositionAsync(
           {
@@ -245,7 +243,7 @@ export default function MutualLocationsPage() {
 
   return (
     <View style={styles.container}>
-      <LocationPermissionModal
+      <LocationFrontPermissionModal
         openModal={modalOpen}
         setOpenModal={setModalOpen}
       />
