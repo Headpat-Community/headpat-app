@@ -13,6 +13,7 @@ export default function UserListPage() {
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
   const [offset, setOffset] = useState<number>(0)
+  const [hasMore, setHasMore] = useState<boolean>(true)
 
   const fetchUsers = async (newOffset: number = 0) => {
     try {
@@ -33,6 +34,9 @@ export default function UserListPage() {
       } else {
         setUsers((prevUsers) => [...prevUsers, ...newUsers])
       }
+
+      // Check if there are more users to load
+      setHasMore(newUsers.length === 20)
     } catch (error) {
       toast('Failed to fetch users. Please try again later.')
       Sentry.captureException(error)
@@ -47,7 +51,7 @@ export default function UserListPage() {
   }
 
   const loadMore = async () => {
-    if (!loadingMore) {
+    if (!loadingMore && hasMore) {
       setLoadingMore(true)
       const newOffset = offset + 20
       setOffset(newOffset)

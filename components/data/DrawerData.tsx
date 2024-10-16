@@ -44,9 +44,10 @@ export function HeaderMenuSidebar() {
   const theme = isDarkColorScheme ? 'white' : 'black'
 
   return (
-    <View>
+    <View className={'flex-row items-center'}>
       <TouchableOpacity
-        style={{ padding: 16 }}
+        // Just to make sure the icon is clickable
+        style={{ paddingRight: 8 }}
         onPress={handlePresentModalPress}
       >
         <MenuIcon size={20} color={theme} />
@@ -267,7 +268,7 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
         </Link>
         <Separator />
         <Text style={{ color: theme, padding: 10, textAlign: 'center' }}>
-          Headpat App v0.8.1
+          Headpat App v0.8.2
         </Text>
         <Muted style={{ textAlign: 'center', paddingBottom: 16 }}>BETA</Muted>
       </BottomSheetScrollView>

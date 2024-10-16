@@ -2,7 +2,7 @@
   "expo": {
     "name": "Headpat",
     "slug": "headpat-app",
-    "version": "0.8.1",
+    "version": "0.8.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "headpatapp",
@@ -52,7 +52,7 @@
         "applinks:headpat.place",
         "applinks:api.headpat.place"
       ],
-      "buildNumber": "108"
+      "buildNumber": "112"
     },
     "android": {
       "permissions": [

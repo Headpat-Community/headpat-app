@@ -19,6 +19,7 @@ import {
 } from '~/components/ui/alert-dialog'
 import { useFocusEffect } from '@react-navigation/native'
 import { Separator } from '~/components/ui/separator'
+import { Button } from '~/components/ui/button'
 
 export default function ShareLocationView() {
   const [isRegistered, setIsRegistered] = React.useState(false)
@@ -26,6 +27,7 @@ export default function ShareLocationView() {
   const [modalOpen, setModalOpen] = React.useState(false)
   const { current } = useUser()
 
+  /*
   useFocusEffect(
     React.useCallback(() => {
       // TODO: Remove this when permissions are properly implemented
@@ -36,6 +38,7 @@ export default function ShareLocationView() {
       })
     }, [current, isRegistered, status])
   )
+ */
 
   const checkStatusAsync = async () => {
     const status = await BackgroundFetch.getStatusAsync()
@@ -167,6 +170,9 @@ export default function ShareLocationView() {
             : 'Background fetch is not available.'}
         </Muted>
       </View>
+      <Button onPress={requestPermissions}>
+        <Text>Enable location sharing</Text>
+      </Button>
       <Separator className={'my-4'} />
       <H3>Thanks for trying out sharing!</H3>
       <Muted className={'p-4 px-7'}>

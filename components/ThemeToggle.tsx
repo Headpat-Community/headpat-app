@@ -12,7 +12,7 @@ export function ProfileThemeToggle() {
   const { current } = useUser()
 
   return (
-    <View className={'flex-row items-center mr-4'}>
+    <View className={'flex-row items-center'}>
       <Link href={current ? '/account' : '/login'} asChild>
         <TouchableOpacity>
           <View

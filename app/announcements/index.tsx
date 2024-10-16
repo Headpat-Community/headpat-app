@@ -16,9 +16,12 @@ export default function AnnouncementsPage() {
   const [announcements, setAnnouncements] =
     useState<Announcements.AnnouncementDataType>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
+  const [loadingMore, setLoadingMore] = useState<boolean>(false)
+  const [offset, setOffset] = useState<number>(0)
+  const [hasMore, setHasMore] = useState<boolean>(true)
   const { showAlertModal } = useAlertModal()
 
-  const fetchAnnouncements = async () => {
+  const fetchAnnouncements = async (newOffset: number = 0) => {
     try {
       const currentDate = new Date()
 
@@ -26,9 +29,23 @@ export default function AnnouncementsPage() {
         await database.listDocuments('hp_db', 'announcements', [
           Query.orderAsc('validUntil'),
           Query.greaterThanEqual('validUntil', currentDate.toISOString()),
+          Query.limit(20),
+          Query.offset(newOffset),
         ])
 
-      setAnnouncements(data)
+      const newAnnouncements = data.documents
+
+      if (newOffset === 0) {
+        setAnnouncements(data)
+      } else {
+        setAnnouncements((prev) => ({
+          ...prev,
+          documents: [...prev.documents, ...newAnnouncements],
+        }))
+      }
+
+      // Check if there are more announcements to load
+      setHasMore(newAnnouncements.length === 20)
     } catch (error) {
       showAlertModal(
         'FAILED',
@@ -48,8 +65,19 @@ export default function AnnouncementsPage() {
   )
 
   const onRefresh = () => {
-    //setRefreshing(true)
-    fetchAnnouncements().then()
+    setRefreshing(true)
+    setOffset(0)
+    fetchAnnouncements(0).then()
+  }
+
+  const loadMore = async () => {
+    if (!loadingMore && hasMore) {
+      setLoadingMore(true)
+      const newOffset = offset + 20
+      setOffset(newOffset)
+      await fetchAnnouncements(newOffset)
+      setLoadingMore(false)
+    }
   }
 
   if (refreshing && !announcements) {
@@ -83,6 +111,9 @@ export default function AnnouncementsPage() {
       refreshing={refreshing}
       contentContainerStyle={{ padding: 8 }}
       contentInsetAdjustmentBehavior={'automatic'}
+      onEndReached={loadMore}
+      onEndReachedThreshold={0.5}
+      ListFooterComponent={loadingMore ? <Text>Loading...</Text> : null}
       renderItem={({ item }) => <AnnouncementItem announcement={item} />}
     />
   )

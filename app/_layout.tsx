@@ -22,9 +22,7 @@ import {
   updatePushTargetWithAppwrite,
   UserProvider,
 } from '~/components/contexts/UserContext'
-import {
-  DrawerScreensData,
-} from '~/components/data/DrawerScreensData'
+import { DrawerScreensData } from '~/components/data/DrawerScreensData'
 import * as TaskManager from 'expo-task-manager'
 import * as BackgroundFetch from 'expo-background-fetch'
 import * as Location from 'expo-location'
@@ -39,40 +37,33 @@ import * as Updates from 'expo-updates'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { HeaderMenuSidebar } from '~/components/data/DrawerData'
 
-TaskManager.defineTask('background-location-task', async ({ data, error }) => {
-  if (error) {
-    console.error(error)
+TaskManager.defineTask(
+  'background-location-task',
+  // @ts-ignore
+  async ({ data: { locations }, error }) => {
+    console.log(locations)
     Sentry.captureException(error)
-    return BackgroundFetch.BackgroundFetchResult.Failed
-  }
+    if (error) {
+      console.error(error)
+      Sentry.captureException(error)
+      return BackgroundFetch.BackgroundFetchResult.Failed
+    }
 
-  // Use the user data from the task
-  const userId = await AsyncStorage.getItem('userId')
-  //const preciseLocation = await AsyncStorage.getItem('preciseLocation')
+    // Use the user data from the task
+    const userId = await AsyncStorage.getItem('userId')
+    //const preciseLocation = await AsyncStorage.getItem('preciseLocation')
 
-  if (!userId) {
-    return Location.stopLocationUpdatesAsync('background-location-task')
-  }
+    if (!userId) {
+      return Location.stopLocationUpdatesAsync('background-location-task')
+    }
 
-  // Get current location
-  const location = await Location.getCurrentPositionAsync({
-    accuracy: Location.LocationAccuracy.High,
-  })
-
-  // Make API calls to update or create location document
-  await database
-    .updateDocument('hp_db', 'locations', userId, {
-      long: location.coords.longitude,
-      lat: location.coords.latitude,
+    // Make API calls to update or create location document
+    await database.updateDocument('hp_db', 'locations', userId, {
+      long: locations.coords.longitude,
+      lat: locations.coords.latitude,
     })
-    .catch(async () => {
-      await database.createDocument('hp_db', 'locations', userId, {
-        long: location.coords.longitude,
-        lat: location.coords.latitude,
-        timeUntilEnd: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-      })
-    })
-})
+  }
+)
 
 const LIGHT_THEME: Theme = {
   dark: false,
@@ -89,7 +80,6 @@ export {
 } from 'expo-router'
 
 export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: 'index',
 }
 
