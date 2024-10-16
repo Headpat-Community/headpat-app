@@ -14,11 +14,12 @@ export function HeaderSidebarBackButton() {
   const theme = isDarkColorScheme ? 'white' : 'black'
 
   return (
-    <View style={{ flexDirection: 'row' }}>
+    <View className={'items-center flex-row'}>
       <TouchableOpacity
         onPress={() => router.back()}
         style={{
-          padding: 10,
+          paddingVertical: 10,
+          paddingRight: 10,
         }}
       >
         <ArrowLeftIcon aria-label={'Go back'} size={20} color={theme} />
@@ -69,6 +70,17 @@ export const DrawerScreensData: DrawerProps[] = [
     title: 'Home',
   },
   {
+    location: 'languages/index',
+    title: 'Languages',
+    headerLeft: <HeaderSidebarBackButton />,
+  },
+  {
+    location: 'chat/(main)',
+    title: 'Chat',
+    headerLeft: <HeaderSidebarBackButton />,
+    headerShown: false,
+  },
+  {
     location: 'announcements/index',
     title: 'Announcements',
     headerLargeTitle: true,
@@ -104,7 +116,7 @@ export const DrawerScreensData: DrawerProps[] = [
     headerRight: <ProfileThemeToggle />,
   },
   {
-    location: 'locations/(tabs)',
+    location: 'locations',
     title: 'Locations',
     headerLeft: <HeaderSidebarBackButton />,
   },

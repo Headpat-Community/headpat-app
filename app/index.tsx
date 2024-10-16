@@ -13,6 +13,7 @@ import {
   MapPinIcon,
   MapPinnedIcon,
   MegaphoneIcon,
+  MessageSquareIcon,
 } from 'lucide-react-native'
 import { useColorScheme } from '~/lib/useColorScheme'
 import { useUser } from '~/components/contexts/UserContext'
@@ -29,6 +30,7 @@ import { TouchableOpacity } from '@gorhom/bottom-sheet'
 import { useFocusEffect } from '@react-navigation/core'
 import * as Sentry from '@sentry/react-native'
 import { Skeleton } from '~/components/ui/skeleton'
+import { i18n } from '~/components/system/i18n'
 
 export default function HomeView() {
   const [userData, setUserData] = useState<UserData.UserDataDocumentsType>(null)
@@ -125,16 +127,44 @@ export default function HomeView() {
               }}
             />
             {userData?.displayName ? (
-              <H4 className={'mt-2'}>Welcome back, {userData?.displayName}</H4>
+              <H4 className={'mt-2'}>
+                {i18n.t('home.welcomeback')}, {userData?.displayName}
+              </H4>
             ) : (
-              <H4 className={'mt-2'}>Welcome back!</H4>
+              <H4 className={'mt-2'}>{i18n.t('home.welcomeback')}</H4>
             )}
           </>
         ) : (
-          <H4 className={'mt-10'}>Welcome to Headpat!</H4>
+          <H4 className={'mt-10'}>{i18n.t('home.welcomenew')}</H4>
         )}
 
         <Card className={'w-3/4 mt-8'}>
+          <TouchableOpacity
+            onPress={() => router.push(current ? '/chat/(main)' : '/login')}
+          >
+            <CardContent className={'p-0'}>
+              <CardFooter className={'mt-2 text-xl flex pb-4'}>
+                <MessageSquareIcon
+                  size={20}
+                  color={theme}
+                  style={{
+                    marginRight: 4,
+                  }}
+                />
+                <Text>Chat</Text>
+              </CardFooter>
+              <CardFooter
+                className={'p-0 pb-2 justify-between flex flex-wrap ml-7'}
+              >
+                <CardDescription>
+                  <Text>{i18n.t('home.chatdescription')}</Text>
+                </CardDescription>
+              </CardFooter>
+            </CardContent>
+          </TouchableOpacity>
+        </Card>
+
+        <Card className={'w-3/4 mt-4'}>
           <TouchableOpacity onPress={() => router.push('/gallery/(stacks)')}>
             <CardContent className={'p-0'}>
               <CardFooter className={'mt-2 text-xl flex pb-4'}>
@@ -151,7 +181,7 @@ export default function HomeView() {
                 className={'p-0 pb-2 justify-between flex flex-wrap ml-7'}
               >
                 <CardDescription>
-                  <Text>The place for all the pictures.</Text>
+                  <Text>{i18n.t('home.gallerydescription')}</Text>
                 </CardDescription>
               </CardFooter>
             </CardContent>
@@ -175,7 +205,7 @@ export default function HomeView() {
                 className={'p-0 pb-2 justify-between flex flex-wrap mx-7'}
               >
                 <CardDescription>
-                  <Text>Find your mutuals!</Text>
+                  <Text>{i18n.t('home.locationsdescription')}</Text>
                 </CardDescription>
                 <CardDescription>
                   <Text>
@@ -204,7 +234,7 @@ export default function HomeView() {
                 className={'p-0 pb-2 justify-between flex flex-wrap ml-7'}
               >
                 <CardDescription>
-                  <Text>Stay updated with our news.</Text>
+                  <Text>{i18n.t('home.announcementsdescription')}</Text>
                 </CardDescription>
               </CardFooter>
             </CardContent>
@@ -228,7 +258,7 @@ export default function HomeView() {
                 className={'p-0 justify-between flex flex-wrap ml-7 pb-2'}
               >
                 <CardDescription>
-                  <Text>Looking for fun?</Text>
+                  <Text>{i18n.t('home.eventsdescription')}</Text>
                 </CardDescription>
               </CardFooter>
               {nextEvent && (

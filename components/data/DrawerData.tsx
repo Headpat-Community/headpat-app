@@ -10,6 +10,7 @@ import {
   CalendarIcon,
   FileCheckIcon,
   HomeIcon,
+  LanguagesIcon,
   LayoutPanelLeftIcon,
   LogInIcon,
   MapPinnedIcon,
@@ -47,7 +48,7 @@ export function HeaderMenuSidebar() {
     <View className={'flex-row items-center'}>
       <TouchableOpacity
         // Just to make sure the icon is clickable
-        style={{ paddingRight: 8 }}
+        style={{ paddingRight: 10, paddingVertical: 10 }}
         onPress={handlePresentModalPress}
       >
         <MenuIcon size={20} color={theme} />
@@ -228,6 +229,16 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
           onPress={() =>
             handleNavigation({ route: current ? '/account' : '/login' })
           }
+        />
+        <DrawerItem
+          label={() => (
+            <DrawerLabel
+              icon={LanguagesIcon}
+              text={'Change language'}
+              theme={theme}
+            />
+          )}
+          onPress={() => handleNavigation({ route: '/languages' })}
         />
         <Separator />
         <DrawerItem
