@@ -2,7 +2,7 @@ import { RefreshControl, FlatList, View } from 'react-native'
 import { H1 } from '~/components/ui/typography'
 import React, { useCallback, useState } from 'react'
 import { Announcements } from '~/lib/types/collections'
-import { database } from '~/lib/appwrite-client'
+import { databases } from '~/lib/appwrite-client'
 import { Query } from 'react-native-appwrite'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import * as Sentry from '@sentry/react-native'
@@ -26,7 +26,7 @@ export default function AnnouncementsPage() {
       const currentDate = new Date()
 
       const data: Announcements.AnnouncementDataType =
-        await database.listDocuments('hp_db', 'announcements', [
+        await databases.listDocuments('hp_db', 'announcements', [
           Query.orderAsc('validUntil'),
           Query.greaterThanEqual('validUntil', currentDate.toISOString()),
           Query.limit(20),

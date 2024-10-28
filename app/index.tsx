@@ -19,7 +19,7 @@ import { useColorScheme } from '~/lib/useColorScheme'
 import { useUser } from '~/components/contexts/UserContext'
 import { useCallback, useEffect, useState } from 'react'
 import { Events, UserData } from '~/lib/types/collections'
-import { database, functions } from '~/lib/appwrite-client'
+import { databases, functions } from '~/lib/appwrite-client'
 import { H4 } from '~/components/ui/typography'
 import { Separator } from '~/components/ui/separator'
 import { ExecutionMethod } from 'react-native-appwrite'
@@ -83,7 +83,7 @@ export default function HomeView() {
 
   const fetchUserData = async () => {
     try {
-      const data: UserData.UserDataDocumentsType = await database.getDocument(
+      const data: UserData.UserDataDocumentsType = await databases.getDocument(
         'hp_db',
         'userdata',
         `${current.$id}`

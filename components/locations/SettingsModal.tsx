@@ -12,7 +12,7 @@ import { View } from 'react-native'
 import { Label } from '~/components/ui/label'
 import { Text } from '~/components/ui/text'
 import { Input } from '~/components/ui/input'
-import { database } from '~/lib/appwrite-client'
+import { databases } from '~/lib/appwrite-client'
 import { Switch } from '~/components/ui/switch'
 import { Separator } from '~/components/ui/separator'
 
@@ -35,7 +35,7 @@ export default function SettingsModal({
 
   const saveStatus = async () => {
     try {
-      await database.updateDocument('hp_db', 'locations', current.$id, {
+      await databases.updateDocument('hp_db', 'locations', current.$id, {
         status: currentStatus.status,
         statusColor: currentStatus.statusColor,
       })

@@ -23,7 +23,7 @@ import {
   UserProvider,
 } from '~/components/contexts/UserContext'
 import { DrawerScreensData } from '~/components/data/DrawerScreensData'
-import { database } from '~/lib/appwrite-client'
+import { databases } from '~/lib/appwrite-client'
 import { toast } from '~/lib/toast'
 import messaging from '@react-native-firebase/messaging'
 import { requestUserPermission } from '~/components/system/pushNotifications'
@@ -171,7 +171,7 @@ export default function RootLayout() {
     const getEulaVersion = async () => {
       try {
         // Get EULA version
-        const data = await database.getDocument('config', 'legal', 'eula')
+        const data = await databases.getDocument('config', 'legal', 'eula')
         // Get EULA cookie
         AsyncStorage.getItem(`eula`).then(async (eula) => {
           if (eula !== data.version) {

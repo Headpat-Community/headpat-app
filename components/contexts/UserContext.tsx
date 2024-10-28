@@ -1,13 +1,14 @@
 import { ID } from 'react-native-appwrite'
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { account } from '~/lib/appwrite-client'
+import { account, databases } from '~/lib/appwrite-client'
 import { toast } from '~/lib/toast'
-import { Account } from '~/lib/types/collections'
+import { Account, UserData } from '~/lib/types/collections'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Sentry from '@sentry/react-native'
 
 interface UserContextValue {
   current: Account.AccountType | null
+  settings: UserData.UserSettingsDocumentsType | null
   setUser: React.Dispatch<React.SetStateAction<Account.AccountType | null>>
   isLoadingUser: boolean
   login: (email: string, password: string) => Promise<void>
@@ -17,8 +18,6 @@ interface UserContextValue {
   toast: (message: string) => void
 }
 
-// TODO: Check this out, proper typing.
-// @ts-ignore
 const UserContext = createContext<UserContextValue | undefined>(undefined)
 
 export function useUser(): UserContextValue {
@@ -31,6 +30,7 @@ export function useUser(): UserContextValue {
 
 export function UserProvider(props: any) {
   const [user, setUser] = useState(null)
+  const [userSettings, setUserSettings] = useState(null)
   const [isLoadingUser, setIsLoadingUser] = useState(false)
 
   async function login(email: string, password: string) {
@@ -67,6 +67,12 @@ export function UserProvider(props: any) {
       setIsLoadingUser(true)
       const loggedIn = await account.get()
       setUser(loggedIn)
+      const settings = await databases.getDocument(
+        'hp_db',
+        'user-settings',
+        loggedIn.$id
+      )
+      setUserSettings(settings)
       setIsLoadingUser(false)
       await loggedInPushNotifications()
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -84,6 +90,7 @@ export function UserProvider(props: any) {
     <UserContext.Provider
       value={{
         current: user,
+        settings: userSettings,
         setUser,
         isLoadingUser,
         login,

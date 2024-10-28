@@ -5,7 +5,7 @@ import { Text } from '~/components/ui/text'
 import { Button } from '~/components/ui/button'
 import { H2, Muted } from '~/components/ui/typography'
 import { router, useGlobalSearchParams } from 'expo-router'
-import { database, functions, storage } from '~/lib/appwrite-client'
+import { databases, functions, storage } from '~/lib/appwrite-client'
 import { ExecutionMethod, ID } from 'react-native-appwrite'
 import * as Sentry from '@sentry/react-native'
 import * as ImagePicker from 'react-native-image-crop-picker'
@@ -125,7 +125,7 @@ export default function BannerAdd() {
       fileData.then(
         async function (response) {
           // Update the community's bannerId
-          await database.updateDocument(
+          await databases.updateDocument(
             'hp_db',
             'community',
             `${local?.communityId}`,

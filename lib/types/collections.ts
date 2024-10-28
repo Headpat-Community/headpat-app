@@ -178,6 +178,23 @@ export namespace UserData {
     prefs: UserPrefsDocumentsType
     isFollowing: boolean
   }
+
+  /**
+   * This data is returned from the API by calling the userSettings endpoint.
+   * @see UserSettingsDocumentsType
+   */
+  export interface UserSettingsType {
+    total: number
+    documents: UserSettingsDocumentsType[]
+  }
+
+  /**
+   * This data is returned from the API within the `documents` array.
+   * @see UserSettingsType
+   */
+  export interface UserSettingsDocumentsType extends Models.Document {
+    roles: string[]
+  }
 }
 
 export namespace Location {

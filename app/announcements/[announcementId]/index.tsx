@@ -2,7 +2,7 @@ import { RefreshControl, ScrollView, View } from 'react-native'
 import { H1, H3, Muted } from '~/components/ui/typography'
 import { useLocalSearchParams } from 'expo-router'
 import { Announcements } from '~/lib/types/collections'
-import { database } from '~/lib/appwrite-client'
+import { databases } from '~/lib/appwrite-client'
 import React, { useEffect, useState } from 'react'
 import { Card, CardContent } from '~/components/ui/card'
 import { Text } from '~/components/ui/text'
@@ -25,7 +25,7 @@ export default function AnnouncementSinglePage() {
     try {
       setRefreshing(true)
       const data: Announcements.AnnouncementDocumentsType =
-        await database.getDocument(
+        await databases.getDocument(
           'hp_db',
           'announcements',
           `${local.announcementId}`

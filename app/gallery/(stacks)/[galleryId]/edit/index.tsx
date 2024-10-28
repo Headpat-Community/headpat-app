@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import { database, storage } from '~/lib/appwrite-client'
+import { databases, storage } from '~/lib/appwrite-client'
 import Gallery from 'react-native-awesome-gallery'
 import { ScrollView } from 'react-native-gesture-handler'
 import { Link, router, useGlobalSearchParams } from 'expo-router'
@@ -37,11 +37,12 @@ export default function HomeView() {
     try {
       setRefreshing(true)
       showLoadingModal()
-      const data: GalleryType.GalleryDocumentsType = await database.getDocument(
-        'hp_db',
-        'gallery-images',
-        `${local?.galleryId}`
-      )
+      const data: GalleryType.GalleryDocumentsType =
+        await databases.getDocument(
+          'hp_db',
+          'gallery-images',
+          `${local?.galleryId}`
+        )
 
       setImage(data)
       setRefreshing(false)
@@ -55,7 +56,7 @@ export default function HomeView() {
 
   const saveGallery = async () => {
     try {
-      await database.updateDocument(
+      await databases.updateDocument(
         'hp_db',
         'gallery-images',
         `${local.galleryId}`,
@@ -76,7 +77,7 @@ export default function HomeView() {
   const deleteGalleryImage = async () => {
     showLoadingModal()
     try {
-      await database.deleteDocument(
+      await databases.deleteDocument(
         'hp_db',
         'gallery-images',
         `${local.galleryId}`

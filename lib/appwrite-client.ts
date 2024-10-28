@@ -15,7 +15,7 @@ client
   .setPlatform('com.headpat.app') // Your application ID or bundle ID.
 
 export const account = new Account(client)
-export const database = new Databases(client)
+export const databases = new Databases(client)
 export const functions = new Functions(client)
 export const storage = new Storage(client)
 export const locale = new Locale(client)

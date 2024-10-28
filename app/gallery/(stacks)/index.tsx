@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Dimensions, FlatList, Text, View } from 'react-native'
-import { database, storage } from '~/lib/appwrite-client'
+import { databases, storage } from '~/lib/appwrite-client'
 import * as Sentry from '@sentry/react-native'
 import { Gallery } from '~/lib/types/collections'
 import { ImageFormat, Query } from 'react-native-appwrite'
@@ -52,8 +52,10 @@ export default function GalleryPage() {
             ]
 
         const [imageData, imagePrefsData]: any = await Promise.all([
-          database.listDocuments('hp_db', 'gallery-images', query),
-          database.listDocuments('hp_db', 'gallery-prefs', [Query.limit(5000)]),
+          databases.listDocuments('hp_db', 'gallery-images', query),
+          databases.listDocuments('hp_db', 'gallery-prefs', [
+            Query.limit(5000),
+          ]),
         ])
 
         const parsedImagePrefs = imagePrefsData.documents.reduce(

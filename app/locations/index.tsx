@@ -13,7 +13,7 @@ import {
   Location as LocationType,
   UserData,
 } from '~/lib/types/collections'
-import { database, client } from '~/lib/appwrite-client'
+import { databases, client } from '~/lib/appwrite-client'
 import { Query } from 'react-native-appwrite'
 import { toast } from '~/lib/toast'
 import { useFocusEffect } from '@react-navigation/core'
@@ -59,7 +59,7 @@ export default function MutualLocationsPage() {
   const fetchEvents = useCallback(async () => {
     try {
       const currentDate = new Date()
-      const data: Events.EventsType = await database.listDocuments(
+      const data: Events.EventsType = await databases.listDocuments(
         'hp_db',
         'events',
         [
@@ -80,7 +80,7 @@ export default function MutualLocationsPage() {
 
   const fetchUserLocations = useCallback(async () => {
     try {
-      const data: LocationType.LocationType = await database.listDocuments(
+      const data: LocationType.LocationType = await databases.listDocuments(
         'hp_db',
         'locations',
         []
@@ -90,7 +90,7 @@ export default function MutualLocationsPage() {
           setUserStatus(doc)
         }
         const userData: UserData.UserDataDocumentsType =
-          await database.getDocument('hp_db', 'userdata', doc.$id)
+          await databases.getDocument('hp_db', 'userdata', doc.$id)
         return { ...doc, userData }
       })
       const results = await Promise.all(promises)
@@ -200,7 +200,7 @@ export default function MutualLocationsPage() {
                 setUserStatus(updatedDocument)
               }
               const userData: UserData.UserDataDocumentsType =
-                await database.getDocument(
+                await databases.getDocument(
                   'hp_db',
                   'userdata',
                   `${updatedDocument.$id}`

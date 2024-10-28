@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import { database, functions } from '~/lib/appwrite-client'
+import { databases, functions } from '~/lib/appwrite-client'
 import Gallery from 'react-native-awesome-gallery'
 import { ScrollView } from 'react-native-gesture-handler'
 import { Link, useLocalSearchParams } from 'expo-router'
@@ -61,7 +61,7 @@ export default function HomeView() {
     try {
       setRefreshing(true)
       const [imageData, imagePrefs]: any = await Promise.all([
-        database.getDocument('hp_db', 'gallery-images', `${local.galleryId}`),
+        databases.getDocument('hp_db', 'gallery-images', `${local.galleryId}`),
         functions.createExecution(
           'gallery-endpoints',
           '',
@@ -75,7 +75,7 @@ export default function HomeView() {
       setImagePrefs(JSON.parse(imagePrefs.responseBody))
 
       const userData: UserData.UserDataDocumentsType =
-        await database.getDocument('hp_db', 'userdata', imageData.userId)
+        await databases.getDocument('hp_db', 'userdata', imageData.userId)
       setUserData(userData)
       setRefreshing(false)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars

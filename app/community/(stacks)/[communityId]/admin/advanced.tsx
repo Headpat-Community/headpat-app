@@ -13,7 +13,7 @@ import { Button } from '~/components/ui/button'
 import React, { useCallback, useState } from 'react'
 import { Switch } from '~/components/ui/switch'
 import { router, useGlobalSearchParams } from 'expo-router'
-import { database, functions } from '~/lib/appwrite-client'
+import { databases, functions } from '~/lib/appwrite-client'
 import { Community } from '~/lib/types/collections'
 import { useFocusEffect } from '@react-navigation/core'
 import { z } from 'zod'
@@ -47,7 +47,7 @@ export default function Page() {
 
   const fetchData = useCallback(async () => {
     const data: Community.CommunitySettingsDocumentsType =
-      await database.getDocument(
+      await databases.getDocument(
         'hp_db',
         'community-settings',
         `${local?.communityId}`

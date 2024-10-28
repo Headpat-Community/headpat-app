@@ -2,7 +2,7 @@ import * as TaskManager from 'expo-task-manager'
 import * as Sentry from '@sentry/react-native'
 import * as Location from 'expo-location'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { database } from '~/lib/appwrite-client'
+import { databases } from '~/lib/appwrite-client'
 
 TaskManager.defineTask(
   'background-location-task',
@@ -24,7 +24,7 @@ TaskManager.defineTask(
 
     // Make API calls to update location document
     try {
-      await database.updateDocument('hp_db', 'locations', userId, {
+      await databases.updateDocument('hp_db', 'locations', userId, {
         long: locations[0].coords.longitude,
         lat: locations[0].coords.latitude,
       })

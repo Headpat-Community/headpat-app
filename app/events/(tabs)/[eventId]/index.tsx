@@ -2,7 +2,7 @@ import { RefreshControl, ScrollView, View } from 'react-native'
 import { H1, Muted } from '~/components/ui/typography'
 import { Stack, useLocalSearchParams } from 'expo-router'
 import { Events } from '~/lib/types/collections'
-import { database, functions } from '~/lib/appwrite-client'
+import { databases, functions } from '~/lib/appwrite-client'
 import React, { useEffect, useState } from 'react'
 import { Card, CardContent } from '~/components/ui/card'
 import { Text } from '~/components/ui/text'
@@ -25,7 +25,7 @@ export default function EventPage() {
 
   const fetchEvents = async () => {
     try {
-      const document: Events.EventsDocumentsType = await database.getDocument(
+      const document: Events.EventsDocumentsType = await databases.getDocument(
         'hp_db',
         'events',
         `${local?.eventId}`

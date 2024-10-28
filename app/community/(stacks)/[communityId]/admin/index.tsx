@@ -12,7 +12,7 @@ import { Separator } from '~/components/ui/separator'
 import { Button } from '~/components/ui/button'
 import React, { useCallback, useState } from 'react'
 import { router, useLocalSearchParams } from 'expo-router'
-import { database } from '~/lib/appwrite-client'
+import { databases } from '~/lib/appwrite-client'
 import { Community } from '~/lib/types/collections'
 import { useFocusEffect } from '@react-navigation/core'
 import { z } from 'zod'
@@ -42,7 +42,7 @@ export default function Page() {
   const { showLoadingModal, showAlertModal } = useAlertModal()
 
   const fetchData = useCallback(async () => {
-    const data: Community.CommunityDocumentsType = await database.getDocument(
+    const data: Community.CommunityDocumentsType = await databases.getDocument(
       'hp_db',
       'community',
       `${local?.communityId}`
@@ -76,7 +76,7 @@ export default function Page() {
       }
 
       try {
-        await database.updateDocument(
+        await databases.updateDocument(
           'hp_db',
           'community',
           `${local.communityId}`,

@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Location from 'expo-location'
 import * as BackgroundFetch from 'expo-background-fetch'
 import * as TaskManager from 'expo-task-manager'
-import { database } from '~/lib/appwrite-client'
+import { databases } from '~/lib/appwrite-client'
 
 interface LocationContextValue {
   status: BackgroundFetch.BackgroundFetchStatus | null
@@ -86,9 +86,9 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
     }
 
     try {
-      await database.getDocument('hp_db', 'locations', userId)
+      await databases.getDocument('hp_db', 'locations', userId)
     } catch {
-      await database.createDocument('hp_db', 'locations', userId, {
+      await databases.createDocument('hp_db', 'locations', userId, {
         long: null,
         lat: null,
         timeUntilEnd: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
@@ -111,7 +111,7 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
     await Location.stopLocationUpdatesAsync('background-location-task')
 
     try {
-      await database.deleteDocument('hp_db', 'locations', userId)
+      await databases.deleteDocument('hp_db', 'locations', userId)
     } catch (e) {
       console.error('Failed to delete document:', e)
     }

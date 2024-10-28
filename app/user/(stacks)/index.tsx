@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { FlatList } from 'react-native'
-import { database } from '~/lib/appwrite-client'
+import { databases } from '~/lib/appwrite-client'
 import { toast } from '~/lib/toast'
 import * as Sentry from '@sentry/react-native'
 import { UserData } from '~/lib/types/collections'
@@ -17,7 +17,7 @@ export default function UserListPage() {
 
   const fetchUsers = async (newOffset: number = 0) => {
     try {
-      const data: UserData.UserDataType = await database.listDocuments(
+      const data: UserData.UserDataType = await databases.listDocuments(
         'hp_db',
         'userdata',
         [

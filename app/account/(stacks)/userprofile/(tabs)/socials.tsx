@@ -10,9 +10,9 @@ import {
 import { Text } from '~/components/ui/text'
 import { Input } from '~/components/ui/input'
 import { Button } from '~/components/ui/button'
-import { database } from '~/lib/appwrite-client'
+import { databases } from '~/lib/appwrite-client'
 import { Separator } from '~/components/ui/separator'
-import { H1, H4, Muted } from '~/components/ui/typography'
+import { H4 } from '~/components/ui/typography'
 import React, { useCallback, useState } from 'react'
 import { toast } from '~/lib/toast'
 import { useUser } from '~/components/contexts/UserContext'
@@ -34,7 +34,7 @@ export default function UserprofilePage() {
 
   const fetchUserData = async () => {
     try {
-      const data: UserData.UserDataDocumentsType = await database.getDocument(
+      const data: UserData.UserDataDocumentsType = await databases.getDocument(
         'hp_db',
         'userdata',
         current.$id
@@ -85,7 +85,7 @@ export default function UserprofilePage() {
       }
 
       try {
-        await database.updateDocument('hp_db', 'userdata', current.$id, {
+        await databases.updateDocument('hp_db', 'userdata', current.$id, {
           [name]: value,
         })
         showAlertModal('SUCCESS', 'User data updated successfully.')

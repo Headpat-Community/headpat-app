@@ -3,7 +3,7 @@ import { Changelog } from '~/lib/types/collections'
 import { FlatList, View } from 'react-native'
 import { Text } from '~/components/ui/text'
 import { H1 } from '~/components/ui/typography'
-import { database } from '~/lib/appwrite-client'
+import { databases } from '~/lib/appwrite-client'
 import * as Sentry from '@sentry/react-native'
 import { Query } from 'react-native-appwrite'
 import ChangelogItem from '~/components/FlatlistItems/ChangelogItem'
@@ -17,7 +17,7 @@ export default function ListComponent() {
   const fetchData = async () => {
     try {
       const changelogData: Changelog.ChangelogType =
-        await database.listDocuments('hp_db', 'changelog', [
+        await databases.listDocuments('hp_db', 'changelog', [
           Query.orderDesc('version'),
         ])
 

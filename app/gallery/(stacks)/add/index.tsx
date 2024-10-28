@@ -11,7 +11,7 @@ import { Textarea } from '~/components/ui/textarea'
 import * as React from 'react'
 import { H2, Muted } from '~/components/ui/typography'
 import { router } from 'expo-router'
-import { database, storage } from '~/lib/appwrite-client'
+import { databases, storage } from '~/lib/appwrite-client'
 import { ID } from 'react-native-appwrite'
 import { useUser } from '~/components/contexts/UserContext'
 import * as Sentry from '@sentry/react-native'
@@ -108,7 +108,7 @@ export default function GalleryAdd() {
         fileData
       )
 
-      await database.createDocument(
+      await databases.createDocument(
         'hp_db',
         'gallery-images',
         storageData.$id,
