@@ -543,11 +543,23 @@ export namespace Notifications {
     /**
      * The date the notification was created.
      */
-    type: 'newFollower'
+    type: 'newFollower' | 'newMessage' | 'newEvent' | 'newAnnouncement'
     /**
      * The user data of the user
      */
     userData: UserData.UserDataDocumentsType
+  }
+}
+
+export namespace Config {
+  export interface ConfigFeaturesType {
+    total: number
+    documents: ConfigFeaturesDocumentsType[]
+  }
+
+  export interface ConfigFeaturesDocumentsType extends Models.Document {
+    isEnabled: boolean
+    type: 'public' | 'earlyaccess' | 'staff' | 'dev'
   }
 }
 
