@@ -8,7 +8,6 @@ import * as Sentry from '@sentry/react-native'
 
 interface UserContextValue {
   current: Account.AccountType | null
-  settings: UserData.UserSettingsDocumentsType | null
   setUser: React.Dispatch<React.SetStateAction<Account.AccountType | null>>
   isLoadingUser: boolean
   login: (email: string, password: string) => Promise<void>
@@ -67,12 +66,6 @@ export function UserProvider(props: any) {
       setIsLoadingUser(true)
       const loggedIn = await account.get()
       setUser(loggedIn)
-      const settings = await databases.getDocument(
-        'hp_db',
-        'user-settings',
-        loggedIn.$id
-      )
-      setUserSettings(settings)
       setIsLoadingUser(false)
       await loggedInPushNotifications()
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -90,7 +83,6 @@ export function UserProvider(props: any) {
     <UserContext.Provider
       value={{
         current: user,
-        settings: userSettings,
         setUser,
         isLoadingUser,
         login,
