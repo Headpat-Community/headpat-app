@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { Alert } from 'react-native'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Location from 'expo-location'
 import * as BackgroundFetch from 'expo-background-fetch'
 import * as TaskManager from 'expo-task-manager'
 import { databases } from '~/lib/appwrite-client'
+import { useUser } from '~/components/contexts/UserContext'
 
 interface LocationContextValue {
   status: BackgroundFetch.BackgroundFetchStatus | null
@@ -37,6 +37,7 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
   const [status, setStatus] =
     useState<BackgroundFetch.BackgroundFetchStatus | null>(null)
   const [isRegistered, setIsRegistered] = useState(false)
+  const { current } = useUser()
 
   useEffect(() => {
     checkStatus().then()
@@ -71,8 +72,7 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
   }
 
   const registerBackgroundFetch = async () => {
-    const userId = await AsyncStorage.getItem('userId')
-    if (!userId) {
+    if (!current.$id) {
       setIsRegistered(false)
       return Alert.alert('Error', 'No user ID found. Are you logged in?')
     }
@@ -86,9 +86,9 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
     }
 
     try {
-      await databases.getDocument('hp_db', 'locations', userId)
+      await databases.getDocument('hp_db', 'locations', current.$id)
     } catch {
-      await databases.createDocument('hp_db', 'locations', userId, {
+      await databases.createDocument('hp_db', 'locations', current.$id, {
         long: null,
         lat: null,
         timeUntilEnd: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
@@ -98,6 +98,7 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
     await Location.startLocationUpdatesAsync('background-location-task', {
       accuracy: Location.Accuracy.Balanced,
       showsBackgroundLocationIndicator: false,
+      pausesUpdatesAutomatically: true,
       distanceInterval: 10,
       timeInterval: 10000,
     })
@@ -107,11 +108,10 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
   }
 
   const unregisterBackgroundFetch = async () => {
-    const userId = await AsyncStorage.getItem('userId')
     await Location.stopLocationUpdatesAsync('background-location-task')
 
     try {
-      await databases.deleteDocument('hp_db', 'locations', userId)
+      await databases.deleteDocument('hp_db', 'locations', current?.$id)
     } catch (e) {
       console.error('Failed to delete document:', e)
     }

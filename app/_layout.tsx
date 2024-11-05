@@ -36,6 +36,7 @@ import { HeaderMenuSidebar } from '~/components/data/DrawerData'
 import { LocationProvider } from '~/components/contexts/SharingContext'
 import { LanguageProvider } from '~/components/contexts/LanguageProvider'
 import '../components/system/backgroundTasks'
+import { DataCacheProvider } from '~/components/contexts/DataCacheContext'
 
 const LIGHT_THEME: Theme = {
   dark: false,
@@ -199,38 +200,40 @@ export default function RootLayout() {
       <LanguageProvider>
         <AlertModalProvider>
           <UserProvider>
-            <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
-            <EulaModal
-              isOpen={openEulaModal}
-              setOpen={setOpenEulaModal}
-              versionData={versionData}
-            />
-            <LocationProvider>
-              <GestureHandlerRootView style={{ flex: 1 }}>
-                <BottomSheetModalProvider>
-                  <Stack>
-                    {DrawerScreensData.map((screen: DrawerProps) => (
-                      <Stack.Screen
-                        key={screen.location}
-                        name={screen.location}
-                        options={{
-                          headerTitleAlign: 'left',
-                          headerShown: screen.headerShown,
-                          headerTitle: screen.title,
-                          headerLargeTitle: screen.headerLargeTitle,
-                          headerLeft: () =>
-                            screen.headerLeft || <HeaderMenuSidebar />,
-                          headerRight: () =>
-                            screen.headerRight || <ProfileThemeToggle />,
-                        }}
-                      />
-                    ))}
-                  </Stack>
-                </BottomSheetModalProvider>
-              </GestureHandlerRootView>
-            </LocationProvider>
-            <PortalHost />
-            <ToastProvider />
+            <DataCacheProvider>
+              <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
+              <EulaModal
+                isOpen={openEulaModal}
+                setOpen={setOpenEulaModal}
+                versionData={versionData}
+              />
+              <LocationProvider>
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                  <BottomSheetModalProvider>
+                    <Stack>
+                      {DrawerScreensData.map((screen: DrawerProps) => (
+                        <Stack.Screen
+                          key={screen.location}
+                          name={screen.location}
+                          options={{
+                            headerTitleAlign: 'left',
+                            headerShown: screen.headerShown,
+                            headerTitle: screen.title,
+                            headerLargeTitle: screen.headerLargeTitle,
+                            headerLeft: () =>
+                              screen.headerLeft || <HeaderMenuSidebar />,
+                            headerRight: () =>
+                              screen.headerRight || <ProfileThemeToggle />,
+                          }}
+                        />
+                      ))}
+                    </Stack>
+                  </BottomSheetModalProvider>
+                </GestureHandlerRootView>
+              </LocationProvider>
+              <PortalHost />
+              <ToastProvider />
+            </DataCacheProvider>
           </UserProvider>
         </AlertModalProvider>
       </LanguageProvider>

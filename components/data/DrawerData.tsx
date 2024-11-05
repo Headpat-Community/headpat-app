@@ -16,6 +16,7 @@ import {
   MapPinnedIcon,
   MegaphoneIcon,
   MenuIcon,
+  MessagesSquareIcon,
   PencilIcon,
   UserIcon,
   UserSearchIcon,
@@ -122,6 +123,12 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
             <DrawerLabel icon={HomeIcon} text="Home" theme={theme} />
           )}
           onPress={() => handleNavigation({ route: '/' })}
+        />
+        <DrawerItem
+          label={() => (
+            <DrawerLabel icon={MessagesSquareIcon} text="Chat" theme={theme} />
+          )}
+          onPress={() => handleNavigation({ route: '/chat/(main)' })}
         />
         <DrawerItem
           label={() => (

@@ -29,7 +29,6 @@ export function useUser(): UserContextValue {
 
 export function UserProvider(props: any) {
   const [user, setUser] = useState(null)
-  const [userSettings, setUserSettings] = useState(null)
   const [isLoadingUser, setIsLoadingUser] = useState(false)
 
   async function login(email: string, password: string) {
