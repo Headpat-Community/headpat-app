@@ -140,7 +140,7 @@ export default function HomeView() {
 
         <Card className={'w-3/4 mt-8'}>
           <TouchableOpacity
-            onPress={() => router.push(current ? '/chat/(main)' : '/login')}
+            onPress={() => router.push(current ? '/chat/list' : '/login')}
           >
             <CardContent className={'p-0'}>
               <CardFooter className={'mt-2 text-xl flex pb-4'}>

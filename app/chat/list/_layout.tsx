@@ -8,7 +8,7 @@ import { ProfileThemeToggle } from '~/components/ThemeToggle'
 export default function TabsLayout() {
   const { current } = useUser()
   return (
-    <Tabs backBehavior={'history'} initialRouteName={'index'}>
+    <Tabs backBehavior={'initialRoute'} initialRouteName={'index'}>
       <Tabs.Screen
         name="index"
         options={{
@@ -29,20 +29,6 @@ export default function TabsLayout() {
           tabBarIcon({ color, size }) {
             return <MapIcon color={color} size={size} />
           },
-          headerLeftContainerStyle: { paddingLeft: 15 },
-          headerRightContainerStyle: { paddingRight: 15 },
-          headerLeft: () => <HeaderSidebarBackButton />,
-          headerRight: () => <ProfileThemeToggle />,
-        }}
-      />
-      <Tabs.Screen
-        name="[conversationId]/index"
-        options={{
-          title: 'Settings',
-          tabBarIcon({ color, size }) {
-            return <MapIcon color={color} size={size} />
-          },
-          href: null,
           headerLeftContainerStyle: { paddingLeft: 15 },
           headerRightContainerStyle: { paddingRight: 15 },
           headerLeft: () => <HeaderSidebarBackButton />,

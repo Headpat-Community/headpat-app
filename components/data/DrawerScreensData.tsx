@@ -75,10 +75,15 @@ export const DrawerScreensData: DrawerProps[] = [
     headerLeft: <HeaderSidebarBackButton />,
   },
   {
-    location: 'chat/(main)',
-    title: 'Chat',
+    location: 'chat/list',
+    title: 'Conversations',
     headerLeft: <HeaderSidebarBackButton />,
     headerShown: false,
+  },
+  {
+    location: 'chat/[conversationId]/index',
+    title: 'Chat',
+    headerLeft: <HeaderSidebarBackButton />,
   },
   {
     location: 'announcements/index',

@@ -3,19 +3,20 @@ import { FlatList, View } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 import { databases, functions } from '~/lib/appwrite-client'
 import { ExecutionMethod, Query } from 'react-native-appwrite'
-import { Messaging } from '~/lib/types/collections'
+import { Messaging, UserData } from '~/lib/types/collections'
 import ConversationItem from '~/components/FlatlistItems/ConversationItem'
 import { useRealtimeChat } from '~/lib/hooks/useRealtimeChat'
 import { useUser } from '~/components/contexts/UserContext'
 import { useDataCache } from '~/components/contexts/DataCacheContext'
 import { Input } from '~/components/ui/input'
 import { useDebounce } from '~/lib/hooks/useDebounce'
-import { Button } from '~/components/ui/button'
+import { Text } from '~/components/ui/text'
+import ConversationSearchItem from '~/components/FlatlistItems/ConversationSearchItem'
+import { useFocusEffect } from '@react-navigation/core'
 
 export default function ConversationsView() {
   const [refreshing, setRefreshing] = useState(false)
   const [displayData, setDisplayData] = useState({})
-  const [isModalOpen, setIsModalOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [isLoading, setIsLoading] = useState(false)
@@ -86,76 +87,64 @@ export default function ConversationsView() {
   const onRefresh = useCallback(() => {
     setRefreshing(true)
     fetchInitialData().then(() => setRefreshing(false))
-  }, [fetchInitialData])
+  }, [])
 
-  const createConversation = async (recipientId: string) => {
-    try {
-      const data = await functions.createExecution(
-        'user-endpoints',
-        '',
-        false,
-        `/user/chat/conversation?recipientId=${recipientId}`,
-        ExecutionMethod.POST
-      )
-      const response = JSON.parse(data.responseBody)
-      console.log(response)
-      if (response.type === 'userchat_missing_recipient_id') {
-        console.error('Missing recipient ID')
-        return
-      } else if (response.type === 'userchat_recipient_does_not_exist') {
-        console.error('Recipient does not exist')
-        return
-      } else if (response.type === 'userchat_messaging_disabled') {
-        console.error('Messaging is currently disabled')
-        return
-      } else if (
-        response.type === 'userchat_recipient_cannot_be_the_same_as_the_user'
-      ) {
-        console.error('Cannot create conversation with yourself')
-        return
-      } else {
-        router.push({
-          pathname: '/chat/[conversationId]',
-          params: { conversationId: response.$id },
-        })
-      }
-      setIsModalOpen(false)
-    } catch (error) {
-      console.error('Error fetching conversation.', error)
-    }
-  }
+  useFocusEffect(
+    useCallback(() => {
+      setSearchTerm('')
+      onRefresh()
+    }, [])
+  )
 
-  const renderItem = ({
+  const renderConversationItem = ({
     item,
   }: {
     item: Messaging.MessageConversationsDocumentsType
   }) => <ConversationItem item={item} displayData={displayData[item.$id]} />
 
+  const renderSearchItem = ({
+    item,
+  }: {
+    item: UserData.UserDataDocumentsType
+  }) => <ConversationSearchItem item={item} />
+
   return (
     <>
-      <View className={'flex-row'}>
-        <Input
-          value={searchTerm}
-          onChangeText={setSearchTerm}
-          placeholder="Search users..."
-          className={'flex-grow'}
-        />
-        <Button variant={'outline'} />
-      </View>
-      <FlatList
-        data={debouncedSearchTerm ? searchResults : conversations}
-        keyExtractor={(item) => item.$id}
-        renderItem={renderItem}
-        onRefresh={onRefresh}
-        refreshing={refreshing}
-        numColumns={1}
-        contentContainerStyle={{ justifyContent: 'space-between' }}
-        //onEndReached={loadMore}
-        //onEndReachedThreshold={0.5}
-        //ListFooterComponent={
-        //  loadingMore && hasMore ? <Text>Loading...</Text> : null
-        //}
+      <Input
+        value={searchTerm}
+        onChangeText={setSearchTerm}
+        placeholder="Search users..."
       />
+      {searchTerm ? (
+        <View>
+          {isLoading ? (
+            <View>
+              <Text>Loading...</Text>
+            </View>
+          ) : (
+            <FlatList
+              data={searchResults}
+              keyExtractor={(item) => item.$id}
+              renderItem={renderSearchItem}
+            />
+          )}
+        </View>
+      ) : (
+        <FlatList
+          data={debouncedSearchTerm ? searchResults : conversations}
+          keyExtractor={(item) => item.$id}
+          renderItem={renderConversationItem}
+          onRefresh={onRefresh}
+          refreshing={refreshing}
+          numColumns={1}
+          contentContainerStyle={{ justifyContent: 'space-between' }}
+          //onEndReached={loadMore}
+          //onEndReachedThreshold={0.5}
+          //ListFooterComponent={
+          //  loadingMore && hasMore ? <Text>Loading...</Text> : null
+          //}
+        />
+      )}
     </>
   )
 }

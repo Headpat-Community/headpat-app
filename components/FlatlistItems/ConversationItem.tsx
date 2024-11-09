@@ -29,8 +29,8 @@ const ConversationItem = React.memo(
     return (
       <Link
         href={{
-          pathname: '/chat/(main)/[conversationId]',
-          params: { conversationId: displayData?.$id },
+          pathname: '/chat/[conversationId]',
+          params: { conversationId: item?.$id },
         }}
         asChild
       >
@@ -40,7 +40,7 @@ const ConversationItem = React.memo(
               <View className={'flex flex-row items-center'}>
                 <View>
                   <Avatar
-                    className="h-16 w-16"
+                    style={{ width: 64, height: 64 }}
                     alt={
                       isCommunity ? displayData?.name : displayData?.displayName
                     }

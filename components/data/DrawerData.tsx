@@ -128,7 +128,7 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
           label={() => (
             <DrawerLabel icon={MessagesSquareIcon} text="Chat" theme={theme} />
           )}
-          onPress={() => handleNavigation({ route: '/chat/(main)' })}
+          onPress={() => handleNavigation({ route: '/chat/list' })}
         />
         <DrawerItem
           label={() => (
