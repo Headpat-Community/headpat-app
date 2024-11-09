@@ -1,5 +1,5 @@
 import { router } from 'expo-router'
-import { FlatList } from 'react-native'
+import { FlatList, View } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 import { databases, functions } from '~/lib/appwrite-client'
 import { ExecutionMethod, Query } from 'react-native-appwrite'
@@ -10,6 +10,7 @@ import { useUser } from '~/components/contexts/UserContext'
 import { useDataCache } from '~/components/contexts/DataCacheContext'
 import { Input } from '~/components/ui/input'
 import { useDebounce } from '~/lib/hooks/useDebounce'
+import { Button } from '~/components/ui/button'
 
 export default function ConversationsView() {
   const [refreshing, setRefreshing] = useState(false)
@@ -128,15 +129,19 @@ export default function ConversationsView() {
     item,
   }: {
     item: Messaging.MessageConversationsDocumentsType
-  }) => <ConversationItem displayData={displayData[item.$id]} />
+  }) => <ConversationItem item={item} displayData={displayData[item.$id]} />
 
   return (
     <>
-      <Input
-        value={searchTerm}
-        onChangeText={setSearchTerm}
-        placeholder="Search users..."
-      />
+      <View className={'flex-row'}>
+        <Input
+          value={searchTerm}
+          onChangeText={setSearchTerm}
+          placeholder="Search users..."
+          className={'flex-grow'}
+        />
+        <Button variant={'outline'} />
+      </View>
       <FlatList
         data={debouncedSearchTerm ? searchResults : conversations}
         keyExtractor={(item) => item.$id}

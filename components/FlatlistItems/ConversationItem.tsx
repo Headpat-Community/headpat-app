@@ -10,18 +10,21 @@ import {
 import { Muted } from '../ui/typography'
 import { Text } from '~/components/ui/text'
 import { Card, CardContent } from '~/components/ui/card'
-import { Community, UserData } from '~/lib/types/collections'
-import { timeSince } from '~/components/calculateTimeLeft'
+import { Community, Messaging, UserData } from '~/lib/types/collections'
+import { useTimeSince } from '../calculateTimeLeft'
 
 const ConversationItem = React.memo(
   ({
+    item,
     displayData,
   }: {
+    item: Messaging.MessageConversationsDocumentsType
     displayData:
       | UserData.UserDataDocumentsType
       | Community.CommunityDocumentsType
   }) => {
     const isCommunity = !!displayData?.name
+    const timeSince = useTimeSince(item?.$updatedAt)
 
     return (
       <Link
@@ -78,19 +81,12 @@ const ConversationItem = React.memo(
                           : displayData?.displayName}
                       </Text>
                     </View>
-                    <Muted className="text-sm">
-                      {displayData?.lastMessage}
-                    </Muted>
+                    <Muted className="text-sm">{item?.lastMessage}</Muted>
                   </View>
                   <View className="ml-4 mr-12">
                     <View>
-                      <Text className="font-semibold">
-                        {timeSince(displayData?.$updatedAt)}
-                      </Text>
+                      <Text className="font-semibold">{timeSince}</Text>
                     </View>
-                    <Muted className="text-sm">
-                      {displayData?.lastMessage}
-                    </Muted>
                   </View>
                 </View>
               </View>

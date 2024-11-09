@@ -95,12 +95,32 @@ export function useRealtimeChat() {
 
       return updatedMessages
     })
+
+    // Update the lastMessage and sort conversations
+    setConversations((prevConversations) => {
+      const updatedConversations = prevConversations.map((conversation) => {
+        if (conversation.$id === payload.conversationId) {
+          return {
+            ...conversation,
+            lastMessage: payload.body,
+            $updatedAt: payload.$updatedAt, // Ensure $updatedAt is updated
+          }
+        }
+        return conversation
+      })
+
+      // Sort conversations by the latest message timestamp
+      return updatedConversations.sort(
+        (a, b) =>
+          new Date(b.$updatedAt).getTime() - new Date(a.$updatedAt).getTime()
+      )
+    })
   }
 
   const fetchInitialData = async () => {
     const initialConversations: Messaging.MessageConversationsType =
       await databases.listDocuments('hp_db', 'messages-conversations', [
-        Query.orderDesc('$createdAt'),
+        Query.orderDesc('$updatedAt'),
         Query.limit(500),
       ])
     setConversations(initialConversations.documents)

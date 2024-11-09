@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react'
+
 export const calculateTimeLeft = (
   eventDate: string,
   eventEndDate: string,
@@ -75,6 +77,20 @@ export const formatDateLocale = (date: Date) => {
 
   // Combine the formatted date with the timezone offset
   return `${day}.${month}.${year} @ ${hours}:${minutes} GMT${offsetSign}${offsetHours}:${offsetMinutes}`
+}
+
+export const useTimeSince = (timestamp: string) => {
+  const [timeElapsed, setTimeElapsed] = useState(() => timeSince(timestamp))
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeElapsed(timeSince(timestamp))
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [timestamp, timeSince])
+
+  return timeElapsed
 }
 
 export const timeSince = (date: string) => {
