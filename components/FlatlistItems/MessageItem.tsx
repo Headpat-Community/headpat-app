@@ -17,6 +17,7 @@ import { useUser } from '~/components/contexts/UserContext'
 import { databases } from '~/lib/appwrite-client'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import ReportMessageModal from '~/components/messaging/moderation/ReportMessageModal'
+import { Link } from 'expo-router'
 
 const MessageItem = ({ message }) => {
   const { current } = useUser()
@@ -98,14 +99,21 @@ const MessageItem = ({ message }) => {
           style={styles.messageContainer}
           className={message.$id.includes('pending_') ? 'animate-pulse' : ''}
         >
-          <Image
-            source={{
-              uri: userData?.avatarId
-                ? `https://api.headpat.place/v1/storage/buckets/avatars/files/${userData.avatarId}/preview?project=hp-main&width=40&height=40`
-                : undefined,
+          <Link
+            href={{
+              pathname: '/user/(stacks)/[userId]',
+              params: { userId: userData?.$id },
             }}
-            style={styles.avatar}
-          />
+          >
+            <Image
+              source={{
+                uri: userData?.avatarId
+                  ? `https://api.headpat.place/v1/storage/buckets/avatars/files/${userData.avatarId}/preview?project=hp-main&width=40&height=40`
+                  : undefined,
+              }}
+              style={styles.avatar}
+            />
+          </Link>
           <View style={styles.messageContent}>
             <View style={styles.header}>
               <Text style={styles.senderName}>{userData?.displayName}</Text>

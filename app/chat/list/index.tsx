@@ -13,6 +13,7 @@ import { useDebounce } from '~/lib/hooks/useDebounce'
 import { Text } from '~/components/ui/text'
 import ConversationSearchItem from '~/components/FlatlistItems/ConversationSearchItem'
 import { useFocusEffect } from '@react-navigation/core'
+import FeatureAccess from '~/components/FeatureAccess'
 
 export default function ConversationsView() {
   const [refreshing, setRefreshing] = useState(false)
@@ -100,7 +101,13 @@ export default function ConversationsView() {
     item,
   }: {
     item: Messaging.MessageConversationsDocumentsType
-  }) => <ConversationItem item={item} displayData={displayData[item.$id]} />
+  }) => (
+    <ConversationItem
+      item={item}
+      displayData={displayData[item.$id]}
+      isLoading={isLoading}
+    />
+  )
 
   const renderSearchItem = ({
     item,
@@ -109,7 +116,7 @@ export default function ConversationsView() {
   }) => <ConversationSearchItem item={item} />
 
   return (
-    <>
+    <FeatureAccess featureName={'messaging'}>
       <Input
         value={searchTerm}
         onChangeText={setSearchTerm}
@@ -145,6 +152,6 @@ export default function ConversationsView() {
           //}
         />
       )}
-    </>
+    </FeatureAccess>
   )
 }

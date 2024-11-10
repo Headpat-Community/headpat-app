@@ -17,6 +17,7 @@ import { useUser } from '~/components/contexts/UserContext'
 import * as Sentry from '@sentry/react-native'
 import * as WebBrowser from 'expo-web-browser'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
+import FeatureAccess from '~/components/FeatureAccess'
 
 export default function GalleryAdd() {
   const [image, setImage] = useState<ImagePicker.ImageOrVideo>(null)
@@ -132,7 +133,7 @@ export default function GalleryAdd() {
   }
 
   return (
-    <>
+    <FeatureAccess featureName={'gallery'}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <View className={'mx-8 flex-1'}>
           <View className={'flex-1'}>
@@ -225,6 +226,6 @@ export default function GalleryAdd() {
           </View>
         </View>
       </TouchableWithoutFeedback>
-    </>
+    </FeatureAccess>
   )
 }

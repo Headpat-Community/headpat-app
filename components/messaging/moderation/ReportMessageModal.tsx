@@ -31,7 +31,7 @@ export default function ReportMessageModal({
 }) {
   const [reportReason, setReportReason] = useState<string>('')
   const [otherReason, setOtherReason] = useState<string>('')
-  const { showLoadingModal, hideLoadingModal, showAlertModal } = useAlertModal()
+  const { showAlertModal } = useAlertModal()
 
   const reportUser = async () => {
     try {

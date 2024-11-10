@@ -1,8 +1,8 @@
 import { ID } from 'react-native-appwrite'
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { account, databases } from '~/lib/appwrite-client'
+import { account } from '~/lib/appwrite-client'
 import { toast } from '~/lib/toast'
-import { Account, UserData } from '~/lib/types/collections'
+import { Account } from '~/lib/types/collections'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Sentry from '@sentry/react-native'
 

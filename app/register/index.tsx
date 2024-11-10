@@ -20,6 +20,7 @@ import * as WebBrowser from 'expo-web-browser'
 import * as Sentry from '@sentry/react-native'
 import MicrosoftIcon from '~/components/icons/MicrosoftIcon'
 import TwitchIcon from '~/components/icons/TwitchIcon'
+import FeatureAccess from '~/components/FeatureAccess'
 
 export default function ModalScreen() {
   const { current, loginOAuth, register } = useUser()
@@ -100,122 +101,124 @@ export default function ModalScreen() {
   }
 
   return (
-    <View className="flex-1 justify-center items-center">
-      <View className="p-4 native:pb-24 max-w-md gap-6">
-        <View className="gap-1">
-          <H1 className="text-foreground text-center">Register</H1>
-          <Muted className="text-base text-center">
-            Enter you email below to login your account
-          </Muted>
-          <Muted className="text-base text-center">
-            Already have an account?
-          </Muted>
-          <Button variant={'outline'} onPress={() => router.push('/login')}>
-            <Text>Login</Text>
-          </Button>
-        </View>
-        <Input
-          textContentType={'username'}
-          placeholder={'Username'}
-          onChangeText={(newUsername) =>
-            setData({ ...data, username: newUsername })
-          }
-        />
-        <Input
-          textContentType={'emailAddress'}
-          placeholder={'Email'}
-          onChangeText={(newEmail) => setData({ ...data, email: newEmail })}
-        />
-        <Input
-          textContentType={'password'}
-          placeholder={'Password'}
-          secureTextEntry={true}
-          onChangeText={(newPassword) =>
-            setData({ ...data, password: newPassword })
-          }
-          maxLength={256}
-        />
-
-        <Button onPress={handleEmailLogin}>
-          <Text>Register</Text>
-        </Button>
-        <View className="flex-row items-center gap-3">
-          <View className="flex-1 h-px bg-muted" />
-          <Muted>OR CONTINUE WITH</Muted>
-          <View className="flex-1 h-px bg-muted" />
-        </View>
-        <View
-          className={'flex flex-row flex-wrap gap-2 mx-auto justify-center'}
-        >
-          <SocialLoginButton
-            color="#5865F2"
-            onPress={() => handleOAuth2Login(OAuthProvider.Discord)}
-            Icon={DiscordIcon}
-            title="Discord"
-          />
-          <SocialLoginButton
-            color="#24292F"
-            onPress={() => handleOAuth2Login(OAuthProvider.Github)}
-            Icon={GithubIcon}
-            title="GitHub"
-          />
-          <SocialLoginButton
-            color="#000000"
-            onPress={() => handleOAuth2Login(OAuthProvider.Apple)}
-            Icon={AppleIcon}
-            title="Apple"
-          />
-
-          <SocialLoginButton
-            color="#131314"
-            onPress={() => handleOAuth2Login(OAuthProvider.Google)}
-            Icon={GoogleIcon}
-            title="Google"
-          />
-          <SocialLoginButton
-            color="#1DB954"
-            onPress={() => handleOAuth2Login(OAuthProvider.Spotify)}
-            Icon={SpotifyIcon}
-            title="Spotify"
-          />
-          <SocialLoginButton
-            color="#01A6F0"
-            onPress={() => handleOAuth2Login(OAuthProvider.Microsoft)}
-            Icon={MicrosoftIcon}
-            title="Microsoft"
-          />
-          <SocialLoginButton
-            color="#6441A5"
-            onPress={() => handleOAuth2Login(OAuthProvider.Twitch)}
-            Icon={TwitchIcon}
-            title="Twitch"
-          />
-        </View>
-        <View>
-          <Muted className="text-center">
-            By creating an account, you agree to our{' '}
-            <Muted
-              className="underline"
-              onPress={() =>
-                Linking.openURL(
-                  'https://headpat.place/legal/termsofservice.pdf'
-                )
-              }
-            >
-              Terms of Service
-            </Muted>{' '}
-            and{' '}
-            <Muted
-              className="underline"
-              onPress={() =>
-                Linking.openURL('https://headpat.place/legal/privacypolicy')
-              }
-            >
-              Privacy Policy
+    <FeatureAccess featureName={'register'}>
+      <View className="flex-1 justify-center items-center">
+        <View className="p-4 native:pb-24 max-w-md gap-6">
+          <View className="gap-1">
+            <H1 className="text-foreground text-center">Register</H1>
+            <Muted className="text-base text-center">
+              Enter you email below to login your account
             </Muted>
-          </Muted>
+            <Muted className="text-base text-center">
+              Already have an account?
+            </Muted>
+            <Button variant={'outline'} onPress={() => router.push('/login')}>
+              <Text>Login</Text>
+            </Button>
+          </View>
+          <Input
+            textContentType={'username'}
+            placeholder={'Username'}
+            onChangeText={(newUsername) =>
+              setData({ ...data, username: newUsername })
+            }
+          />
+          <Input
+            textContentType={'emailAddress'}
+            placeholder={'Email'}
+            onChangeText={(newEmail) => setData({ ...data, email: newEmail })}
+          />
+          <Input
+            textContentType={'password'}
+            placeholder={'Password'}
+            secureTextEntry={true}
+            onChangeText={(newPassword) =>
+              setData({ ...data, password: newPassword })
+            }
+            maxLength={256}
+          />
+
+          <Button onPress={handleEmailLogin}>
+            <Text>Register</Text>
+          </Button>
+          <View className="flex-row items-center gap-3">
+            <View className="flex-1 h-px bg-muted" />
+            <Muted>OR CONTINUE WITH</Muted>
+            <View className="flex-1 h-px bg-muted" />
+          </View>
+          <View
+            className={'flex flex-row flex-wrap gap-2 mx-auto justify-center'}
+          >
+            <SocialLoginButton
+              color="#5865F2"
+              onPress={() => handleOAuth2Login(OAuthProvider.Discord)}
+              Icon={DiscordIcon}
+              title="Discord"
+            />
+            <SocialLoginButton
+              color="#24292F"
+              onPress={() => handleOAuth2Login(OAuthProvider.Github)}
+              Icon={GithubIcon}
+              title="GitHub"
+            />
+            <SocialLoginButton
+              color="#000000"
+              onPress={() => handleOAuth2Login(OAuthProvider.Apple)}
+              Icon={AppleIcon}
+              title="Apple"
+            />
+
+            <SocialLoginButton
+              color="#131314"
+              onPress={() => handleOAuth2Login(OAuthProvider.Google)}
+              Icon={GoogleIcon}
+              title="Google"
+            />
+            <SocialLoginButton
+              color="#1DB954"
+              onPress={() => handleOAuth2Login(OAuthProvider.Spotify)}
+              Icon={SpotifyIcon}
+              title="Spotify"
+            />
+            <SocialLoginButton
+              color="#01A6F0"
+              onPress={() => handleOAuth2Login(OAuthProvider.Microsoft)}
+              Icon={MicrosoftIcon}
+              title="Microsoft"
+            />
+            <SocialLoginButton
+              color="#6441A5"
+              onPress={() => handleOAuth2Login(OAuthProvider.Twitch)}
+              Icon={TwitchIcon}
+              title="Twitch"
+            />
+          </View>
+          <View>
+            <Muted className="text-center">
+              By creating an account, you agree to our{' '}
+              <Muted
+                className="underline"
+                onPress={() =>
+                  Linking.openURL(
+                    'https://headpat.place/legal/termsofservice.pdf'
+                  )
+                }
+              >
+                Terms of Service
+              </Muted>{' '}
+              and{' '}
+              <Muted
+                className="underline"
+                onPress={() =>
+                  Linking.openURL('https://headpat.place/legal/privacypolicy')
+                }
+              >
+                Privacy Policy
+              </Muted>
+            </Muted>
+          </View>
         </View>
       </View>
-    </View>
+    </FeatureAccess>
   )
 }

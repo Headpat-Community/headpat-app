@@ -7,6 +7,7 @@ import { TouchableOpacity } from '@gorhom/bottom-sheet'
 import { PlusIcon } from 'lucide-react-native'
 import { ProfileThemeToggle } from '~/components/ThemeToggle'
 import { HeaderSidebarBackButton } from '~/components/data/DrawerScreensData'
+import FeatureAccess from '~/components/FeatureAccess'
 
 function CommunityAddButton() {
   const { isDarkColorScheme } = useColorScheme()
@@ -14,7 +15,7 @@ function CommunityAddButton() {
   const { current } = useUser()
 
   return (
-    <>
+    <FeatureAccess featureName={'communities'}>
       <View className={'items-center flex-row gap-4'}>
         {current && (
           <TouchableOpacity onPress={() => router.navigate('/community/add')}>
@@ -30,7 +31,7 @@ function CommunityAddButton() {
           <ProfileThemeToggle />
         </View>
       </View>
-    </>
+    </FeatureAccess>
   )
 }
 

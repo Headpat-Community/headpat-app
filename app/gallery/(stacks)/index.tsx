@@ -9,6 +9,7 @@ import { useUser } from '~/components/contexts/UserContext'
 import GalleryItem from '~/components/gallery/GalleryItem'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { Skeleton } from '~/components/ui/skeleton'
+import FeatureAccess from '~/components/FeatureAccess'
 
 export default function GalleryPage() {
   const { current } = useUser()
@@ -202,32 +203,34 @@ export default function GalleryPage() {
   }
 
   return (
-    <View style={{ flex: 1 }}>
-      <FlatList
-        data={images}
-        keyExtractor={(item) => item.$id}
-        renderItem={renderItem}
-        onRefresh={onRefresh}
-        refreshing={refreshing}
-        numColumns={maxColumns}
-        contentContainerStyle={{ flexGrow: 1 }}
-        // TODO: Implement this in the future
-        //onEndReached={loadMore}
-        //onEndReachedThreshold={0.5}
-        ListFooterComponent={
-          loadingMore && (
-            <View
-              style={{
-                padding: 10,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <Text>Loading...</Text>
-            </View>
-          )
-        }
-      />
-    </View>
+    <FeatureAccess featureName={'gallery'}>
+      <View style={{ flex: 1 }}>
+        <FlatList
+          data={images}
+          keyExtractor={(item) => item.$id}
+          renderItem={renderItem}
+          onRefresh={onRefresh}
+          refreshing={refreshing}
+          numColumns={maxColumns}
+          contentContainerStyle={{ flexGrow: 1 }}
+          // TODO: Implement this in the future
+          //onEndReached={loadMore}
+          //onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            loadingMore && (
+              <View
+                style={{
+                  padding: 10,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <Text>Loading...</Text>
+              </View>
+            )
+          }
+        />
+      </View>
+    </FeatureAccess>
   )
 }
