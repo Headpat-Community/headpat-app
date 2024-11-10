@@ -61,15 +61,18 @@ export default function ChatView() {
       const offset = reset ? 0 : page * limit
 
       try {
-        const result = await databases.listDocuments('hp_db', 'messages', [
-          Query.equal('conversationId', local?.conversationId),
-          Query.orderDesc('$createdAt'),
-          Query.limit(limit),
-          Query.offset(offset),
-        ])
+        const result: Messaging.MessagesType = await databases.listDocuments(
+          'hp_db',
+          'messages',
+          [
+            Query.equal('conversationId', local?.conversationId),
+            Query.orderDesc('$createdAt'),
+            Query.limit(limit),
+            Query.offset(offset),
+          ]
+        )
 
-        const newMessages =
-          result.documents as Messaging.MessagesType['documents']
+        const newMessages = result.documents
 
         // Sort messages by $createdAt
         newMessages.sort(
@@ -173,7 +176,6 @@ export default function ChatView() {
   useFocusEffect(
     useCallback(() => {
       fetchConversation().then()
-      getConversationName()
     }, [])
   )
 
@@ -215,7 +217,7 @@ export default function ChatView() {
     }
   }, [messages])
 
-  const handleScroll = (event) => {
+  const handleScroll = (event: any) => {
     const { contentOffset } = event.nativeEvent
     if (contentOffset.y <= 0) {
       if (scrollTimeout) {
@@ -238,8 +240,8 @@ export default function ChatView() {
     }
   }
 
-  const sendMessage = async (event) => {
-    const maxFileSize = 8 * 1024 * 1024 // 8 MB in bytes
+  const sendMessage = async () => {
+    //const maxFileSize = 8 * 1024 * 1024 // 8 MB in bytes
     const conversationId = `${local?.conversationId}`
 
     try {
