@@ -72,7 +72,7 @@ const ConversationItem = React.memo(
                     </AvatarFallback>
                   </Avatar>
                   {isCommunity && (
-                    <View className="absolute bottom-0 left-10 bg-primary text-primary-foreground rounded-full p-0.5">
+                    <View className="absolute bottom-0.5 -right-0.5 bg-primary text-primary-foreground rounded-full p-0.5">
                       <UsersIcon size={16} color={'white'} />
                     </View>
                   )}
