@@ -17,11 +17,13 @@ const ConversationItem = React.memo(
   ({
     item,
     displayData,
+    isLoading,
   }: {
     item: Messaging.MessageConversationsDocumentsType
     displayData:
       | UserData.UserDataDocumentsType
       | Community.CommunityDocumentsType
+    isLoading: boolean
   }) => {
     const isCommunity = !!displayData?.name
     const timeSince = useTimeSince(item?.$updatedAt)
@@ -47,7 +49,10 @@ const ConversationItem = React.memo(
                   >
                     <AvatarImage
                       src={
-                        isCommunity
+                        isLoading
+                          ? // is required to prevent the avatar from not loading
+                            null
+                          : isCommunity
                           ? getCommunityAvatarUrlPreview(
                               displayData?.avatarId,
                               'width=100&height=100'

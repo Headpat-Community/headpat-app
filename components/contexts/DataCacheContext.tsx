@@ -1,9 +1,15 @@
-import React, { createContext, useContext, useState, useCallback } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+} from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Community, UserData } from '~/lib/types/collections'
 import { databases } from '~/lib/appwrite-client'
 
-const MAX_USER_CACHE = 50
+const MAX_USER_CACHE = 250
 const MAX_COMMUNITY_CACHE = 50
 const CACHE_EXPIRATION_TIME = 24 * 60 * 60 * 1000 // 24 hours
 
@@ -55,6 +61,9 @@ export const DataCacheProvider: React.FC<{ children: React.ReactNode }> = ({
   >({})
 
   const fetchUserData = useCallback(async (userId: string) => {
+    if (!userId) {
+      return null
+    }
     const cacheKey = 'userCache'
     const cachedData = await AsyncStorage.getItem(cacheKey)
     const parsedCache = cachedData ? JSON.parse(cachedData) : {}
@@ -72,7 +81,10 @@ export const DataCacheProvider: React.FC<{ children: React.ReactNode }> = ({
       parsedCache[userId] = { data: userData, timestamp: Date.now() }
       await AsyncStorage.setItem(cacheKey, JSON.stringify(parsedCache))
       await manageCacheSize(cacheKey, MAX_USER_CACHE)
-      setUserCache(parsedCache)
+      setUserCache((prevCache) => ({
+        ...prevCache,
+        [userId]: parsedCache[userId],
+      }))
       return userData
     } catch (error) {
       console.error('Error fetching user data:', error)
@@ -110,6 +122,46 @@ export const DataCacheProvider: React.FC<{ children: React.ReactNode }> = ({
       console.error('Error fetching community data:', error)
       return null
     }
+  }, [])
+
+  useEffect(() => {
+    const initCache = async () => {
+      try {
+        const userCacheKey = 'userCache'
+        const communityCacheKey = 'communityCache'
+
+        const [userCacheData, communityCacheData] = await Promise.all([
+          AsyncStorage.getItem(userCacheKey),
+          AsyncStorage.getItem(communityCacheKey),
+        ])
+
+        if (userCacheData) {
+          const parsedUserCache = JSON.parse(userCacheData)
+          const userCacheOnlyData = Object.fromEntries(
+            Object.entries(parsedUserCache).map(([key, value]) => [
+              key,
+              value['data'],
+            ])
+          )
+          setUserCache(userCacheOnlyData)
+        }
+
+        if (communityCacheData) {
+          const parsedCommunityCache = JSON.parse(communityCacheData)
+          const communityCacheOnlyData = Object.fromEntries(
+            Object.entries(parsedCommunityCache).map(([key, value]) => [
+              key,
+              value['data'],
+            ])
+          )
+          setCommunityCache(communityCacheOnlyData)
+        }
+      } catch (error) {
+        console.error('Error initializing cache:', error)
+      }
+    }
+
+    initCache().then()
   }, [])
 
   return (
