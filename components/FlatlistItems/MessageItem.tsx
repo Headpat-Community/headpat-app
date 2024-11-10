@@ -16,10 +16,6 @@ const MessageItem = ({ message }) => {
     })
   }, [fetchUserData, message.senderId, userCache])
 
-  if (message.$id.includes('pending_')) {
-    console.log('hi')
-  }
-
   return (
     <View
       style={styles.messageContainer}
