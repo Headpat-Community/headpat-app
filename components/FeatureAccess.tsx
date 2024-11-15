@@ -41,13 +41,15 @@ const FeatureAccess = ({ featureName, children }: FeatureAccessProps) => {
     return <Maintenance />
   } else if (
     cachedFeatureStatus?.type === 'earlyaccess' &&
-    (!current.labels?.includes(`${featureName}Beta`) ||
-      !current.labels?.includes('dev'))
+    !(
+        current.labels?.includes(`${featureName}Beta`) ||
+        current.labels?.includes('dev')
+    )
   ) {
     return <NoAccess />
   } else if (
     cachedFeatureStatus?.type === 'staff' &&
-    (!current.labels?.includes('staff') || !current.labels?.includes('dev'))
+    !(current.labels?.includes('staff') || current.labels?.includes('dev'))
   ) {
     return <NoAccess />
   } else if (
