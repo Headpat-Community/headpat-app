@@ -7,7 +7,7 @@ import {
 } from 'react-native'
 import { H3, Muted } from '~/components/ui/typography'
 import { Link, useLocalSearchParams } from 'expo-router'
-import React, { Suspense, useEffect, useState } from 'react'
+import React, { Suspense, useCallback, useEffect, useState } from 'react'
 import { UserData } from '~/lib/types/collections'
 import { functions } from '~/lib/appwrite-client'
 import { Image } from 'expo-image'
@@ -36,6 +36,7 @@ import sanitizeHtml from 'sanitize-html'
 import HTMLView from 'react-native-htmlview'
 import { Badge } from '~/components/ui/badge'
 import { Skeleton } from '~/components/ui/skeleton'
+import { useDataCache } from '~/components/contexts/DataCacheContext'
 
 const UserActions = React.lazy(() => import('~/components/user/UserActions'))
 
@@ -47,9 +48,17 @@ export default function UserPage() {
     useState<UserData.UserProfileDocumentsType>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const { current } = useUser()
+  const { userCache, updateUserCache } = useDataCache()
 
-  const fetchUser = async () => {
+  const fetchUser = useCallback(async () => {
     setRefreshing(true)
+    if (userCache[`${local?.userId}`]) {
+      setUserData(
+        userCache[`${local?.userId}`].data as UserData.UserProfileDocumentsType
+      )
+      setRefreshing(false)
+    }
+
     try {
       const dataUser = await functions.createExecution(
         'user-endpoints',
@@ -59,13 +68,14 @@ export default function UserPage() {
         ExecutionMethod.GET
       )
       const dataUserJson = JSON.parse(dataUser.responseBody)
+      updateUserCache(`${local?.userId}`, dataUserJson)
       setUserData(dataUserJson)
     } catch (error) {
       Sentry.captureException(error)
     } finally {
       setRefreshing(false)
     }
-  }
+  }, [local?.userId, userCache, updateUserCache])
 
   const getUserAvatar = (avatarId: string) => {
     return avatarId
@@ -80,7 +90,7 @@ export default function UserPage() {
   }
 
   useEffect(() => {
-    fetchUser().then()
+    fetchUser().then(() => console.log('test'))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [local.userId])
 
@@ -141,10 +151,10 @@ export default function UserPage() {
         </Badge>
       )}
       {userData?.profileBannerId && (
-        <View className={'flex-1 justify-center items-center'}>
+        <View className={''}>
           <Image
             source={getUserBanner(userData?.profileBannerId)}
-            alt={`${userData?.displayName}'s banner`}
+            alt={`${userData?.displayName || userData?.profileUrl}'s banner`}
             style={{ width: '100%', height: bannerHeight }}
             contentFit={'contain'}
           />
@@ -194,7 +204,7 @@ export default function UserPage() {
                 )}
               </Muted>
               <Muted className={'mb-2'}>
-                {!userData?.birthday.includes('1900-01-01') && (
+                {!userData?.birthday?.includes('1900-01-01') && (
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <CakeIcon
                       size={12}

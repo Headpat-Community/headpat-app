@@ -14,14 +14,33 @@ const MAX_COMMUNITY_CACHE = 50
 const CACHE_EXPIRATION_TIME = 24 * 60 * 60 * 1000 // 24 hours
 
 type DataCacheContextType = {
-  userCache: Record<string, UserData.UserDataDocumentsType>
-  communityCache: Record<string, Community.CommunityDocumentsType>
-  fetchUserData: (
-    userId: string
-  ) => Promise<UserData.UserDataDocumentsType | null>
-  fetchCommunityData: (
-    communityId: string
-  ) => Promise<Community.CommunityDocumentsType | null>
+  userCache: Record<
+    string,
+    { data: UserData.UserDataDocumentsType; timestamp: number }
+  >
+  communityCache: Record<
+    string,
+    {
+      data: Community.CommunityDocumentsType
+      timestamp: number
+    }
+  >
+  fetchUserData: (userId: string) => Promise<{
+    data: UserData.UserDataDocumentsType
+    timestamp: number
+  } | null>
+  fetchCommunityData: (communityId: string) => Promise<{
+    data: Community.CommunityDocumentsType
+    timestamp: number
+  } | null>
+  updateUserCache: (
+    userId: string,
+    data: UserData.UserDataDocumentsType
+  ) => void
+  updateCommunityCache: (
+    communityId: string,
+    data: Community.CommunityDocumentsType
+  ) => void
 }
 
 const DataCacheContext = createContext<DataCacheContextType | undefined>(
@@ -54,10 +73,13 @@ export const DataCacheProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [userCache, setUserCache] = useState<
-    Record<string, UserData.UserDataDocumentsType>
+    Record<string, { data: UserData.UserDataDocumentsType; timestamp: number }>
   >({})
   const [communityCache, setCommunityCache] = useState<
-    Record<string, Community.CommunityDocumentsType>
+    Record<
+      string,
+      { data: Community.CommunityDocumentsType; timestamp: number }
+    >
   >({})
 
   const fetchUserData = useCallback(async (userId: string) => {
@@ -69,7 +91,7 @@ export const DataCacheProvider: React.FC<{ children: React.ReactNode }> = ({
     const parsedCache = cachedData ? JSON.parse(cachedData) : {}
 
     if (parsedCache[userId] && !isCacheExpired(parsedCache[userId].timestamp)) {
-      return parsedCache[userId].data
+      return parsedCache[userId]
     }
 
     try {
@@ -78,14 +100,15 @@ export const DataCacheProvider: React.FC<{ children: React.ReactNode }> = ({
         'userdata',
         userId
       )) as UserData.UserDataDocumentsType
-      parsedCache[userId] = { data: userData, timestamp: Date.now() }
+      const cacheEntry = { data: userData, timestamp: Date.now() }
+      parsedCache[userId] = cacheEntry
       await AsyncStorage.setItem(cacheKey, JSON.stringify(parsedCache))
       await manageCacheSize(cacheKey, MAX_USER_CACHE)
       setUserCache((prevCache) => ({
         ...prevCache,
-        [userId]: parsedCache[userId],
+        [userId]: cacheEntry,
       }))
-      return userData
+      return cacheEntry
     } catch (error) {
       console.error('Error fetching user data:', error)
       return null
@@ -101,7 +124,7 @@ export const DataCacheProvider: React.FC<{ children: React.ReactNode }> = ({
       parsedCache[communityId] &&
       !isCacheExpired(parsedCache[communityId].timestamp)
     ) {
-      return parsedCache[communityId].data
+      return parsedCache[communityId]
     }
 
     try {
@@ -110,19 +133,49 @@ export const DataCacheProvider: React.FC<{ children: React.ReactNode }> = ({
         'community',
         communityId
       )) as Community.CommunityDocumentsType
-      parsedCache[communityId] = {
-        data: communityData,
-        timestamp: Date.now(),
-      }
+      const cacheEntry = { data: communityData, timestamp: Date.now() }
+      parsedCache[communityId] = cacheEntry
       await AsyncStorage.setItem(cacheKey, JSON.stringify(parsedCache))
       await manageCacheSize(cacheKey, MAX_COMMUNITY_CACHE)
       setCommunityCache(parsedCache)
-      return communityData
+      return cacheEntry
     } catch (error) {
       console.error('Error fetching community data:', error)
       return null
     }
   }, [])
+
+  const updateUserCache = useCallback(
+    (userId: string, data: UserData.UserDataDocumentsType) => {
+      const cacheKey = 'userCache'
+      const cacheEntry = { data, timestamp: Date.now() }
+      setUserCache((prevCache) => ({
+        ...prevCache,
+        [userId]: cacheEntry,
+      }))
+      AsyncStorage.setItem(
+        cacheKey,
+        JSON.stringify({ ...userCache, [userId]: cacheEntry })
+      ).then()
+    },
+    [userCache]
+  )
+
+  const updateCommunityCache = useCallback(
+    (communityId: string, data: Community.CommunityDocumentsType) => {
+      const cacheKey = 'communityCache'
+      const cacheEntry = { data, timestamp: Date.now() }
+      setCommunityCache((prevCache) => ({
+        ...prevCache,
+        [communityId]: cacheEntry,
+      }))
+      AsyncStorage.setItem(
+        cacheKey,
+        JSON.stringify({ ...communityCache, [communityId]: cacheEntry })
+      ).then()
+    },
+    [communityCache]
+  )
 
   useEffect(() => {
     const initCache = async () => {
@@ -137,24 +190,12 @@ export const DataCacheProvider: React.FC<{ children: React.ReactNode }> = ({
 
         if (userCacheData) {
           const parsedUserCache = JSON.parse(userCacheData)
-          const userCacheOnlyData = Object.fromEntries(
-            Object.entries(parsedUserCache).map(([key, value]) => [
-              key,
-              value['data'],
-            ])
-          )
-          setUserCache(userCacheOnlyData)
+          setUserCache(parsedUserCache)
         }
 
         if (communityCacheData) {
           const parsedCommunityCache = JSON.parse(communityCacheData)
-          const communityCacheOnlyData = Object.fromEntries(
-            Object.entries(parsedCommunityCache).map(([key, value]) => [
-              key,
-              value['data'],
-            ])
-          )
-          setCommunityCache(communityCacheOnlyData)
+          setCommunityCache(parsedCommunityCache)
         }
       } catch (error) {
         console.error('Error initializing cache:', error)
@@ -166,7 +207,14 @@ export const DataCacheProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <DataCacheContext.Provider
-      value={{ userCache, communityCache, fetchUserData, fetchCommunityData }}
+      value={{
+        userCache,
+        communityCache,
+        fetchUserData,
+        fetchCommunityData,
+        updateUserCache,
+        updateCommunityCache,
+      }}
     >
       {children}
     </DataCacheContext.Provider>

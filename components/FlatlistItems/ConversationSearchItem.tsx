@@ -18,7 +18,6 @@ const createConversation = async (recipientId: string) => {
       ExecutionMethod.POST
     )
     const response = JSON.parse(data.responseBody)
-    console.log(response)
     if (response.type === 'userchat_missing_recipient_id') {
       console.error('Missing recipient ID')
       return
@@ -50,8 +49,10 @@ const ConversationSearchItem = React.memo(
       return `https://api.headpat.place/v1/storage/buckets/avatars/files/${avatarId}/preview?project=hp-main&width=100&height=100`
     }
 
+    item = item.data
+
     return (
-      <TouchableOpacity onPress={() => createConversation(item.$id)}>
+      <TouchableOpacity onPress={() => createConversation(item?.$id)}>
         <Card>
           <CardContent className={'pt-4 pb-4'}>
             <View className={'flex flex-row items-center'}>

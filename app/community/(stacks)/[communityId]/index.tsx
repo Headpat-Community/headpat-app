@@ -16,6 +16,7 @@ import HTMLView from 'react-native-htmlview'
 import { Badge } from '~/components/ui/badge'
 import { Skeleton } from '~/components/ui/skeleton'
 import { hasAdminPanelAccess } from '~/components/community/hasPermission'
+import { useDataCache } from '~/components/contexts/DataCacheContext'
 
 const CommunityActions = React.lazy(
   () => import('~/components/community/CommunityActions')
@@ -30,9 +31,15 @@ export default function UserPage() {
   const [hasPermissions, setHasPermissions] = useState<boolean>(false)
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const { current } = useUser()
+  const { communityCache, updateCommunityCache } = useDataCache()
 
   const fetchCommunity = async () => {
     setRefreshing(true)
+    if (communityCache[`${local?.communityId}`]) {
+      setCommunityData(communityCache[`${local?.communityId}`].data)
+      setRefreshing(false)
+    }
+
     try {
       const data = await functions.createExecution(
         'community-endpoints',
@@ -41,10 +48,11 @@ export default function UserPage() {
         `/community?communityId=${local?.communityId}`,
         ExecutionMethod.GET
       )
-      const response = JSON.parse(data.responseBody)
+      const dataCommunityJson = JSON.parse(data.responseBody)
 
-      setCommunityData(response)
-      setHasPermissions(await hasAdminPanelAccess(response.roles))
+      updateCommunityCache(`${local?.communityId}`, dataCommunityJson)
+      setCommunityData(dataCommunityJson)
+      setHasPermissions(await hasAdminPanelAccess(dataCommunityJson.roles))
     } catch (error) {
       Sentry.captureException(error)
     } finally {

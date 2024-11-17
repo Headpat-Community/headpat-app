@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react'
-import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native'
+import { View, StyleSheet, TouchableOpacity } from 'react-native'
 import { useDataCache } from '~/components/contexts/DataCacheContext'
 import { Image } from 'expo-image'
 import { Text } from '~/components/ui/text'
@@ -18,21 +18,22 @@ import { databases } from '~/lib/appwrite-client'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import ReportMessageModal from '~/components/messaging/moderation/ReportMessageModal'
 import { Link } from 'expo-router'
+import { Muted } from '~/components/ui/typography'
 
 const MessageItem = ({ message }) => {
   const { current } = useUser()
   const { userCache, fetchUserData } = useDataCache()
   const { showAlertModal } = useAlertModal()
-  const [userData, setUserData] = useState(userCache[message.senderId])
+  const [userData, setUserData] = useState(userCache[message.senderId]?.data)
   const [openModal, setOpenModal] = useState(false)
   const [openReportModal, setOpenReportModal] = useState(false)
 
   useEffect(() => {
     const userId = message.senderId
     fetchUserData(userId).then((data) => {
-      setUserData(data)
+      setUserData(data.data)
     })
-  }, [fetchUserData, message.senderId, userCache])
+  }, [fetchUserData, message.senderId])
 
   const handleLongPress = useCallback(() => {
     setOpenModal(true)
@@ -67,7 +68,7 @@ const MessageItem = ({ message }) => {
       />
       <AlertDialog open={openModal} onOpenChange={setOpenModal}>
         <AlertDialogContent>
-          <AlertDialogTitle>Report message</AlertDialogTitle>
+          <AlertDialogTitle>Moderation</AlertDialogTitle>
           <AlertDialogDescription>
             What would you like to do?
           </AlertDialogDescription>
@@ -117,9 +118,9 @@ const MessageItem = ({ message }) => {
           <View style={styles.messageContent}>
             <View style={styles.header}>
               <Text style={styles.senderName}>{userData?.displayName}</Text>
-              <Text style={styles.timestamp}>
+              <Muted style={styles.timestamp}>
                 {formatDate(new Date(message.$createdAt))}
-              </Text>
+              </Muted>
             </View>
             <Text style={styles.messageText}>{message.body}</Text>
           </View>
@@ -154,7 +155,6 @@ const styles = StyleSheet.create({
   },
   timestamp: {
     fontSize: 12,
-    color: '#888',
   },
   messageText: {
     fontSize: 14,

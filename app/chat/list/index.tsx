@@ -1,9 +1,8 @@
-import { router } from 'expo-router'
 import { FlatList, View } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
-import { databases, functions } from '~/lib/appwrite-client'
-import { ExecutionMethod, Query } from 'react-native-appwrite'
-import { Messaging, UserData } from '~/lib/types/collections'
+import { databases } from '~/lib/appwrite-client'
+import { Query } from 'react-native-appwrite'
+import { Community, Messaging, UserData } from '~/lib/types/collections'
 import ConversationItem from '~/components/FlatlistItems/ConversationItem'
 import { useRealtimeChat } from '~/lib/hooks/useRealtimeChat'
 import { useUser } from '~/components/contexts/UserContext'
@@ -23,7 +22,8 @@ export default function ConversationsView() {
   const [isLoading, setIsLoading] = useState(false)
   const debouncedSearchTerm = useDebounce(searchTerm, 500)
   const { conversations, fetchInitialData } = useRealtimeChat()
-  const { fetchCommunityData, fetchUserData } = useDataCache()
+  const { fetchCommunityData, fetchUserData, userCache, communityCache } =
+    useDataCache()
   const { current } = useUser()
 
   useEffect(() => {
@@ -31,9 +31,12 @@ export default function ConversationsView() {
       const newDisplayUsers = {}
       for (const conversation of conversations) {
         if (conversation.communityId) {
-          const communityData = await fetchCommunityData(
-            conversation.communityId
-          )
+          let communityData: Community.CommunityDocumentsType =
+            communityCache[conversation.communityId]?.data
+          if (!communityData) {
+            const response = await fetchCommunityData(conversation.communityId)
+            communityData = response.data
+          }
           if (communityData) {
             newDisplayUsers[conversation.$id] = {
               isCommunity: true,
@@ -45,7 +48,12 @@ export default function ConversationsView() {
             (participant) => participant !== current.$id
           )
           if (otherParticipantId) {
-            const userData = await fetchUserData(otherParticipantId)
+            let userData: UserData.UserDataDocumentsType =
+              userCache[otherParticipantId]?.data
+            if (!userData) {
+              const response = await fetchUserData(otherParticipantId)
+              userData = response.data
+            }
             if (userData) {
               newDisplayUsers[conversation.$id] = userData
             }
@@ -56,7 +64,14 @@ export default function ConversationsView() {
     }
 
     updateDisplayUsers().then()
-  }, [conversations, current, fetchCommunityData, fetchUserData])
+  }, [
+    conversations,
+    current,
+    fetchCommunityData,
+    fetchUserData,
+    userCache,
+    communityCache,
+  ])
 
   useEffect(() => {
     const searchUsers = async () => {
@@ -121,6 +136,7 @@ export default function ConversationsView() {
         value={searchTerm}
         onChangeText={setSearchTerm}
         placeholder="Search users..."
+        className={'rounded-none'}
       />
       {searchTerm ? (
         <View>
@@ -138,7 +154,7 @@ export default function ConversationsView() {
         </View>
       ) : (
         <FlatList
-          data={debouncedSearchTerm ? searchResults : conversations}
+          data={searchTerm ? searchResults : conversations}
           keyExtractor={(item) => item.$id}
           renderItem={renderConversationItem}
           onRefresh={onRefresh}

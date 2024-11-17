@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import {
   FlatList,
   View,
-  Button,
   StyleSheet,
   Platform,
   KeyboardAvoidingView,
@@ -22,6 +21,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
 import { getCommunityAvatarUrlPreview } from '~/components/api/getStorageItem'
 import { z } from 'zod'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
+import { Button } from '~/components/ui/button'
+import { SendIcon } from 'lucide-react-native'
+import { useColorScheme } from '~/lib/useColorScheme'
 
 const schema = z.object({
   message: z
@@ -52,6 +54,8 @@ export default function ChatView() {
   const [isFetching, setIsFetching] = useState(false)
   const [lastFetchedIndex, setLastFetchedIndex] = useState<number | null>(null)
   const flatListRef = useRef<FlatList>(null)
+  const { isDarkColorScheme } = useColorScheme()
+  const theme = isDarkColorScheme ? 'white' : 'black'
 
   const fetchMessages = useCallback(
     async (reset = false) => {
@@ -181,7 +185,7 @@ export default function ChatView() {
 
   const getUserAvatar = useCallback(
     (userId: string) => {
-      const user = userCache[userId]
+      const user = userCache[userId]?.data
       if (!user) return undefined
       if (!user.avatarId) return undefined
       return `https://api.headpat.place/v1/storage/buckets/avatars/files/${user?.avatarId}/preview?project=hp-main&width=100&height=100`
@@ -192,7 +196,7 @@ export default function ChatView() {
   const getConversationAvatar = useCallback(() => {
     if (communityId && communityCache[communityId]) {
       return getCommunityAvatarUrlPreview(
-        communityCache[communityId].avatarId,
+        communityCache[communityId]?.data.avatarId,
         'width=100&height=100'
       )
     }
@@ -201,9 +205,9 @@ export default function ChatView() {
 
   const getConversationName = useCallback(() => {
     if (communityId && communityCache[communityId]) {
-      return communityCache[communityId].name
+      return communityCache[communityId]?.data.name
     }
-    return userCache[participants.find((id) => id !== current.$id) || '']
+    return userCache[participants.find((id) => id !== current.$id) || '']?.data
       ?.displayName
   }, [communityId, communityCache, userCache, participants, current.$id])
 
@@ -211,7 +215,7 @@ export default function ChatView() {
     if (flatListRef.current && messages.length > 0) {
       const timeout = setTimeout(() => {
         flatListRef.current.scrollToEnd({ animated: false })
-      }, 100) // 100 milliseconds delay
+      }, 250) // 100 milliseconds delay
 
       return () => clearTimeout(timeout)
     }
@@ -290,10 +294,6 @@ export default function ChatView() {
         prev.filter((msg) => msg.$id !== pendingMessage.$id)
       )
 
-      // Clear the message and attachments
-      setMessageText('')
-      setAttachments([])
-
       const response = JSON.parse(data.responseBody)
       if (response.code === 500) {
         showAlertModal('FAILED', 'An error occurred while sending the message')
@@ -302,7 +302,9 @@ export default function ChatView() {
         showAlertModal('FAILED', 'You are not in this conversation')
         return
       } else if (response.type === 'userchat_message_sent') {
-        // Do nothing
+        // Clear the message and attachments
+        setMessageText('')
+        setAttachments([])
       }
     } catch (error) {
       // Remove the pending message in case of error
@@ -310,7 +312,6 @@ export default function ChatView() {
         prev.filter((msg) => msg.$id !== `pending_${Date.now()}`)
       )
       if (error instanceof z.ZodError) {
-        console.error(error.errors[0].message)
         showAlertModal('FAILED', error.errors[0].message)
       } else {
         showAlertModal('FAILED', 'An error occurred while sending the message')
@@ -350,11 +351,6 @@ export default function ChatView() {
         style={{ flex: 1 }}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
       >
-        {isFetching && (
-          <View style={styles.loadingContainer}>
-            <Text>Loading...</Text>
-          </View>
-        )}
         <FlatList
           ref={flatListRef}
           data={[...messages]}
@@ -374,41 +370,25 @@ export default function ChatView() {
             }
           }}
         />
-        <View style={styles.inputContainer}>
-          <Input
-            style={styles.input}
-            value={messageText}
-            onChangeText={setMessageText}
-            placeholder="Type a message"
-          />
-          <Button title="Send" onPress={sendMessage} />
+        <View className={'flex-row p-4 items-center mb-2'}>
+          <View className={'flex-1 flex-row items-center px-2'}>
+            <Input
+              className={'flex-1 mr-2.5'}
+              value={messageText}
+              onChangeText={setMessageText}
+              placeholder="Type a message"
+            />
+            <Button
+              variant={'ghost'}
+              size={'icon'}
+              onPress={sendMessage}
+              className={'active:bg-transparent'}
+            >
+              <SendIcon color={theme} />
+            </Button>
+          </View>
         </View>
       </KeyboardAvoidingView>
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  inputContainer: {
-    flexDirection: 'row',
-    padding: 10,
-    alignItems: 'center',
-  },
-  input: {
-    flex: 1,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 20,
-    paddingHorizontal: 10,
-    marginRight: 10,
-  },
-  loadingContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-    padding: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-  },
-})

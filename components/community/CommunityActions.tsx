@@ -18,7 +18,6 @@ import {
 } from 'lucide-react-native'
 import { View } from 'react-native'
 import { Text } from '~/components/ui/text'
-import { useColorScheme } from '~/lib/useColorScheme'
 import { Account, Community } from '~/lib/types/collections'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import ReportCommunityModal from '~/components/community/moderation/ReportCommunityModal'
@@ -40,8 +39,6 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
   ({ data, setData, hasPermissions, current }: UserActionsProps) => {
     const [moderationModalOpen, setModerationModalOpen] = useState(false)
     const [reportModalOpen, setReportModalOpen] = useState(false)
-    const { isDarkColorScheme } = useColorScheme()
-    const themeButtons = isDarkColorScheme ? 'black' : 'white'
     const { showLoadingModal, showAlertModal } = useAlertModal()
 
     const handleFollow = async () => {
