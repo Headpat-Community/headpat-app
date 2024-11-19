@@ -105,7 +105,7 @@ export default function AnnouncementsPage() {
 
   return (
     <FlatList
-      data={announcements?.documents}
+      data={!refreshing && announcements?.documents}
       keyExtractor={(item) => item.$id}
       onRefresh={onRefresh}
       refreshing={refreshing}

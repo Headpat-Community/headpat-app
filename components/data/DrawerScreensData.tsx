@@ -7,6 +7,7 @@ import { router } from 'expo-router'
 import { ProfileThemeToggle } from '~/components/ThemeToggle'
 import { useUser } from '~/components/contexts/UserContext'
 import { DrawerProps } from '~/app/_layout'
+import { i18n } from '~/components/system/i18n'
 
 export function HeaderSidebarBackButton() {
   // Back button to go back to the previous screen
@@ -67,27 +68,27 @@ function GalleryAddButton() {
 export const DrawerScreensData: DrawerProps[] = [
   {
     location: 'index',
-    title: 'Home',
+    title: i18n.t('screens.home'),
   },
   {
     location: 'languages/index',
-    title: 'Languages',
+    title: i18n.t('screens.languages'),
     headerLeft: <HeaderSidebarBackButton />,
   },
   {
     location: 'chat/list',
-    title: 'Conversations',
+    title: i18n.t('screens.conversations'),
     headerLeft: <HeaderSidebarBackButton />,
     headerShown: false,
   },
   {
     location: 'chat/[conversationId]/index',
-    title: 'Chat',
+    title: i18n.t('screens.chat'),
     headerLeft: <HeaderSidebarBackButton />,
   },
   {
     location: 'announcements/index',
-    title: 'Announcements',
+    title: i18n.t('screens.announcements'),
     headerLargeTitle: true,
     headerLeft: <HeaderSidebarBackButton />,
   },
@@ -98,46 +99,46 @@ export const DrawerScreensData: DrawerProps[] = [
   },
   {
     location: 'gallery/(stacks)/index',
-    title: 'Gallery',
+    title: i18n.t('screens.gallery'),
     headerLeft: <HeaderSidebarBackButton />,
     headerRight: <GalleryAddButton />,
   },
   {
     location: 'gallery/(stacks)/add/index',
-    title: 'Gallery',
+    title: i18n.t('screens.gallery'),
     headerLeft: <HeaderSidebarBackButton />,
     headerRight: <GalleryAddButton />,
   },
   {
     location: 'gallery/(stacks)/[galleryId]/index',
-    title: 'Gallery',
+    title: i18n.t('screens.gallery'),
     headerLeft: <HeaderSidebarBackButton />,
     headerRight: <GalleryAddButton />,
   },
   {
     location: 'gallery/(stacks)/[galleryId]/edit',
-    title: 'Gallery',
+    title: i18n.t('screens.gallery'),
     headerLeft: <HeaderSidebarBackButton />,
     headerRight: <ProfileThemeToggle />,
   },
   {
     location: 'locations',
-    title: 'Locations',
+    title: i18n.t('screens.locations'),
     headerLeft: <HeaderSidebarBackButton />,
   },
   {
     location: 'community',
-    title: 'Communities',
+    title: i18n.t('screens.communities'),
     headerShown: false,
   },
   {
     location: 'events/(tabs)',
-    title: 'Events',
+    title: i18n.t('screens.events'),
     headerLeft: <HeaderSidebarBackButton />,
   },
   {
     location: 'user/(stacks)/index',
-    title: 'Users',
+    title: i18n.t('screens.users'),
     headerLeft: <HeaderSidebarBackButton />,
     headerRight: <ProfileThemeToggle />,
   },
@@ -149,47 +150,47 @@ export const DrawerScreensData: DrawerProps[] = [
   },
   {
     location: 'user/(stacks)/[userId]/relationships/followers/index',
-    title: 'Followers',
+    title: i18n.t('screens.followers'),
     headerLeft: <HeaderSidebarBackButton />,
     headerRight: <ProfileThemeToggle />,
   },
   {
     location: 'user/(stacks)/[userId]/relationships/following/index',
-    title: 'Following',
+    title: i18n.t('screens.following'),
     headerLeft: <HeaderSidebarBackButton />,
     headerRight: <ProfileThemeToggle />,
   },
   {
     location: 'notifications/index',
-    title: 'Notifications',
+    title: i18n.t('screens.notifications'),
     headerLeft: <HeaderSidebarBackButton />,
     headerRight: <ProfileThemeToggle />,
   },
   {
     location: 'login/index',
-    title: 'Login',
+    title: i18n.t('screens.login'),
     headerLeft: <HeaderSidebarBackButton />,
     headerRight: <ProfileThemeToggle />,
   },
   {
     location: 'register/index',
-    title: 'Register',
+    title: i18n.t('screens.register'),
     headerLeft: <HeaderSidebarBackButton />,
     headerRight: <ProfileThemeToggle />,
   },
   {
     location: 'account/(stacks)',
-    title: 'My Account',
+    title: i18n.t('screens.account'),
     headerLeft: <HeaderSidebarBackButton />,
   },
   {
     location: 'relationships',
-    title: 'Connections',
+    title: i18n.t('screens.connections'),
     headerShown: false,
   },
   {
     location: 'changelog/index',
-    title: 'Changelog',
+    title: i18n.t('screens.changelog'),
     headerLeft: <HeaderSidebarBackButton />,
   },
   {
@@ -197,13 +198,5 @@ export const DrawerScreensData: DrawerProps[] = [
     title: 'Oops!',
     headerLeft: <HeaderSidebarBackButton />,
     headerRight: <ProfileThemeToggle />,
-  },
-]
-
-export const DrawerScreensTabsData: DrawerProps[] = [
-  {
-    location: 'relationships/mutuals',
-    title: 'Connections',
-    headerShown: true,
   },
 ]

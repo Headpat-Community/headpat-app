@@ -31,13 +31,18 @@ export default function UserPage() {
   const [hasPermissions, setHasPermissions] = useState<boolean>(false)
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const { current } = useUser()
-  const { communityCache, updateCommunityCache } = useDataCache()
+  const { getCache, saveCache } = useDataCache()
 
   const fetchCommunity = async () => {
     setRefreshing(true)
-    if (communityCache[`${local?.communityId}`]) {
-      setCommunityData(communityCache[`${local?.communityId}`].data)
+    const cache = await getCache<Community.CommunityDocumentsType>(
+      'communities',
+      `${local?.communityId}`
+    )
+    if (cache) {
+      setCommunityData(cache?.data)
       setRefreshing(false)
+      setHasPermissions(await hasAdminPanelAccess(cache?.data?.roles))
     }
 
     try {
@@ -50,7 +55,7 @@ export default function UserPage() {
       )
       const dataCommunityJson = JSON.parse(data.responseBody)
 
-      updateCommunityCache(`${local?.communityId}`, dataCommunityJson)
+      saveCache('communities', `${local?.communityId}`, dataCommunityJson)
       setCommunityData(dataCommunityJson)
       setHasPermissions(await hasAdminPanelAccess(dataCommunityJson.roles))
     } catch (error) {

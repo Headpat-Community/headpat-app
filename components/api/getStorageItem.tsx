@@ -45,24 +45,14 @@ export const getGalleryImageUrlPreview = (
   return `https://api.headpat.place/v1/storage/buckets/gallery/files/${galleryId}/preview?project=hp-main&${attributes}`
 }
 
-export const getCommunityAvatarUrlView = (
-  galleryId: string,
-  defaultImage: string = '/logos/Headpat_Logo_web_1024x1024_240518-02.png'
-) => {
-  if (!galleryId) {
-    return defaultImage
-  }
+export const getCommunityAvatarUrlView = (galleryId: string) => {
   return `https://api.headpat.place/v1/storage/buckets/community-avatars/files/${galleryId}/view?project=hp-main`
 }
 
 export const getCommunityAvatarUrlPreview = (
   galleryId: string,
-  attributes: string,
-  defaultImage: string = '/logos/Headpat_Logo_web_1024x1024_240518-02.png'
+  attributes: string
 ) => {
-  if (!galleryId) {
-    return defaultImage
-  }
   return `https://api.headpat.place/v1/storage/buckets/community-avatars/files/${galleryId}/preview?project=hp-main&${attributes}`
 }
 
@@ -73,9 +63,7 @@ export const getCommunityBannerUrlView = (galleryId: string) => {
 
 export const getCommunityBannerUrlPreview = (
   galleryId: string,
-  attributes: string,
-  defaultImage: string = '/logos/Headpat_Logo_web_1024x1024_240518-02.png'
+  attributes: string
 ) => {
-  if (!galleryId) return defaultImage
   return `https://api.headpat.place/v1/storage/buckets/community-banners/files/${galleryId}/preview?project=hp-main&${attributes}`
 }

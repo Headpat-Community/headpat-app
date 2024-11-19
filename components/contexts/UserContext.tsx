@@ -3,7 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react'
 import { account } from '~/lib/appwrite-client'
 import { toast } from '~/lib/toast'
 import { Account } from '~/lib/types/collections'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import kv from 'expo-sqlite/kv-store'
 import * as Sentry from '@sentry/react-native'
 
 interface UserContextValue {
@@ -97,14 +97,14 @@ export function UserProvider(props: any) {
 }
 
 const loggedInPushNotifications = async () => {
-  const fcmToken = await AsyncStorage.getItem('fcmToken')
+  const fcmToken = await kv.getItem('fcmToken')
   if (!fcmToken) return
   await updatePushTargetWithAppwrite(fcmToken)
 }
 
 export const updatePushTargetWithAppwrite = async (fcmToken: string) => {
   // If is simulator, don't update push target
-  const targetId = await AsyncStorage.getItem('targetId')
+  const targetId = await kv.getItem('targetId')
   if (!fcmToken) return
   try {
     const session = await account.get()
@@ -122,7 +122,7 @@ export const updatePushTargetWithAppwrite = async (fcmToken: string) => {
         fcmToken,
         '66bcfc3b0028d9fb7a68' // FCM Appwrite Provider ID
       )
-      await AsyncStorage.setItem('targetId', target.$id)
+      await kv.setItem('targetId', target.$id)
     } else {
       // Update the existing push target
       try {
@@ -134,7 +134,7 @@ export const updatePushTargetWithAppwrite = async (fcmToken: string) => {
           fcmToken,
           '66bcfc3b0028d9fb7a68'
         )
-        await AsyncStorage.setItem('targetId', target.$id)
+        await kv.setItem('targetId', target.$id)
       }
     }
   } catch (error) {

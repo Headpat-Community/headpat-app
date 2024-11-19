@@ -124,17 +124,16 @@ const ConversationItem = React.memo(
                       <AvatarImage
                         src={
                           isLoading
-                            ? // is required to prevent the avatar from not loading
-                              null
+                            ? null
                             : isCommunity
-                            ? getCommunityAvatarUrlPreview(
-                                displayData?.avatarId,
-                                'width=100&height=100'
-                              )
-                            : getAvatarImageUrlPreview(
-                                displayData?.avatarId,
-                                'width=100&height=100'
-                              ) || null
+                              ? getCommunityAvatarUrlPreview(
+                                  displayData?.avatarId,
+                                  'width=100&height=100'
+                                )
+                              : getAvatarImageUrlPreview(
+                                  displayData?.avatarId,
+                                  'width=100&height=100'
+                                ) || require('~/assets/images/headpat_logo.png')
                         }
                       />
                       <AvatarFallback>

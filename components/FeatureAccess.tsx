@@ -14,6 +14,7 @@ const FeatureAccess = ({ featureName, children }: FeatureAccessProps) => {
   const [cachedFeatureStatuses, setCachedFeatureStatuses] = useState<{
     [key: string]: any
   }>({})
+  const [isLoading, setIsLoading] = useState(true)
   const featureStatus = useFeatureStatus(featureName)
   const { current } = useUser()
 
@@ -23,18 +24,24 @@ const FeatureAccess = ({ featureName, children }: FeatureAccessProps) => {
         ...prevStatuses,
         [featureName]: featureStatus,
       }))
+      setIsLoading(false)
     }
   }, [featureStatus, featureName])
 
   const cachedFeatureStatus = cachedFeatureStatuses[featureName]
 
-  if (!cachedFeatureStatus) {
+  useEffect(() => {
+    if (!isLoading && !current && cachedFeatureStatus?.type !== 'public') {
+      router.push('/login')
+    }
+  }, [current, cachedFeatureStatus, isLoading])
+
+  if (isLoading || !cachedFeatureStatus) {
     return null
   }
 
-  if (!current) {
-    router.push('/login')
-    return null
+  if (cachedFeatureStatus?.type === 'public') {
+    return children
   }
 
   if (!cachedFeatureStatus?.isEnabled && !current.labels?.includes('dev')) {
@@ -42,8 +49,8 @@ const FeatureAccess = ({ featureName, children }: FeatureAccessProps) => {
   } else if (
     cachedFeatureStatus?.type === 'earlyaccess' &&
     !(
-        current.labels?.includes(`${featureName}Beta`) ||
-        current.labels?.includes('dev')
+      current.labels?.includes(`${featureName}Beta`) ||
+      current.labels?.includes('dev')
     )
   ) {
     return <NoAccess />

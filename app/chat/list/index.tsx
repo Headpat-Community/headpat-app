@@ -22,8 +22,7 @@ export default function ConversationsView() {
   const [isLoading, setIsLoading] = useState(false)
   const debouncedSearchTerm = useDebounce(searchTerm, 500)
   const { conversations, fetchInitialData } = useRealtimeChat()
-  const { fetchCommunityData, fetchUserData, userCache, communityCache } =
-    useDataCache()
+  const { getCache, saveCache } = useDataCache()
   const { current } = useUser()
 
   useEffect(() => {
@@ -31,11 +30,19 @@ export default function ConversationsView() {
       const newDisplayUsers = {}
       for (const conversation of conversations) {
         if (conversation.communityId) {
-          let communityData: Community.CommunityDocumentsType =
-            communityCache[conversation.communityId]?.data
+          let communityData = await getCache<Community.CommunityDocumentsType>(
+            'communities',
+            conversation.communityId
+          ).then((res) => res?.data)
           if (!communityData) {
-            const response = await fetchCommunityData(conversation.communityId)
-            communityData = response.data
+            const response: Community.CommunityDocumentsType =
+              await databases.getDocument(
+                'hp_db',
+                'community',
+                conversation.communityId
+              )
+            saveCache('communities', conversation.communityId, response)
+            communityData = response
           }
           if (communityData) {
             newDisplayUsers[conversation.$id] = {
@@ -48,11 +55,19 @@ export default function ConversationsView() {
             (participant) => participant !== current.$id
           )
           if (otherParticipantId) {
-            let userData: UserData.UserDataDocumentsType =
-              userCache[otherParticipantId]?.data
+            let userData = await getCache<UserData.UserDataDocumentsType>(
+              'users',
+              otherParticipantId
+            ).then((res) => res?.data)
             if (!userData) {
-              const response = await fetchUserData(otherParticipantId)
-              userData = response.data
+              const response: UserData.UserDataDocumentsType =
+                await databases.getDocument(
+                  'hp_db',
+                  'userdata',
+                  otherParticipantId
+                )
+              saveCache('users', otherParticipantId, response)
+              userData = response
             }
             if (userData) {
               newDisplayUsers[conversation.$id] = userData
@@ -64,14 +79,7 @@ export default function ConversationsView() {
     }
 
     updateDisplayUsers().then()
-  }, [
-    conversations,
-    current,
-    fetchCommunityData,
-    fetchUserData,
-    userCache,
-    communityCache,
-  ])
+  }, [conversations, current, getCache, saveCache])
 
   useEffect(() => {
     const searchUsers = async () => {
@@ -83,7 +91,7 @@ export default function ConversationsView() {
           ])
           const userDataResults = await Promise.all(
             results.documents.map(async (user) => {
-              return await fetchUserData(user.$id)
+              return await databases.getDocument('hp_db', 'userdata', user.$id)
             })
           )
           setSearchResults(userDataResults)
@@ -98,7 +106,7 @@ export default function ConversationsView() {
     }
 
     searchUsers().then()
-  }, [debouncedSearchTerm, fetchUserData])
+  }, [debouncedSearchTerm])
 
   const onRefresh = useCallback(() => {
     setRefreshing(true)

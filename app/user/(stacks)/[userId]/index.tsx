@@ -48,14 +48,16 @@ export default function UserPage() {
     useState<UserData.UserProfileDocumentsType>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const { current } = useUser()
-  const { userCache, updateUserCache } = useDataCache()
+  const { getCache, saveCache } = useDataCache()
 
   const fetchUser = useCallback(async () => {
     setRefreshing(true)
-    if (userCache[`${local?.userId}`]) {
-      setUserData(
-        userCache[`${local?.userId}`].data as UserData.UserProfileDocumentsType
-      )
+    const cache = await getCache<UserData.UserDataDocumentsType>(
+      'users',
+      `${local?.userId}`
+    )
+    if (cache) {
+      setUserData(cache.data as UserData.UserProfileDocumentsType)
       setRefreshing(false)
     }
 
@@ -68,14 +70,14 @@ export default function UserPage() {
         ExecutionMethod.GET
       )
       const dataUserJson = JSON.parse(dataUser.responseBody)
-      updateUserCache(`${local?.userId}`, dataUserJson)
+      saveCache('users', `${local?.userId}`, dataUserJson)
       setUserData(dataUserJson)
     } catch (error) {
       Sentry.captureException(error)
     } finally {
       setRefreshing(false)
     }
-  }, [local?.userId, userCache, updateUserCache])
+  }, [getCache, local?.userId, saveCache])
 
   const getUserAvatar = (avatarId: string) => {
     return avatarId
@@ -90,7 +92,7 @@ export default function UserPage() {
   }
 
   useEffect(() => {
-    fetchUser().then(() => console.log('test'))
+    fetchUser().then()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [local.userId])
 

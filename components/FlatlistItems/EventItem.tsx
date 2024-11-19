@@ -1,5 +1,5 @@
 import React from 'react'
-import { TouchableOpacity } from 'react-native'
+import { TouchableOpacity, View, Text } from 'react-native'
 import { Events } from '~/lib/types/collections'
 import {
   Card,
@@ -12,7 +12,7 @@ import { ClockIcon, MapPinIcon, UsersIcon } from 'lucide-react-native'
 import { useColorScheme } from '~/lib/useColorScheme'
 import { Link } from 'expo-router'
 import {
-  calculateTimeLeft,
+  calculateTimeLeftEvent,
   formatDateLocale,
 } from '~/components/calculateTimeLeft'
 
@@ -38,25 +38,37 @@ const EventItem = React.memo(
               </CardTitle>
               <CardFooter className={'p-0 mt-2 justify-between flex flex-wrap'}>
                 <CardDescription>
-                  <ClockIcon size={12} color={theme} />{' '}
-                  {formatDateLocale(new Date(event.date))}
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <ClockIcon size={12} color={theme} />
+                    <Text style={{ marginLeft: 4 }}>
+                      {formatDateLocale(new Date(event.date))}
+                    </Text>
+                  </View>
                 </CardDescription>
                 <CardDescription>
-                  {calculateTimeLeft(event.date, event.dateUntil)}
+                  {calculateTimeLeftEvent(event.date, event.dateUntil)}
                 </CardDescription>
               </CardFooter>
 
               {event.location && (
                 <CardFooter className={'p-0 mt-2 flex flex-wrap'}>
                   <CardDescription>
-                    <MapPinIcon size={12} color={theme} /> {event.location}
+                    <View
+                      style={{ flexDirection: 'row', alignItems: 'center' }}
+                    >
+                      <MapPinIcon size={12} color={theme} />
+                      <Text style={{ marginLeft: 4 }}>{event.location}</Text>
+                    </View>
                   </CardDescription>
                 </CardFooter>
               )}
 
               <CardFooter className={'p-0 mt-2 flex flex-wrap'}>
                 <CardDescription>
-                  <UsersIcon size={12} color={theme} /> {event.attendees}
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <UsersIcon size={12} color={theme} />
+                    <Text style={{ marginLeft: 4 }}>{event.attendees}</Text>
+                  </View>
                 </CardDescription>
               </CardFooter>
             </CardContent>

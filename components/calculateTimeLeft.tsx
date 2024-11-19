@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
+import { i18n } from '~/components/system/i18n'
 
-export const calculateTimeLeft = (
+export const calculateTimeLeftEvent = (
   eventDate: string,
   eventEndDate: string,
   upcoming: boolean = false
@@ -16,36 +17,59 @@ export const calculateTimeLeft = (
   if (now < eventStart) {
     // Event hasn't started yet
     if (differenceInTime < 0) {
-      return 'Event has ended'
+      return i18n.t('time.eventHasEnded')
     } else {
       const differenceInDays = Math.ceil(timeLeft / (1000 * 3600 * 24))
       const differenceInHours = Math.ceil(timeLeft / (1000 * 3600))
       const differenceInMinutes = Math.ceil(timeLeft / (1000 * 60))
 
       if (differenceInDays > 1) {
-        return `${differenceInDays} days left`
+        return `${differenceInDays} ` + i18n.t('time.daysLeft')
       } else if (differenceInHours > 1) {
-        return `${differenceInHours} hours left`
+        return `${differenceInHours} ` + i18n.t('time.hoursLeft')
       } else {
-        return `${differenceInMinutes} minutes left`
+        return `${differenceInMinutes} ` + i18n.t('time.minutesLeft')
       }
     }
   } else {
     // Event has started, but not ended
     if (timeLeft < 0) {
-      return 'Event has ended'
+      return i18n.t('time.eventHasEnded')
     } else {
       const differenceInDays = Math.ceil(timeLeft / (1000 * 3600 * 24))
       const differenceInHours = Math.ceil(timeLeft / (1000 * 3600))
       const differenceInMinutes = Math.ceil(timeLeft / (1000 * 60))
 
       if (differenceInDays > 1) {
-        return `${differenceInDays} days until end`
+        return `${differenceInDays} ` + i18n.t('time.daysUntilEnd')
       } else if (differenceInHours > 1) {
-        return `${differenceInHours} hours until end`
+        return `${differenceInHours} ` + i18n.t('time.hoursUntilEnd')
       } else {
-        return `${differenceInMinutes} minutes until end`
+        return `${differenceInMinutes} ` + i18n.t('time.minutesUntilEnd')
       }
+    }
+  }
+}
+
+export const calculateTimeLeft = (date: string, upcoming: boolean = false) => {
+  const now = new Date()
+  const eventEnd = new Date(date)
+  const differenceInTime = eventEnd.getTime() - now.getTime()
+
+  // Event hasn't started yet
+  if (differenceInTime < 0) {
+    return i18n.t('time.ended')
+  } else {
+    const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24))
+    const differenceInHours = Math.ceil(differenceInTime / (1000 * 3600))
+    const differenceInMinutes = Math.ceil(differenceInTime / (1000 * 60))
+
+    if (differenceInDays > 1) {
+      return `${differenceInDays} ` + i18n.t('time.daysLeft')
+    } else if (differenceInHours > 1) {
+      return `${differenceInHours} ` + i18n.t('time.hoursLeft')
+    } else {
+      return `${differenceInMinutes} ` + i18n.t('time.minutesLeft')
     }
   }
 }
@@ -79,6 +103,22 @@ export const formatDateLocale = (date: Date) => {
   return `${day}.${month}.${year} @ ${hours}:${minutes} GMT${offsetSign}${offsetHours}:${offsetMinutes}`
 }
 
+export const useTimeLeft = (date: string, upcoming: boolean = false) => {
+  const [timeLeft, setTimeLeft] = useState(() =>
+    calculateTimeLeft(date, upcoming)
+  )
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeLeft(calculateTimeLeft(date, upcoming))
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [date, upcoming, calculateTimeLeft])
+
+  return timeLeft
+}
+
 export const useTimeSince = (timestamp: string) => {
   const [timeElapsed, setTimeElapsed] = useState(() => timeSince(timestamp))
 
@@ -102,13 +142,13 @@ export const timeSince = (date: string) => {
     return `${secondsPast} seconds ago`
   }
   if (secondsPast < 3600) {
-    return `${Math.floor(secondsPast / 60)} minutes ago`
+    return `${Math.floor(secondsPast / 60)} ` + i18n.t('time.minutesAgo')
   }
   if (secondsPast <= 86400) {
-    return `${Math.floor(secondsPast / 3600)} hours ago`
+    return `${Math.floor(secondsPast / 3600)} ` + i18n.t('time.hoursAgo')
   }
   if (secondsPast <= 604800) {
-    return `${Math.floor(secondsPast / 86400)} days ago`
+    return `${Math.floor(secondsPast / 86400)} ` + i18n.t('time.daysAgo')
   }
   return formatDate(past)
 }

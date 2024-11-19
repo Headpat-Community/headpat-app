@@ -12,6 +12,7 @@ import { Switch } from '~/components/ui/switch'
 import { Label } from '~/components/ui/label'
 import { Text } from '~/components/ui/text'
 import React from 'react'
+import { i18n } from '~/components/system/i18n'
 
 export default function FiltersModal({
   openModal,
@@ -23,9 +24,11 @@ export default function FiltersModal({
     <AlertDialog onOpenChange={setOpenModal} open={openModal}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Need to change filters?</AlertDialogTitle>
+          <AlertDialogTitle>
+            {i18n.t('location.map.filters.title')}
+          </AlertDialogTitle>
           <AlertDialogDescription>
-            Please select the filters you want to apply.
+            {i18n.t('location.map.filters.description')}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <View className={'gap-4'}>
@@ -49,7 +52,7 @@ export default function FiltersModal({
                 }))
               }}
             >
-              Show events
+              {i18n.t('location.map.filters.showEvents')}
             </Label>
           </View>
           <View className="flex-row items-center gap-2">
@@ -72,7 +75,7 @@ export default function FiltersModal({
                 }))
               }
             >
-              Show Users
+              {i18n.t('location.map.filters.showUsers')}
             </Label>
           </View>
         </View>

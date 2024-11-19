@@ -23,7 +23,7 @@ import { databases, functions } from '~/lib/appwrite-client'
 import { H4 } from '~/components/ui/typography'
 import { Separator } from '~/components/ui/separator'
 import { ExecutionMethod } from 'react-native-appwrite'
-import { calculateTimeLeft } from '~/components/calculateTimeLeft'
+import { calculateTimeLeftEvent } from '~/components/calculateTimeLeft'
 import { Image } from 'expo-image'
 import { router } from 'expo-router'
 import { TouchableOpacity } from '@gorhom/bottom-sheet'
@@ -58,7 +58,7 @@ export default function HomeView() {
         'event-endpoints',
         '',
         false,
-        '/getNextEvent',
+        '/event/next',
         ExecutionMethod.GET
       )
       const response: Events.EventsDocumentsType = JSON.parse(data.responseBody)
@@ -269,7 +269,10 @@ export default function HomeView() {
                   <CardFooter className={'p-0 flex flex-wrap ml-7 mb-2'}>
                     <CardDescription>
                       <ClockIcon size={12} color={theme} /> {nextEvent?.title} -{' '}
-                      {calculateTimeLeft(nextEvent?.date, nextEvent?.dateUntil)}
+                      {calculateTimeLeftEvent(
+                        nextEvent?.date,
+                        nextEvent?.dateUntil
+                      )}
                     </CardDescription>
                   </CardFooter>
                   {nextEvent?.locationZoneMethod === 'virtual' && (

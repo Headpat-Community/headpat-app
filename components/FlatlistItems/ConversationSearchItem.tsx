@@ -49,8 +49,6 @@ const ConversationSearchItem = React.memo(
       return `https://api.headpat.place/v1/storage/buckets/avatars/files/${avatarId}/preview?project=hp-main&width=100&height=100`
     }
 
-    item = item.data
-
     return (
       <TouchableOpacity onPress={() => createConversation(item?.$id)}>
         <Card>
@@ -59,7 +57,7 @@ const ConversationSearchItem = React.memo(
               <View>
                 <Avatar
                   className="h-16 w-16"
-                  alt={item.displayName || item.profileUrl}
+                  alt={item?.displayName || item?.profileUrl}
                 >
                   <AvatarImage src={getUserAvatar(item?.avatarId)} />
                   <AvatarFallback>
@@ -82,6 +80,6 @@ const ConversationSearchItem = React.memo(
   }
 )
 
-ConversationSearchItem.displayName = 'ConversationItem'
+ConversationSearchItem.displayName = 'ConversationSearchItem'
 
 export default ConversationSearchItem

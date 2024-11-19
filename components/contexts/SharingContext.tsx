@@ -5,6 +5,7 @@ import * as BackgroundFetch from 'expo-background-fetch'
 import * as TaskManager from 'expo-task-manager'
 import { databases } from '~/lib/appwrite-client'
 import { useUser } from '~/components/contexts/UserContext'
+import * as Sentry from '@sentry/react-native'
 
 interface LocationContextValue {
   status: BackgroundFetch.BackgroundFetchStatus | null
@@ -50,6 +51,14 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
     )
     setStatus(status)
     setIsRegistered(isRegistered)
+
+    if (status && !isRegistered) {
+      await databases
+        .deleteDocument('hp_db', 'locations', current?.$id)
+        .catch(() => {
+          return
+        })
+    }
   }
 
   const requestPermissions = async () => {
@@ -72,6 +81,10 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
   }
 
   const registerBackgroundFetch = async () => {
+    if (isRegistered) {
+      checkStatus().then()
+      return Alert.alert('Error', 'You are already sharing your location.')
+    }
     if (!current.$id) {
       setIsRegistered(false)
       return Alert.alert('Error', 'No user ID found. Are you logged in?')
@@ -82,7 +95,7 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
     let foreground = await Location.getForegroundPermissionsAsync()
     let background = await Location.getBackgroundPermissionsAsync()
     if (foreground.status !== 'granted' || background.status !== 'granted') {
-      return
+      return Alert.alert('Error', 'Location permissions not granted')
     }
 
     try {
@@ -101,6 +114,10 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
       pausesUpdatesAutomatically: true,
       distanceInterval: 10,
       timeInterval: 10000,
+    }).catch((e) => {
+      Sentry.captureException(e)
+      Alert.alert('Error', 'Failed to start location updates')
+      return
     })
 
     setIsRegistered(true)
@@ -108,6 +125,10 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
   }
 
   const unregisterBackgroundFetch = async () => {
+    if (!isRegistered) {
+      checkStatus().then()
+      return Alert.alert('Error', 'You are not sharing your location.')
+    }
     await Location.stopLocationUpdatesAsync('background-location-task')
 
     try {

@@ -1,7 +1,7 @@
 import messaging, {
   FirebaseMessagingTypes,
 } from '@react-native-firebase/messaging'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import kv from 'expo-sqlite/kv-store'
 import * as Device from 'expo-device'
 import { Platform } from 'react-native'
 import { PermissionsAndroid } from 'react-native'
@@ -43,7 +43,7 @@ const getFcmToken = async () => {
   await new Promise((resolve) => setTimeout(resolve, 500))
   const fcmToken = await messaging().getToken()
   if (fcmToken) {
-    await AsyncStorage.setItem('fcmToken', fcmToken)
+    await kv.setItem('fcmToken', fcmToken)
   } else {
     console.log('Failed to get FCM token')
   }

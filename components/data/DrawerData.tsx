@@ -17,7 +17,9 @@ import {
   MegaphoneIcon,
   MenuIcon,
   MessagesSquareIcon,
+  MoonStarIcon,
   PencilIcon,
+  SunIcon,
   UserIcon,
   UserSearchIcon,
   UsersIcon,
@@ -25,16 +27,14 @@ import {
 } from 'lucide-react-native'
 import { useUser } from '~/components/contexts/UserContext'
 import { Text } from '~/components/ui/text'
-import { DrawerItem } from '@react-navigation/drawer'
 import { Link, router } from 'expo-router'
 import { Separator } from '~/components/ui/separator'
-import { MoonStar, Sun } from '~/components/Icons'
-import { setAndroidNavigationBar } from '~/lib/android-navigation-bar'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import kv from 'expo-sqlite/kv-store'
 import DiscordIcon from '~/components/icons/DiscordIcon'
 import { Muted } from '~/components/ui/typography'
 import * as React from 'react'
 import * as WebBrowser from 'expo-web-browser'
+import { i18n } from '~/components/system/i18n'
 
 export function HeaderMenuSidebar() {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null)
@@ -83,14 +83,6 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
     await WebBrowser.openBrowserAsync(url)
   }
 
-  const handleNavigation = useCallback(
-    ({ route, params = {} }) => {
-      router.navigate({ pathname: route, params })
-      bottomSheetModalRef.current?.dismiss()
-    },
-    [bottomSheetModalRef]
-  )
-
   return (
     <>
       <View
@@ -118,153 +110,131 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
       </View>
 
       <BottomSheetScrollView>
-        <DrawerItem
-          label={() => (
-            <DrawerLabel icon={HomeIcon} text="Home" theme={theme} />
-          )}
-          onPress={() => handleNavigation({ route: '/' })}
+        <DrawerLabel
+          icon={HomeIcon}
+          text="Home"
+          theme={theme}
+          route={'/'}
+          bottomSheetModalRef={bottomSheetModalRef}
         />
-        <DrawerItem
-          label={() => (
-            <DrawerLabel icon={MessagesSquareIcon} text="Chat" theme={theme} />
-          )}
-          onPress={() => handleNavigation({ route: '/chat/list' })}
+        <DrawerLabel
+          icon={LayoutPanelLeftIcon}
+          text="Gallery"
+          theme={theme}
+          route={'/gallery/(stacks)'}
+          bottomSheetModalRef={bottomSheetModalRef}
         />
-        <DrawerItem
-          label={() => (
-            <DrawerLabel
-              icon={LayoutPanelLeftIcon}
-              text="Gallery"
-              theme={theme}
-            />
-          )}
-          onPress={() => handleNavigation({ route: '/gallery/(stacks)' })}
+        <DrawerLabel
+          icon={MapPinnedIcon}
+          text="Locations"
+          theme={theme}
+          route={'/locations'}
+          bottomSheetModalRef={bottomSheetModalRef}
         />
-        <DrawerItem
-          label={() => (
-            <DrawerLabel icon={MapPinnedIcon} text="Locations" theme={theme} />
-          )}
-          onPress={() => handleNavigation({ route: '/locations' })}
+        <DrawerLabel
+          icon={CalendarIcon}
+          text="Events"
+          theme={theme}
+          route={'/events/(tabs)'}
+          bottomSheetModalRef={bottomSheetModalRef}
         />
-        <DrawerItem
-          label={() => (
-            <DrawerLabel
-              icon={MegaphoneIcon}
-              text="Announcements"
-              theme={theme}
-            />
-          )}
-          onPress={() => handleNavigation({ route: '/announcements' })}
+        <DrawerLabel
+          icon={MegaphoneIcon}
+          text="Announcements"
+          theme={theme}
+          route={'/announcements'}
+          bottomSheetModalRef={bottomSheetModalRef}
         />
-        <DrawerItem
-          label={() => (
-            <DrawerLabel icon={CalendarIcon} text="Events" theme={theme} />
-          )}
-          onPress={() => handleNavigation({ route: '/events/(tabs)' })}
+        <DrawerLabel
+          icon={UserSearchIcon}
+          text="Users"
+          theme={theme}
+          route={'/user/(stacks)'}
+          bottomSheetModalRef={bottomSheetModalRef}
         />
-        <DrawerItem
-          label={() => (
-            <DrawerLabel icon={UserSearchIcon} text="Users" theme={theme} />
-          )}
-          onPress={() => handleNavigation({ route: '/user/(stacks)' })}
+        <DrawerLabel
+          icon={BoxesIcon}
+          text="Communities"
+          theme={theme}
+          route={'/community'}
+          bottomSheetModalRef={bottomSheetModalRef}
         />
         <Separator />
         {current && (
           <>
-            <DrawerItem
-              label={() => (
-                <DrawerLabel
-                  icon={BellIcon}
-                  text="Notifications"
-                  theme={theme}
-                />
-              )}
-              onPress={() => handleNavigation({ route: '/notifications' })}
+            <DrawerLabel
+              icon={MessagesSquareIcon}
+              text="Chat"
+              theme={theme}
+              route={'/chat/list'}
+              bottomSheetModalRef={bottomSheetModalRef}
             />
-            <DrawerItem
-              label={() => (
-                <DrawerLabel icon={UserIcon} text="My Profile" theme={theme} />
-              )}
-              onPress={() =>
-                handleNavigation({
-                  route: '/user/(stacks)/[userId]',
-                  params: { userId: current.$id },
-                })
-              }
+            <DrawerLabel
+              icon={BellIcon}
+              text="Notifications"
+              theme={theme}
+              route={'/notifications'}
+              bottomSheetModalRef={bottomSheetModalRef}
             />
-            <DrawerItem
-              label={() => (
-                <DrawerLabel icon={UsersIcon} text="Mutuals" theme={theme} />
-              )}
-              onPress={() =>
-                handleNavigation({ route: '/relationships/mutuals' })
-              }
+            <DrawerLabel
+              icon={UserIcon}
+              text="My Profile"
+              theme={theme}
+              route={'/user/(stacks)/[userId]'}
+              bottomSheetModalRef={bottomSheetModalRef}
+            />
+            <DrawerLabel
+              icon={UsersIcon}
+              text="Mutuals"
+              theme={theme}
+              route={'/relationships/mutuals'}
+              bottomSheetModalRef={bottomSheetModalRef}
             />
           </>
         )}
-        <DrawerItem
-          label={() => (
-            <DrawerLabel icon={BoxesIcon} text="Communities" theme={theme} />
-          )}
-          onPress={() => handleNavigation({ route: '/community' })}
-        />
-        <View style={{ flex: 1, flexGrow: 1 }}></View>
         <Separator />
-        <DrawerItem
-          label={() => (
-            <DrawerLabel
-              icon={isDarkColorScheme ? MoonStar : Sun}
-              text="Switch theme"
-              theme={theme}
-            />
-          )}
-          onPress={() => {
-            const newTheme = isDarkColorScheme ? 'light' : 'dark'
-            setColorScheme(newTheme)
-            setAndroidNavigationBar(newTheme).then()
-            AsyncStorage.setItem('theme', newTheme).then()
-          }}
+        <DrawerLabel
+          icon={isDarkColorScheme ? MoonStarIcon : SunIcon}
+          text="Switch theme"
+          theme={theme}
+          route={'/theme'}
+          bottomSheetModalRef={bottomSheetModalRef}
         />
-        <DrawerItem
-          label={() => (
-            <DrawerLabel
-              icon={LogInIcon}
-              text={current ? 'Account' : 'Login'}
-              theme={theme}
-            />
-          )}
-          onPress={() =>
-            handleNavigation({ route: current ? '/account' : '/login' })
-          }
+        <DrawerLabel
+          icon={LogInIcon}
+          text={current ? 'Account' : 'Login'}
+          theme={theme}
+          route={current ? '/account' : '/login'}
+          bottomSheetModalRef={bottomSheetModalRef}
         />
-        <DrawerItem
-          label={() => (
-            <DrawerLabel
-              icon={LanguagesIcon}
-              text={'Change language'}
-              theme={theme}
-            />
-          )}
-          onPress={() => handleNavigation({ route: '/languages' })}
+        <DrawerLabel
+          icon={LanguagesIcon}
+          text={'Change language'}
+          theme={theme}
+          route={'/languages'}
+          bottomSheetModalRef={bottomSheetModalRef}
         />
         <Separator />
-        <DrawerItem
-          label={() => (
-            <DrawerLabel icon={FileCheckIcon} text="Legal" theme={theme} />
-          )}
-          onPress={() => openBrowser('https://headpat.place/legal')}
+        <DrawerLabel
+          icon={FileCheckIcon}
+          text="Legal"
+          theme={theme}
+          route={'https://headpat.place/legal'}
+          bottomSheetModalRef={bottomSheetModalRef}
         />
-        <DrawerItem
-          label={() => (
-            <DrawerLabel icon={BadgeHelpIcon} text="Support" theme={theme} />
-          )}
-          onPress={() => openBrowser('https://headpat.place/support')}
+        <DrawerLabel
+          icon={BadgeHelpIcon}
+          text="Support"
+          theme={theme}
+          route={'https://headpat.place/support'}
+          bottomSheetModalRef={bottomSheetModalRef}
         />
-        <DrawerItem
-          label={() => (
-            <DrawerLabel icon={PencilIcon} text="Changelog" theme={theme} />
-          )}
-          onPress={() => handleNavigation({ route: '/changelog' })}
+        <DrawerLabel
+          icon={PencilIcon}
+          text="Changelog"
+          theme={theme}
+          route={'/changelog'}
+          bottomSheetModalRef={bottomSheetModalRef}
         />
         <Separator />
         <Link
@@ -286,7 +256,7 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
         </Link>
         <Separator />
         <Text style={{ color: theme, padding: 10, textAlign: 'center' }}>
-          Headpat App v0.8.2
+          Headpat App v0.8.3
         </Text>
         <Muted style={{ textAlign: 'center', paddingBottom: 16 }}>BETA</Muted>
       </BottomSheetScrollView>
@@ -294,16 +264,34 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
   )
 }
 
-const DrawerLabel = ({ icon: Icon, text, theme }) => (
-  <View
-    style={{
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 12,
-      paddingLeft: 12,
-    }}
-  >
-    <Icon size={20} color={theme} />
-    <Text style={{ color: theme }}>{text}</Text>
-  </View>
-)
+const DrawerLabel = ({
+  icon: Icon,
+  text,
+  theme,
+  route,
+  bottomSheetModalRef,
+}) => {
+  const handleNavigation = useCallback(
+    ({ route, params = {} }) => {
+      router.navigate({ pathname: route, params })
+      bottomSheetModalRef.current?.dismiss()
+    },
+    [bottomSheetModalRef]
+  )
+
+  return (
+    <TouchableOpacity
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+        padding: 12,
+        paddingLeft: 20,
+      }}
+      onPress={() => handleNavigation({ route })}
+    >
+      <Icon size={20} color={theme} />
+      <Text style={{ color: theme }}>{text}</Text>
+    </TouchableOpacity>
+  )
+}

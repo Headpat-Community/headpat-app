@@ -1,229 +1,181 @@
 import React, {
   createContext,
-  useContext,
-  useState,
   useCallback,
+  useContext,
   useEffect,
+  useMemo,
+  useState,
 } from 'react'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Community, UserData } from '~/lib/types/collections'
-import { databases } from '~/lib/appwrite-client'
+import kv from 'expo-sqlite/kv-store'
 
-const MAX_USER_CACHE = 250
-const MAX_COMMUNITY_CACHE = 50
 const CACHE_EXPIRATION_TIME = 24 * 60 * 60 * 1000 // 24 hours
+const storeNames = ['users', 'communities']
 
 type DataCacheContextType = {
-  userCache: Record<
-    string,
-    { data: UserData.UserDataDocumentsType; timestamp: number }
-  >
-  communityCache: Record<
-    string,
-    {
-      data: Community.CommunityDocumentsType
-      timestamp: number
-    }
-  >
-  fetchUserData: (userId: string) => Promise<{
-    data: UserData.UserDataDocumentsType
-    timestamp: number
-  } | null>
-  fetchCommunityData: (communityId: string) => Promise<{
-    data: Community.CommunityDocumentsType
-    timestamp: number
-  } | null>
-  updateUserCache: (
-    userId: string,
-    data: UserData.UserDataDocumentsType
-  ) => void
-  updateCommunityCache: (
-    communityId: string,
-    data: Community.CommunityDocumentsType
-  ) => void
+  getCache: <T>(storeName: string, key: string) => Promise<CacheItem<T> | null>
+  saveCache: <T>(storeName: string, key: string, data: T) => void
+  removeCache: (storeName: string, key: string) => void
+  getCacheSync: <T>(storeName: string, key: string) => CacheItem<T> | null
+  getAllCache: <T>(storeName: string) => Promise<CacheItem<T>[]>
+  saveAllCache: <T>(storeName: string, data: T[]) => void
+}
+
+type CacheItem<T> = {
+  id: string
+  data: T
+  timestamp: number
 }
 
 const DataCacheContext = createContext<DataCacheContextType | undefined>(
   undefined
 )
 
-const manageCacheSize = async (cacheKey: string, maxSize: number) => {
-  const cache = await AsyncStorage.getItem(cacheKey)
-  if (cache) {
-    const parsedCache = JSON.parse(cache)
-    if (Object.keys(parsedCache).length > maxSize) {
-      const sortedKeys = Object.keys(parsedCache).sort(
-        (a, b) => parsedCache[a].timestamp - parsedCache[b].timestamp
-      )
-      const keysToRemove = sortedKeys.slice(
-        0,
-        Object.keys(parsedCache).length - maxSize
-      )
-      keysToRemove.forEach((key) => delete parsedCache[key])
-      await AsyncStorage.setItem(cacheKey, JSON.stringify(parsedCache))
-    }
-  }
-}
-
-const isCacheExpired = (timestamp: number) => {
-  return Date.now() - timestamp > CACHE_EXPIRATION_TIME
-}
-
 export const DataCacheProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [userCache, setUserCache] = useState<
-    Record<string, { data: UserData.UserDataDocumentsType; timestamp: number }>
-  >({})
-  const [communityCache, setCommunityCache] = useState<
-    Record<
-      string,
-      { data: Community.CommunityDocumentsType; timestamp: number }
-    >
-  >({})
-
-  const fetchUserData = useCallback(async (userId: string) => {
-    if (!userId) {
-      return null
-    }
-    const cacheKey = 'userCache'
-    const cachedData = await AsyncStorage.getItem(cacheKey)
-    const parsedCache = cachedData ? JSON.parse(cachedData) : {}
-
-    if (parsedCache[userId] && !isCacheExpired(parsedCache[userId].timestamp)) {
-      return parsedCache[userId]
-    }
-
-    try {
-      const userData = (await databases.getDocument(
-        'hp_db',
-        'userdata',
-        userId
-      )) as UserData.UserDataDocumentsType
-      const cacheEntry = { data: userData, timestamp: Date.now() }
-      parsedCache[userId] = cacheEntry
-      await AsyncStorage.setItem(cacheKey, JSON.stringify(parsedCache))
-      await manageCacheSize(cacheKey, MAX_USER_CACHE)
-      setUserCache((prevCache) => ({
-        ...prevCache,
-        [userId]: cacheEntry,
-      }))
-      return cacheEntry
-    } catch (error) {
-      console.error('Error fetching user data:', error)
-      return null
-    }
-  }, [])
-
-  const fetchCommunityData = useCallback(async (communityId: string) => {
-    const cacheKey = 'communityCache'
-    const cachedData = await AsyncStorage.getItem(cacheKey)
-    const parsedCache = cachedData ? JSON.parse(cachedData) : {}
-
-    if (
-      parsedCache[communityId] &&
-      !isCacheExpired(parsedCache[communityId].timestamp)
-    ) {
-      return parsedCache[communityId]
-    }
-
-    try {
-      const communityData = (await databases.getDocument(
-        'hp_db',
-        'community',
-        communityId
-      )) as Community.CommunityDocumentsType
-      const cacheEntry = { data: communityData, timestamp: Date.now() }
-      parsedCache[communityId] = cacheEntry
-      await AsyncStorage.setItem(cacheKey, JSON.stringify(parsedCache))
-      await manageCacheSize(cacheKey, MAX_COMMUNITY_CACHE)
-      setCommunityCache(parsedCache)
-      return cacheEntry
-    } catch (error) {
-      console.error('Error fetching community data:', error)
-      return null
-    }
-  }, [])
-
-  const updateUserCache = useCallback(
-    (userId: string, data: UserData.UserDataDocumentsType) => {
-      const cacheKey = 'userCache'
-      const cacheEntry = { data, timestamp: Date.now() }
-      setUserCache((prevCache) => ({
-        ...prevCache,
-        [userId]: cacheEntry,
-      }))
-      AsyncStorage.setItem(
-        cacheKey,
-        JSON.stringify({ ...userCache, [userId]: cacheEntry })
-      ).then()
-    },
-    [userCache]
-  )
-
-  const updateCommunityCache = useCallback(
-    (communityId: string, data: Community.CommunityDocumentsType) => {
-      const cacheKey = 'communityCache'
-      const cacheEntry = { data, timestamp: Date.now() }
-      setCommunityCache((prevCache) => ({
-        ...prevCache,
-        [communityId]: cacheEntry,
-      }))
-      AsyncStorage.setItem(
-        cacheKey,
-        JSON.stringify({ ...communityCache, [communityId]: cacheEntry })
-      ).then()
-    },
-    [communityCache]
-  )
+  const [cacheData, setCacheData] = useState<Record<string, any>>({})
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const initCache = async () => {
       try {
-        const userCacheKey = 'userCache'
-        const communityCacheKey = 'communityCache'
+        const cachePromises = storeNames.map((storeName) =>
+          kv.getItem(storeName)
+        )
+        const cacheResults = await Promise.all(cachePromises)
 
-        const [userCacheData, communityCacheData] = await Promise.all([
-          AsyncStorage.getItem(userCacheKey),
-          AsyncStorage.getItem(communityCacheKey),
-        ])
+        const formattedCacheData = cacheResults.reduce((acc, cache, index) => {
+          const storeName = storeNames[index]
+          const parsedCache = cache ? JSON.parse(cache) : {}
+          Object.keys(parsedCache).forEach((key) => {
+            acc[`${storeName}-${key}`] = parsedCache[key]
+          })
+          return acc
+        }, {})
 
-        if (userCacheData) {
-          const parsedUserCache = JSON.parse(userCacheData)
-          setUserCache(parsedUserCache)
-        }
-
-        if (communityCacheData) {
-          const parsedCommunityCache = JSON.parse(communityCacheData)
-          setCommunityCache(parsedCommunityCache)
-        }
+        setCacheData((prev) => ({
+          ...prev,
+          ...formattedCacheData,
+        }))
       } catch (error) {
         console.error('Error initializing cache:', error)
+      } finally {
+        setLoading(false)
       }
     }
 
     initCache().then()
   }, [])
 
+  const isCacheExpired = (timestamp: number) => {
+    return Date.now() - timestamp > CACHE_EXPIRATION_TIME
+  }
+
+  const getAllCache = useCallback(
+    async <T,>(storeName: string): Promise<CacheItem<T>[]> => {
+      const cache = await kv.getItem(storeName)
+      return cache ? JSON.parse(cache) : []
+    },
+    []
+  )
+
+  const getCache = useCallback(
+    async <T,>(
+      storeName: string,
+      key: string
+    ): Promise<CacheItem<T> | null> => {
+      const cache = await kv.getItem(storeName)
+      if (!cache) return null
+
+      const parsedCache = JSON.parse(cache)
+      const item = parsedCache[key]
+
+      if (item && !isCacheExpired(item.timestamp)) {
+        return item
+      }
+
+      // Remove expired item lazily
+      if (item) {
+        delete parsedCache[key]
+        await kv.setItem(storeName, JSON.stringify(parsedCache))
+      }
+      return null
+    },
+    []
+  )
+
+  const saveAllCache = useCallback(async <T,>(storeName: string, data: T[]) => {
+    const cache = data.reduce((acc, item) => {
+      acc[item['id']] = { data: item, timestamp: Date.now() }
+      return acc
+    }, {})
+
+    await kv.setItem(storeName, JSON.stringify(cache))
+    setCacheData((prev) => ({ ...prev, ...cache }))
+  }, [])
+
+  const saveCache = useCallback(
+    async <T,>(storeName: string, key: string, data: T) => {
+      const cacheItem = { data, timestamp: Date.now() }
+      const cache = await kv.getItem(storeName)
+      const parsedCache = cache ? JSON.parse(cache) : {}
+
+      parsedCache[key] = cacheItem
+      await kv.setItem(storeName, JSON.stringify(parsedCache))
+      setCacheData((prev) => ({ ...prev, [`${storeName}-${key}`]: cacheItem }))
+    },
+    []
+  )
+
+  const removeCache = useCallback(async (storeName: string, key: string) => {
+    const cache = await kv.getItem(storeName)
+    if (!cache) return
+
+    const parsedCache = JSON.parse(cache)
+    delete parsedCache[key]
+    await kv.setItem(storeName, JSON.stringify(parsedCache))
+
+    setCacheData((prev) => {
+      const newData = { ...prev }
+      delete newData[`${storeName}-${key}`]
+      return newData
+    })
+  }, [])
+
+  const getCacheSync = useCallback(
+    <T,>(storeName: string, key: string): CacheItem<T> | null => {
+      const cacheKey = `${storeName}-${key}`
+      const item = cacheData[cacheKey]
+      if (item && !isCacheExpired(item.timestamp)) {
+        return item
+      }
+      return null
+    },
+    [cacheData]
+  )
+
+  const contextValue = useMemo(
+    () => ({
+      getCache,
+      saveCache,
+      removeCache,
+      getCacheSync,
+      getAllCache,
+      saveAllCache,
+    }),
+    [getCache, saveCache, removeCache, getCacheSync, getAllCache, saveAllCache]
+  )
+
   return (
-    <DataCacheContext.Provider
-      value={{
-        userCache,
-        communityCache,
-        fetchUserData,
-        fetchCommunityData,
-        updateUserCache,
-        updateCommunityCache,
-      }}
-    >
-      {children}
+    <DataCacheContext.Provider value={contextValue}>
+      {loading ? null : children}
     </DataCacheContext.Provider>
   )
 }
 
 export const useDataCache = () => {
   const context = useContext(DataCacheContext)
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useDataCache must be used within a DataCacheProvider')
   }
   return context

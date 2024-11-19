@@ -1,7 +1,7 @@
 import * as TaskManager from 'expo-task-manager'
 import * as Sentry from '@sentry/react-native'
 import * as Location from 'expo-location'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import kv from 'expo-sqlite/kv-store'
 import { databases } from '~/lib/appwrite-client'
 
 TaskManager.defineTask(
@@ -15,8 +15,8 @@ TaskManager.defineTask(
     }
 
     // Use the user data from the task
-    const userId = await AsyncStorage.getItem('userId')
-    //const preciseLocation = await AsyncStorage.getItem('preciseLocation')
+    const userId = await kv.getItem('userId')
+    //const preciseLocation = await kv.getItem('preciseLocation')
 
     if (!userId) {
       return Location.stopLocationUpdatesAsync('background-location-task')

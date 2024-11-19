@@ -36,7 +36,7 @@ export default function GalleryPage() {
   }
 
   const fetchGallery = useCallback(
-    async (newOffset: number = 0, limit: number = 10) => {
+    async (newOffset: number = 0, limit: number = 20) => {
       try {
         const nsfwPreference = current?.prefs?.nsfw ?? false
         let query = nsfwPreference
@@ -124,7 +124,7 @@ export default function GalleryPage() {
   const onRefresh = async () => {
     setRefreshing(true)
     setOffset(0)
-    await fetchGallery(0, 9)
+    await fetchGallery(0, 5000)
     setRefreshing(false)
   }
 
@@ -213,7 +213,6 @@ export default function GalleryPage() {
           refreshing={refreshing}
           numColumns={maxColumns}
           contentContainerStyle={{ flexGrow: 1 }}
-          // TODO: Implement this in the future
           //onEndReached={loadMore}
           //onEndReachedThreshold={0.5}
           ListFooterComponent={

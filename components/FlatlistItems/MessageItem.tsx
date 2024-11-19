@@ -1,9 +1,8 @@
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useState, useCallback } from 'react'
 import { View, StyleSheet, TouchableOpacity } from 'react-native'
 import { useDataCache } from '~/components/contexts/DataCacheContext'
-import { Image } from 'expo-image'
 import { Text } from '~/components/ui/text'
-import { formatDate } from '~/components/calculateTimeLeft'
+import { timeSince } from '~/components/calculateTimeLeft'
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -19,21 +18,20 @@ import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import ReportMessageModal from '~/components/messaging/moderation/ReportMessageModal'
 import { Link } from 'expo-router'
 import { Muted } from '~/components/ui/typography'
+import { UserData } from '~/lib/types/collections'
+import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
+import { getAvatarImageUrlPreview } from '~/components/api/getStorageItem'
 
 const MessageItem = ({ message }) => {
   const { current } = useUser()
-  const { userCache, fetchUserData } = useDataCache()
+  const { getCacheSync } = useDataCache()
   const { showAlertModal } = useAlertModal()
-  const [userData, setUserData] = useState(userCache[message.senderId]?.data)
   const [openModal, setOpenModal] = useState(false)
   const [openReportModal, setOpenReportModal] = useState(false)
-
-  useEffect(() => {
-    const userId = message.senderId
-    fetchUserData(userId).then((data) => {
-      setUserData(data.data)
-    })
-  }, [fetchUserData, message.senderId])
+  const userData = getCacheSync<UserData.UserDataDocumentsType>(
+    'users',
+    message.senderId
+  )?.data
 
   const handleLongPress = useCallback(() => {
     setOpenModal(true)
@@ -106,20 +104,26 @@ const MessageItem = ({ message }) => {
               params: { userId: userData?.$id },
             }}
           >
-            <Image
-              source={{
-                uri: userData?.avatarId
-                  ? `https://api.headpat.place/v1/storage/buckets/avatars/files/${userData.avatarId}/preview?project=hp-main&width=40&height=40`
-                  : undefined,
-              }}
-              style={styles.avatar}
-            />
+            <Avatar
+              style={{ width: 48, height: 48 }}
+              alt={userData?.displayName}
+            >
+              <AvatarImage
+                src={getAvatarImageUrlPreview(
+                  userData?.avatarId,
+                  'width=50&height=50'
+                )}
+              />
+              <AvatarFallback>
+                <Text>{userData?.displayName?.charAt(0)}</Text>
+              </AvatarFallback>
+            </Avatar>
           </Link>
           <View style={styles.messageContent}>
             <View style={styles.header}>
               <Text style={styles.senderName}>{userData?.displayName}</Text>
               <Muted style={styles.timestamp}>
-                {formatDate(new Date(message.$createdAt))}
+                {timeSince(message.$createdAt)}
               </Muted>
             </View>
             <Text style={styles.messageText}>{message.body}</Text>
@@ -143,6 +147,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   messageContent: {
+    marginLeft: 10,
     flex: 1,
   },
   header: {

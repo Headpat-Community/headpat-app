@@ -1,11 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import {
-  FlatList,
-  View,
-  StyleSheet,
-  Platform,
-  KeyboardAvoidingView,
-} from 'react-native'
+import { FlatList, View, Platform, KeyboardAvoidingView } from 'react-native'
 import { Stack, useLocalSearchParams } from 'expo-router'
 import { Text } from '~/components/ui/text'
 import { useFocusEffect } from '@react-navigation/core'
@@ -13,12 +7,15 @@ import { useUser } from '~/components/contexts/UserContext'
 import { useRealtimeChat } from '~/lib/hooks/useRealtimeChat'
 import { useDataCache } from '~/components/contexts/DataCacheContext'
 import { databases, functions } from '~/lib/appwrite-client'
-import { Messaging } from '~/lib/types/collections'
+import { Community, Messaging, UserData } from '~/lib/types/collections'
 import { ExecutionMethod, Query } from 'react-native-appwrite'
 import MessageItem from '~/components/FlatlistItems/MessageItem'
 import { Input } from '~/components/ui/input'
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
-import { getCommunityAvatarUrlPreview } from '~/components/api/getStorageItem'
+import {
+  getAvatarImageUrlPreview,
+  getCommunityAvatarUrlPreview,
+} from '~/components/api/getStorageItem'
 import { z } from 'zod'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { Button } from '~/components/ui/button'
@@ -38,8 +35,7 @@ export default function ChatView() {
   const local = useLocalSearchParams()
   const { current } = useUser()
   const { messages, setMessages } = useRealtimeChat()
-  const { userCache, communityCache, fetchUserData, fetchCommunityData } =
-    useDataCache()
+  const { getCache, getCacheSync, saveCache } = useDataCache()
   const { showAlertModal } = useAlertModal()
   const [participants, setParticipants] = useState<string[]>([])
   const [communityId, setCommunityId] = useState<string | null>(null)
@@ -60,8 +56,9 @@ export default function ChatView() {
   const fetchMessages = useCallback(
     async (reset = false) => {
       if (!hasMore && !reset) return
+      if (!local?.conversationId) return
 
-      const limit = 20
+      const limit = 25
       const offset = reset ? 0 : page * limit
 
       try {
@@ -69,14 +66,19 @@ export default function ChatView() {
           'hp_db',
           'messages',
           [
-            Query.equal('conversationId', local?.conversationId),
-            Query.orderDesc('$createdAt'),
+            Query.equal('conversationId', `${local.conversationId}`),
+            Query.orderAsc('$createdAt'),
             Query.limit(limit),
             Query.offset(offset),
           ]
         )
 
         const newMessages = result.documents
+
+        if (!newMessages) {
+          console.error('newMessages is undefined')
+          return
+        }
 
         // Sort messages by $createdAt
         newMessages.sort(
@@ -87,8 +89,12 @@ export default function ChatView() {
         // Fetch user data for any new message senders
         const newParticipants = newMessages.map((msg) => msg.senderId)
         const participantPromises = newParticipants.map(async (userId) => {
-          if (!userCache[userId]) {
-            await fetchUserData(userId)
+          if (getCache && saveCache && !(await getCache('users', userId))) {
+            await databases
+              .getDocument('hp_db', 'userdata', userId)
+              .then((userData) => {
+                saveCache('users', userId, userData)
+              })
           }
         })
         await Promise.all(participantPromises)
@@ -115,14 +121,7 @@ export default function ChatView() {
         console.error('Error fetching messages:', error)
       }
     },
-    [
-      local?.conversationId,
-      hasMore,
-      page,
-      setMessages,
-      userCache,
-      fetchUserData,
-    ]
+    [local?.conversationId, hasMore, page, setMessages, getCache, saveCache]
   )
 
   const fetchConversation = useCallback(async () => {
@@ -138,8 +137,16 @@ export default function ChatView() {
 
       if (conversationData.communityId) {
         setCommunityId(conversationData.communityId)
-        if (!communityCache[conversationData.communityId]) {
-          await fetchCommunityData(conversationData.communityId)
+        if (!(await getCache('communities', conversationData.communityId))) {
+          await databases
+            .getDocument('hp_db', 'community', conversationData.communityId)
+            .then((communityData) => {
+              saveCache(
+                'communities',
+                conversationData.communityId,
+                communityData
+              )
+            })
         }
       }
 
@@ -149,33 +156,59 @@ export default function ChatView() {
         ...new Set([...messageParticipants, ...conversationParticipants]),
       ]
 
-      setParticipants(allParticipants)
-
       const participantPromises = allParticipants.map(async (userId) => {
-        if (!userCache[userId]) {
-          await fetchUserData(userId)
+        if (!(await getCache('users', userId))) {
+          await databases
+            .getDocument('hp_db', 'userdata', userId)
+            .then((userData) => {
+              saveCache('users', userId, userData)
+            })
         }
       })
 
       await Promise.all(participantPromises)
+
+      setParticipants(
+        conversationData.communityId
+          ? messageParticipants
+          : conversationData.participants || []
+      )
     } catch (error) {
       console.error('Error fetching conversation:', error)
     }
-  }, [
-    fetchMessages,
-    local?.conversationId,
-    communityCache,
-    fetchCommunityData,
-    messages,
-    userCache,
-    fetchUserData,
-  ])
+  }, [fetchMessages, local?.conversationId, messages, getCache, saveCache])
 
+  useEffect(() => {
+    fetchConversation().then()
+  }, [local?.conversationId])
+
+  useEffect(() => {
+    const fetchParticipantsData = async () => {
+      const promises = participants.map((userId) => {
+        if (!getCache('users', userId)) {
+          return databases
+            .getDocument('hp_db', 'userdata', userId)
+            .then((userData) => {
+              saveCache('users', userId, userData)
+            })
+        }
+        return Promise.resolve()
+      })
+      await Promise.all(promises)
+    }
+
+    if (participants.length > 0) {
+      fetchParticipantsData().then()
+    }
+  }, [getCache, participants, saveCache])
+
+  /*
   useEffect(() => {
     if (participants.length > 0) {
       Promise.all(participants.map(fetchUserData)).then()
     }
-  }, [fetchUserData, participants])
+  }, [])
+   */
 
   useFocusEffect(
     useCallback(() => {
@@ -183,33 +216,48 @@ export default function ChatView() {
     }, [])
   )
 
-  const getUserAvatar = useCallback(
-    (userId: string) => {
-      const user = userCache[userId]?.data
-      if (!user) return undefined
-      if (!user.avatarId) return undefined
-      return `https://api.headpat.place/v1/storage/buckets/avatars/files/${user?.avatarId}/preview?project=hp-main&width=100&height=100`
-    },
-    [userCache]
-  )
+  const getUserAvatar = (userId: string) => {
+    if (!userId) return undefined
+    const userCache = getCacheSync<UserData.UserDataDocumentsType>(
+      'users',
+      userId
+    )
+    return getAvatarImageUrlPreview(
+      userCache?.data?.avatarId,
+      'width=100&height=100'
+    )
+  }
 
-  const getConversationAvatar = useCallback(() => {
-    if (communityId && communityCache[communityId]) {
+  const getConversationAvatar = () => {
+    if (communityId) {
+      const communityCache = getCacheSync<Community.CommunityDocumentsType>(
+        'communities',
+        communityId
+      )
+
       return getCommunityAvatarUrlPreview(
-        communityCache[communityId]?.data.avatarId,
+        communityCache?.data?.avatarId,
         'width=100&height=100'
       )
     }
     return getUserAvatar(participants.find((id) => id !== current.$id) || '')
-  }, [communityId, communityCache, getUserAvatar, participants, current.$id])
+  }
 
-  const getConversationName = useCallback(() => {
-    if (communityId && communityCache[communityId]) {
-      return communityCache[communityId]?.data.name
+  const getConversationName = () => {
+    if (communityId) {
+      const communityCache = getCacheSync<Community.CommunityDocumentsType>(
+        'communities',
+        communityId
+      )
+
+      return communityCache?.data?.name
     }
-    return userCache[participants.find((id) => id !== current.$id) || '']?.data
-      ?.displayName
-  }, [communityId, communityCache, userCache, participants, current.$id])
+    const userCache = getCacheSync<UserData.UserDataDocumentsType>(
+      'users',
+      participants.find((id) => id !== current.$id) || ''
+    )
+    return userCache?.data?.displayName
+  }
 
   useEffect(() => {
     if (flatListRef.current && messages.length > 0) {
@@ -320,7 +368,10 @@ export default function ChatView() {
     }
   }
 
-  const renderItem = ({ item }) => <MessageItem message={item} />
+  const renderItem = ({ item }) => {
+    if (!item) return null
+    return <MessageItem message={item} />
+  }
 
   return (
     <View className={'flex-1'}>

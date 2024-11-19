@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import kv from 'expo-sqlite/kv-store'
 import { View } from 'react-native'
 import { CircleUserRound, MoonStar, Sun } from '~/components/Icons'
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar'
@@ -34,7 +34,7 @@ export function ProfileThemeToggle() {
           const newTheme = isDarkColorScheme ? 'light' : 'dark'
           setColorScheme(newTheme)
           setAndroidNavigationBar(newTheme).then()
-          AsyncStorage.setItem('theme', newTheme).then()
+          kv.setItem('theme', newTheme).then()
         }}
         className="pl-4"
       >

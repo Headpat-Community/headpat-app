@@ -5,7 +5,7 @@ import React, {
   useEffect,
   ReactNode,
 } from 'react'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import kv from 'expo-sqlite/kv-store'
 import { i18n } from '~/components/system/i18n'
 import * as Localization from 'expo-localization'
 
@@ -31,9 +31,9 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({
     const getLocale = async () => {
       // Check language
       const locale =
-        (await AsyncStorage.getItem('locale')) ||
+        (await kv.getItem('locale')) ||
         Localization.getLocales()[0].languageCode
-      await AsyncStorage.setItem('locale', locale)
+      await kv.setItem('locale', locale)
       i18n.enableFallback = true
       i18n.defaultLocale = 'en'
       setLanguage(locale)
@@ -45,7 +45,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({
   const changeLanguage = async (newLanguage: string) => {
     setLanguage(newLanguage)
     i18n.locale = newLanguage
-    await AsyncStorage.setItem('locale', newLanguage)
+    await kv.setItem('locale', newLanguage)
   }
 
   return (

@@ -12,7 +12,7 @@ import {
 } from '~/components/ui/alert-dialog'
 import { Text } from '~/components/ui/text'
 import { Button } from '~/components/ui/button'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import kv from 'expo-sqlite/kv-store'
 
 export default function EulaModal({ isOpen, setOpen, versionData }) {
   const openBrowser = async (url: string) => {
@@ -20,7 +20,7 @@ export default function EulaModal({ isOpen, setOpen, versionData }) {
   }
 
   const acceptEula = () => {
-    AsyncStorage.setItem(`eula`, `${versionData.version}`).then()
+    kv.setItem(`eula`, `${versionData.version}`).then()
     setOpen(false)
   }
 

@@ -3,7 +3,10 @@ import React from 'react'
 
 function _layout() {
   return (
-    <Stack screenOptions={{ headerShown: false }} initialRouteName="index">
+    <Stack
+      screenOptions={{ headerShown: false }}
+      initialRouteName="[communityId]/index"
+    >
       <Stack.Screen name="[communityId]/index" />
       <Stack.Screen name="[communityId]/relationships/followers/index" />
       <Stack.Screen name="[communityId]/admin" />

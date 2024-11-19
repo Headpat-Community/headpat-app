@@ -2,7 +2,7 @@
   "expo": {
     "name": "Headpat",
     "slug": "headpat-app",
-    "version": "0.8.2",
+    "version": "0.8.3",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "headpatapp",
@@ -131,17 +131,25 @@
         }
       ],
       [
+        "expo-sqlite",
+        {
+          "enableFTS": true,
+          "useSQLCipher": true
+        }
+      ],
+      [
         "expo-build-properties",
         {
           "ios": {
             "useFrameworks": "static",
-            "deploymentTarget": "13.4"
+            "deploymentTarget": "15.1"
           }
         }
       ],
       "expo-video",
       "expo-router",
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-sqlite"
     ]
   }
 }

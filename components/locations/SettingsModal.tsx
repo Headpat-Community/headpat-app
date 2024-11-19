@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React from 'react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,6 +15,7 @@ import { Input } from '~/components/ui/input'
 import { databases } from '~/lib/appwrite-client'
 import { Switch } from '~/components/ui/switch'
 import { Separator } from '~/components/ui/separator'
+import { i18n } from '~/components/system/i18n'
 
 export default function SettingsModal({
   openModal,
@@ -24,9 +25,9 @@ export default function SettingsModal({
   current,
 }) {
   const [currentStatus, setCurrentStatus] = React.useState(userStatus)
-  const prevOpenModal = useRef(openModal)
+  const prevOpenModal = React.useRef(openModal)
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (openModal && !prevOpenModal.current) {
       setCurrentStatus(userStatus)
     }
@@ -49,10 +50,11 @@ export default function SettingsModal({
     <AlertDialog onOpenChange={setOpenModal} open={openModal}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>What are you up to?</AlertDialogTitle>
+          <AlertDialogTitle>
+            {i18n.t('location.map.status.title')}
+          </AlertDialogTitle>
           <AlertDialogDescription>
-            Let others know what you are up to. You can always change this
-            later.
+            {i18n.t('location.map.status.description')}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <View className={'gap-4'}>
@@ -91,13 +93,13 @@ export default function SettingsModal({
                 }))
               }}
             >
-              Do not disturb
+              {i18n.t('location.map.status.doNotDisturb')}
             </Label>
           </View>
         </View>
         <AlertDialogFooter>
-          <AlertDialogAction onPress={saveStatus}>
-            <Text>Apply</Text>
+          <AlertDialogAction onPress={() => saveStatus()}>
+            <Text>{i18n.t('location.map.status.apply')}</Text>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
