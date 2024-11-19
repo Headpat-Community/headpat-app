@@ -3,7 +3,7 @@ import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Text } from '~/components/ui/text'
 import { H1, Muted } from '~/components/ui/typography'
-import { useEffect, useState } from 'react'
+import React from 'react'
 import { account } from '~/lib/appwrite-client'
 import { useUser } from '~/components/contexts/UserContext'
 import { router } from 'expo-router'
@@ -20,27 +20,23 @@ import * as WebBrowser from 'expo-web-browser'
 import * as Sentry from '@sentry/react-native'
 import TwitchIcon from '~/components/icons/TwitchIcon'
 import MicrosoftIcon from '~/components/icons/MicrosoftIcon'
-import { useAlertModal } from '~/components/contexts/AlertModalProvider'
+import { useFocusEffect } from '@react-navigation/core'
 
 export default function ModalScreen() {
-  const { current, isLoadingUser, login, loginOAuth } = useUser()
-  const { showLoadingModal, hideLoadingModal } = useAlertModal()
+  const { current, login, loginOAuth } = useUser()
 
-  const [data, setData] = useState({
+  const [data, setData] = React.useState({
     email: '',
     password: '',
   })
 
-  useEffect(() => {
-    if (isLoadingUser) {
-      showLoadingModal()
-    } else if (current) {
-      hideLoadingModal()
-      router.push('/account')
-    }
-    // Don't add current, as it will cause user to be redirected to account page twice after login
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoadingUser])
+  useFocusEffect(
+    React.useCallback(() => {
+      if (current) {
+        router.push('/account')
+      }
+    }, [current])
+  )
 
   const handleEmailLogin = async () => {
     if (data.email.length < 1) {

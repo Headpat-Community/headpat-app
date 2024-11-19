@@ -21,6 +21,7 @@ const LocationSearchItem = React.memo(
     isSelected: boolean
     onSelectItem: () => void
   }) => {
+    console.log(item)
     const { isDarkColorScheme } = useColorScheme()
     const theme = isDarkColorScheme ? 'white' : 'black'
     const isCommunity = !!item?.name

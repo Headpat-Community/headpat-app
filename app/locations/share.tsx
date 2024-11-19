@@ -39,9 +39,11 @@ export default function ShareLocationView() {
 
   useFocusEffect(
     React.useCallback(() => {
-      checkStatus().then()
-      fetchShared().then()
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+      const initializeStatus = async () => {
+        await checkStatus()
+        await fetchShared()
+      }
+      initializeStatus().then()
     }, [])
   )
 

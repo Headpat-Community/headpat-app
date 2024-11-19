@@ -41,7 +41,10 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
   const { current } = useUser()
 
   useEffect(() => {
-    checkStatus().then()
+    const initializeStatus = async () => {
+      await checkStatus()
+    }
+    initializeStatus().then()
   }, [])
 
   const checkStatus = async () => {
@@ -82,7 +85,7 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
 
   const registerBackgroundFetch = async () => {
     if (isRegistered) {
-      checkStatus().then()
+      await checkStatus()
       return Alert.alert('Error', 'You are already sharing your location.')
     }
     if (!current.$id) {
@@ -121,12 +124,12 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
     })
 
     setIsRegistered(true)
-    checkStatus().then()
+    await checkStatus()
   }
 
   const unregisterBackgroundFetch = async () => {
     if (!isRegistered) {
-      checkStatus().then()
+      await checkStatus()
       return Alert.alert('Error', 'You are not sharing your location.')
     }
     await Location.stopLocationUpdatesAsync('background-location-task')
@@ -138,7 +141,7 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
     }
 
     setIsRegistered(false)
-    checkStatus().then()
+    await checkStatus()
   }
 
   return (

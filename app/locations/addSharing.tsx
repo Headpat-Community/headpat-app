@@ -192,11 +192,11 @@ export default function AddSharing() {
 
   const renderSearchItem = ({ item }) => (
     <LocationSearchItem
-      item={item.data}
+      item={item}
       isSelected={selectedItems.some(
-        (selectedItem) => selectedItem.id === item.data.$id
+        (selectedItem) => selectedItem.id === item.$id
       )}
-      onSelectItem={() => handleSelectItem(item.data)}
+      onSelectItem={() => handleSelectItem(item)}
     />
   )
 
@@ -231,7 +231,7 @@ export default function AddSharing() {
                 ) : (
                   <FlatList
                     data={searchResults}
-                    keyExtractor={(item) => item.data.$id}
+                    keyExtractor={(item) => item.$id}
                     renderItem={renderSearchItem}
                     className={'mb-24'}
                   />
