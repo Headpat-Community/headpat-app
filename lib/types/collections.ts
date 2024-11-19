@@ -7,7 +7,7 @@ export interface HeadpatException {
 }
 
 export namespace Account {
-  export interface AccountType extends Models.User<Models.Preferences> {}
+  export type AccountType = Models.User<Models.Preferences>
 
   /**
    * This data is returned from the API by calling their own account data.

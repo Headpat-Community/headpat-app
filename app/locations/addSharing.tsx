@@ -80,6 +80,7 @@ export default function AddSharing() {
           Promise.all(
             resultsUsers.documents.map(async (user) => {
               let userData: any = await getCache('users', user.$id)
+              userData = userData?.data
               if (!userData) {
                 userData = await databases.getDocument(
                   'hp_db',
@@ -98,6 +99,7 @@ export default function AddSharing() {
                   'communities',
                   community.$id
                 )
+              communityData = communityData?.data
               if (!communityData) {
                 communityData = await databases.getDocument(
                   'hp_db',

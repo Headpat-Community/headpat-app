@@ -7,7 +7,7 @@ import {
   View,
 } from 'react-native'
 import { Text } from '~/components/ui/text'
-import { H1, H4, Muted } from '~/components/ui/typography'
+import { H4, Muted } from '~/components/ui/typography'
 import { Separator } from '~/components/ui/separator'
 import { Button } from '~/components/ui/button'
 import React, { useCallback, useState } from 'react'

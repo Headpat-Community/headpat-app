@@ -38,6 +38,7 @@ export default function MaterialTopTabsLayout() {
         tabBarScrollEnabled: true,
         tabBarItemStyle: { width: 'auto', minWidth: 100 },
       }}
+      id={undefined}
     >
       <MaterialTopTabs.Screen
         name="index"

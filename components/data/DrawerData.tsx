@@ -29,7 +29,6 @@ import { useUser } from '~/components/contexts/UserContext'
 import { Text } from '~/components/ui/text'
 import { Link, router } from 'expo-router'
 import { Separator } from '~/components/ui/separator'
-import kv from 'expo-sqlite/kv-store'
 import DiscordIcon from '~/components/icons/DiscordIcon'
 import { Muted } from '~/components/ui/typography'
 import * as React from 'react'
@@ -112,49 +111,49 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
       <BottomSheetScrollView>
         <DrawerLabel
           icon={HomeIcon}
-          text="Home"
+          text={i18n.t('screens.home')}
           theme={theme}
           route={'/'}
           bottomSheetModalRef={bottomSheetModalRef}
         />
         <DrawerLabel
           icon={LayoutPanelLeftIcon}
-          text="Gallery"
+          text={i18n.t('screens.gallery')}
           theme={theme}
           route={'/gallery/(stacks)'}
           bottomSheetModalRef={bottomSheetModalRef}
         />
         <DrawerLabel
           icon={MapPinnedIcon}
-          text="Locations"
+          text={i18n.t('screens.locations')}
           theme={theme}
           route={'/locations'}
           bottomSheetModalRef={bottomSheetModalRef}
         />
         <DrawerLabel
           icon={CalendarIcon}
-          text="Events"
+          text={i18n.t('screens.events')}
           theme={theme}
           route={'/events/(tabs)'}
           bottomSheetModalRef={bottomSheetModalRef}
         />
         <DrawerLabel
           icon={MegaphoneIcon}
-          text="Announcements"
+          text={i18n.t('screens.announcements')}
           theme={theme}
           route={'/announcements'}
           bottomSheetModalRef={bottomSheetModalRef}
         />
         <DrawerLabel
           icon={UserSearchIcon}
-          text="Users"
+          text={i18n.t('screens.users')}
           theme={theme}
           route={'/user/(stacks)'}
           bottomSheetModalRef={bottomSheetModalRef}
         />
         <DrawerLabel
           icon={BoxesIcon}
-          text="Communities"
+          text={i18n.t('screens.communities')}
           theme={theme}
           route={'/community'}
           bottomSheetModalRef={bottomSheetModalRef}
@@ -164,28 +163,28 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
           <>
             <DrawerLabel
               icon={MessagesSquareIcon}
-              text="Chat"
+              text={i18n.t('screens.chat')}
               theme={theme}
               route={'/chat/list'}
               bottomSheetModalRef={bottomSheetModalRef}
             />
             <DrawerLabel
               icon={BellIcon}
-              text="Notifications"
+              text={i18n.t('screens.notifications')}
               theme={theme}
               route={'/notifications'}
               bottomSheetModalRef={bottomSheetModalRef}
             />
             <DrawerLabel
               icon={UserIcon}
-              text="My Profile"
+              text={i18n.t('screens.myProfile')}
               theme={theme}
               route={'/user/(stacks)/[userId]'}
               bottomSheetModalRef={bottomSheetModalRef}
             />
             <DrawerLabel
               icon={UsersIcon}
-              text="Mutuals"
+              text={i18n.t('screens.mutuals')}
               theme={theme}
               route={'/relationships/mutuals'}
               bottomSheetModalRef={bottomSheetModalRef}
@@ -195,21 +194,21 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
         <Separator />
         <DrawerLabel
           icon={isDarkColorScheme ? MoonStarIcon : SunIcon}
-          text="Switch theme"
+          text={i18n.t('drawer.switchTheme')}
           theme={theme}
           route={'/theme'}
           bottomSheetModalRef={bottomSheetModalRef}
         />
         <DrawerLabel
           icon={LogInIcon}
-          text={current ? 'Account' : 'Login'}
+          text={current ? i18n.t('screens.account') : i18n.t('screens.login')}
           theme={theme}
           route={current ? '/account' : '/login'}
           bottomSheetModalRef={bottomSheetModalRef}
         />
         <DrawerLabel
           icon={LanguagesIcon}
-          text={'Change language'}
+          text={i18n.t('screens.changeLanguage')}
           theme={theme}
           route={'/languages'}
           bottomSheetModalRef={bottomSheetModalRef}
@@ -217,21 +216,21 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
         <Separator />
         <DrawerLabel
           icon={FileCheckIcon}
-          text="Legal"
+          text={i18n.t('screens.legal')}
           theme={theme}
           route={'https://headpat.place/legal'}
           bottomSheetModalRef={bottomSheetModalRef}
         />
         <DrawerLabel
           icon={BadgeHelpIcon}
-          text="Support"
+          text={i18n.t('screens.support')}
           theme={theme}
           route={'https://headpat.place/support'}
           bottomSheetModalRef={bottomSheetModalRef}
         />
         <DrawerLabel
           icon={PencilIcon}
-          text="Changelog"
+          text={i18n.t('screens.changelog')}
           theme={theme}
           route={'/changelog'}
           bottomSheetModalRef={bottomSheetModalRef}

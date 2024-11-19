@@ -6,7 +6,6 @@ import React from 'react'
 import { ProfileThemeToggle } from '~/components/ThemeToggle'
 
 export default function TabsLayout() {
-  const { current } = useUser()
   return (
     <Tabs backBehavior={'initialRoute'} initialRouteName={'index'}>
       <Tabs.Screen

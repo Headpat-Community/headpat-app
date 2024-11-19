@@ -47,7 +47,6 @@ export default function ChatView() {
   const [scrollTimeout, setScrollTimeout] = useState<NodeJS.Timeout | null>(
     null
   )
-  const [isFetching, setIsFetching] = useState(false)
   const [lastFetchedIndex, setLastFetchedIndex] = useState<number | null>(null)
   const flatListRef = useRef<FlatList>(null)
   const { isDarkColorScheme } = useColorScheme()
@@ -277,9 +276,7 @@ export default function ChatView() {
       }
       setScrollTimeout(
         setTimeout(() => {
-          setIsFetching(true)
           fetchMessages().then(() => {
-            setIsFetching(false)
             if (lastFetchedIndex !== null && lastFetchedIndex >= 0 && hasMore) {
               flatListRef.current?.scrollToIndex({
                 index: lastFetchedIndex,

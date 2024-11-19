@@ -2,12 +2,8 @@ import { Tabs } from 'expo-router'
 import { MapIcon, PersonStandingIcon, UsersIcon } from 'lucide-react-native'
 import { ProfileThemeToggle } from '~/components/ThemeToggle'
 import { HeaderSidebarBackButton } from '~/components/data/DrawerScreensData'
-import { useColorScheme } from '~/lib/useColorScheme'
 
 export default function TabsLayout() {
-  const { isDarkColorScheme } = useColorScheme()
-  const theme = isDarkColorScheme ? 'white' : 'black'
-
   return (
     <Tabs backBehavior={'history'}>
       <Tabs.Screen
