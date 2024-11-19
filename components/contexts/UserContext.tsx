@@ -106,39 +106,28 @@ export const updatePushTargetWithAppwrite = async (fcmToken: string) => {
   // If is simulator, don't update push target
   const targetId = await kv.getItem('targetId')
   if (!fcmToken) return
+  let session: Account.AccountPrefs
   try {
-    const session = await account.get()
+    session = await account.get()
     if (!session.$id) return // User is not logged in
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (error) {
+  } catch {
     return
   }
 
+  // Check if the target is already in the user's account
+  const target = session.targets.find((t) => t.$id === targetId)
+  if (target) return
+
   try {
-    if (!targetId) {
-      // Create a new push target
-      const target = await account.createPushTarget(
-        ID.unique(),
-        fcmToken,
-        '66bcfc3b0028d9fb7a68' // FCM Appwrite Provider ID
-      )
-      await kv.setItem('targetId', target.$id)
-    } else {
-      // Update the existing push target
-      try {
-        await account.updatePushTarget(targetId, fcmToken)
-      } catch (error) {
-        console.error('Failed to update push target:', error)
-        const target = await account.createPushTarget(
-          ID.unique(),
-          fcmToken,
-          '66bcfc3b0028d9fb7a68'
-        )
-        await kv.setItem('targetId', target.$id)
-      }
-    }
+    // Create a new push target
+    const target = await account.createPushTarget(
+      ID.unique(),
+      fcmToken,
+      '66bcfc3b0028d9fb7a68' // FCM Appwrite Provider ID
+    )
+    await kv.setItem('targetId', target.$id)
   } catch (error) {
-    console.error('Failed to update push target in Appwrite:', error)
+    console.error('Failed to create push target in Appwrite:', error)
     Sentry.captureException(error)
   }
 }
