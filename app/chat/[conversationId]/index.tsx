@@ -57,7 +57,7 @@ export default function ChatView() {
       if (!hasMore && !reset) return
       if (!local?.conversationId) return
 
-      const limit = 25
+      const limit = 1000
       const offset = reset ? 0 : page * limit
 
       try {
