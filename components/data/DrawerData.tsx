@@ -32,7 +32,6 @@ import { Separator } from '~/components/ui/separator'
 import DiscordIcon from '~/components/icons/DiscordIcon'
 import { Muted } from '~/components/ui/typography'
 import * as React from 'react'
-import * as WebBrowser from 'expo-web-browser'
 import { i18n } from '~/components/system/i18n'
 
 export function HeaderMenuSidebar() {
@@ -74,13 +73,9 @@ export function HeaderMenuSidebar() {
 }
 
 function CustomDrawerContent({ bottomSheetModalRef }) {
-  const { isDarkColorScheme, setColorScheme } = useColorScheme()
+  const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
   const { current } = useUser()
-
-  const openBrowser = async (url: string) => {
-    await WebBrowser.openBrowserAsync(url)
-  }
 
   return (
     <>

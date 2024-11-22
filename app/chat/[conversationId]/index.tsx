@@ -21,6 +21,7 @@ import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { Button } from '~/components/ui/button'
 import { SendIcon } from 'lucide-react-native'
 import { useColorScheme } from '~/lib/useColorScheme'
+import * as Sentry from '@sentry/react-native'
 
 const schema = z.object({
   message: z
@@ -201,14 +202,6 @@ export default function ChatView() {
     }
   }, [getCache, participants, saveCache])
 
-  /*
-  useEffect(() => {
-    if (participants.length > 0) {
-      Promise.all(participants.map(fetchUserData)).then()
-    }
-  }, [])
-   */
-
   useFocusEffect(
     useCallback(() => {
       fetchConversation().then()
@@ -359,6 +352,7 @@ export default function ChatView() {
       if (error instanceof z.ZodError) {
         showAlertModal('FAILED', error.errors[0].message)
       } else {
+        Sentry.captureException(error)
         showAlertModal('FAILED', 'An error occurred while sending the message')
         console.error('Error sending message:', error)
       }

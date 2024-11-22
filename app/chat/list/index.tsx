@@ -13,6 +13,7 @@ import { Text } from '~/components/ui/text'
 import ConversationSearchItem from '~/components/FlatlistItems/ConversationSearchItem'
 import { useFocusEffect } from '@react-navigation/core'
 import FeatureAccess from '~/components/FeatureAccess'
+import * as Sentry from '@sentry/react-native'
 
 export default function ConversationsView() {
   const [refreshing, setRefreshing] = useState(false)
@@ -97,6 +98,7 @@ export default function ConversationsView() {
           )
           setSearchResults(userDataResults)
         } catch (error) {
+          Sentry.captureException(error)
           console.error('Error searching users', error)
         } finally {
           setIsLoading(false)

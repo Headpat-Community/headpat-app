@@ -1,6 +1,5 @@
 import { Tabs } from 'expo-router'
 import { MapIcon, PersonStandingIcon } from 'lucide-react-native'
-import { useUser } from '~/components/contexts/UserContext'
 import { HeaderSidebarBackButton } from '~/components/data/DrawerScreensData'
 import React from 'react'
 import { ProfileThemeToggle } from '~/components/ThemeToggle'

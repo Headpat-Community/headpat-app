@@ -504,9 +504,9 @@ export namespace Events {
      */
     circleRadius: number
     /**
-     * User IDs of attendees.
+     * User IDs of attendees or the maximum amount of attendees.
      */
-    attendees: string[]
+    attendees: string[] | number
     /**
      * The community ID connected to the event.
      */

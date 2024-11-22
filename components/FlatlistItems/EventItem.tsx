@@ -1,5 +1,5 @@
 import React from 'react'
-import { TouchableOpacity, View, Text } from 'react-native'
+import { TouchableOpacity, View } from 'react-native'
 import { Events } from '~/lib/types/collections'
 import {
   Card,
@@ -15,6 +15,7 @@ import {
   calculateTimeLeftEvent,
   formatDateLocale,
 } from '~/components/calculateTimeLeft'
+import { Text } from '~/components/ui/text'
 
 // eslint-disable-next-line react/display-name
 const EventItem = React.memo(

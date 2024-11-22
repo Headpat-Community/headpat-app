@@ -20,7 +20,6 @@ import {
 import { blockUser } from '~/components/user/api/blockUser'
 import { View } from 'react-native'
 import { Text } from '~/components/ui/text'
-import { useColorScheme } from '~/lib/useColorScheme'
 import { Account, UserData } from '~/lib/types/collections'
 import { addFollow } from '~/components/user/api/addFollow'
 import { removeFollow } from '~/components/user/api/removeFollow'
@@ -42,8 +41,6 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
   ({ userData, setUserData, current }) => {
     const [moderationModalOpen, setModerationModalOpen] = useState(false)
     const [reportUserModalOpen, setReportUserModalOpen] = useState(false)
-    const { isDarkColorScheme } = useColorScheme()
-    const themeButtons = isDarkColorScheme ? 'black' : 'white'
     const { showLoadingModal, hideLoadingModal, showAlertModal } =
       useAlertModal()
 

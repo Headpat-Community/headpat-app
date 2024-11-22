@@ -6,10 +6,18 @@ import { Badge } from '~/components/ui/badge'
 import { Text } from '~/components/ui/text'
 import { ImageFormat } from 'react-native-appwrite'
 import { Skeleton } from '~/components/ui/skeleton'
+import { Gallery } from '~/lib/types/collections'
+
+type GalleryItemProps = {
+  image: Gallery.GalleryDocumentsType
+  thumbnail: string
+  getGalleryUrl: (id: string, format?: ImageFormat) => string
+  imagePrefs: { [key: string]: Gallery.GalleryPrefsDocumentsType }
+}
 
 // eslint-disable-next-line react/display-name
 const GalleryItem = React.memo(
-  ({ image, thumbnail, getGalleryUrl, isHidden }: any) => {
+  ({ image, thumbnail, getGalleryUrl, imagePrefs }: GalleryItemProps) => {
     const format = image.mimeType?.split('/').pop()
     const imageFormat = format
       ? (ImageFormat[
@@ -22,6 +30,7 @@ const GalleryItem = React.memo(
 
     // Define height based on device size
     const widthColumns = width > 600 ? '24%' : '48%'
+    const isHidden: boolean = imagePrefs[image.$id]?.isHidden
 
     return (
       <Link

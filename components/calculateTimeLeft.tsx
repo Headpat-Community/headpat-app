@@ -51,7 +51,7 @@ export const calculateTimeLeftEvent = (
   }
 }
 
-export const calculateTimeLeft = (date: string, upcoming: boolean = false) => {
+export const calculateTimeLeft = (date: string) => {
   const now = new Date()
   const eventEnd = new Date(date)
   const differenceInTime = eventEnd.getTime() - now.getTime()
@@ -103,18 +103,16 @@ export const formatDateLocale = (date: Date) => {
   return `${day}.${month}.${year} @ ${hours}:${minutes} GMT${offsetSign}${offsetHours}:${offsetMinutes}`
 }
 
-export const useTimeLeft = (date: string, upcoming: boolean = false) => {
-  const [timeLeft, setTimeLeft] = useState(() =>
-    calculateTimeLeft(date, upcoming)
-  )
+export const useTimeLeft = (date: string) => {
+  const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(date))
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimeLeft(calculateTimeLeft(date, upcoming))
+      setTimeLeft(calculateTimeLeft(date))
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [date, upcoming, calculateTimeLeft])
+  }, [date])
 
   return timeLeft
 }
@@ -128,7 +126,7 @@ export const useTimeSince = (timestamp: string) => {
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [timestamp, timeSince])
+  }, [timestamp])
 
   return timeElapsed
 }

@@ -3,7 +3,7 @@ import { H1, Muted } from '~/components/ui/typography'
 import { Stack, useLocalSearchParams } from 'expo-router'
 import { Events } from '~/lib/types/collections'
 import { databases, functions } from '~/lib/appwrite-client'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Card, CardContent } from '~/components/ui/card'
 import { Text } from '~/components/ui/text'
 import { formatDate } from '~/components/calculateTimeLeft'
@@ -15,13 +15,17 @@ import sanitizeHtml from 'sanitize-html'
 import { UsersIcon } from 'lucide-react-native'
 import { Skeleton } from '~/components/ui/skeleton'
 import { ExecutionMethod } from 'react-native-appwrite'
+import { useAlertModal } from '~/components/contexts/AlertModalProvider'
+import { useFocusEffect } from '@react-navigation/core'
+import { Button } from '~/components/ui/button'
 
 export default function EventPage() {
   const local = useLocalSearchParams()
-  const [event, setEvent] = useState<Events.EventsDocumentsType>(null)
-  const [refreshing, setRefreshing] = useState<boolean>(false)
+  const [event, setEvent] = React.useState<Events.EventsDocumentsType>(null)
+  const [refreshing, setRefreshing] = React.useState<boolean>(true)
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
+  const { showAlertModal } = useAlertModal()
 
   const fetchEvents = async () => {
     try {
@@ -32,6 +36,7 @@ export default function EventPage() {
       )
 
       setEvent(document)
+      setRefreshing(false)
 
       const eventResponse = await functions.createExecution(
         'event-endpoints',
@@ -43,9 +48,33 @@ export default function EventPage() {
       const event = JSON.parse(eventResponse.responseBody)
       setEvent({ ...document, attendees: event })
     } catch {
+      showAlertModal('FAILED', 'Failed to fetch event data.')
       setRefreshing(false)
-    } finally {
-      setRefreshing(false)
+    }
+  }
+
+  const attendEvent = async () => {
+    try {
+      const eventResponse = await functions.createExecution(
+        'event-endpoints',
+        '',
+        false,
+        `/event/attendees?eventId=${local?.eventId}`,
+        ExecutionMethod.POST
+      )
+      const event = JSON.parse(eventResponse.responseBody)
+      if (event.type === 'event_attendee_add_success') {
+        setEvent((prev) => ({
+          ...prev,
+          attendees: Array.isArray(prev.attendees)
+            ? prev.attendees
+            : prev.attendees + 1,
+        }))
+      } else {
+        showAlertModal('FAILED', 'Failed to attend event.')
+      }
+    } catch {
+      showAlertModal('FAILED', 'Failed to fetch event data.')
     }
   }
 
@@ -54,11 +83,16 @@ export default function EventPage() {
     fetchEvents().then()
   }
 
-  useEffect(() => {
-    setRefreshing(true)
-    fetchEvents().then()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [local.eventId])
+  useFocusEffect(
+    React.useCallback(() => {
+      if (!local?.eventId)
+        return () => showAlertModal('FAILED', 'Event ID not found.')
+      fetchEvents().then()
+      return () => {
+        setEvent(null)
+      }
+    }, [local?.eventId])
+  )
 
   if (refreshing)
     return (
@@ -169,8 +203,23 @@ export default function EventPage() {
               </CardContent>
             </Card>
           </View>
+
+          <View>
+            <Button
+              variant={'default'}
+              className={'flex-1 p-0'}
+              onPress={attendEvent}
+            >
+              <Text className={'font-bold'}>
+                {event?.attendees === 0
+                  ? 'Be the first to attend!'
+                  : 'Attend this event!'}
+              </Text>
+            </Button>
+          </View>
         </View>
       </ScrollView>
+
       {event.attendees === null || event.attendees === undefined ? (
         <Skeleton
           className={

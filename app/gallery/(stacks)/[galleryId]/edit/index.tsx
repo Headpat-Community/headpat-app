@@ -23,6 +23,16 @@ import { Button } from '~/components/ui/button'
 import { useUser } from '~/components/contexts/UserContext'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import * as Sentry from '@sentry/react-native'
+import { z } from 'zod'
+
+const gallerySchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, 'Name is required')
+    .max(32, 'Name is too long'),
+  longText: z.string().trim().max(2048, 'Description is too long').optional(),
+})
 
 export default function HomeView() {
   const local = useGlobalSearchParams()
@@ -47,8 +57,8 @@ export default function HomeView() {
       setImage(data)
       setRefreshing(false)
       hideLoadingModal()
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
+      console.log(error)
       showAlertModal('FAILED', 'Failed to fetch gallery data. Does it exist?')
       setRefreshing(false)
     }
@@ -56,21 +66,30 @@ export default function HomeView() {
 
   const saveGallery = async () => {
     try {
+      gallerySchema.parse({
+        name: image.name,
+        longText: image.longText,
+      })
+
       await databases.updateDocument(
         'hp_db',
         'gallery-images',
         `${local.galleryId}`,
         {
           name: image.name,
-          longText: image.longText,
+          longText: image.longText || '',
         }
       )
 
       showAlertModal('SUCCESS', 'Gallery data saved successfully.')
       router.back()
     } catch (error) {
-      showAlertModal('FAILED', 'Failed to save gallery data.')
-      Sentry.captureException(error)
+      if (error instanceof z.ZodError) {
+        showAlertModal('FAILED', error.errors.map((e) => e.message).join(', '))
+      } else {
+        showAlertModal('FAILED', 'Failed to save gallery data.')
+        Sentry.captureException(error)
+      }
     }
   }
 
@@ -95,13 +114,6 @@ export default function HomeView() {
   const onRefresh = () => {
     fetchGallery().then()
   }
-
-  useEffect(() => {
-    showLoadingModal()
-    fetchGallery().then()
-    hideLoadingModal()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [local.galleryId])
 
   const getGalleryUrl = (galleryId: string) => {
     if (!galleryId) return
@@ -133,6 +145,7 @@ export default function HomeView() {
 
   useFocusEffect(
     useCallback(() => {
+      fetchGallery().then()
       return () => {
         //if (player.playing) player.pause()
       }
@@ -186,11 +199,29 @@ export default function HomeView() {
         <View className={'mt-8 px-8'}>
           <View>
             <Label nativeID={'gallery-name'}>Name</Label>
-            <Input defaultValue={image?.name || ''} />
+            <Input
+              value={image?.name || ''}
+              onChangeText={(text) => {
+                setImage({
+                  ...image,
+                  name: text,
+                })
+              }}
+            />
           </View>
           <View className={'mt-4'}>
             <Label nativeID={'gallery-longText'}>Description</Label>
-            <Textarea defaultValue={image?.longText || ''} />
+            <Textarea
+              value={image?.longText || ''}
+              onChangeText={(text) => {
+                setImage({
+                  ...image,
+                  longText: text,
+                })
+              }}
+              numberOfLines={4}
+              multiline={true}
+            />
           </View>
           <Button className={'mt-8'} onPress={saveGallery}>
             <Text>Save</Text>

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React from 'react'
 import { Dimensions, FlatList, Text, View } from 'react-native'
 import { databases, storage } from '~/lib/appwrite-client'
 import * as Sentry from '@sentry/react-native'
@@ -14,12 +14,16 @@ import FeatureAccess from '~/components/FeatureAccess'
 export default function GalleryPage() {
   const { current } = useUser()
 
-  const [images, setImages] = useState<Gallery.GalleryDocumentsType[]>([])
-  const [imagePrefs, setImagePrefs] = useState<{ [key: string]: any }>({})
-  const [refreshing, setRefreshing] = useState<boolean>(false)
-  const [thumbnails, setThumbnails] = useState<{ [key: string]: string }>({})
-  const [offset, setOffset] = useState<number>(0)
-  const [loadingMore, setLoadingMore] = useState<boolean>(false)
+  const [images, setImages] = React.useState<Gallery.GalleryDocumentsType[]>([])
+  const [imagePrefs, setImagePrefs] = React.useState<{
+    [key: string]: Gallery.GalleryPrefsDocumentsType
+  }>({})
+  const [refreshing, setRefreshing] = React.useState<boolean>(false)
+  const [thumbnails, setThumbnails] = React.useState<{ [key: string]: string }>(
+    {}
+  )
+  const [offset, setOffset] = React.useState<number>(0)
+  const [loadingMore, setLoadingMore] = React.useState<boolean>(false)
   const { showAlertModal } = useAlertModal()
   const { width } = Dimensions.get('window')
   const maxColumns = width > 600 ? 4 : 2
@@ -35,7 +39,7 @@ export default function GalleryPage() {
     return array
   }
 
-  const fetchGallery = useCallback(
+  const fetchGallery = React.useCallback(
     async (newOffset: number = 0, limit: number = 20) => {
       try {
         const nsfwPreference = current?.prefs?.nsfw ?? false
@@ -98,7 +102,7 @@ export default function GalleryPage() {
     [current]
   )
 
-  const getGalleryUrl = useCallback(
+  const getGalleryUrl = React.useCallback(
     (galleryId: string, output: ImageFormat = ImageFormat.Jpeg) => {
       if (!galleryId) return
       const data = storage.getFilePreview(
@@ -138,14 +142,14 @@ export default function GalleryPage() {
     }
   }
 
-  useEffect(() => {
+  React.useEffect(() => {
     // TODO: Use this in the future
     //fetchGallery(0, startCount).then()
     fetchGallery(0, 5000).then()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current, startCount])
 
-  const generateThumbnail = useCallback(async (galleryId: string) => {
+  const generateThumbnail = React.useCallback(async (galleryId: string) => {
     try {
       const { uri } = await VideoThumbnails.getThumbnailAsync(
         `https://api.headpat.place/v1/storage/buckets/gallery/files/${galleryId}/view?project=hp-main`
@@ -190,25 +194,20 @@ export default function GalleryPage() {
     )
   }
 
-  const renderItem = ({ item }) => {
-    const pref = imagePrefs[item.$id]
-    return (
-      <GalleryItem
-        image={item}
-        thumbnail={thumbnails[item.$id]}
-        getGalleryUrl={getGalleryUrl}
-        isHidden={pref?.isHidden}
-      />
-    )
-  }
-
   return (
     <FeatureAccess featureName={'gallery'}>
       <View style={{ flex: 1 }}>
         <FlatList
           data={images}
           keyExtractor={(item) => item.$id}
-          renderItem={renderItem}
+          renderItem={({ item }) => (
+            <GalleryItem
+              image={item}
+              thumbnail={thumbnails[item.$id]}
+              getGalleryUrl={getGalleryUrl}
+              imagePrefs={imagePrefs}
+            />
+          )}
           onRefresh={onRefresh}
           refreshing={refreshing}
           numColumns={maxColumns}

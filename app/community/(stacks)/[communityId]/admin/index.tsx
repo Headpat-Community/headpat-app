@@ -237,7 +237,6 @@ export default function Page() {
                         description: e.nativeEvent.text,
                       })
                     }
-                    textContentType={'name'}
                     value={community.description}
                   />
                 </View>

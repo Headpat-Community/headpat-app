@@ -1,4 +1,4 @@
-import { FlatList, RefreshControl, ScrollView, View, Text } from 'react-native'
+import { FlatList, RefreshControl, ScrollView, View } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 import { functions } from '~/lib/appwrite-client'
 import { Events } from '~/lib/types/collections'
@@ -7,6 +7,7 @@ import { ExecutionMethod } from 'react-native-appwrite'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { useFocusEffect } from '@react-navigation/core'
 import EventItem from '~/components/FlatlistItems/EventItem'
+import { Text } from '~/components/ui/text'
 
 interface EventsListProps {
   endpoint: string

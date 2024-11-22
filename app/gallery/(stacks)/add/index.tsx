@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import * as ImagePicker from 'react-native-image-crop-picker'
-import { toast } from '~/lib/toast'
+import * as ImagePicker from 'expo-image-picker'
 import { Keyboard, TouchableWithoutFeedback, View } from 'react-native'
 import { Text } from '~/components/ui/text'
 import { Button } from '~/components/ui/button'
@@ -18,14 +17,27 @@ import * as Sentry from '@sentry/react-native'
 import * as WebBrowser from 'expo-web-browser'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import FeatureAccess from '~/components/FeatureAccess'
+import { z } from 'zod'
+import { Progress } from '~/components/ui/progress'
+
+const gallerySchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, 'Name is required')
+    .max(32, 'Name is too long'),
+  longText: z.string().trim().max(2048, 'Description is too long').optional(),
+})
 
 export default function GalleryAdd() {
-  const [image, setImage] = useState<ImagePicker.ImageOrVideo>(null)
-  const [page, setPage] = useState(1)
-  const [title, setTitle] = useState('')
-  const [nsfw, setNsfw] = useState(false)
-  const [description, setDescription] = useState('')
-  const { showLoadingModal, hideLoadingModal, showAlertModal } = useAlertModal()
+  const [image, setImage] = useState<ImagePicker.ImagePickerAsset>(null)
+  const [page, setPage] = useState<number>(1)
+  const [title, setTitle] = useState<string>('')
+  const [nsfw, setNsfw] = useState<boolean>(false)
+  const [description, setDescription] = useState<string>('')
+  const [isUploading, setIsUploading] = useState<boolean>(false)
+  const [progress, setProgress] = useState<number>(0)
+  const { showAlertModal } = useAlertModal()
   const { current } = useUser()
 
   const openBrowser = async (url: string) => {
@@ -33,30 +45,31 @@ export default function GalleryAdd() {
   }
 
   const maxFileSize = 8 * 1024 * 1024 // 8 MB in bytes
-  const maxResolution = 8 * 1024 * 1024
 
   const pickImage = async () => {
     try {
-      let result = await ImagePicker.openPicker({
-        mediaType: 'any',
-        compressImageQuality: 0.9,
-        compressVideoPreset: 'MediumQuality',
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images', 'videos', 'livePhotos'],
+        allowsEditing: true,
+        quality: 0.9,
+        videoQuality: 1,
       })
 
-      if (!result || !result?.path) {
+      if (result?.assets?.length === 0 || !result?.assets[0].uri) {
         showAlertModal('FAILED', 'No image selected!')
         return
       }
 
-      if (result.width + result.height > maxResolution) {
-        showAlertModal('FAILED', 'Image resolution is too large.')
+      if (result?.assets[0]?.fileSize > maxFileSize) {
+        showAlertModal(
+          'FAILED',
+          'Image size is too large. Has to be under 8 MB'
+        )
         return
       }
 
-      if (result.width + result.height <= maxResolution) {
-        setImage(result)
-        setPage(2)
-      }
+      setImage(result.assets[0])
+      setPage(2)
     } catch (error) {
       console.log(error)
       //showAlertModal('FAILED', 'Error picking image.')
@@ -77,36 +90,40 @@ export default function GalleryAdd() {
   }
 
   async function uploadImageAsync() {
-    showLoadingModal()
-    if (!image.path) {
-      showAlertModal('FAILED', 'Please select an image to upload')
-      return
-    }
-    if (!title || title.length <= 3) {
-      toast('Please provide a valid title.')
+    setIsUploading(true)
+    if (!image.uri) {
+      showAlertModal('FAILED', 'Please select an image to upload!')
+      setIsUploading(false)
       return
     }
 
     try {
-      const fileData = {
-        name: image.filename,
-        type: image.mime,
-        size: image.size,
-        uri: image.path,
-      }
+      gallerySchema.parse({ name: title, longText: description })
+    } catch (error) {
+      showAlertModal('FAILED', error.errors[0].message)
+      setIsUploading(false)
+      return
+    }
 
-      if (image.size > maxFileSize) {
-        showAlertModal(
-          'FAILED',
-          'Image size is too large. Has to be under 8 MB'
-        )
-        return
+    try {
+      // name is galleryFile + mimeType
+      const name =
+        image.fileName || 'galleryFile.' + image.mimeType.split('/')[1]
+      const fileData = {
+        name: image.fileName || name,
+        type: image.mimeType,
+        size: image.fileSize,
+        uri: image.uri,
       }
 
       const storageData = await storage.createFile(
         'gallery',
         ID.unique(),
-        fileData
+        fileData,
+        undefined,
+        (progress) => {
+          setProgress(progress.progress)
+        }
       )
 
       await databases.createDocument(
@@ -124,11 +141,16 @@ export default function GalleryAdd() {
       )
 
       handleFinish(storageData.$id)
-      hideLoadingModal()
     } catch (error) {
-      //console.log(error)
-      showAlertModal('FAILED', 'Error picking image.')
-      Sentry.captureException(error)
+      if (error.type === 'storage_file_type_unsupported') {
+        showAlertModal('FAILED', 'Unsupported file type.')
+      } else {
+        console.log(error.type)
+        Sentry.captureException(error)
+        showAlertModal('FAILED', 'Error uploading image.')
+      }
+    } finally {
+      setIsUploading(false)
     }
   }
 
@@ -209,12 +231,13 @@ export default function GalleryAdd() {
           </View>
           <View style={{ marginBottom: 40 }} className={'gap-4'}>
             <>
+              {isUploading && <Progress value={progress} />}
               <Button variant={'outline'} onPress={handleClose}>
                 <Text>Cancel</Text>
               </Button>
               {page === 2 && (
                 <>
-                  <Button onPress={uploadImageAsync}>
+                  <Button disabled={isUploading} onPress={uploadImageAsync}>
                     <Text>Submit</Text>
                   </Button>
                   <Button onPress={() => setPage(1)}>

@@ -20,7 +20,7 @@ export default function CommunitiesPage() {
   // Fetch communities function
   const fetchCommunities = async (
     newOffset: number = 0,
-    limit: number = 10
+    limit: number = 50
   ) => {
     try {
       const data = await functions.createExecution(
@@ -58,7 +58,7 @@ export default function CommunitiesPage() {
   const onRefresh = async () => {
     setRefreshing(true)
     setOffset(0)
-    await fetchCommunities(0, 9)
+    await fetchCommunities(0)
   }
 
   // Handle loading more communities
