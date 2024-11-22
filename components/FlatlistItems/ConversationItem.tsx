@@ -108,7 +108,9 @@ const ConversationItem = React.memo(
           }}
           asChild
         >
-          <TouchableOpacity onLongPress={handleLongPress}>
+          <TouchableOpacity
+            onLongPress={!isCommunity ? handleLongPress : undefined}
+          >
             <Card className={'rounded-none'}>
               <CardContent className={'pt-4 pb-4'}>
                 <View className={'flex flex-row items-center'}>

@@ -88,7 +88,7 @@ export default function ChatView() {
         // Fetch user data for any new message senders
         const newParticipants = newMessages.map((msg) => msg.senderId)
         const participantPromises = newParticipants.map(async (userId) => {
-          if (getCache && saveCache && !(await getCache('users', userId))) {
+          if (!(await getCache('users', userId))) {
             await databases
               .getDocument('hp_db', 'userdata', userId)
               .then((userData) => {

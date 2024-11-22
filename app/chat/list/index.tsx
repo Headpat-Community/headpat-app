@@ -19,7 +19,7 @@ export default function ConversationsView() {
   const [displayData, setDisplayData] = useState({})
   const [searchTerm, setSearchTerm] = useState('')
   const [searchResults, setSearchResults] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const debouncedSearchTerm = useDebounce(searchTerm, 500)
   const { conversations, fetchInitialData } = useRealtimeChat()
   const { getCache, saveCache } = useDataCache()
@@ -76,6 +76,7 @@ export default function ConversationsView() {
         }
       }
       setDisplayData(newDisplayUsers)
+      setIsLoading(false)
     }
 
     updateDisplayUsers().then()
