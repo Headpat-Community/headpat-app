@@ -126,7 +126,7 @@ const ConversationItem = React.memo(
                       <AvatarImage
                         src={
                           isLoading
-                            ? null
+                            ? require('~/assets/images/headpat_logo.png')
                             : isCommunity
                               ? getCommunityAvatarUrlPreview(
                                   displayData?.avatarId,
