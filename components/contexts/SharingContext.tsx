@@ -49,11 +49,11 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
 
   const checkStatus = async () => {
     const status = await BackgroundFetch.getStatusAsync()
-    const isRegistered = await TaskManager.isTaskRegisteredAsync(
+    const isRegisteredTask = await TaskManager.isTaskRegisteredAsync(
       'background-location-task'
     )
     setStatus(status)
-    setIsRegistered(isRegistered)
+    setIsRegistered(isRegisteredTask)
 
     if (status && !isRegistered) {
       await databases
