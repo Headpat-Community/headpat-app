@@ -6,6 +6,7 @@ import * as TaskManager from 'expo-task-manager'
 import { databases } from '~/lib/appwrite-client'
 import { useUser } from '~/components/contexts/UserContext'
 import * as Sentry from '@sentry/react-native'
+import { toast } from '~/lib/toast'
 
 interface LocationContextValue {
   status: BackgroundFetch.BackgroundFetchStatus | null
@@ -48,14 +49,26 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
   }, [])
 
   const checkStatus = async () => {
-    const status = await BackgroundFetch.getStatusAsync()
+    const backgroundStatus = await BackgroundFetch.getStatusAsync()
+    setStatus(backgroundStatus)
+    if (backgroundStatus !== BackgroundFetch.BackgroundFetchStatus.Available) {
+      return toast(
+        'Background fetch is restricted. Headpat requires background fetch to share your location.'
+      )
+    }
+    const isDefined = TaskManager.isTaskDefined('background-location-task')
+    if (!isDefined) {
+      TaskManager.defineTask('background-location-task', async () => {
+        return
+      })
+    }
     const isRegisteredTask = await TaskManager.isTaskRegisteredAsync(
       'background-location-task'
     )
-    setStatus(status)
     setIsRegistered(isRegisteredTask)
+    Sentry.captureMessage(`Location sharing status: ${isRegisteredTask}`)
 
-    if (status && !isRegisteredTask) {
+    if (!isRegisteredTask) {
       await databases
         .deleteDocument('hp_db', 'locations', current?.$id)
         .catch(() => {
