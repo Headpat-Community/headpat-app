@@ -55,7 +55,7 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
     setStatus(status)
     setIsRegistered(isRegisteredTask)
 
-    if (status && !isRegistered) {
+    if (status && !isRegisteredTask) {
       await databases
         .deleteDocument('hp_db', 'locations', current?.$id)
         .catch(() => {
