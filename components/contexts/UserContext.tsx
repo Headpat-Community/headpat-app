@@ -35,6 +35,7 @@ export function UserProvider(props: any) {
     await account.createEmailPasswordSession(email, password)
     const accountData = await account.get()
     setUser(accountData)
+    await kv.setItem('userId', accountData.$id)
     await loggedInPushNotifications()
   }
 
@@ -49,6 +50,7 @@ export function UserProvider(props: any) {
     try {
       await account.deleteSession('current')
       setUser(null)
+      await kv.removeItem('userId')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setUser(null)
@@ -65,6 +67,7 @@ export function UserProvider(props: any) {
       setIsLoadingUser(true)
       const loggedIn = await account.get()
       setUser(loggedIn)
+      await kv.setItem('userId', loggedIn.$id)
       setIsLoadingUser(false)
       await loggedInPushNotifications()
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
