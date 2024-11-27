@@ -53,7 +53,7 @@
         "applinks:headpat.place",
         "applinks:api.headpat.place"
       ],
-      "buildNumber": "117"
+      "buildNumber": "118"
     },
     "android": {
       "permissions": [
@@ -74,7 +74,7 @@
         }
       },
       "package": "com.headpat.app",
-      "versionCode": 82
+      "versionCode": 83
     },
     "extra": {
       "router": {
