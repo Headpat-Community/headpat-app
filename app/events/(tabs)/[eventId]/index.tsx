@@ -1,6 +1,6 @@
 import { RefreshControl, ScrollView, View } from 'react-native'
 import { H1, Muted } from '~/components/ui/typography'
-import { Stack, useLocalSearchParams } from 'expo-router'
+import { router, Stack, useLocalSearchParams } from 'expo-router'
 import { Events } from '~/lib/types/collections'
 import { databases, functions } from '~/lib/appwrite-client'
 import React from 'react'
@@ -25,7 +25,7 @@ export default function EventPage() {
   const [refreshing, setRefreshing] = React.useState<boolean>(true)
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
-  const { showAlertModal } = useAlertModal()
+  const { showAlertModal, hideLoadingModal } = useAlertModal()
 
   const fetchEvents = async () => {
     try {
@@ -46,7 +46,11 @@ export default function EventPage() {
         ExecutionMethod.GET
       )
       const event = JSON.parse(eventResponse.responseBody)
-      setEvent({ ...document, attendees: event })
+      setEvent({
+        ...document,
+        attendees: event.attendees,
+        isAttending: event.isAttending,
+      })
     } catch {
       showAlertModal('FAILED', 'Failed to fetch event data.')
       setRefreshing(false)
@@ -59,22 +63,63 @@ export default function EventPage() {
         'event-endpoints',
         '',
         false,
-        `/event/attendees?eventId=${local?.eventId}`,
+        `/event/attendee?eventId=${local?.eventId}`,
         ExecutionMethod.POST
       )
       const event = JSON.parse(eventResponse.responseBody)
-      if (event.type === 'event_attendee_add_success') {
+      console.log(event)
+
+      if (event.type === 'event_attendee_add_already_added') {
+        showAlertModal('FAILED', 'You are already attending this event.')
+      } else if (event.type === 'event_attendee_add_success') {
         setEvent((prev) => ({
           ...prev,
           attendees: Array.isArray(prev.attendees)
             ? prev.attendees
             : prev.attendees + 1,
+          isAttending: true,
         }))
+        hideLoadingModal()
       } else {
-        showAlertModal('FAILED', 'Failed to attend event.')
+        showAlertModal(
+          'FAILED',
+          'Failed to attend event. Please try again later.'
+        )
       }
     } catch {
       showAlertModal('FAILED', 'Failed to fetch event data.')
+    }
+  }
+
+  const removeAttendee = async () => {
+    console.log('removeAttendee')
+    try {
+      const eventResponse = await functions.createExecution(
+        'event-endpoints',
+        '',
+        false,
+        `/event/attendee?eventId=${local?.eventId}`,
+        ExecutionMethod.DELETE
+      )
+      const event = JSON.parse(eventResponse.responseBody)
+      console.log(event)
+
+      if (event.type === 'event_attendee_remove_not_found') {
+        return showAlertModal('FAILED', 'You are not attending this event.')
+      } else if (event.type === 'event_attendee_remove_success') {
+        setEvent((prev) => ({
+          ...prev,
+          attendees: Array.isArray(prev.attendees)
+            ? prev.attendees
+            : prev.attendees - 1,
+          isAttending: false,
+        }))
+        hideLoadingModal()
+      } else {
+        showAlertModal('FAILED', 'Failed to remove attendee.')
+      }
+    } catch {
+      showAlertModal('FAILED', 'Failed to remove attendee.')
     }
   }
 
@@ -86,7 +131,11 @@ export default function EventPage() {
   useFocusEffect(
     React.useCallback(() => {
       if (!local?.eventId)
-        return () => showAlertModal('FAILED', 'Event ID not found.')
+        return () => {
+          showAlertModal('FAILED', 'Event ID not found.')
+          setEvent(null)
+          router.back()
+        }
       fetchEvents().then()
       return () => {
         setEvent(null)
@@ -116,7 +165,7 @@ export default function EventPage() {
       </ScrollView>
     )
 
-  if (!event)
+  if (!refreshing && !event)
     return (
       <ScrollView
         refreshControl={
@@ -205,17 +254,32 @@ export default function EventPage() {
           </View>
 
           <View>
-            <Button
-              variant={'default'}
-              className={'flex-1 p-0'}
-              onPress={attendEvent}
-            >
-              <Text className={'font-bold'}>
-                {event?.attendees === 0
-                  ? 'Be the first to attend!'
-                  : 'Attend this event!'}
-              </Text>
-            </Button>
+            {event?.attendees == null ? (
+              <View className={'flex-row gap-2 justify-center items-center'}>
+                <Skeleton
+                  className={
+                    'h-12 w-full self-center rounded border border-border'
+                  }
+                />
+              </View>
+            ) : (
+              <Button
+                variant={'default'}
+                className={'flex-1 p-0'}
+                onPress={event.isAttending ? removeAttendee : attendEvent}
+                disabled={new Date() > new Date(event?.dateUntil)}
+              >
+                <Text className={'font-bold'}>
+                  {new Date() > new Date(event?.dateUntil)
+                    ? 'Event has ended!'
+                    : event?.attendees === 0
+                      ? 'Be the first to attend!'
+                      : event?.isAttending
+                        ? 'Currently attending'
+                        : 'Attend this event!'}
+                </Text>
+              </Button>
+            )}
           </View>
         </View>
       </ScrollView>

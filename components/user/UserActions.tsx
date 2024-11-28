@@ -70,7 +70,7 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
     }, [userData])
 
     const handleMessage = useCallback(() => {
-      toast('Ha! You thought this was a real button!')
+      toast('Soon :3')
     }, [])
 
     const handleReport = useCallback(() => {

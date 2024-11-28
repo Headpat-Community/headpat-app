@@ -35,30 +35,30 @@ const EventItem = React.memo(
           <Card>
             <CardContent>
               <CardTitle className={'justify-between mt-2 text-xl'}>
-                {event.title}
+                {event?.title}
               </CardTitle>
               <CardFooter className={'p-0 mt-2 justify-between flex flex-wrap'}>
                 <CardDescription>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <ClockIcon size={12} color={theme} />
                     <Text style={{ marginLeft: 4 }}>
-                      {formatDateLocale(new Date(event.date))}
+                      {formatDateLocale(new Date(event?.date))}
                     </Text>
                   </View>
                 </CardDescription>
                 <CardDescription>
-                  {calculateTimeLeftEvent(event.date, event.dateUntil)}
+                  {calculateTimeLeftEvent(event?.date, event?.dateUntil)}
                 </CardDescription>
               </CardFooter>
 
-              {event.location && (
+              {event?.location && (
                 <CardFooter className={'p-0 mt-2 flex flex-wrap'}>
                   <CardDescription>
                     <View
                       style={{ flexDirection: 'row', alignItems: 'center' }}
                     >
                       <MapPinIcon size={12} color={theme} />
-                      <Text style={{ marginLeft: 4 }}>{event.location}</Text>
+                      <Text style={{ marginLeft: 4 }}>{event?.location}</Text>
                     </View>
                   </CardDescription>
                 </CardFooter>
@@ -68,7 +68,7 @@ const EventItem = React.memo(
                 <CardDescription>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <UsersIcon size={12} color={theme} />
-                    <Text style={{ marginLeft: 4 }}>{event.attendees}</Text>
+                    <Text style={{ marginLeft: 4 }}>{event?.attendees}</Text>
                   </View>
                 </CardDescription>
               </CardFooter>
