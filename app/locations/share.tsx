@@ -120,7 +120,7 @@ export default function ShareLocationView() {
     <LocationSharedItem
       documentId={item.documentId}
       timeUntil={item.timeUntil}
-      item={item.data}
+      item={item}
       onRemove={handleRemoveItem}
     />
   )
@@ -141,6 +141,13 @@ export default function ShareLocationView() {
     setRefreshing(true)
     fetchShared().then()
   }
+
+  React.useEffect(() => {
+    const intervalId = setInterval(fetchShared, 60000) // 60000 ms = 1 minute
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(intervalId)
+  }, [fetchShared])
 
   return (
     <>
@@ -201,7 +208,7 @@ export default function ShareLocationView() {
         </View>
       ) : (
         <FlatList
-          data={[...sharedItems]}
+          data={sharedItems}
           keyExtractor={(item) => item.documentId}
           renderItem={renderConversationItem}
           onRefresh={onRefresh}

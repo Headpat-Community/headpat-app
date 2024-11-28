@@ -92,7 +92,6 @@ export default function EventPage() {
   }
 
   const removeAttendee = async () => {
-    console.log('removeAttendee')
     try {
       const eventResponse = await functions.createExecution(
         'event-endpoints',
@@ -102,7 +101,6 @@ export default function EventPage() {
         ExecutionMethod.DELETE
       )
       const event = JSON.parse(eventResponse.responseBody)
-      console.log(event)
 
       if (event.type === 'event_attendee_remove_not_found') {
         return showAlertModal('FAILED', 'You are not attending this event.')

@@ -35,7 +35,7 @@ const translations = {
       refreshing: 'Refreshing...',
     },
     time: {
-      ended: 'Ended',
+      endingSoon: 'Ending soon',
       eventHasEnded: 'Event has ended',
       secondsLeft: 'seconds left',
       minutesLeft: 'minutes left',
@@ -139,7 +139,7 @@ const translations = {
       refreshing: 'Aktualisieren...',
     },
     time: {
-      ended: 'Beendet',
+      endingSoon: 'Endet bald',
       eventHasEnded: 'Veranstaltung ist beendet',
       secondsLeft: 'Sekunden übrig',
       minutesLeft: 'Minuten übrig',
@@ -244,7 +244,7 @@ const translations = {
       refreshing: 'Vernieuwen...',
     },
     time: {
-      ended: 'Beëindigd',
+      endingSoon: 'Eindigt binnenkort',
       eventHasEnded: 'Evenement is afgelopen',
       secondsLeft: 'seconden over',
       minutesLeft: 'minuten over',

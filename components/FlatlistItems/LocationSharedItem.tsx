@@ -60,7 +60,8 @@ const LocationSharedItem = React.memo(
         Sentry.captureException(e)
         showAlertModal(
           'FAILED',
-          'An error occurred while deleting the conversation'
+          'An error occurred while deleting location sharing with ' +
+            (isCommunity ? item?.name : item?.displayName)
         )
       } finally {
         setOpenModal(false)

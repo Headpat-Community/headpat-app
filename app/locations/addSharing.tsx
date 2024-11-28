@@ -157,6 +157,9 @@ export default function AddSharing() {
     if (selectedItems.length === 0) {
       showAlertModal('FAILED', 'Please select at least one user or community')
       return
+    } else if (!selectedTime) {
+      showAlertModal('FAILED', 'Please select a time')
+      return
     }
 
     setPage(2)
@@ -244,7 +247,7 @@ export default function AddSharing() {
 
       {page === 1 && (
         <View className={'flex-1 justify-center items-center'}>
-          <Text>
+          <Text className={'mb-4'}>
             Thanks! Please choose how long you want to share your location with
             them.
           </Text>
@@ -272,14 +275,18 @@ export default function AddSharing() {
             mode="time"
             onConfirm={(time) => {
               setTimeOpen(false)
-              selectedTime.setHours(time.getHours())
-              selectedTime.setMinutes(time.getMinutes())
-              setSelectedTime(selectedTime)
+              const updatedTime = new Date(selectedTime)
+              updatedTime.setHours(time.getHours())
+              updatedTime.setMinutes(time.getMinutes())
+              setSelectedTime(updatedTime)
             }}
             onCancel={() => {
               setTimeOpen(false)
             }}
           />
+          {selectedTime && (
+            <Text>Selected Time: {selectedTime.toLocaleString()}</Text>
+          )}
         </View>
       )}
       {page === 2 && (

@@ -58,7 +58,7 @@ export const calculateTimeLeft = (date: string) => {
 
   // Event hasn't started yet
   if (differenceInTime < 0) {
-    return i18n.t('time.ended')
+    return i18n.t('time.endingSoon')
   } else {
     const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24))
     const differenceInHours = Math.ceil(differenceInTime / (1000 * 3600))
