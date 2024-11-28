@@ -36,6 +36,7 @@ import SettingsModal from '~/components/locations/SettingsModal'
 import { LocationFrontPermissionModal } from '~/components/locations/LocationPermissionModal'
 import sanitizeHtml from 'sanitize-html'
 import { generatePolygonCoords } from '~/components/locations/generatePolygonCoords'
+import { useDataCache } from '~/components/contexts/DataCacheContext'
 
 export default function MutualLocationsPage() {
   const { current } = useUser()
@@ -55,6 +56,7 @@ export default function MutualLocationsPage() {
   >([])
   const [currentEvent, setCurrentEvent] = useState(null)
   const [filters, setFilters] = useState({ showEvents: true, showUsers: true })
+  const { getCache, saveCache } = useDataCache()
 
   const fetchEvents = useCallback(async () => {
     try {
@@ -89,17 +91,25 @@ export default function MutualLocationsPage() {
         if (current?.$id === doc.$id) {
           setUserStatus(doc)
         }
-        const userData: UserData.UserDataDocumentsType =
-          await databases.getDocument('hp_db', 'userdata', doc.$id)
+        // get cached user data if available, otherwise fetch
+        // @ts-ignore
+        let userData: UserData.UserDataDocumentsType =
+          await getCache<UserData.UserDataDocumentsType>('userdata', doc.$id)
+        if (!userData) {
+          userData = await databases.getDocument('hp_db', 'userdata', doc.$id)
+          saveCache('userdata', doc.$id, userData)
+        } else {
+          userData = userData.data // Extract the data property
+        }
         return { ...doc, userData }
       })
-      const results = await Promise.all(promises)
+      const results: any = await Promise.all(promises)
       setFriendsLocations(results)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast('Failed to fetch locations. Please try again later.')
     }
-  }, [current])
+  }, [current?.$id, getCache, saveCache])
 
   const onRefresh = useCallback(() => {
     fetchUserLocations().then(() => fetchEvents().then())
