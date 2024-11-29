@@ -121,23 +121,22 @@ export default function UserprofilePage() {
     }
   }
 
-  const handlePrefs = async () => {
+  const handlePrefs = async (newNsfw: boolean, newIndexable: boolean) => {
     const prefs = current.prefs
     const body = {
       ...prefs,
-      nsfw: nsfw,
-      indexingEnabled: indexable,
+      nsfw: newNsfw,
+      indexingEnabled: newIndexable,
     }
     try {
       await account.updatePrefs(body)
       setUser((prev: any) => ({
         ...prev,
         prefs: body,
-        indexingEnabled: indexable,
       }))
-      showAlertModal('SUCCESS', 'NSFW preference updated successfully.')
+      showAlertModal('SUCCESS', 'Preference updated successfully.')
     } catch (error) {
-      showAlertModal('FAILED', 'Failed to update NSFW preference.')
+      showAlertModal('FAILED', 'Failed to update preference.')
       console.error(error)
       Sentry.captureException(error)
     }
@@ -148,6 +147,16 @@ export default function UserprofilePage() {
     fetchUserData().then()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  const changeNsfw = async (e: boolean) => {
+    setNsfw(e)
+    handlePrefs(e, indexable).then()
+  }
+
+  const changeIndexable = async (e: boolean) => {
+    setIndexable(e)
+    handlePrefs(nsfw, e).then()
+  }
 
   if (!userData) return <SlowInternet />
 
@@ -226,10 +235,7 @@ export default function UserprofilePage() {
                   <Checkbox
                     nativeID={'nsfw'}
                     checked={nsfw}
-                    onCheckedChange={(e) => {
-                      setNsfw(e)
-                      handlePrefs().then()
-                    }}
+                    onCheckedChange={(e) => changeNsfw(e)}
                     className={'p-4'}
                   />
                 </View>
@@ -250,10 +256,7 @@ export default function UserprofilePage() {
                   <Checkbox
                     nativeID={'index'}
                     checked={indexable}
-                    onCheckedChange={(e) => {
-                      setIndexable(e)
-                      handlePrefs().then()
-                    }}
+                    onCheckedChange={(e) => changeIndexable(e)}
                     className={'p-4'}
                   />
                 </View>
