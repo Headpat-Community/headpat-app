@@ -3,11 +3,18 @@ import * as Sentry from '@sentry/react-native'
 import * as Location from 'expo-location'
 import kv from 'expo-sqlite/kv-store'
 import { databases } from '~/lib/appwrite-client'
+import { TaskManagerTaskBody } from 'expo-task-manager'
+
+type BackgroundLocationTaskData = {
+  locations: Location.LocationObject[]
+}
 
 TaskManager.defineTask(
   'background-location-task',
-  // @ts-ignore
-  async ({ data: { locations }, error }) => {
+  async ({
+    data: { locations },
+    error,
+  }: TaskManagerTaskBody<BackgroundLocationTaskData>) => {
     if (error) {
       console.error(error)
       Sentry.captureException(error)
