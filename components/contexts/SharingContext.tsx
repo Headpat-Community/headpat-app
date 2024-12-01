@@ -56,12 +56,6 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
         'Background fetch is restricted. Headpat requires background fetch to share your location.'
       )
     }
-    const isDefined = TaskManager.isTaskDefined('background-location-task')
-    if (!isDefined) {
-      TaskManager.defineTask('background-location-task', async () => {
-        return
-      })
-    }
     const isRegisteredTask = await TaskManager.isTaskRegisteredAsync(
       'background-location-task'
     )
