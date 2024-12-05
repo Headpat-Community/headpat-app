@@ -1,5 +1,5 @@
 import { FlatList, View } from 'react-native'
-import React, { useCallback, useEffect, useState } from 'react'
+import React from 'react'
 import { databases } from '~/lib/appwrite-client'
 import { Query } from 'react-native-appwrite'
 import { Community, Messaging, UserData } from '~/lib/types/collections'
@@ -16,17 +16,17 @@ import FeatureAccess from '~/components/FeatureAccess'
 import * as Sentry from '@sentry/react-native'
 
 export default function ConversationsView() {
-  const [refreshing, setRefreshing] = useState(false)
-  const [displayData, setDisplayData] = useState({})
-  const [searchTerm, setSearchTerm] = useState('')
-  const [searchResults, setSearchResults] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [refreshing, setRefreshing] = React.useState(false)
+  const [displayData, setDisplayData] = React.useState({})
+  const [searchTerm, setSearchTerm] = React.useState('')
+  const [searchResults, setSearchResults] = React.useState([])
+  const [isLoading, setIsLoading] = React.useState(true)
   const debouncedSearchTerm = useDebounce(searchTerm, 500)
   const { conversations, fetchInitialData } = useRealtimeChat()
   const { getCache, saveCache } = useDataCache()
   const { current } = useUser()
 
-  useEffect(() => {
+  React.useEffect(() => {
     const updateDisplayUsers = async () => {
       const newDisplayUsers = {}
       for (const conversation of conversations) {
@@ -83,7 +83,7 @@ export default function ConversationsView() {
     updateDisplayUsers().then()
   }, [conversations, current, getCache, saveCache])
 
-  useEffect(() => {
+  React.useEffect(() => {
     const searchUsers = async () => {
       if (debouncedSearchTerm) {
         setIsLoading(true)
@@ -111,13 +111,13 @@ export default function ConversationsView() {
     searchUsers().then()
   }, [debouncedSearchTerm])
 
-  const onRefresh = useCallback(() => {
+  const onRefresh = React.useCallback(() => {
     setRefreshing(true)
     fetchInitialData().then(() => setRefreshing(false))
   }, [])
 
   useFocusEffect(
-    useCallback(() => {
+    React.useCallback(() => {
       setSearchTerm('')
       onRefresh()
     }, [])

@@ -31,6 +31,7 @@ export default function TabsLayout() {
           headerRightContainerStyle: { paddingRight: 15 },
           headerLeft: () => <HeaderSidebarBackButton />,
           headerRight: () => <ProfileThemeToggle />,
+          href: null,
         }}
       />
     </Tabs>

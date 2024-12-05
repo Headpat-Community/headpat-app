@@ -46,7 +46,11 @@ export default function EventPage() {
         ExecutionMethod.GET
       )
       const event = JSON.parse(eventResponse.responseBody)
-      setEvent({ ...document, attendees: event })
+      setEvent({
+        ...document,
+        attendees: event?.attendees,
+        isAttending: event?.isAttending,
+      })
     } catch {
       showAlertModal('FAILED', 'Failed to fetch event data.')
       setRefreshing(false)
@@ -59,7 +63,7 @@ export default function EventPage() {
         'event-endpoints',
         '',
         false,
-        `/event/attendees?eventId=${local?.eventId}`,
+        `/event/attendee?eventId=${local?.eventId}`,
         ExecutionMethod.POST
       )
       const event = JSON.parse(eventResponse.responseBody)
@@ -69,9 +73,40 @@ export default function EventPage() {
           attendees: Array.isArray(prev.attendees)
             ? prev.attendees
             : prev.attendees + 1,
+          isAttending: true,
         }))
+      } else if (event.type === 'event_ended') {
+        showAlertModal('FAILED', 'Event has ended.')
       } else {
         showAlertModal('FAILED', 'Failed to attend event.')
+      }
+    } catch {
+      showAlertModal('FAILED', 'Failed to fetch event data.')
+    }
+  }
+
+  const unattendEvent = async () => {
+    try {
+      const eventResponse = await functions.createExecution(
+        'event-endpoints',
+        '',
+        false,
+        `/event/attendee?eventId=${local?.eventId}`,
+        ExecutionMethod.DELETE
+      )
+      const event = JSON.parse(eventResponse.responseBody)
+      if (event.type === 'event_attendee_remove_success') {
+        setEvent((prev) => ({
+          ...prev,
+          attendees: Array.isArray(prev.attendees)
+            ? prev.attendees
+            : prev.attendees - 1,
+          isAttending: false,
+        }))
+      } else if (event.type === 'event_ended') {
+        showAlertModal('FAILED', 'Event has ended.')
+      } else {
+        showAlertModal('FAILED', 'Failed to unattend event.')
       }
     } catch {
       showAlertModal('FAILED', 'Failed to fetch event data.')
@@ -136,6 +171,7 @@ export default function EventPage() {
     )
 
   const sanitizedDescription = sanitizeHtml(event.description)
+  const isEventEnded = new Date(event.dateUntil) < new Date()
 
   return (
     <>
@@ -208,12 +244,23 @@ export default function EventPage() {
             <Button
               variant={'default'}
               className={'flex-1 p-0'}
-              onPress={attendEvent}
+              onPress={
+                isEventEnded
+                  ? null
+                  : event.isAttending
+                    ? unattendEvent
+                    : attendEvent
+              }
+              disabled={isEventEnded}
             >
               <Text className={'font-bold'}>
-                {event?.attendees === 0
-                  ? 'Be the first to attend!'
-                  : 'Attend this event!'}
+                {isEventEnded
+                  ? 'This event has ended'
+                  : event.isAttending
+                    ? 'Unattend this event'
+                    : event?.attendees === 0
+                      ? 'Be the first to attend!'
+                      : 'Attend this event!'}
               </Text>
             </Button>
           </View>

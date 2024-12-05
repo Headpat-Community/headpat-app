@@ -17,7 +17,6 @@ import {
 } from 'lucide-react-native'
 import { useColorScheme } from '~/lib/useColorScheme'
 import { useUser } from '~/components/contexts/UserContext'
-import { useCallback, useEffect, useState } from 'react'
 import { Events, UserData } from '~/lib/types/collections'
 import { databases, functions } from '~/lib/appwrite-client'
 import { H4 } from '~/components/ui/typography'
@@ -31,11 +30,15 @@ import { useFocusEffect } from '@react-navigation/core'
 import * as Sentry from '@sentry/react-native'
 import { Skeleton } from '~/components/ui/skeleton'
 import { i18n } from '~/components/system/i18n'
+import React from 'react'
+import { Badge } from '~/components/ui/badge'
 
 export default function HomeView() {
-  const [userData, setUserData] = useState<UserData.UserDataDocumentsType>(null)
-  const [nextEvent, setNextEvent] = useState<Events.EventsDocumentsType>(null)
-  const [refreshing, setRefreshing] = useState<boolean>(false)
+  const [userData, setUserData] =
+    React.useState<UserData.UserDataDocumentsType>(null)
+  const [nextEvent, setNextEvent] =
+    React.useState<Events.EventsDocumentsType>(null)
+  const [refreshing, setRefreshing] = React.useState<boolean>(false)
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
   const { current, isLoadingUser } = useUser()
@@ -74,7 +77,7 @@ export default function HomeView() {
     }
   }
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (current?.$id) {
       fetchUserData().then()
     }
@@ -95,7 +98,7 @@ export default function HomeView() {
   }
 
   useFocusEffect(
-    useCallback(() => {
+    React.useCallback(() => {
       fetchNextEvent().then()
     }, [])
   )
@@ -143,6 +146,9 @@ export default function HomeView() {
             onPress={() => router.push(current ? '/chat/list' : '/login')}
           >
             <CardContent className={'p-0'}>
+              <Badge className={'rounded-none'}>
+                <Text>BETA</Text>
+              </Badge>
               <CardFooter className={'mt-2 text-xl flex pb-4'}>
                 <MessageSquareIcon
                   size={20}
