@@ -37,7 +37,7 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
 }) => {
   const [status, setStatus] =
     useState<BackgroundFetch.BackgroundFetchStatus | null>(null)
-  const [isRegistered, setIsRegistered] = useState(false)
+  const [isRegistered, setIsRegistered] = useState<boolean | null>(null)
   const { current } = useUser()
 
   useEffect(() => {
@@ -48,14 +48,14 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
   }, [])
 
   const checkStatus = async () => {
-    const status = await BackgroundFetch.getStatusAsync()
+    const BackgroundStatus = await BackgroundFetch.getStatusAsync()
     const isRegisteredTask = await TaskManager.isTaskRegisteredAsync(
       'background-location-task'
     )
-    setStatus(status)
+    setStatus(BackgroundStatus)
     setIsRegistered(isRegisteredTask)
 
-    if (status && !isRegistered) {
+    if (BackgroundStatus && !isRegisteredTask) {
       await databases
         .deleteDocument('hp_db', 'locations', current?.$id)
         .catch(() => {
@@ -135,6 +135,7 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
     await Location.stopLocationUpdatesAsync('background-location-task')
 
     try {
+      console.log('deleting location document')
       await databases.deleteDocument('hp_db', 'locations', current?.$id)
     } catch (e) {
       console.error('Failed to delete document:', e)

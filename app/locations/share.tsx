@@ -120,7 +120,7 @@ export default function ShareLocationView() {
     <LocationSharedItem
       documentId={item.documentId}
       timeUntil={item.timeUntil}
-      item={item.data}
+      item={item}
       onRemove={handleRemoveItem}
     />
   )

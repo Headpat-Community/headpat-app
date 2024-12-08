@@ -19,6 +19,7 @@ TaskManager.defineTask(
     //const preciseLocation = await kv.getItem('preciseLocation')
 
     if (!userId) {
+      console.error('No user ID found')
       return Location.stopLocationUpdatesAsync('background-location-task')
     }
 
