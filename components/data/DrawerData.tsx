@@ -250,7 +250,7 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
         </Link>
         <Separator />
         <Text style={{ color: theme, padding: 10, textAlign: 'center' }}>
-          Headpat App v0.8.3
+          Headpat App v0.8.4
         </Text>
         <Muted style={{ textAlign: 'center', paddingBottom: 16 }}>BETA</Muted>
       </BottomSheetScrollView>
