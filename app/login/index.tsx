@@ -50,7 +50,6 @@ export default function ModalScreen() {
 
     try {
       await login(data.email, data.password)
-      router.push('/account')
     } catch (error) {
       if (error.type === 'user_invalid_credentials') {
         toast('E-Mail or Password incorrect.')

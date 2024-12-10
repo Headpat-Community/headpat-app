@@ -186,7 +186,7 @@ export const DrawerScreensData: DrawerProps[] = [
   {
     location: 'relationships',
     title: i18n.t('screens.connections'),
-    headerShown: false,
+    headerLeft: <HeaderSidebarBackButton />,
   },
   {
     location: 'changelog/index',

@@ -23,6 +23,14 @@ import { z } from 'zod'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import SlowInternet from '~/components/views/SlowInternet'
 
+const schema = z.object({
+  telegramname: z.string().max(32, 'Max length is 32'),
+  discordname: z.string().max(32, 'Max length is 32'),
+  furaffinityname: z.string().max(32, 'Max length is 32'),
+  X_name: z.string().max(32, 'Max length is 32'),
+  twitchname: z.string().max(32, 'Max length is 32'),
+})
+
 export default function UserprofilePage() {
   const [isDisabled, setIsDisabled] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
@@ -30,7 +38,7 @@ export default function UserprofilePage() {
 
   const [userData, setUserData] =
     useState<UserData.UserDataDocumentsType | null>(null)
-  const { showLoadingModal, showAlertModal } = useAlertModal()
+  const { showAlertModal } = useAlertModal()
 
   const fetchUserData = async () => {
     try {
@@ -59,26 +67,13 @@ export default function UserprofilePage() {
 
   useFocusEffect(memoizedCallback)
 
-  const handleUpdate = async (name: string, value: string) => {
-    showLoadingModal()
+  const handleUpdate = async () => {
     try {
       setIsDisabled(true)
-      const schemaDefinitions = {
-        telegramname: z.string().max(32, 'Max length is 32'),
-        discordname: z.string().max(32, 'Max length is 32'),
-        furaffinityname: z.string().max(32, 'Max length is 32'),
-        X_name: z.string().max(32, 'Max length is 32'),
-        twitchname: z.string().max(32, 'Max length is 32'),
-      }
-
-      // Dynamically create a schema with only the field that needs validation
-      const dynamicSchema = z.object({
-        [name]: schemaDefinitions[name],
-      })
 
       try {
-        // Validate only the field that triggered the event
-        dynamicSchema.parse({ [name]: value })
+        // parse the data
+        schema.parse(userData)
       } catch (error) {
         toast(error.errors[0].message)
         return
@@ -86,15 +81,21 @@ export default function UserprofilePage() {
 
       try {
         await databases.updateDocument('hp_db', 'userdata', current.$id, {
-          [name]: value,
+          discordname: userData.discordname,
+          telegramname: userData.telegramname,
+          furaffinityname: userData.furaffinityname,
+          X_name: userData.X_name,
+          twitchname: userData.twitchname,
         })
         showAlertModal('SUCCESS', 'User data updated successfully.')
       } catch (error) {
+        console.log(error)
         showAlertModal('FAILED', 'Failed to save social data')
         Sentry.captureException(error)
       }
       setIsDisabled(false)
     } catch (error) {
+      console.log(error)
       setIsDisabled(false)
       console.error(error)
       Sentry.captureException(error)
@@ -148,16 +149,6 @@ export default function UserprofilePage() {
                     />
                   </View>
                 </View>
-                <View>
-                  <Button
-                    onPress={() =>
-                      handleUpdate('discordname', userData.discordname)
-                    }
-                    disabled={isDisabled}
-                  >
-                    <Text>Save</Text>
-                  </Button>
-                </View>
               </View>
             </View>
             <Separator />
@@ -185,16 +176,6 @@ export default function UserprofilePage() {
                   />
                 </View>
               </View>
-              <View>
-                <Button
-                  onPress={() =>
-                    handleUpdate('telegramname', userData.telegramname)
-                  }
-                  disabled={isDisabled}
-                >
-                  <Text>Save</Text>
-                </Button>
-              </View>
             </View>
             <Separator />
             <View className={'w-full gap-4'}>
@@ -220,16 +201,6 @@ export default function UserprofilePage() {
                     value={userData.furaffinityname}
                   />
                 </View>
-              </View>
-              <View>
-                <Button
-                  onPress={() =>
-                    handleUpdate('furaffinityname', userData.furaffinityname)
-                  }
-                  disabled={isDisabled}
-                >
-                  <Text>Save</Text>
-                </Button>
               </View>
             </View>
             <Separator />
@@ -257,14 +228,6 @@ export default function UserprofilePage() {
                   />
                 </View>
               </View>
-              <View>
-                <Button
-                  onPress={() => handleUpdate('X_name', userData.X_name)}
-                  disabled={isDisabled}
-                >
-                  <Text>Save</Text>
-                </Button>
-              </View>
             </View>
             <Separator />
             <View className={'w-full gap-4'}>
@@ -291,16 +254,12 @@ export default function UserprofilePage() {
                   />
                 </View>
               </View>
-              <View>
-                <Button
-                  onPress={() =>
-                    handleUpdate('twitchname', userData.twitchname)
-                  }
-                  disabled={isDisabled}
-                >
-                  <Text>Save</Text>
-                </Button>
-              </View>
+            </View>
+            <Separator />
+            <View>
+              <Button onPress={handleUpdate} disabled={isDisabled}>
+                <Text>Save</Text>
+              </Button>
             </View>
           </View>
         </TouchableWithoutFeedback>

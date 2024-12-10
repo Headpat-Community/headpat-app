@@ -2,6 +2,7 @@ import { Tabs } from 'expo-router'
 import { MapIcon, PersonStandingIcon, UsersIcon } from 'lucide-react-native'
 import { ProfileThemeToggle } from '~/components/ThemeToggle'
 import { HeaderSidebarBackButton } from '~/components/data/DrawerScreensData'
+import * as React from 'react'
 
 export default function TabsLayout() {
   return (
@@ -13,8 +14,7 @@ export default function TabsLayout() {
           tabBarIcon({ color, size }) {
             return <PersonStandingIcon color={color} size={size} />
           },
-          headerLeft: () => <HeaderSidebarBackButton />,
-          headerRight: () => <ProfileThemeToggle />,
+          headerShown: false,
         }}
       />
       <Tabs.Screen
@@ -24,8 +24,7 @@ export default function TabsLayout() {
           tabBarIcon({ color, size }) {
             return <MapIcon color={color} size={size} />
           },
-          headerLeft: () => <HeaderSidebarBackButton />,
-          headerRight: () => <ProfileThemeToggle />,
+          headerShown: false,
         }}
       />
       <Tabs.Screen
@@ -35,8 +34,7 @@ export default function TabsLayout() {
           tabBarIcon({ color, size }) {
             return <UsersIcon color={color} size={size} />
           },
-          headerLeft: () => <HeaderSidebarBackButton />,
-          headerRight: () => <ProfileThemeToggle />,
+          headerShown: false,
         }}
       />
     </Tabs>

@@ -59,7 +59,6 @@ export default function ShareLocationView() {
         Query.select(['$id', 'isCommunity', 'requesterId', 'timeUntil']),
       ]
     )
-
     const items = []
 
     for (const item of result.documents) {
@@ -83,7 +82,7 @@ export default function ShareLocationView() {
         if (!cache) {
           const response: any = await databases.getDocument(
             'hp_db',
-            'user',
+            'userdata',
             item.requesterId
           )
           saveCache('users', item.requesterId, response)

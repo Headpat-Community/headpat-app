@@ -2,7 +2,7 @@
   "expo": {
     "name": "Headpat",
     "slug": "headpat-app",
-    "version": "0.8.4",
+    "version": "0.8.5",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "headpatapp",
@@ -52,7 +52,7 @@
         "applinks:headpat.place",
         "applinks:api.headpat.place"
       ],
-      "buildNumber": "118",
+      "buildNumber": "121",
       "appleTeamId": "S243K37R5M"
     },
     "android": {
@@ -81,7 +81,7 @@
         }
       },
       "package": "com.headpat.app",
-      "versionCode": 119
+      "versionCode": 122
     },
     "extra": {
       "router": {

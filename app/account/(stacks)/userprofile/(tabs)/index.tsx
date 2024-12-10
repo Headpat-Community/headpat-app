@@ -12,7 +12,7 @@ import { Input } from '~/components/ui/input'
 import { Button } from '~/components/ui/button'
 import { account, databases } from '~/lib/appwrite-client'
 import { Separator } from '~/components/ui/separator'
-import { H4, Muted } from '~/components/ui/typography'
+import { H1, H4, Muted } from '~/components/ui/typography'
 import React, { useCallback, useState } from 'react'
 import { toast } from '~/lib/toast'
 import { useUser } from '~/components/contexts/UserContext'
@@ -27,6 +27,22 @@ import DatePicker from 'react-native-date-picker'
 import { Textarea } from '~/components/ui/textarea'
 import SlowInternet from '~/components/views/SlowInternet'
 
+const schema = z.object({
+  profileUrl: z
+    .string()
+    .min(1, 'Profile URL cannot be blank')
+    .max(48, 'Max length is 48'),
+  displayName: z
+    .string()
+    .min(3, 'Display Name should be at least 3 characters')
+    .max(48, 'Max length is 48'),
+  status: z.string().max(24, 'Max length is 24'),
+  pronouns: z.string().max(16, 'Max length is 16'),
+  birthday: z.string().max(32, 'Max length is 32'),
+  location: z.string().max(48, 'Max length is 48'),
+  bio: z.string().max(2048, 'Max length is 2048'),
+})
+
 export default function UserprofilePage() {
   const [isDisabled, setIsDisabled] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
@@ -36,7 +52,8 @@ export default function UserprofilePage() {
   const [userData, setUserData] =
     useState<UserData.UserDataDocumentsType | null>(null)
   const [nsfw, setNsfw] = useState<boolean>(false)
-  const { showLoadingModal, showAlertModal, hideLoadingModal } = useAlertModal()
+  const [indexable, setIndexable] = useState<boolean>(false)
+  const { showAlertModal, hideLoadingModal } = useAlertModal()
 
   const fetchUserData = async () => {
     try {
@@ -47,6 +64,7 @@ export default function UserprofilePage() {
       )
       setUserData(data)
       setNsfw(current.prefs.nsfw)
+      setIndexable(current.prefs.indexingEnabled)
     } catch (error) {
       showAlertModal(
         'FAILED',
@@ -66,34 +84,12 @@ export default function UserprofilePage() {
 
   useFocusEffect(memoizedCallback)
 
-  const handleUpdate = async (name: string, value: string) => {
-    showLoadingModal()
+  const handleUpdate = async () => {
     try {
       setIsDisabled(true)
-      const schemaDefinitions = {
-        profileUrl: z
-          .string()
-          .min(1, 'Profile URL cannot be blank')
-          .max(48, 'Max length is 48'),
-        displayName: z
-          .string()
-          .min(3, 'Display Name should be at least 3 characters')
-          .max(48, 'Max length is 48'),
-        status: z.string().max(24, 'Max length is 24'),
-        pronouns: z.string().max(16, 'Max length is 16'),
-        birthday: z.string().max(32, 'Max length is 32'),
-        location: z.string().max(48, 'Max length is 48'),
-        bio: z.string().max(2048, 'Max length is 2048'),
-      }
-
-      // Dynamically create a schema with only the field that needs validation
-      const dynamicSchema = z.object({
-        [name]: schemaDefinitions[name],
-      })
 
       try {
-        // Validate only the field that triggered the event
-        dynamicSchema.parse({ [name]: value })
+        schema.parse(userData)
       } catch (error) {
         toast(error.errors[0].message)
         hideLoadingModal()
@@ -103,7 +99,13 @@ export default function UserprofilePage() {
 
       try {
         await databases.updateDocument('hp_db', 'userdata', current.$id, {
-          [name]: value,
+          profileUrl: userData.profileUrl,
+          displayName: userData.displayName,
+          status: userData.status,
+          pronouns: userData.pronouns,
+          birthday: userData.birthday,
+          location: userData.location,
+          bio: userData.bio,
         })
         showAlertModal('SUCCESS', 'User data updated successfully.')
       } catch (error) {
@@ -119,12 +121,12 @@ export default function UserprofilePage() {
     }
   }
 
-  const handleNsfw = async () => {
-    showLoadingModal()
+  const handlePrefs = async (newNsfw: boolean, newIndexable: boolean) => {
     const prefs = current.prefs
     const body = {
       ...prefs,
-      nsfw: nsfw,
+      nsfw: newNsfw,
+      indexingEnabled: newIndexable,
     }
     try {
       await account.updatePrefs(body)
@@ -132,9 +134,9 @@ export default function UserprofilePage() {
         ...prev,
         prefs: body,
       }))
-      showAlertModal('SUCCESS', 'NSFW preference updated successfully.')
+      showAlertModal('SUCCESS', 'Preference updated successfully.')
     } catch (error) {
-      showAlertModal('FAILED', 'Failed to update NSFW preference.')
+      showAlertModal('FAILED', 'Failed to update preference.')
       console.error(error)
       Sentry.captureException(error)
     }
@@ -145,6 +147,16 @@ export default function UserprofilePage() {
     fetchUserData().then()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  const changeNsfw = async (e: boolean) => {
+    setNsfw(e)
+    handlePrefs(e, indexable).then()
+  }
+
+  const changeIndexable = async (e: boolean) => {
+    setIndexable(e)
+    handlePrefs(nsfw, e).then()
+  }
 
   if (!userData) return <SlowInternet />
 
@@ -205,6 +217,13 @@ export default function UserprofilePage() {
               </View>
             </View>
             <Separator />
+            <View className={'flex'}>
+              <View>
+                <H1>Preferences</H1>
+                <Muted>Change your preferences here.</Muted>
+              </View>
+            </View>
+            <Separator />
             <View className={'flex-row gap-8'}>
               <View className={'w-full gap-4'}>
                 <View>
@@ -216,14 +235,38 @@ export default function UserprofilePage() {
                   <Checkbox
                     nativeID={'nsfw'}
                     checked={nsfw}
-                    onCheckedChange={(e) => setNsfw(e)}
+                    onCheckedChange={(e) => changeNsfw(e)}
+                    className={'p-4'}
                   />
                 </View>
+              </View>
+            </View>
+
+            <View className={'flex-row gap-8'}>
+              <View className={'w-full gap-4'}>
                 <View>
-                  <Button onPress={handleNsfw} disabled={isDisabled}>
-                    <Text>Save</Text>
-                  </Button>
+                  <H4>Index profile?</H4>
+                  <Muted>
+                    Checking this box will enable your profile to be indexed by
+                    search engines.
+                  </Muted>
                 </View>
+                <Separator className={'w-[100px]'} />
+                <View>
+                  <Checkbox
+                    nativeID={'index'}
+                    checked={indexable}
+                    onCheckedChange={(e) => changeIndexable(e)}
+                    className={'p-4'}
+                  />
+                </View>
+              </View>
+            </View>
+            <Separator />
+            <View className={'flex'}>
+              <View>
+                <H1>Profile</H1>
+                <Muted>Update your profile information here.</Muted>
               </View>
             </View>
             <Separator />
@@ -258,16 +301,6 @@ export default function UserprofilePage() {
                     />
                   </View>
                 </View>
-                <View>
-                  <Button
-                    onPress={() =>
-                      handleUpdate('profileUrl', userData.profileUrl)
-                    }
-                    disabled={isDisabled || userData.profileUrl.length < 3}
-                  >
-                    <Text>Save</Text>
-                  </Button>
-                </View>
               </View>
             </View>
             <Separator />
@@ -291,16 +324,6 @@ export default function UserprofilePage() {
                     value={userData.displayName}
                   />
                 </View>
-                <View>
-                  <Button
-                    onPress={() =>
-                      handleUpdate('displayName', userData.displayName)
-                    }
-                    disabled={isDisabled || userData.displayName.length < 3}
-                  >
-                    <Text>Save</Text>
-                  </Button>
-                </View>
               </View>
             </View>
             <Separator />
@@ -319,14 +342,6 @@ export default function UserprofilePage() {
                     }
                     value={userData.status}
                   />
-                </View>
-                <View>
-                  <Button
-                    onPress={() => handleUpdate('status', userData.status)}
-                    disabled={isDisabled}
-                  >
-                    <Text>Save</Text>
-                  </Button>
                 </View>
               </View>
             </View>
@@ -347,14 +362,6 @@ export default function UserprofilePage() {
                     value={userData.pronouns}
                     maxLength={16}
                   />
-                </View>
-                <View>
-                  <Button
-                    onPress={() => handleUpdate('pronouns', userData.pronouns)}
-                    disabled={isDisabled}
-                  >
-                    <Text>Save</Text>
-                  </Button>
                 </View>
               </View>
             </View>
@@ -382,16 +389,6 @@ export default function UserprofilePage() {
                         }}
                         mode="date"
                       />
-                      <View>
-                        <Button
-                          onPress={() =>
-                            handleUpdate('birthday', userData.birthday)
-                          }
-                          disabled={isDisabled}
-                        >
-                          <Text>Save</Text>
-                        </Button>
-                      </View>
                     </>
                   )}
                 </View>
@@ -419,14 +416,6 @@ export default function UserprofilePage() {
                     maxLength={48}
                   />
                 </View>
-                <View>
-                  <Button
-                    onPress={() => handleUpdate('location', userData.location)}
-                    disabled={isDisabled}
-                  >
-                    <Text>Save</Text>
-                  </Button>
-                </View>
               </View>
             </View>
             <Separator />
@@ -452,15 +441,12 @@ export default function UserprofilePage() {
                     maxLength={2048}
                   />
                 </View>
-                <View>
-                  <Button
-                    onPress={() => handleUpdate('bio', userData.bio)}
-                    disabled={isDisabled}
-                  >
-                    <Text>Save</Text>
-                  </Button>
-                </View>
               </View>
+            </View>
+            <View>
+              <Button onPress={handleUpdate} disabled={isDisabled}>
+                <Text>Save</Text>
+              </Button>
             </View>
           </View>
         </TouchableWithoutFeedback>

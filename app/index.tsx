@@ -109,7 +109,7 @@ export default function HomeView() {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
     >
-      <View className="justify-center items-center">
+      <View className="justify-center items-center mb-4">
         {isLoadingUser ? (
           <View className={'px-4 m-4 w-full flex flex-col items-center'}>
             <Skeleton className="w-[100px] h-[100px] rounded-3xl mt-4" />
@@ -164,6 +164,32 @@ export default function HomeView() {
               >
                 <CardDescription>
                   <Text>{i18n.t('home.chatdescription')}</Text>
+                </CardDescription>
+              </CardFooter>
+            </CardContent>
+          </TouchableOpacity>
+        </Card>
+
+        <Card className={'w-3/4 mt-4'}>
+          <TouchableOpacity
+            onPress={() => router.push(current ? '/notifications' : '/login')}
+          >
+            <CardContent className={'p-0'}>
+              <CardFooter className={'mt-2 text-xl flex pb-4'}>
+                <LayoutDashboardIcon
+                  size={20}
+                  color={theme}
+                  style={{
+                    marginRight: 4,
+                  }}
+                />
+                <Text>{i18n.t('screens.notifications')}</Text>
+              </CardFooter>
+              <CardFooter
+                className={'p-0 pb-2 justify-between flex flex-wrap ml-7'}
+              >
+                <CardDescription>
+                  <Text>{i18n.t('home.notificationsdescription')}</Text>
                 </CardDescription>
               </CardFooter>
             </CardContent>

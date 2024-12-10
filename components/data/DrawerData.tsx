@@ -33,6 +33,8 @@ import DiscordIcon from '~/components/icons/DiscordIcon'
 import { Muted } from '~/components/ui/typography'
 import * as React from 'react'
 import { i18n } from '~/components/system/i18n'
+import { setAndroidNavigationBar } from '~/lib/android-navigation-bar'
+import kv from 'expo-sqlite/kv-store'
 
 export function HeaderMenuSidebar() {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null)
@@ -73,7 +75,7 @@ export function HeaderMenuSidebar() {
 }
 
 function CustomDrawerContent({ bottomSheetModalRef }) {
-  const { isDarkColorScheme } = useColorScheme()
+  const { isDarkColorScheme, setColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
   const { current } = useUser()
 
@@ -174,7 +176,7 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
               icon={UserIcon}
               text={i18n.t('screens.myProfile')}
               theme={theme}
-              route={'/user/(stacks)/[userId]'}
+              route={`/user/(stacks)/${current.$id}`}
               bottomSheetModalRef={bottomSheetModalRef}
             />
             <DrawerLabel
@@ -187,13 +189,28 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
           </>
         )}
         <Separator />
-        <DrawerLabel
-          icon={isDarkColorScheme ? MoonStarIcon : SunIcon}
-          text={i18n.t('drawer.switchTheme')}
-          theme={theme}
-          route={'/theme'}
-          bottomSheetModalRef={bottomSheetModalRef}
-        />
+        <TouchableOpacity
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 12,
+            padding: 12,
+            paddingLeft: 20,
+          }}
+          onPress={() => {
+            const newTheme = isDarkColorScheme ? 'light' : 'dark'
+            setColorScheme(newTheme)
+            setAndroidNavigationBar(newTheme).then()
+            kv.setItem('theme', newTheme).then()
+          }}
+        >
+          {isDarkColorScheme ? (
+            <MoonStarIcon size={20} color={theme} />
+          ) : (
+            <SunIcon size={20} color={theme} />
+          )}
+          <Text style={{ color: theme }}>{i18n.t('drawer.switchTheme')}</Text>
+        </TouchableOpacity>
         <DrawerLabel
           icon={LogInIcon}
           text={current ? i18n.t('screens.account') : i18n.t('screens.login')}
@@ -250,7 +267,7 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
         </Link>
         <Separator />
         <Text style={{ color: theme, padding: 10, textAlign: 'center' }}>
-          Headpat App v0.8.4
+          Headpat App v0.8.5
         </Text>
         <Muted style={{ textAlign: 'center', paddingBottom: 16 }}>BETA</Muted>
       </BottomSheetScrollView>

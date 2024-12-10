@@ -192,8 +192,8 @@ export default function UserPage() {
         <View style={{ flex: 1 }}>
           <View className={'mx-10 my-4 flex-row justify-between gap-4'}>
             <View>
-              <Muted className={'mb-2'}>
-                {userData?.location && (
+              {userData?.location && (
+                <Muted className={'mb-2'}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <MapPinIcon
                       size={12}
@@ -203,10 +203,10 @@ export default function UserPage() {
                     />
                     <Muted>{userData?.location}</Muted>
                   </View>
-                )}
-              </Muted>
-              <Muted className={'mb-2'}>
-                {!userData?.birthday?.includes('1900-01-01') && (
+                </Muted>
+              )}
+              {!userData?.birthday?.includes('1900-01-01') && (
+                <Muted className={'mb-2'}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <CakeIcon
                       size={12}
@@ -217,10 +217,10 @@ export default function UserPage() {
                       {calculateBirthday(new Date(userData?.birthday))}
                     </Muted>
                   </View>
-                )}
-              </Muted>
-              <Muted className={'mb-2'}>
-                {userData?.pronouns && (
+                </Muted>
+              )}
+              {userData?.pronouns && (
+                <Muted className={'mb-2'}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <TagIcon
                       size={12}
@@ -230,8 +230,8 @@ export default function UserPage() {
                     />
                     <Muted>{userData?.pronouns}</Muted>
                   </View>
-                )}
-              </Muted>
+                </Muted>
+              )}
             </View>
           </View>
         </View>

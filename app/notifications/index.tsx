@@ -8,6 +8,8 @@ import NotificationItem from '~/components/FlatlistItems/NotificationItem'
 import { ExecutionMethod } from 'react-native-appwrite'
 import { useUser } from '~/components/contexts/UserContext'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
+import { useFocusEffect } from '@react-navigation/core'
+import { router } from 'expo-router'
 
 export default function CommunitiesPage() {
   const [notifications, setNotifications] = useState<
@@ -74,6 +76,14 @@ export default function CommunitiesPage() {
     }
   }
 
+  useFocusEffect(
+    React.useCallback(() => {
+      if (!current) {
+        router.push('/login')
+      }
+    }, [current])
+  )
+
   // Initial fetch when component mounts
   useEffect(() => {
     showLoadingModal()
@@ -81,7 +91,7 @@ export default function CommunitiesPage() {
     fetchNotifications(0).then()
     hideLoadingModal()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [current.$id])
+  }, [current?.$id])
 
   const renderItem = ({
     item,

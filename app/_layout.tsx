@@ -226,6 +226,7 @@ export default function RootLayout() {
                           key={screen.location}
                           name={screen.location}
                           options={{
+                            keyboardHandlingEnabled: true,
                             headerTitleAlign: 'left',
                             headerShown: screen.headerShown,
                             headerTitle: screen.title,
