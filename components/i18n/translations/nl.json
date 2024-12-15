@@ -1,0 +1,101 @@
+{
+  "language": "Nederlands",
+  "drawer": {
+    "switchTheme": "Thema wisselen"
+  },
+  "screens": {
+    "home": "Startpagina",
+    "chat": "Chat",
+    "conversations": "Conversaties",
+    "gallery": "Galerij",
+    "locations": "Locaties",
+    "map": "Kaart",
+    "shareMyLocation": "Deel mijn locatie",
+    "announcements": "Aankondigingen",
+    "events": "Evenementen",
+    "users": "Gebruikers",
+    "notifications": "Meldingen",
+    "myProfile": "Mijn Profiel",
+    "followers": "Followers",
+    "following": "Following",
+    "connections": "Connecties",
+    "mutuals": "Mutuals",
+    "communities": "Communities",
+    "account": "Account",
+    "login": "Inloggen",
+    "register": "Registreren",
+    "changeLanguage": "Taal wijzigen",
+    "languages": "Talen",
+    "legal": "Juridisch",
+    "support": "Ondersteuning",
+    "changelog": "Wijzigingen"
+  },
+  "main": {
+    "refreshing": "Vernieuwen..."
+  },
+  "time": {
+    "ended": "Beëindigd",
+    "eventHasEnded": "Evenement is afgelopen",
+    "secondsLeft": "seconden over",
+    "minutesLeft": "minuten over",
+    "hoursLeft": "uren over",
+    "daysLeft": "dagen over",
+    "weeksLeft": "weken over",
+    "secondsUntilEnd": "seconden tot einde",
+    "minutesUntilEnd": "minuten tot einde",
+    "hoursUntilEnd": "uren tot einde",
+    "daysUntilEnd": "dagen tot einde",
+    "weeksUntilEnd": "weken tot einde",
+    "secondsAgo": "seconden geleden",
+    "minutesAgo": "minuten geleden",
+    "hoursAgo": "uren geleden",
+    "daysAgo": "dagen geleden",
+    "weeksAgo": "weken geleden"
+  },
+  "home": {
+    "welcomenew": "Welkom bij Headpat!",
+    "welcomeback": "Welkom terug",
+    "announcementsdescription": "Blijf op de hoogte met ons nieuws!",
+    "eventsdescription": "Op zoek naar plezier?",
+    "chatdescription": "Stuur je vrienden een bericht",
+    "notificationsdescription": "Blijf op de hoogte met je meldingen",
+    "gallerydescription": "De plek voor alle foto's",
+    "locationsdescription": "Deel je locatie met vrienden"
+  },
+  "location": {
+    "share": {
+      "title": "Locatie delen",
+      "sharing": {
+        "enabled": "Je deelt momenteel je locatie met andere gebruikers.",
+        "disabled": "Je deelt je locatie niet met andere gebruikers."
+      },
+      "description": "Na het inschakelen van locatiedeling kunt u gebruikers of communities selecteren om uw locatie mee te delen met behulp van de knop in de rechterbenedenhoek.",
+      "nobody": {
+        "title": "Niemand om mee te delen...",
+        "description": "Selecteer gebruikers of communities om uw locatie mee te delen. U kunt dit doen door op de + in de rechterbenedenhoek te klikken."
+      },
+      "button": {
+        "start": "Begin met delen",
+        "stop": "Stop met delen",
+        "unavailable": "Niet beschikbaar"
+      }
+    },
+    "add": {
+      "search": "Zoek..."
+    },
+    "map": {
+      "status": {
+        "title": "Wat ben je aan het doen?",
+        "description": "Laat anderen weten wat je aan het doen bent. Je kunt dit later altijd wijzigen.",
+        "doNotDisturb": "Niet storen",
+        "apply": "Toepassen"
+      },
+      "filters": {
+        "title": "Filters wijzigen?",
+        "description": "Selecteer de filters die u wilt toepassen.",
+        "showEvents": "Evenementen tonen",
+        "showUsers": "Gebruikers tonen"
+      }
+    }
+  }
+}

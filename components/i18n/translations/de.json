@@ -1,0 +1,101 @@
+{
+  "language": "Deutsch",
+  "drawer": {
+    "switchTheme": "Thema wechseln"
+  },
+  "screens": {
+    "home": "Startseite",
+    "chat": "Chat",
+    "conversations": "Konversationen",
+    "gallery": "Galerie",
+    "locations": "Standorte",
+    "map": "Karte",
+    "shareMyLocation": "Meinen Standort teilen",
+    "announcements": "Ankündigungen",
+    "events": "Veranstaltungen",
+    "users": "Benutzer",
+    "notifications": "Benachrichtigungen",
+    "myProfile": "Mein Profil",
+    "followers": "Followers",
+    "following": "Following",
+    "connections": "Connections",
+    "mutuals": "Mutuals",
+    "communities": "Communities",
+    "account": "Konto",
+    "login": "Anmelden",
+    "register": "Registrieren",
+    "changeLanguage": "Sprache ändern",
+    "languages": "Sprachen",
+    "legal": "Rechtliches",
+    "support": "Unterstützung",
+    "changelog": "Änderungen"
+  },
+  "main": {
+    "refreshing": "Aktualisieren..."
+  },
+  "time": {
+    "ended": "Beendet",
+    "eventHasEnded": "Veranstaltung ist beendet",
+    "secondsLeft": "Sekunden übrig",
+    "minutesLeft": "Minuten übrig",
+    "hoursLeft": "Stunden übrig",
+    "daysLeft": "Tage übrig",
+    "weeksLeft": "Wochen übrig",
+    "secondsUntilEnd": "Sekunden bis Ende",
+    "minutesUntilEnd": "Minuten bis Ende",
+    "hoursUntilEnd": "Stunden bis Ende",
+    "daysUntilEnd": "Tage bis Ende",
+    "weeksUntilEnd": "Wochen bis Ende",
+    "secondsAgo": "Sekunden her",
+    "minutesAgo": "Minuten her",
+    "hoursAgo": "Stunden her",
+    "daysAgo": "Tage her",
+    "weeksAgo": "Wochen her"
+  },
+  "home": {
+    "welcomenew": "Willkommen bei Headpat!",
+    "welcomeback": "Willkommen zurück",
+    "announcementsdescription": "Bleibe auf dem Laufenden!",
+    "eventsdescription": "Auf der Suche nach Spaß?",
+    "chatdescription": "Schreibe deinen Freunden",
+    "notificationsdescription": "Bleibe auf dem Laufenden mit deinen Benachrichtigungen",
+    "gallerydescription": "Der Ort für alle Bilder",
+    "locationsdescription": "Teile deine Position mit Freunden"
+  },
+  "location": {
+    "share": {
+      "title": "Standortfreigabe",
+      "sharing": {
+        "enabled": "Du teilst derzeit deinen Standort mit anderen Benutzern.",
+        "disabled": "Du teilst deinen Standort nicht mit anderen Benutzern."
+      },
+      "description": "Nach der Aktivierung der Standortfreigabe kannst du Benutzer oder Communities auswählen, mit denen du deinen Standort über die Schaltfläche in der unteren rechten Ecke teilen kannst.",
+      "nobody": {
+        "title": "Niemand zum Teilen...",
+        "description": "Bitte wähle Benutzer oder Communities aus, mit denen du deinen Standort teilen möchtest. Du kannst dies tun, indem du auf das + in der unteren rechten Ecke klickst."
+      },
+      "button": {
+        "start": "Starte das Teilen",
+        "stop": "Hör auf zu teilen",
+        "unavailable": "Nicht verfügbar"
+      }
+    },
+    "add": {
+      "search": "Suchen..."
+    },
+    "map": {
+      "status": {
+        "title": "Was machst du gerade?",
+        "description": "Lass andere wissen, was du gerade machst. Du kannst dies später jederzeit ändern.",
+        "doNotDisturb": "Nicht stören",
+        "apply": "Anwenden"
+      },
+      "filters": {
+        "title": "Müssen Sie Filter ändern?",
+        "description": "Bitte wählen Sie die Filter aus, die Sie anwenden möchten.",
+        "showEvents": "Veranstaltungen anzeigen",
+        "showUsers": "Benutzer anzeigen"
+      }
+    }
+  }
+}

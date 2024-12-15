@@ -1,0 +1,101 @@
+{
+  "language": "English",
+  "drawer": {
+    "switchTheme": "Switch Theme"
+  },
+  "screens": {
+    "home": "Home",
+    "chat": "Chat",
+    "conversations": "Conversations",
+    "gallery": "Gallery",
+    "locations": "Locations",
+    "map": "Map",
+    "shareMyLocation": "Share my location",
+    "announcements": "Announcements",
+    "events": "Events",
+    "users": "Users",
+    "notifications": "Notifications",
+    "myProfile": "My Profile",
+    "followers": "Followers",
+    "following": "Following",
+    "connections": "Connections",
+    "mutuals": "Mutuals",
+    "communities": "Communities",
+    "account": "Account",
+    "login": "Login",
+    "register": "Register",
+    "changeLanguage": "Change Language",
+    "languages": "Languages",
+    "legal": "Legal",
+    "support": "Support",
+    "changelog": "Changelog"
+  },
+  "main": {
+    "refreshing": "Refreshing..."
+  },
+  "time": {
+    "ended": "Ended",
+    "eventHasEnded": "Event has ended",
+    "secondsLeft": "seconds left",
+    "minutesLeft": "minutes left",
+    "hoursLeft": "hours left",
+    "daysLeft": "days left",
+    "weeksLeft": "weeks left",
+    "secondsUntilEnd": "seconds until end",
+    "minutesUntilEnd": "minutes until end",
+    "hoursUntilEnd": "hours until end",
+    "daysUntilEnd": "days until end",
+    "weeksUntilEnd": "weeks until end",
+    "secondsAgo": "seconds ago",
+    "minutesAgo": "minutes ago",
+    "hoursAgo": "hours ago",
+    "daysAgo": "days ago",
+    "weeksAgo": "weeks ago"
+  },
+  "home": {
+    "welcomenew": "Welcome to Headpat!",
+    "welcomeback": "Welcome back",
+    "announcementsdescription": "Stay updated with our news!",
+    "eventsdescription": "Looking for fun?",
+    "chatdescription": "Message your friends",
+    "notificationsdescription": "Stay updated with your notifications",
+    "gallerydescription": "The place for all the pictures",
+    "locationsdescription": "Share your location with friends"
+  },
+  "location": {
+    "share": {
+      "title": "Location Sharing",
+      "sharing": {
+        "enabled": "You are currently sharing your location with other users.",
+        "disabled": "You are not sharing your location with other users."
+      },
+      "description": "After enabling location sharing, you can select users or communities to share your location with using the button in the bottom right corner.",
+      "nobody": {
+        "title": "Nobody to share with...",
+        "description": "Please select users or communities to share your location with. You can do this by clicking the + in the bottom right corner."
+      },
+      "button": {
+        "start": "Start sharing",
+        "stop": "Stop sharing",
+        "unavailable": "Unavailable"
+      }
+    },
+    "add": {
+      "search": "Search..."
+    },
+    "map": {
+      "status": {
+        "title": "What are you up to?",
+        "description": "Let others know what you are up to. You can alwys change this later.",
+        "doNotDisturb": "Do not disturb",
+        "apply": "Apply"
+      },
+      "filters": {
+        "title": "Need to change filters?",
+        "description": "Please select the filters you want to apply.",
+        "showEvents": "Show events",
+        "showUsers": "Show Users"
+      }
+    }
+  }
+}
