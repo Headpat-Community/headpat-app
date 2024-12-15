@@ -2,7 +2,7 @@
   "expo": {
     "name": "Headpat",
     "slug": "headpat-app",
-    "version": "0.8.5",
+    "version": "0.8.6",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "headpatapp",
