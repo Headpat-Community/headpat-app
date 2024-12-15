@@ -1,3 +1,5 @@
+[![Crowdin](https://badges.crowdin.net/headpat/localized.svg)](https://crowdin.com/project/headpat)
+
 # Headpat app
 
 How to get started:

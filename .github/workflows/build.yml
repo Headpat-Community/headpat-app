@@ -50,7 +50,7 @@ jobs:
           eas-version: latest
 
       - name: 📦 Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: 👷 Build app
         run: |
