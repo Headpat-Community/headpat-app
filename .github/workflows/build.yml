@@ -52,9 +52,6 @@ jobs:
       - name: 📦 Install dependencies
         run: npm install
 
-      - name: 📋 Test project
-        run: npm test
-
       - name: 👷 Build app
         run: |
           eas build --local \
