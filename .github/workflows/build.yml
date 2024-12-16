@@ -54,7 +54,7 @@ jobs:
 
       - name: 👷 Build app
         run: |
-          EXPO_DEBUG=1 eas build --local \
+          eas build --local \
             --non-interactive \
             --output=./app-build \
             --platform=${{ github.event.inputs.platform }} \
@@ -62,7 +62,4 @@ jobs:
 
       - name: 🚢 Submit
         if: ${{ github.event.inputs.should_submit }}
-        env:
-          EXPO_APPLE_ID: ${{ secrets.EXPO_APPLE_ID }}
-          EXPO_APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.EXPO_APPLE_APP_SPECIFIC_PASSWORD }}
         run: eas submit -p ${{ github.event.inputs.platform }} --profile ${{ github.event.inputs.profile }} --path app-build
