@@ -61,29 +61,41 @@ jobs:
               console.error(`stderr: ${stderr}`);
             });
 
-  update-comment:
-    needs: check-comment
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check build status
-        id: check_status
-        run: |
-          for i in {1..60}; do
-            STATUS=$(gh run list --workflow=build.yml --json status --jq '.[0].status')
-            if [[ "$STATUS" == "completed" ]]; then
-              echo "Build completed"
-              break
-            fi
-            echo "Waiting for build to complete..."
-            sleep 60
-          done
+update-comment:
+  needs: check-comment
+  runs-on: ubuntu-latest
+  steps:
+    - name: Check build status
+      id: check_status
+      run: |
+        for i in {1..60}; do
+          STATUS=$(gh run list --workflow=build.yml --json status --jq '.[0].status')
+          CONCLUSION=$(gh run list --workflow=build.yml --json conclusion --jq '.[0].conclusion')
+          if [[ "$STATUS" == "completed" ]]; then
+            echo "status=completed" >> $GITHUB_ENV
+            echo "conclusion=$CONCLUSION" >> $GITHUB_ENV
+            break
+          fi
+          echo "Waiting for build to complete..."
+          sleep 60
+        done
 
-      - name: Update comment
-        if: steps.check_status.outputs.status == 'completed'
-        uses: peter-evans/create-or-update-comment@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}
-          issue-number: ${{ github.event.issue.number }}
-          comment-id: ${{ steps.post_comment.outputs.comment-id }}
-          body: "Build for ${{ env.platform }} succeeded :white_check_mark:"
+    - name: Update comment on success
+      if: env.conclusion == 'success'
+      uses: peter-evans/create-or-update-comment@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        repository: ${{ github.repository }}
+        issue-number: ${{ github.event.issue.number }}
+        comment-id: ${{ steps.post_comment.outputs.comment-id }}
+        body: "Build for ${{ env.platform }} succeeded :white_check_mark:"
+
+    - name: Update comment on failure
+      if: env.conclusion != 'success'
+      uses: peter-evans/create-or-update-comment@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        repository: ${{ github.repository }}
+        issue-number: ${{ github.event.issue.number }}
+        comment-id: ${{ steps.post_comment.outputs.comment-id }}
+        body: "Build for ${{ env.platform }} failed :x:"
