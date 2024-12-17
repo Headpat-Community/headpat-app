@@ -1,0 +1,89 @@
+name: Comment Trigger
+
+on:
+  pull_request_review_comment:
+    types: [created]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  check-comment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if comment author is a member
+        id: check_membership
+        run: |
+          AUTHOR="${{ github.event.comment.user.login }}"
+          REPO="${{ github.repository }}"
+          ORG=$(echo $REPO | cut -d'/' -f1)
+          IS_MEMBER=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+            "https://api.github.com/orgs/$ORG/members/$AUTHOR" | jq -r '.message != "Not Found"')
+          if [[ "$IS_MEMBER" != "true" ]]; then
+            echo "Comment author is not a member of the repository"
+            exit 1
+          fi
+
+      - name: Check comment
+        id: check_comment
+        run: |
+          COMMENT_BODY="${{ github.event.comment.body }}"
+          if [[ "$COMMENT_BODY" == "build:ios" ]]; then
+            echo "platform=ios" >> $GITHUB_ENV
+            echo "os=ubuntu-latest" >> $GITHUB_ENV
+          elif [[ "$COMMENT_BODY" == "build:android" ]]; then
+            echo "platform=android" >> $GITHUB_ENV
+            echo "os=macos-latest" >> $GITHUB_ENV
+          else
+            echo "Invalid comment"
+            exit 1
+          fi
+
+      - name: Post initial comment
+        id: post_comment
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          issue-number: ${{ github.event.issue.number }}
+          body: "Building for ${{ env.platform }} :hourglass:"
+
+      - name: Trigger build
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { exec } = require('child_process');
+            exec(`gh workflow run build.yml -f os=${{ env.os }} -f platform=${{ env.platform }} -f profile=production -f should_submit=true`, (error, stdout, stderr) => {
+              if (error) {
+                console.error(`exec error: ${error}`);
+                return;
+              }
+              console.log(`stdout: ${stdout}`);
+              console.error(`stderr: ${stderr}`);
+            });
+
+  update-comment:
+    needs: check-comment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check build status
+        id: check_status
+        run: |
+          for i in {1..60}; do
+            STATUS=$(gh run list --workflow=build.yml --json status --jq '.[0].status')
+            if [[ "$STATUS" == "completed" ]]; then
+              echo "Build completed"
+              break
+            fi
+            echo "Waiting for build to complete..."
+            sleep 60
+          done
+
+      - name: Update comment
+        if: steps.check_status.outputs.status == 'completed'
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          issue-number: ${{ github.event.issue.number }}
+          comment-id: ${{ steps.post_comment.outputs.comment-id }}
+          body: "Build for ${{ env.platform }} succeeded :white_check_mark:"
