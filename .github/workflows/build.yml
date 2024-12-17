@@ -42,6 +42,13 @@ jobs:
           node-version: ${{ matrix.node }}
           cache: npm
 
+      - name: 🏗 Setup Java
+        if: ${{ github.event.inputs.platform == 'android' }}
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
       - name: 🏗 Setup Expo and EAS
         uses: expo/expo-github-action@v7
         with:
