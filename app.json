@@ -46,7 +46,7 @@
         "applinks:headpat.place",
         "applinks:api.headpat.place"
       ],
-      "buildNumber": "127",
+      "buildNumber": "128",
       "appleTeamId": "S243K37R5M"
     },
     "android": {
@@ -75,7 +75,7 @@
         }
       },
       "package": "com.headpat.app",
-      "versionCode": 127
+      "versionCode": 128
     },
     "extra": {
       "router": {
