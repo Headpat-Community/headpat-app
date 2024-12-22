@@ -10,6 +10,11 @@ jobs:
   check-comment:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out the PR branch
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
       - name: Check if comment author is a member
         id: check_membership
         run: |
