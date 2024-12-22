@@ -1,107 +1,94 @@
-name: Comment Trigger
+name: Build App on PR Comments
 
 on:
-  pull_request_review_comment:
-    types: [created]
-  pull_request:
-    types: [opened, synchronize, reopened]
+  issue_comment:
+    types:
+      - created
+
+permissions:
+  issues: write  # To update comments
+  pull-requests: read
+  contents: read
 
 jobs:
-  check-comment:
-    runs-on: ubuntu-latest
+  build:
+    if: |
+      github.event.issue.pull_request && 
+      (github.event.comment.body == 'build:android' || github.event.comment.body == 'build:ios')
+    runs-on: ${{ github.event.comment.body == 'build:android' && 'ubuntu-latest' || 'macos-latest' }}
+    strategy:
+      matrix:
+        node: [22.x]
+
     steps:
-      - name: Check out the PR branch
+      - name: 💬 Post initial status comment
+        id: comment
+        run: |
+          echo "::set-output name=comment_id::$(gh api \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            "/repos/${{ github.repository }}/issues/comments" \
+            -f body='Building app for ${{ github.event.comment.body == "build:android" && "android" || "ios" }}... This can take about 25 minutes.' \
+            --jq '.id')"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🏗 Setup repo
         uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
 
-      - name: Check if comment author is a member
-        id: check_membership
+      - name: 🏗 Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+
+      - name: 🏗 Setup Java
+        if: ${{ github.event.comment.body == 'build:android' }}
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: 🏗 Setup Expo and EAS
+        uses: expo/expo-github-action@v7
+        with:
+          token: ${{ secrets.EXPO_TOKEN }}
+          expo-version: latest
+          eas-version: latest
+
+      - name: 📦 Install dependencies
+        run: npm install
+
+      - name: 👷 Build app
         run: |
-          AUTHOR="${{ github.event.comment.user.login }}"
-          REPO="${{ github.repository }}"
-          ORG=$(echo $REPO | cut -d'/' -f1)
-          RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-            "https://api.github.com/orgs/$ORG/members/$AUTHOR")
-          IS_MEMBER=$(echo $RESPONSE | jq -r '.message != "Not Found"')
-          if [[ "$IS_MEMBER" != "true" ]]; then
-            echo "Comment author is not a member of the repository"
-            exit 1
-          fi
+          eas build --local \
+            --non-interactive \
+            --output=./app-build \
+            --platform=${{ github.event.comment.body == 'build:android' && 'android' || 'ios' }} \
+            --profile=production
 
-      - name: Check comment
-        id: check_comment
+      - name: 🚢 Submit
         run: |
-          COMMENT_BODY="${{ github.event.comment.body }}"
-          if [[ "$COMMENT_BODY" == "build:ios" ]]; then
-            echo "platform=ios" >> $GITHUB_ENV
-            echo "os=ubuntu-latest" >> $GITHUB_ENV
-          elif [[ "$COMMENT_BODY" == "build:android" ]]; then
-            echo "platform=android" >> $GITHUB_ENV
-            echo "os=macos-latest" >> $GITHUB_ENV
-          else
-            echo "Invalid comment"
-            exit 1
-          fi
+          eas submit -p ${{ github.event.comment.body == 'build:android' && 'android' || 'ios' }} --profile=production --path app-build
 
-      - name: Post initial comment
-        id: post_comment
-        uses: peter-evans/create-or-update-comment@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}
-          issue-number: ${{ github.event.issue.number }}
-          body: "Building for ${{ env.platform }} :hourglass:"
-
-      - name: Trigger build
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const { exec } = require('child_process');
-            exec(`gh workflow run build.yml -f os=${{ env.os }} -f platform=${{ env.platform }} -f profile=production -f should_submit=true`, (error, stdout, stderr) => {
-              if (error) {
-                console.error(`exec error: ${error}`);
-                return;
-              }
-              console.log(`stdout: ${stdout}`);
-              console.error(`stderr: ${stderr}`);
-            });
-
-  update-comment:
-    needs: check-comment
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check build status
-        id: check_status
+      - name: 💬 Update comment to success
+        if: success()
         run: |
-          for i in {1..60}; do
-            STATUS=$(gh run list --workflow=build.yml --json status --jq '.[0].status')
-            CONCLUSION=$(gh run list --workflow=build.yml --json conclusion --jq '.[0].conclusion')
-            if [[ "$STATUS" == "completed" ]]; then
-              echo "status=completed" >> $GITHUB_ENV
-              echo "conclusion=$CONCLUSION" >> $GITHUB_ENV
-              break
-            fi
-            echo "Waiting for build to complete..."
-            sleep 60
-          done
+          gh api \
+            -X PATCH \
+            -H "Accept: application/vnd.github+json" \
+            "/repos/${{ github.repository }}/issues/comments/${{ steps.comment.outputs.comment_id }}" \
+            -f body='Build complete for ${{ github.event.comment.body == "build:android" && "android" || "ios" }}.'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Update comment on success
-        if: env.conclusion == 'success'
-        uses: peter-evans/create-or-update-comment@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}
-          issue-number: ${{ github.event.issue.number }}
-          comment-id: ${{ steps.post_comment.outputs.comment-id }}
-          body: "Build for ${{ env.platform }} succeeded :white_check_mark:"
-
-      - name: Update comment on failure
-        if: env.conclusion != 'success'
-        uses: peter-evans/create-or-update-comment@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}
-          issue-number: ${{ github.event.issue.number }}
-          comment-id: ${{ steps.post_comment.outputs.comment-id }}
-          body: "Build for ${{ env.platform }} failed :x:"
+      - name: 💬 Update comment to failure
+        if: failure()
+        run: |
+          gh api \
+            -X PATCH \
+            -H "Accept: application/vnd.github+json" \
+            "/repos/${{ github.repository }}/issues/comments/${{ steps.comment.outputs.comment_id }}" \
+            -f body='Build failed for ${{ github.event.comment.body == "build:android" && "android" || "ios" }}.'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
