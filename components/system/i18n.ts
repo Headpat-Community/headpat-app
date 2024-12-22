@@ -12,5 +12,5 @@ export const i18n = new I18n({
   options: {
     enableFallback: true,
     defaultLocale: 'en',
-  }
+  },
 })
