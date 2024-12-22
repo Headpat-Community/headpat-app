@@ -21,8 +21,9 @@ jobs:
           AUTHOR="${{ github.event.comment.user.login }}"
           REPO="${{ github.repository }}"
           ORG=$(echo $REPO | cut -d'/' -f1)
-          IS_MEMBER=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-            "https://api.github.com/orgs/$ORG/members/$AUTHOR" | jq -r '.message != "Not Found"')
+          RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+            "https://api.github.com/orgs/$ORG/members/$AUTHOR")
+          IS_MEMBER=$(echo $RESPONSE | jq -r '.message != "Not Found"')
           if [[ "$IS_MEMBER" != "true" ]]; then
             echo "Comment author is not a member of the repository"
             exit 1
