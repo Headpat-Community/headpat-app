@@ -17,9 +17,7 @@
       "iosDisplayInForeground": true
     },
     "githubUrl": "https://github.com/Headpat-Community/headpat-app",
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "entitlements": {
         "aps-environment": "production"
@@ -34,11 +32,7 @@
       },
       "appStoreUrl": "https://apps.apple.com/app/headpat/id6502715063",
       "infoPlist": {
-        "UIBackgroundModes": [
-          "fetch",
-          "remote-notification",
-          "processing"
-        ],
+        "UIBackgroundModes": ["fetch", "remote-notification", "processing"],
         "NSLocationWhenInUseUsageDescription": "This app requires access to your location to show you on the map.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "This app requires access to your location to show you on the map.",
         "NSLocationAlwaysUsageDescription": "This app requires access to your location to show you on the map.",

@@ -156,8 +156,8 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
             hasPermissions
               ? handleManage
               : data.isFollowing
-              ? handleUnfollow
-              : handleFollow
+                ? handleUnfollow
+                : handleFollow
           }
         >
           {hasPermissions ? (
