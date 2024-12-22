@@ -39,11 +39,16 @@ jobs:
       - name: 💬 Post initial status comment
         id: comment
         run: |
+          if [[ "${{ github.event.comment.body }}" == "build:android" ]]; then
+            PLATFORM="android"
+          else
+            PLATFORM="ios"
+          fi
           echo "::set-output name=comment_id::$(gh api \
             -X POST \
-            -H "Accept: application/vnd.github+json" \
-            "/repos/${{ github.repository }}/issues/comments" \
-            -f body='Building app for ${{ github.event.comment.body == 'build:android' && 'android' || 'ios' }}... This can take about 25 minutes.' \
+            -H 'Accept: application/vnd.github+json' \
+            '/repos/${{ github.repository }}/issues/comments' \
+            -f body='Building app for $PLATFORM... This can take about 25 minutes.' \
             --jq '.id')"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -76,34 +81,54 @@ jobs:
 
       - name: 👷 Build app
         run: |
+          if [[ "${{ github.event.comment.body }}" == "build:android" ]]; then
+            PLATFORM="android"
+          else
+            PLATFORM="ios"
+          fi
           eas build --local \
             --non-interactive \
             --output=./app-build \
-            --platform=${{ github.event.comment.body == 'build:android' && 'android' || 'ios' }} \
+            --platform=$PLATFORM \
             --profile=production
 
       - name: 🚢 Submit
         run: |
-          eas submit -p ${{ github.event.comment.body == 'build:android' && 'android' || 'ios' }} --profile=production --path app-build
+          if [[ "${{ github.event.comment.body }}" == "build:android" ]]; then
+            PLATFORM="android"
+          else
+            PLATFORM="ios"
+          fi
+          eas submit -p $PLATFORM --profile=production --path app-build
 
       - name: 💬 Update comment to success
         if: success()
         run: |
+          if [[ "${{ github.event.comment.body }}" == "build:android" ]]; then
+            PLATFORM="android"
+          else
+            PLATFORM="ios"
+          fi
           gh api \
             -X PATCH \
             -H "Accept: application/vnd.github+json" \
             "/repos/${{ github.repository }}/issues/comments/${{ steps.comment.outputs.comment_id }}" \
-            -f body='Build complete for ${{ github.event.comment.body == "build:android" && "android" || "ios" }}.'
+            -f body="Build complete for $PLATFORM."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 💬 Update comment to failure
         if: failure()
         run: |
+          if [[ "${{ github.event.comment.body }}" == "build:android" ]]; then
+            PLATFORM="android"
+          else
+            PLATFORM="ios"
+          fi
           gh api \
             -X PATCH \
             -H "Accept: application/vnd.github+json" \
             "/repos/${{ github.repository }}/issues/comments/${{ steps.comment.outputs.comment_id }}" \
-            -f body='Build failed for ${{ github.event.comment.body == "build:android" && "android" || "ios" }}.'
+            -f body="Build failed for $PLATFORM."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
