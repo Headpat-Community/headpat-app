@@ -3,14 +3,14 @@ import en from '~/components/i18n/translations/en.json'
 import de from '~/components/i18n/translations/de.json'
 import nl from '~/components/i18n/translations/nl.json'
 
-export const i18n = new I18n({
-  translations: {
-    en,
-    de,
-    nl,
+export const i18n = new I18n(
+  {
+    en: en,
+    de: de,
+    nl: nl,
   },
-  options: {
+  {
     enableFallback: true,
     defaultLocale: 'en',
-  },
-})
+  }
+)
