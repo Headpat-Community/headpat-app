@@ -21,6 +21,21 @@ jobs:
         node: [22.x]
 
     steps:
+      - name: Check comment author permissions
+        id: check-permissions
+        run: |
+          PERMISSION=$(gh api \
+            -H "Accept: application/vnd.github+json" \
+            /repos/${{ github.repository }}/collaborators/${{ github.event.comment.user.login }}/permission \
+            --jq '.permission')
+          echo "User permission: $PERMISSION"
+          if [[ "$PERMISSION" != "admin" && "$PERMISSION" != "maintain" && "$PERMISSION" != "write" ]]; then
+            echo "User does not have sufficient permissions to trigger the build."
+            exit 1
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: 💬 Post initial status comment
         id: comment
         run: |
