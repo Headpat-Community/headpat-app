@@ -6,9 +6,9 @@ on:
       - created
 
 permissions:
-  issues: write  # To update comments
-  pull-requests: read
-  contents: read
+  issues: write  # Allow writing comments
+  pull-requests: write  # Allow writing on pull requests
+  contents: read  # Read repository contents
 
 jobs:
   build:
