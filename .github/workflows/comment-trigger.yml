@@ -30,7 +30,7 @@ jobs:
             --jq '.permission')
           echo "User permission: $PERMISSION"
           if [[ "$PERMISSION" != "admin" && "$PERMISSION" != "maintain" && "$PERMISSION" != "write" ]]; then
-            echo "User does not have sufficient permissions to trigger the build."
+            echo "User ${{ github.event.comment.user.login }} does not have sufficient permissions to trigger the build."
             exit 1
           fi
         env:
