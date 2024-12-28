@@ -30,7 +30,6 @@ import { requestUserPermission } from '~/components/system/pushNotifications'
 import { AlertModalProvider } from '~/components/contexts/AlertModalProvider'
 import * as Sentry from '@sentry/react-native'
 import EulaModal from '~/components/system/EulaModal'
-import * as Updates from 'expo-updates'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { HeaderMenuSidebar } from '~/components/data/DrawerData'
 import { LocationProvider } from '~/components/contexts/SharingContext'
@@ -103,18 +102,6 @@ export default function RootLayout() {
     () => (isDarkColorScheme ? DARK_THEME : LIGHT_THEME),
     [isDarkColorScheme]
   )
-
-  async function onFetchUpdateAsync() {
-    try {
-      const update = await Updates.checkForUpdateAsync()
-      if (update.isAvailable) {
-        await Updates.fetchUpdateAsync()
-        await Updates.reloadAsync()
-      }
-    } catch (error) {
-      Sentry.captureException(error)
-    }
-  }
 
   useEffect(() => {
     const initialize = async () => {
@@ -195,7 +182,6 @@ export default function RootLayout() {
       }
     }
     if (isMounted) {
-      onFetchUpdateAsync().then()
       getEulaVersion().then()
       bootstrap().then()
     }
