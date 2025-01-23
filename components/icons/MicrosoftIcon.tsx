@@ -19,7 +19,7 @@ type SiMicrosoftProps = React.ComponentPropsWithoutRef<'svg'> & {
   size?: string | number
 }
 
-const defaultColor = '#5E5E5E'
+const defaultColor = '#5865F2'
 
 const MicrosoftIcon: IconType = React.forwardRef<
   SVGSVGElement,

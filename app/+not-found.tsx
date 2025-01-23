@@ -2,6 +2,7 @@ import { Link } from 'expo-router'
 import { View } from 'react-native'
 import { Text } from '~/components/ui/text'
 import { Image } from 'expo-image'
+import React from 'react'
 
 export default function NotFoundScreen() {
   return (

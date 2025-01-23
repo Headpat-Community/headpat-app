@@ -247,7 +247,11 @@ export default function UserPage() {
                       color={theme}
                       style={{ marginRight: 4 }}
                     />
-                    <Muted>{userData?.followersCount} Followers</Muted>
+                    {userData.followersCount !== undefined ? (
+                      <Muted>{userData?.followersCount} Followers</Muted>
+                    ) : (
+                      <Skeleton className={'w-16 h-4'} />
+                    )}
                   </View>
                 </Link>
               </Muted>
@@ -259,7 +263,11 @@ export default function UserPage() {
                       color={theme}
                       style={{ marginRight: 4 }}
                     />
-                    <Muted>{userData?.followingCount} Following</Muted>
+                    {userData.followingCount !== undefined ? (
+                      <Muted>{userData?.followingCount} Following</Muted>
+                    ) : (
+                      <Skeleton className={'w-16 h-4'} />
+                    )}
                   </View>
                 </Link>
               </Muted>

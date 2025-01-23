@@ -14,12 +14,12 @@ import DiscordIcon from '~/components/icons/DiscordIcon'
 import GithubIcon from '~/components/icons/GithubIcon'
 import GoogleIcon from '~/components/icons/GoogleIcon'
 import SpotifyIcon from '~/components/icons/SpotifyIcon'
+import TwitchIcon from '~/components/icons/TwitchIcon'
+import MicrosoftIcon from '~/components/icons/MicrosoftIcon'
 import SocialLoginButton from '~/components/SocialLoginButton'
 import { makeRedirectUri } from 'expo-auth-session'
 import * as WebBrowser from 'expo-web-browser'
 import * as Sentry from '@sentry/react-native'
-import TwitchIcon from '~/components/icons/TwitchIcon'
-import MicrosoftIcon from '~/components/icons/MicrosoftIcon'
 import { useFocusEffect } from '@react-navigation/core'
 
 export default function ModalScreen() {
@@ -33,7 +33,7 @@ export default function ModalScreen() {
   useFocusEffect(
     React.useCallback(() => {
       if (current) {
-        router.push('/account')
+        router.push('/')
       }
     }, [current])
   )
@@ -84,7 +84,7 @@ export default function ModalScreen() {
         const userId = params.get('userId')
 
         await loginOAuth(userId, secret)
-        router.push('/account')
+        router.push('/')
       }
     } catch (error) {
       toast('An error occurred.')
@@ -94,7 +94,7 @@ export default function ModalScreen() {
 
   return (
     <View className="flex-1 justify-center items-center">
-      <View className="p-4 native:pb-24 max-w-md gap-6">
+      <View className="p-4 native:pb-24 max-w-md gap-4">
         <View className="gap-1">
           <H1 className="text-foreground text-center">Login</H1>
           <Muted className="text-base text-center">
@@ -135,6 +135,12 @@ export default function ModalScreen() {
             onPress={() => handleOAuth2Login(OAuthProvider.Discord)}
             Icon={DiscordIcon}
             title="Discord"
+          />
+          <SocialLoginButton
+            color="#005953"
+            Image={require('~/assets/logos/eurofurence.webp')}
+            onPress={() => handleOAuth2Login(OAuthProvider.Oidc)}
+            title="Eurofurence"
           />
           <SocialLoginButton
             color="#24292F"

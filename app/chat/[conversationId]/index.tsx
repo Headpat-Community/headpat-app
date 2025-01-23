@@ -375,7 +375,7 @@ export default function ChatView() {
                   source={{
                     uri: getConversationAvatar(),
                   }}
-                  style={{ width: 32, height: 32, borderRadius: 12 }}
+                  style={{ width: 32, height: 32, borderRadius: 50 }}
                 />
                 <AvatarFallback>
                   <Text>{getConversationName()}</Text>

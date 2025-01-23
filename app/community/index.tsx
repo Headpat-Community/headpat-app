@@ -1,14 +1,17 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { FlatList, Text, View, ScrollView } from 'react-native'
 import { functions } from '~/lib/appwrite-client'
 import { toast } from '~/lib/toast'
 import * as Sentry from '@sentry/react-native'
-import { Community } from '~/lib/types/collections'
+import { Community, Notifications } from '~/lib/types/collections'
 import { ExecutionMethod } from 'react-native-appwrite'
 import CommunityItem from '~/components/community/CommunityItem'
 import { Skeleton } from '~/components/ui/skeleton'
+import { useDataCache } from '~/components/contexts/DataCacheContext'
+import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 
 export default function CommunitiesPage() {
+  const { getAllCache, saveAllCache } = useDataCache()
   const [communities, setCommunities] = useState<
     Community.CommunityDocumentsType[]
   >([])
@@ -16,43 +19,57 @@ export default function CommunitiesPage() {
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
   const [offset, setOffset] = useState<number>(0)
   const [hasMore, setHasMore] = useState<boolean>(true)
+  const { showAlertModal } = useAlertModal()
 
   // Fetch communities function
-  const fetchCommunities = async (
-    newOffset: number = 0,
-    limit: number = 50
-  ) => {
-    try {
-      const data = await functions.createExecution(
-        'community-endpoints',
-        '',
-        false,
-        `/communities?limit=${limit}&offset=${newOffset}`, // Fetch with pagination
-        ExecutionMethod.GET
-      )
-      const newCommunities: Community.CommunityDocumentsType[] = JSON.parse(
-        data.responseBody
-      )
-
-      if (newOffset === 0) {
-        setCommunities(newCommunities)
-      } else {
-        setCommunities((prevCommunities) => [
-          ...prevCommunities,
-          ...newCommunities,
-        ])
+  const fetchCommunities = useCallback(
+    async (newOffset: number = 0, limit: number = 50) => {
+      const cachedCommunities =
+        await getAllCache<Community.CommunityDocumentsType>('communities')
+      if (cachedCommunities && typeof cachedCommunities === 'object') {
+        const communitiesArray = Object.values(cachedCommunities).map(
+          (item) => item.data
+        )
+        setCommunities(communitiesArray)
+        setRefreshing(false)
       }
+      try {
+        const data = await functions.createExecution(
+          'community-endpoints',
+          '',
+          false,
+          `/communities?limit=${limit}&offset=${newOffset}`, // Fetch with pagination
+          ExecutionMethod.GET
+        )
+        const newCommunities: Community.CommunityDocumentsType[] = JSON.parse(
+          data.responseBody
+        )
 
-      // Check if more communities are available
-      setHasMore(newCommunities.length === 20)
-    } catch (error) {
-      toast('Failed to fetch communities. Please try again later.')
-      Sentry.captureException(error)
-    } finally {
-      setRefreshing(false)
-      setLoadingMore(false)
-    }
-  }
+        if (newOffset === 0) {
+          setCommunities(newCommunities)
+          saveAllCache('communities', newCommunities)
+        } else {
+          saveAllCache('communities', [...communities, ...newCommunities])
+          setCommunities((prevCommunities) => [
+            ...prevCommunities,
+            ...newCommunities,
+          ])
+        }
+
+        setHasMore(newCommunities.length === 20)
+      } catch (error) {
+        showAlertModal(
+          'FAILED',
+          'Failed to fetch notifications. Please try again later.'
+        )
+        Sentry.captureException(error)
+      } finally {
+        setRefreshing(false)
+        setLoadingMore(false)
+      }
+    },
+    [getAllCache, saveAllCache]
+  )
 
   // Handle refresh
   const onRefresh = async () => {
@@ -75,7 +92,6 @@ export default function CommunitiesPage() {
   useEffect(() => {
     setRefreshing(true)
     fetchCommunities(0).then()
-    setRefreshing(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

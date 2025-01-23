@@ -3,10 +3,11 @@ import { FlatList } from 'react-native'
 import { databases } from '~/lib/appwrite-client'
 import { toast } from '~/lib/toast'
 import * as Sentry from '@sentry/react-native'
-import { UserData } from '~/lib/types/collections'
+import { Community, UserData } from '~/lib/types/collections'
 import { Query } from 'react-native-appwrite'
 import UserItem from '~/components/user/UserItem'
 import { Text } from 'react-native'
+import { useDataCache } from '~/components/contexts/DataCacheContext'
 
 export default function UserListPage() {
   const [users, setUsers] = useState<UserData.UserDataDocumentsType[]>([])
@@ -14,8 +15,17 @@ export default function UserListPage() {
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
   const [offset, setOffset] = useState<number>(0)
   const [hasMore, setHasMore] = useState<boolean>(true)
+  const { getAllCache, saveAllCache } = useDataCache()
 
   const fetchUsers = async (newOffset: number = 0) => {
+    const cachedUsers =
+      await getAllCache<UserData.UserDataDocumentsType>('users')
+    console.log(cachedUsers)
+    if (cachedUsers && typeof cachedUsers === 'object') {
+      const usersArray = Object.values(cachedUsers).map((item) => item.data)
+      setUsers(usersArray)
+      setRefreshing(false)
+    }
     try {
       const data: UserData.UserDataType = await databases.listDocuments(
         'hp_db',
@@ -31,7 +41,9 @@ export default function UserListPage() {
 
       if (newOffset === 0) {
         setUsers(newUsers)
+        saveAllCache('users', newUsers)
       } else {
+        saveAllCache('users', [...users, ...newUsers])
         setUsers((prevUsers) => [...prevUsers, ...newUsers])
       }
 

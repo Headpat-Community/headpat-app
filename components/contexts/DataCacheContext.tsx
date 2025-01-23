@@ -9,7 +9,7 @@ import React, {
 import kv from 'expo-sqlite/kv-store'
 
 const CACHE_EXPIRATION_TIME = 24 * 60 * 60 * 1000 // 24 hours
-const storeNames = ['users', 'communities']
+const storeNames = ['users', 'communities', 'notifications']
 
 type DataCacheContextType = {
   getCache: <T>(storeName: string, key: string) => Promise<CacheItem<T> | null>
@@ -106,7 +106,7 @@ export const DataCacheProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const saveAllCache = useCallback(async <T,>(storeName: string, data: T[]) => {
     const cache = data.reduce((acc, item) => {
-      acc[item['id']] = { data: item, timestamp: Date.now() }
+      acc[item['$id']] = { data: item, timestamp: Date.now() }
       return acc
     }, {})
 

@@ -57,6 +57,8 @@ export default function FollowingPage() {
     } catch (error) {
       toast('Failed to fetch users. Please try again later.')
       Sentry.captureException(error)
+    } finally {
+      setRefreshing(false)
     }
   }
 
@@ -78,7 +80,6 @@ export default function FollowingPage() {
       return
     }
     fetchUsers().then()
-    setRefreshing(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [local?.userId])
 
