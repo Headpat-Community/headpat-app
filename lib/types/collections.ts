@@ -511,6 +511,14 @@ export namespace Events {
      * The community ID connected to the event.
      */
     communityId: string
+    /**
+     * Maximum amount of attendees.
+     */
+    visitorCapacity: number
+    /**
+     * Images of the event.
+     */
+    images: string[]
   }
 }
 
@@ -545,6 +553,10 @@ export namespace Community {
      * The status of the community.
      */
     status: string
+    /**
+     * The community settings.
+     */
+    communitySettings: CommunitySettingsDocumentsType
     /**
      * The amount of followers the community has.
      */
