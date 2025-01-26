@@ -21,7 +21,6 @@ export default function UserListPage() {
   const fetchUsers = async (newOffset: number = 0) => {
     const cachedUsers =
       await getAllCache<UserData.UserDataDocumentsType>('users')
-    console.log(cachedUsers)
     if (cachedUsers && typeof cachedUsers === 'object') {
       const usersArray = Object.values(cachedUsers).map((item) => item.data)
       setUsers(usersArray)
