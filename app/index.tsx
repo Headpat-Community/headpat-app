@@ -290,7 +290,7 @@ export default function HomeView() {
                 className={'p-0 justify-between flex flex-wrap ml-7 pb-2'}
               >
                 <CardDescription>
-                  <Text>{i18n.t('home.eventsdescription')}</Text>
+                  <Text>{i18n.t('home.eventsDescription')}</Text>
                 </CardDescription>
               </CardFooter>
               {nextEvent && (

@@ -9,6 +9,7 @@ import CommunityItem from '~/components/community/CommunityItem'
 import { Skeleton } from '~/components/ui/skeleton'
 import { useDataCache } from '~/components/contexts/DataCacheContext'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
+import { i18n } from '~/components/system/i18n'
 
 export default function CommunitiesPage() {
   const { getAllCache, saveAllCache } = useDataCache()
@@ -137,7 +138,7 @@ export default function CommunitiesPage() {
       onEndReached={loadMore}
       onEndReachedThreshold={0.5}
       ListFooterComponent={
-        loadingMore && hasMore ? <Text>Loading...</Text> : null
+        loadingMore && hasMore ? <Text>{i18n.t('main.loading')}</Text> : null
       }
       contentInsetAdjustmentBehavior={'automatic'}
     />

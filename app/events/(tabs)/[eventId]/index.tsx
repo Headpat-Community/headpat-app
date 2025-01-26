@@ -18,6 +18,7 @@ import { ExecutionMethod } from 'react-native-appwrite'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { useFocusEffect } from '@react-navigation/core'
 import { Button } from '~/components/ui/button'
+import { i18n } from '~/components/system/i18n'
 
 export default function EventPage() {
   const local = useLocalSearchParams()
@@ -52,7 +53,7 @@ export default function EventPage() {
         isAttending: event?.isAttending,
       })
     } catch {
-      showAlertModal('FAILED', 'Failed to fetch event data.')
+      showAlertModal('FAILED', i18n.t('events.failedtofetch'))
       setRefreshing(false)
     }
   }
@@ -76,12 +77,12 @@ export default function EventPage() {
           isAttending: true,
         }))
       } else if (event.type === 'event_ended') {
-        showAlertModal('FAILED', 'Event has ended.')
+        showAlertModal('FAILED', i18n.t('time.eventHasEnded'))
       } else {
-        showAlertModal('FAILED', 'Failed to attend event.')
+        showAlertModal('FAILED', i18n.t('events.failedToAttend'))
       }
     } catch {
-      showAlertModal('FAILED', 'Failed to fetch event data.')
+      showAlertModal('FAILED', i18n.t('events.failedToFetch'))
     }
   }
 
@@ -104,12 +105,12 @@ export default function EventPage() {
           isAttending: false,
         }))
       } else if (event.type === 'event_ended') {
-        showAlertModal('FAILED', 'Event has ended.')
+        showAlertModal('FAILED', i18n.t('time.eventHasEnded'))
       } else {
-        showAlertModal('FAILED', 'Failed to unattend event.')
+        showAlertModal('FAILED', i18n.t('events.failedCancelAttendance'))
       }
     } catch {
-      showAlertModal('FAILED', 'Failed to fetch event data.')
+      showAlertModal('FAILED', i18n.t('events.failedToFetch'))
     }
   }
 
@@ -121,7 +122,7 @@ export default function EventPage() {
   useFocusEffect(
     React.useCallback(() => {
       if (!local?.eventId)
-        return () => showAlertModal('FAILED', 'Event ID not found.')
+        return () => showAlertModal('FAILED', i18n.t('events.idNotFound'))
       fetchEvents().then()
       return () => {
         setEvent(null)
@@ -139,13 +140,17 @@ export default function EventPage() {
       >
         <Stack.Screen
           options={{
-            headerTitle: 'What is this event?',
+            headerTitle: i18n.t('events.whatIsThisEvent'),
           }}
         />
         <View className={'p-4 native:pb-24 max-w-md gap-6'}>
           <View className={'gap-1'}>
-            <H1 className={'text-foreground text-center'}>Event</H1>
-            <Muted className={'text-base text-center'}>Loading...</Muted>
+            <H1 className={'text-foreground text-center'}>
+              {i18n.t('events.event')}
+            </H1>
+            <Muted className={'text-base text-center'}>
+              {i18n.t('main.loading')}
+            </Muted>
           </View>
         </View>
       </ScrollView>
@@ -161,9 +166,11 @@ export default function EventPage() {
       >
         <View className={'p-4 native:pb-24 max-w-md gap-6'}>
           <View className={'gap-1'}>
-            <H1 className={'text-foreground text-center'}>Event</H1>
+            <H1 className={'text-foreground text-center'}>
+              {i18n.t('events.event')}
+            </H1>
             <Muted className={'text-base text-center'}>
-              Event unavailable. Does it even exist?
+              {i18n.t('events.eventUnavailable')}
             </Muted>
           </View>
         </View>
@@ -177,7 +184,7 @@ export default function EventPage() {
     <>
       <Stack.Screen
         options={{
-          headerTitle: event?.title || 'Event',
+          headerTitle: event?.title || i18n.t('events.event'),
         }}
       />
       <ScrollView
@@ -195,14 +202,14 @@ export default function EventPage() {
           <View className={'flex-row justify-between gap-4'}>
             <Card className={'flex-1 p-0'}>
               <CardContent className={'p-6'}>
-                <Text className={'font-bold'}>Start: </Text>
+                <Text className={'font-bold'}>{i18n.t('events.start')}: </Text>
                 <Text>{formatDate(new Date(event?.date))}</Text>
               </CardContent>
             </Card>
 
             <Card className={'flex-1 p-0'}>
               <CardContent className={'p-6'}>
-                <Text className={'font-bold'}>End: </Text>
+                <Text className={'font-bold'}>{i18n.t('events.end')}: </Text>
                 <Text>{formatDate(new Date(event?.dateUntil))}</Text>
               </CardContent>
             </Card>
@@ -211,8 +218,12 @@ export default function EventPage() {
           <View>
             <Card className={'flex-1 p-0'}>
               <CardContent className={'p-6'}>
-                <Text className={'font-bold'}>Location: </Text>
-                <Text>{event?.location || 'No location given.'}</Text>
+                <Text className={'font-bold'}>
+                  {i18n.t('events.location')}:{' '}
+                </Text>
+                <Text>
+                  {event?.location || i18n.t('events.noLocationGiven')}
+                </Text>
               </CardContent>
             </Card>
           </View>
@@ -255,12 +266,12 @@ export default function EventPage() {
             >
               <Text className={'font-bold'}>
                 {isEventEnded
-                  ? 'This event has ended'
+                  ? i18n.t('events.eventHasEnded')
                   : event.isAttending
-                    ? 'Unattend this event'
+                    ? i18n.t('events.cancelAttendance')
                     : event?.attendees === 0
-                      ? 'Be the first to attend!'
-                      : 'Attend this event!'}
+                      ? i18n.t('events.beFirstAttend')
+                      : i18n.t('events.attendEvent')}
               </Text>
             </Button>
           </View>

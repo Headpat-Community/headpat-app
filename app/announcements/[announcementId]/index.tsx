@@ -12,6 +12,7 @@ import { Badge } from '~/components/ui/badge'
 import sanitizeHtml from 'sanitize-html'
 import HTMLView from 'react-native-htmlview'
 import { useColorScheme } from '~/lib/useColorScheme'
+import { i18n } from '~/components/system/i18n'
 
 export default function AnnouncementSinglePage() {
   const local = useLocalSearchParams()
@@ -61,7 +62,9 @@ export default function AnnouncementSinglePage() {
           <View className={'p-4 native:pb-24 max-w-md gap-6'}>
             <View className={'gap-1'}>
               <H1 className={'text-foreground text-center'}>Announcement</H1>
-              <Muted className={'text-base text-center'}>Loading...</Muted>
+              <Muted className={'text-base text-center'}>
+                {i18n.t('main.loading')}
+              </Muted>
             </View>
           </View>
         </View>

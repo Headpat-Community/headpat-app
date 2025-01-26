@@ -11,6 +11,7 @@ import { useUser } from '~/components/contexts/UserContext'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { router } from 'expo-router'
 import { Skeleton } from '~/components/ui/skeleton'
+import { i18n } from '~/components/system/i18n'
 
 export default function FollowersPage() {
   const [users, setUsers] = useState<UserData.UserDataDocumentsType[]>(null)
@@ -147,7 +148,7 @@ export default function FollowersPage() {
       onEndReached={loadMore}
       onEndReachedThreshold={0.5}
       ListFooterComponent={
-        loadingMore && hasMore ? <Text>Loading...</Text> : null
+        loadingMore && hasMore ? <Text>{i18n.t('main.loading')}</Text> : null
       }
     />
   )

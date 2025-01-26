@@ -226,7 +226,7 @@ export default function AddSharing() {
               <View className={'h-fit'}>
                 {isLoading ? (
                   <View>
-                    <Text>Loading...</Text>
+                    <Text>{i18n.t('main.loading')}</Text>
                   </View>
                 ) : (
                   <FlatList

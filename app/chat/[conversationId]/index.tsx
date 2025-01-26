@@ -75,11 +75,6 @@ export default function ChatView() {
 
         const newMessages = result.documents
 
-        if (!newMessages) {
-          console.error('newMessages is undefined')
-          return
-        }
-
         // Sort messages by $createdAt
         newMessages.sort(
           (a, b) =>

@@ -16,9 +16,9 @@
     "users": "Benutzer",
     "notifications": "Benachrichtigungen",
     "myProfile": "Mein Profil",
-    "followers": "Followers",
-    "following": "Following",
-    "connections": "Connections",
+    "followers": "Anhänger",
+    "following": "Gefolgt",
+    "connections": "Verbindungen",
     "mutuals": "Mutuals",
     "communities": "Communities",
     "account": "Konto",
@@ -31,7 +31,8 @@
     "changelog": "Änderungen"
   },
   "main": {
-    "refreshing": "Aktualisieren..."
+    "refreshing": "Aktualisieren...",
+    "loading": "Laden..."
   },
   "time": {
     "ended": "Beendet",
@@ -56,11 +57,11 @@
     "welcomenew": "Willkommen bei Headpat!",
     "welcomeback": "Willkommen zurück",
     "announcementsdescription": "Bleibe auf dem Laufenden!",
-    "eventsdescription": "Auf der Suche nach Spaß?",
     "chatdescription": "Schreibe deinen Freunden",
-    "notificationsdescription": "Bleibe auf dem Laufenden mit deinen Benachrichtigungen",
+    "notificationsdescription": "Bleibe auf dem Laufenden",
     "gallerydescription": "Der Ort für alle Bilder",
-    "locationsdescription": "Teile deine Position mit Freunden"
+    "locationsdescription": "Teile deine Position mit Freunden",
+    "eventsDescription": "Auf der Suche nach Spaß?"
   },
   "location": {
     "share": {
@@ -97,5 +98,27 @@
         "showUsers": "Benutzer anzeigen"
       }
     }
+  },
+  "events": {
+    "tabs": {
+      "active": "Aktiv",
+      "upcoming": "Anstehend",
+      "archived": "Archiviert"
+    },
+    "start": "Start",
+    "end": "Endzeit",
+    "location": "Ort",
+    "eventHasEnded": "Die Veranstaltung ist beendet",
+    "attendEvent": "An diese Veranstaltung teilnehmen",
+    "beFirstAttend": "Sei der Erste, der teilnimmt!",
+    "cancelAttendance": "Teilnahme stornieren",
+    "failedToFetch": "Fehler beim Abrufen der Event-Daten.",
+    "failedToAttend": "Teilnahme an Event fehlgeschlagen.",
+    "failedCancelAttendance": "Teilnahme konnte nicht abgebrochen werden.",
+    "idNotFound": "Event-ID nicht gefunden.",
+    "whatIsThisEvent": "Was ist diese Veranstaltung?",
+    "eventUnavailable": "Veranstaltung nicht verfügbar. Besteht es überhaupt?",
+    "event": "Veranstaltung",
+    "noLocationGiven": "Kein Ort angegeben"
   }
 }

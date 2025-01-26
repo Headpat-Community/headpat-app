@@ -8,6 +8,7 @@ import { Query } from 'react-native-appwrite'
 import UserItem from '~/components/user/UserItem'
 import { Text } from 'react-native'
 import { useDataCache } from '~/components/contexts/DataCacheContext'
+import { i18n } from '~/components/system/i18n'
 
 export default function UserListPage() {
   const [users, setUsers] = useState<UserData.UserDataDocumentsType[]>([])
@@ -91,7 +92,9 @@ export default function UserListPage() {
       contentContainerStyle={{ justifyContent: 'space-between' }}
       onEndReached={loadMore}
       onEndReachedThreshold={0.5}
-      ListFooterComponent={loadingMore ? <Text>Loading...</Text> : null}
+      ListFooterComponent={
+        loadingMore ? <Text>{i18n.t('main.loading')}</Text> : null
+      }
       contentInsetAdjustmentBehavior={'automatic'}
     />
   )

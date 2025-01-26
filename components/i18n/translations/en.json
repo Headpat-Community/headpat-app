@@ -31,7 +31,8 @@
     "changelog": "Changelog"
   },
   "main": {
-    "refreshing": "Refreshing..."
+    "refreshing": "Refreshing...",
+    "loading": "Loading..."
   },
   "time": {
     "ended": "Ended",
@@ -56,15 +57,15 @@
     "welcomenew": "Welcome to Headpat!",
     "welcomeback": "Welcome back",
     "announcementsdescription": "Stay updated with our news!",
-    "eventsdescription": "Looking for fun?",
     "chatdescription": "Message your friends",
     "notificationsdescription": "Stay updated with your notifications",
     "gallerydescription": "The place for all the pictures",
-    "locationsdescription": "Share your location with friends"
+    "locationsdescription": "Share your location with friends",
+    "eventsDescription": "Looking for fun?"
   },
   "location": {
     "share": {
-      "title": "Location Sharing",
+      "title": "Share your location with friends",
       "sharing": {
         "enabled": "You are currently sharing your location with other users.",
         "disabled": "You are not sharing your location with other users."
@@ -86,7 +87,7 @@
     "map": {
       "status": {
         "title": "What are you up to?",
-        "description": "Let others know what you are up to. You can alwys change this later.",
+        "description": "Let others know what you are up to. You can always change this later.",
         "doNotDisturb": "Do not disturb",
         "apply": "Apply"
       },
@@ -97,5 +98,27 @@
         "showUsers": "Show Users"
       }
     }
+  },
+  "events": {
+    "tabs": {
+      "active": "Active",
+      "upcoming": "Upcoming",
+      "archived": "Archived"
+    },
+    "start": "Start",
+    "end": "End",
+    "location": "Location",
+    "eventHasEnded": "The event has ended",
+    "attendEvent": "Attend this event",
+    "beFirstAttend": "Be the first to attend!",
+    "cancelAttendance": "Cancel attendance",
+    "failedToFetch": "Failed to fetch event data.",
+    "failedToAttend": "Failed to attend event.",
+    "failedCancelAttendance": "Failed to cancel attendance.",
+    "idNotFound": "Event ID not found.",
+    "whatIsThisEvent": "What is this event?",
+    "eventUnavailable": "Event unavailable. Does it even exist?",
+    "event": "Event",
+    "noLocationGiven": "No location given"
   }
 }

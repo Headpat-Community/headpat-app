@@ -11,6 +11,7 @@ import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { useFocusEffect } from '@react-navigation/core'
 import { router } from 'expo-router'
 import { useDataCache } from '~/components/contexts/DataCacheContext'
+import { i18n } from '~/components/system/i18n'
 
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<
@@ -149,7 +150,7 @@ export default function NotificationsPage() {
       onEndReached={loadMore}
       onEndReachedThreshold={0.5}
       ListFooterComponent={
-        loadingMore && hasMore ? <Text>Loading...</Text> : null
+        loadingMore && hasMore ? <Text>{i18n.t('main.loading')}</Text> : null
       }
     />
   )

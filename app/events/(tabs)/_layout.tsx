@@ -5,6 +5,7 @@ import {
   CalendarIcon,
 } from 'lucide-react-native'
 import FeatureAccess from '~/components/FeatureAccess'
+import { i18n } from '~/components/system/i18n'
 
 export default function TabsLayout() {
   return (
@@ -13,7 +14,7 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            title: 'Active',
+            title: i18n.t('events.tabs.active'),
             tabBarIcon({ color, size }) {
               return <CalendarIcon color={color} size={size} />
             },
@@ -22,7 +23,7 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="upcoming"
           options={{
-            title: 'Upcoming',
+            title: i18n.t('events.tabs.upcoming'),
             tabBarIcon({ color, size }) {
               return <CalendarClockIcon color={color} size={size} />
             },
@@ -31,7 +32,7 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="archived"
           options={{
-            title: 'Archived',
+            title: i18n.t('events.tabs.archived'),
             tabBarIcon({ color, size }) {
               return <CalendarCheck2Icon color={color} size={size} />
             },

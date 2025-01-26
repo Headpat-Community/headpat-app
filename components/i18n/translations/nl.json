@@ -16,8 +16,8 @@
     "users": "Gebruikers",
     "notifications": "Meldingen",
     "myProfile": "Mijn Profiel",
-    "followers": "Followers",
-    "following": "Following",
+    "followers": "Volgers",
+    "following": "Volgend",
     "connections": "Connecties",
     "mutuals": "Mutuals",
     "communities": "Communities",
@@ -31,7 +31,8 @@
     "changelog": "Wijzigingen"
   },
   "main": {
-    "refreshing": "Vernieuwen..."
+    "refreshing": "Vernieuwen...",
+    "loading": "Laden..."
   },
   "time": {
     "ended": "Beëindigd",
@@ -56,11 +57,11 @@
     "welcomenew": "Welkom bij Headpat!",
     "welcomeback": "Welkom terug",
     "announcementsdescription": "Blijf op de hoogte met ons nieuws!",
-    "eventsdescription": "Op zoek naar plezier?",
     "chatdescription": "Stuur je vrienden een bericht",
     "notificationsdescription": "Blijf op de hoogte met je meldingen",
     "gallerydescription": "De plek voor alle foto's",
-    "locationsdescription": "Deel je locatie met vrienden"
+    "locationsdescription": "Deel je locatie met vrienden",
+    "eventsDescription": "Op zoek naar plezier?"
   },
   "location": {
     "share": {
@@ -97,5 +98,27 @@
         "showUsers": "Gebruikers tonen"
       }
     }
+  },
+  "events": {
+    "tabs": {
+      "active": "Actief",
+      "upcoming": "Binnenkort",
+      "archived": "Gearchiveerd"
+    },
+    "start": "Start",
+    "end": "Eindtijd",
+    "location": "Locatie",
+    "eventHasEnded": "Dit evenement is beëindigd",
+    "attendEvent": "Bezoek dit evenement",
+    "beFirstAttend": "Wees de eerste die aanwezig is!",
+    "cancelAttendance": "Annuleer deelname",
+    "failedToFetch": "Event gegevens ophalen is mislukt.",
+    "failedToAttend": "Deelname evenement mislukt.",
+    "failedCancelAttendance": "Mislukt om aanwezigheid te annuleren.",
+    "idNotFound": "Event ID niet gevonden.",
+    "whatIsThisEvent": "Wat is dit evenement?",
+    "eventUnavailable": "Evenement niet beschikbaar. Bestaat het eigenlijk?",
+    "event": "Evenement",
+    "noLocationGiven": "Geen locatie opgegeven"
   }
 }
