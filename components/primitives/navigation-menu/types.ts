@@ -1,45 +1,45 @@
-import type { ForceMountable } from '~/components/primitives/types';
-import React from "react";
+import type { ForceMountable } from '~/components/primitives/types'
+import React from 'react'
 
 interface NavigationMenuRootProps {
-  value: string | undefined;
-  onValueChange: (value: string | undefined) => void;
+  value: string | undefined
+  onValueChange: (value: string | undefined) => void
   /**
    * Platform: WEB ONLY
    */
-  delayDuration?: number;
+  delayDuration?: number
   /**
    * Platform: WEB ONLY
    */
-  skipDelayDuration?: number;
+  skipDelayDuration?: number
   /**
    * Platform: WEB ONLY
    */
-  dir?: 'ltr' | 'rtl';
+  dir?: 'ltr' | 'rtl'
   /**
    * Platform: WEB ONLY
    */
-  orientation?: 'horizontal' | 'vertical';
+  orientation?: 'horizontal' | 'vertical'
 }
 
 interface NavigationMenuItemProps {
-  value: string | undefined;
+  value: string | undefined
 }
 
 interface NavigationMenuPortalProps extends ForceMountable {
-  children: React.ReactNode;
+  children: React.ReactNode
   /**
    * Platform: NATIVE ONLY
    */
-  hostName?: string;
+  hostName?: string
   /**
    * Platform: WEB ONLY
    */
-  container?: HTMLElement | null | undefined;
+  container?: HTMLElement | null | undefined
 }
 
 interface NavigationMenuLinkProps {
-  active?: boolean;
+  active?: boolean
 }
 
 export type {
@@ -47,4 +47,4 @@ export type {
   NavigationMenuPortalProps,
   NavigationMenuRootProps,
   NavigationMenuLinkProps,
-};
+}

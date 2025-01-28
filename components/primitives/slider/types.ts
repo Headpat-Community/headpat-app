@@ -1,24 +1,24 @@
 interface SliderRootProps {
-  value: number;
-  disabled?: boolean;
-  min?: number;
-  max?: number;
+  value: number
+  disabled?: boolean
+  min?: number
+  max?: number
   /**
    * Platform: WEB ONLY
    */
-  dir?: 'ltr' | 'rtl';
+  dir?: 'ltr' | 'rtl'
   /**
    * Platform: WEB ONLY
    */
-  inverted?: boolean;
+  inverted?: boolean
   /**
    * Platform: WEB ONLY
    */
-  step?: number;
+  step?: number
   /**
    * Platform: WEB ONLY
    */
-  onValueChange?: (value: number[]) => void;
+  onValueChange?: (value: number[]) => void
 }
 
-export type { SliderRootProps };
+export type { SliderRootProps }

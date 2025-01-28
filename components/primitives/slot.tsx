@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from 'react'
 import {
   Image as RNImage,
   Pressable as RNPressable,
@@ -12,36 +12,39 @@ import {
   type TextProps as RNTextProps,
   type ViewProps as RNViewProps,
   type StyleProp,
-} from 'react-native';
+} from 'react-native'
 
-const Pressable = React.forwardRef<React.ElementRef<typeof RNPressable>, RNPressableprops>(
-  (props, forwardedRef) => {
-    const { children, ...pressableslotProps } = props;
+const Pressable = React.forwardRef<
+  React.ElementRef<typeof RNPressable>,
+  RNPressableprops
+>((props, forwardedRef) => {
+  const { children, ...pressableslotProps } = props
 
-    if (!React.isValidElement(children)) {
-      console.log('Slot.Pressable - Invalid asChild element', children);
-      return null;
-    }
-
-    return React.cloneElement<
-      React.ComponentPropsWithoutRef<typeof RNPressable>,
-      React.ElementRef<typeof RNPressable>
-    >(isTextChildren(children) ? <></> : children, {
-      ...mergeProps(pressableslotProps, children.props),
-      ref: forwardedRef ? composeRefs(forwardedRef, (children as any).ref) : (children as any).ref,
-    });
+  if (!React.isValidElement(children)) {
+    console.log('Slot.Pressable - Invalid asChild element', children)
+    return null
   }
-);
 
-Pressable.displayName = 'SlotPressable';
+  return React.cloneElement<
+    React.ComponentPropsWithoutRef<typeof RNPressable>,
+    React.ElementRef<typeof RNPressable>
+  >(isTextChildren(children) ? <></> : children, {
+    ...mergeProps(pressableslotProps, children.props),
+    ref: forwardedRef
+      ? composeRefs(forwardedRef, (children as any).ref)
+      : (children as any).ref,
+  })
+})
+
+Pressable.displayName = 'SlotPressable'
 
 const View = React.forwardRef<React.ElementRef<typeof RNView>, RNViewProps>(
   (props, forwardedRef) => {
-    const { children, ...viewSlotProps } = props;
+    const { children, ...viewSlotProps } = props
 
     if (!React.isValidElement(children)) {
-      console.log('Slot.View - Invalid asChild element', children);
-      return null;
+      console.log('Slot.View - Invalid asChild element', children)
+      return null
     }
 
     return React.cloneElement<
@@ -49,20 +52,22 @@ const View = React.forwardRef<React.ElementRef<typeof RNView>, RNViewProps>(
       React.ElementRef<typeof RNView>
     >(isTextChildren(children) ? <></> : children, {
       ...mergeProps(viewSlotProps, children.props),
-      ref: forwardedRef ? composeRefs(forwardedRef, (children as any).ref) : (children as any).ref,
-    });
+      ref: forwardedRef
+        ? composeRefs(forwardedRef, (children as any).ref)
+        : (children as any).ref,
+    })
   }
-);
+)
 
-View.displayName = 'SlotView';
+View.displayName = 'SlotView'
 
 const Text = React.forwardRef<React.ElementRef<typeof RNText>, RNTextProps>(
   (props, forwardedRef) => {
-    const { children, ...textSlotProps } = props;
+    const { children, ...textSlotProps } = props
 
     if (!React.isValidElement(children)) {
-      console.log('Slot.Text - Invalid asChild element', children);
-      return null;
+      console.log('Slot.Text - Invalid asChild element', children)
+      return null
     }
 
     return React.cloneElement<
@@ -70,39 +75,44 @@ const Text = React.forwardRef<React.ElementRef<typeof RNText>, RNTextProps>(
       React.ElementRef<typeof RNText>
     >(isTextChildren(children) ? <></> : children, {
       ...mergeProps(textSlotProps, children.props),
-      ref: forwardedRef ? composeRefs(forwardedRef, (children as any).ref) : (children as any).ref,
-    });
+      ref: forwardedRef
+        ? composeRefs(forwardedRef, (children as any).ref)
+        : (children as any).ref,
+    })
   }
-);
+)
 
-Text.displayName = 'SlotText';
+Text.displayName = 'SlotText'
 
 type ImageSlotProps = RNImageProps & {
-  children?: React.ReactNode;
-};
+  children?: React.ReactNode
+}
 
-const Image = React.forwardRef<React.ElementRef<typeof RNImage>, ImageSlotProps>(
-  (props, forwardedRef) => {
-    const { children, ...imageSlotProps } = props;
+const Image = React.forwardRef<
+  React.ElementRef<typeof RNImage>,
+  ImageSlotProps
+>((props, forwardedRef) => {
+  const { children, ...imageSlotProps } = props
 
-    if (!React.isValidElement(children)) {
-      console.log('Slot.Image - Invalid asChild element', children);
-      return null;
-    }
-
-    return React.cloneElement<
-      React.ComponentPropsWithoutRef<typeof RNImage>,
-      React.ElementRef<typeof RNImage>
-    >(isTextChildren(children) ? <></> : children, {
-      ...mergeProps(imageSlotProps, children.props),
-      ref: forwardedRef ? composeRefs(forwardedRef, (children as any).ref) : (children as any).ref,
-    });
+  if (!React.isValidElement(children)) {
+    console.log('Slot.Image - Invalid asChild element', children)
+    return null
   }
-);
 
-Image.displayName = 'SlotImage';
+  return React.cloneElement<
+    React.ComponentPropsWithoutRef<typeof RNImage>,
+    React.ElementRef<typeof RNImage>
+  >(isTextChildren(children) ? <></> : children, {
+    ...mergeProps(imageSlotProps, children.props),
+    ref: forwardedRef
+      ? composeRefs(forwardedRef, (children as any).ref)
+      : (children as any).ref,
+  })
+})
 
-export { Image, Pressable, Text, View };
+Image.displayName = 'SlotImage'
+
+export { Image, Pressable, Text, View }
 
 // This project uses code from WorkOS/Radix Primitives.
 // The code is licensed under the MIT License.
@@ -112,76 +122,84 @@ function composeRefs<T>(...refs: (React.Ref<T> | undefined)[]) {
   return (node: T) =>
     refs.forEach((ref) => {
       if (typeof ref === 'function') {
-        ref(node);
+        ref(node)
       } else if (ref != null) {
-        (ref as React.MutableRefObject<T>).current = node;
+        ;(ref as React.MutableRefObject<T>).current = node
       }
-    });
+    })
 }
 
-type AnyProps = Record<string, any>;
+type AnyProps = Record<string, any>
 
 function mergeProps(slotProps: AnyProps, childProps: AnyProps) {
   // all child props should override
-  const overrideProps = { ...childProps };
+  const overrideProps = { ...childProps }
 
   for (const propName in childProps) {
-    const slotPropValue = slotProps[propName];
-    const childPropValue = childProps[propName];
+    const slotPropValue = slotProps[propName]
+    const childPropValue = childProps[propName]
 
-    const isHandler = /^on[A-Z]/.test(propName);
+    const isHandler = /^on[A-Z]/.test(propName)
     if (isHandler) {
       // if the handler exists on both, we compose them
       if (slotPropValue && childPropValue) {
         overrideProps[propName] = (...args: unknown[]) => {
-          childPropValue(...args);
-          slotPropValue(...args);
-        };
+          childPropValue(...args)
+          slotPropValue(...args)
+        }
       }
       // but if it exists only on the slot, we use only this one
       else if (slotPropValue) {
-        overrideProps[propName] = slotPropValue;
+        overrideProps[propName] = slotPropValue
       }
     }
     // if it's `style`, we merge them
     else if (propName === 'style') {
-      overrideProps[propName] = combineStyles(slotPropValue, childPropValue);
+      overrideProps[propName] = combineStyles(slotPropValue, childPropValue)
     } else if (propName === 'className') {
-      overrideProps[propName] = [slotPropValue, childPropValue].filter(Boolean).join(' ');
+      overrideProps[propName] = [slotPropValue, childPropValue]
+        .filter(Boolean)
+        .join(' ')
     }
   }
 
-  return { ...slotProps, ...overrideProps };
+  return { ...slotProps, ...overrideProps }
 }
 
-type PressableStyle = RNPressableprops['style'];
-type ImageStyle = StyleProp<RNImageStyle>;
-type Style = PressableStyle | ImageStyle;
+type PressableStyle = RNPressableprops['style']
+type ImageStyle = StyleProp<RNImageStyle>
+type Style = PressableStyle | ImageStyle
 
 function combineStyles(slotStyle?: Style, childValue?: Style) {
   if (typeof slotStyle === 'function' && typeof childValue === 'function') {
     return (state: PressableStateCallbackType) => {
-      return StyleSheet.flatten([slotStyle(state), childValue(state)]);
-    };
+      return StyleSheet.flatten([slotStyle(state), childValue(state)])
+    }
   }
   if (typeof slotStyle === 'function') {
     return (state: PressableStateCallbackType) => {
-      return childValue ? StyleSheet.flatten([slotStyle(state), childValue]) : slotStyle(state);
-    };
+      return childValue
+        ? StyleSheet.flatten([slotStyle(state), childValue])
+        : slotStyle(state)
+    }
   }
   if (typeof childValue === 'function') {
     return (state: PressableStateCallbackType) => {
-      return slotStyle ? StyleSheet.flatten([slotStyle, childValue(state)]) : childValue(state);
-    };
+      return slotStyle
+        ? StyleSheet.flatten([slotStyle, childValue(state)])
+        : childValue(state)
+    }
   }
 
-  return StyleSheet.flatten([slotStyle, childValue].filter(Boolean));
+  return StyleSheet.flatten([slotStyle, childValue].filter(Boolean))
 }
 
 export function isTextChildren(
-  children: React.ReactNode | ((state: PressableStateCallbackType) => React.ReactNode)
+  children:
+    | React.ReactNode
+    | ((state: PressableStateCallbackType) => React.ReactNode)
 ) {
   return Array.isArray(children)
     ? children.every((child) => typeof child === 'string')
-    : typeof children === 'string';
+    : typeof children === 'string'
 }

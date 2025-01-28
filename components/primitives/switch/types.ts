@@ -1,13 +1,13 @@
-import React from "react";
+import React from 'react'
 
 interface SwitchRootProps {
-  checked: boolean;
-  onCheckedChange: (checked: boolean) => void;
-  disabled?: boolean;
+  checked: boolean
+  onCheckedChange: (checked: boolean) => void
+  disabled?: boolean
   /**
    * Platform: WEB ONLY
    */
-  onKeyDown?: (ev: React.KeyboardEvent) => void;
+  onKeyDown?: (ev: React.KeyboardEvent) => void
 }
 
-export type { SwitchRootProps };
+export type { SwitchRootProps }

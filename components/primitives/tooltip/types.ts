@@ -1,45 +1,50 @@
-import type { ForceMountable } from '~/components/primitives/types';
-import React from "react";
+import type { ForceMountable } from '~/components/primitives/types'
+import React from 'react'
 
 interface RootContext extends TooltipRootProps {
-  open: boolean;
-  onOpenChange: (value: boolean) => void;
+  open: boolean
+  onOpenChange: (value: boolean) => void
 }
 
 interface TooltipRootProps {
-  defaultOpen?: boolean;
-  open?: boolean;
-  onOpenChange?: (value: boolean) => void;
+  defaultOpen?: boolean
+  open?: boolean
+  onOpenChange?: (value: boolean) => void
   /**
    * Platform: WEB ONLY
    * @default 700
    */
-  delayDuration?: number;
+  delayDuration?: number
   /**
    * Platform: WEB ONLY
    * @default 300
    */
-  skipDelayDuration?: number;
+  skipDelayDuration?: number
   /**
    * Platform: WEB ONLY
    */
-  disableHoverableContent?: boolean;
+  disableHoverableContent?: boolean
 }
 
 interface TooltipPortalProps extends ForceMountable {
-  children: React.ReactNode;
+  children: React.ReactNode
   /**
    * Platform: NATIVE ONLY
    */
-  hostName?: string;
+  hostName?: string
   /**
    * Platform: WEB ONLY
    */
-  container?: HTMLElement | null | undefined;
+  container?: HTMLElement | null | undefined
 }
 
 interface TooltipOverlayProps extends ForceMountable {
-  closeOnPress?: boolean;
+  closeOnPress?: boolean
 }
 
-export type { RootContext, TooltipOverlayProps, TooltipPortalProps, TooltipRootProps };
+export type {
+  RootContext,
+  TooltipOverlayProps,
+  TooltipPortalProps,
+  TooltipRootProps,
+}

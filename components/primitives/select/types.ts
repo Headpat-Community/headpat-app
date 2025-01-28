@@ -1,78 +1,78 @@
-import type { ForceMountable } from '~/components/primitives/types';
-import React from "react";
+import type { ForceMountable } from '~/components/primitives/types'
+import React from 'react'
 
 type Option =
-    | {
-  value: string;
-  label: string;
-}
-    | undefined;
+  | {
+      value: string
+      label: string
+    }
+  | undefined
 
 interface RootContext {
-  value: Option;
-  onValueChange: (option: Option) => void;
-  open: boolean;
-  onOpenChange: (value: boolean) => void;
-  disabled?: boolean;
+  value: Option
+  onValueChange: (option: Option) => void
+  open: boolean
+  onOpenChange: (value: boolean) => void
+  disabled?: boolean
 }
 
 interface SelectRootProps {
-  value?: Option;
-  defaultValue?: Option;
-  onValueChange?: (option: Option) => void;
-  open?: boolean;
-  defaultOpen?: boolean;
-  onOpenChange?: (value: boolean) => void;
-  disabled?: boolean;
+  value?: Option
+  defaultValue?: Option
+  onValueChange?: (option: Option) => void
+  open?: boolean
+  defaultOpen?: boolean
+  onOpenChange?: (value: boolean) => void
+  disabled?: boolean
   /**
    * Platform: WEB ONLY
    */
-  dir?: 'ltr' | 'rtl';
+  dir?: 'ltr' | 'rtl'
   /**
    * Platform: WEB ONLY
    */
-  name?: string;
+  name?: string
   /**
    * Platform: WEB ONLY
    */
-  required?: boolean;
+  required?: boolean
 }
 
 interface SelectValueProps {
-  placeholder: string;
+  placeholder: string
 }
 
 interface SelectPortalProps extends ForceMountable {
-  children: React.ReactNode;
+  children: React.ReactNode
   /**
    * Platform: NATIVE ONLY
    */
-  hostName?: string;
+  hostName?: string
   /**
    * Platform: WEB ONLY
    */
-  container?: HTMLElement | null | undefined;
+  container?: HTMLElement | null | undefined
 }
 
 interface SelectOverlayProps extends ForceMountable {
-  closeOnPress?: boolean;
+  closeOnPress?: boolean
 }
 
 interface SelectContentProps {
   /**
    * Platform: WEB ONLY
    */
-  position?: 'popper' | 'item-aligned' | undefined;
+  position?: 'popper' | 'item-aligned' | undefined
 }
 
 interface SelectItemProps {
-  value: string;
-  label: string;
-  closeOnPress?: boolean;
+  value: string
+  label: string
+  closeOnPress?: boolean
 }
 
 interface SelectSeparatorProps {
-  decorative?: boolean;
+  decorative?: boolean
 }
 
 export type {
@@ -85,4 +85,4 @@ export type {
   SelectRootProps,
   SelectSeparatorProps,
   SelectValueProps,
-};
+}

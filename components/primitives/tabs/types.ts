@@ -1,24 +1,24 @@
-import type { ForceMountable } from '~/components/primitives/types';
+import type { ForceMountable } from '~/components/primitives/types'
 
 interface TabsRootProps {
-  value: string;
-  onValueChange: (value: string) => void;
+  value: string
+  onValueChange: (value: string) => void
   /**
    * Platform: WEB ONLY
    */
-  orientation?: 'horizontal' | 'vertical';
+  orientation?: 'horizontal' | 'vertical'
   /**
    * Platform: WEB ONLY
    */
-  dir?: 'ltr' | 'rtl';
+  dir?: 'ltr' | 'rtl'
   /**
    * Platform: WEB ONLY
    */
-  activationMode?: 'automatic' | 'manual';
+  activationMode?: 'automatic' | 'manual'
 }
 
 interface TabsContentProps extends ForceMountable {
-  value: string;
+  value: string
 }
 
-export type { TabsContentProps, TabsRootProps };
+export type { TabsContentProps, TabsRootProps }

@@ -2,38 +2,38 @@ interface ToolbarRootProps {
   /**
    * Platform: WEB ONLY
    */
-  orientation?: 'horizontal' | 'vertical';
+  orientation?: 'horizontal' | 'vertical'
   /**
    * Platform: WEB ONLY
    */
-  dir?: 'ltr' | 'rtl';
+  dir?: 'ltr' | 'rtl'
   /**
    * Platform: WEB ONLY
    */
-  loop?: boolean;
+  loop?: boolean
 }
 
 type SingleToggleGroupProps = {
-  type: 'single';
-  value: string | undefined;
-  onValueChange: (val: string | undefined) => void;
-};
-
-type MultipleToggleGroupProps = {
-  type: 'multiple';
-  value: string[];
-  onValueChange: (val: string[]) => void;
-};
-
-type ToolbarToggleGroupProps = (
-    | SingleToggleGroupProps
-    | MultipleToggleGroupProps
-    ) & {
-  disabled?: boolean;
-};
-
-interface ToolbarToggleItem {
-  value: string;
+  type: 'single'
+  value: string | undefined
+  onValueChange: (val: string | undefined) => void
 }
 
-export type { ToolbarToggleGroupProps, ToolbarToggleItem, ToolbarRootProps };
+type MultipleToggleGroupProps = {
+  type: 'multiple'
+  value: string[]
+  onValueChange: (val: string[]) => void
+}
+
+type ToolbarToggleGroupProps = (
+  | SingleToggleGroupProps
+  | MultipleToggleGroupProps
+) & {
+  disabled?: boolean
+}
+
+interface ToolbarToggleItem {
+  value: string
+}
+
+export type { ToolbarToggleGroupProps, ToolbarToggleItem, ToolbarRootProps }

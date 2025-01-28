@@ -1,6 +1,6 @@
-import * as React from 'react';
-import { Pressable, Text, View, type GestureResponderEvent } from 'react-native';
-import * as Slot from '~/components/primitives/slot';
+import * as React from 'react'
+import { Pressable, Text, View, type GestureResponderEvent } from 'react-native'
+import * as Slot from '~/components/primitives/slot'
 import type {
   PressableRef,
   SlottablePressableProps,
@@ -8,121 +8,134 @@ import type {
   SlottableViewProps,
   TextRef,
   ViewRef,
-} from '~/components/primitives/types';
-import type { ToastRootProps } from './types';
+} from '~/components/primitives/types'
+import type { ToastRootProps } from './types'
 
 interface RootContext extends ToastRootProps {
-  nativeID: string;
+  nativeID: string
 }
-const ToastContext = React.createContext<RootContext | null>(null);
+const ToastContext = React.createContext<RootContext | null>(null)
 
 const Root = React.forwardRef<ViewRef, SlottableViewProps & ToastRootProps>(
-    ({ asChild, type = 'foreground', open, onOpenChange, ...viewProps }, ref) => {
-      const nativeID = React.useId();
+  ({ asChild, type = 'foreground', open, onOpenChange, ...viewProps }, ref) => {
+    const nativeID = React.useId()
 
-      if (!open) {
-        return null;
-      }
-
-      const Component = asChild ? Slot.View : View;
-      return (
-          <ToastContext.Provider
-              value={{
-                open,
-                onOpenChange,
-                type,
-                nativeID,
-              }}
-          >
-            <Component
-                ref={ref}
-                role='status'
-                aria-live={type === 'foreground' ? 'assertive' : 'polite'}
-                {...viewProps}
-            />
-          </ToastContext.Provider>
-      );
+    if (!open) {
+      return null
     }
-);
 
-Root.displayName = 'RootToast';
+    const Component = asChild ? Slot.View : View
+    return (
+      <ToastContext.Provider
+        value={{
+          open,
+          onOpenChange,
+          type,
+          nativeID,
+        }}
+      >
+        <Component
+          ref={ref}
+          role="status"
+          aria-live={type === 'foreground' ? 'assertive' : 'polite'}
+          {...viewProps}
+        />
+      </ToastContext.Provider>
+    )
+  }
+)
+
+Root.displayName = 'RootToast'
 
 function useToastContext() {
-  const context = React.useContext(ToastContext);
+  const context = React.useContext(ToastContext)
   if (!context) {
-    throw new Error('Toast compound components cannot be rendered outside the Toast component');
+    throw new Error(
+      'Toast compound components cannot be rendered outside the Toast component'
+    )
   }
-  return context;
+  return context
 }
 
 const Close = React.forwardRef<PressableRef, SlottablePressableProps>(
-    ({ asChild, onPress: onPressProp, disabled = false, ...props }, ref) => {
-      const { onOpenChange } = useToastContext();
+  ({ asChild, onPress: onPressProp, disabled = false, ...props }, ref) => {
+    const { onOpenChange } = useToastContext()
 
-      function onPress(ev: GestureResponderEvent) {
-        if (disabled) return;
-        onOpenChange(false);
-        onPressProp?.(ev);
-      }
-
-      const Component = asChild ? Slot.Pressable : Pressable;
-      return (
-          <Component
-              ref={ref}
-              aria-disabled={disabled ?? undefined}
-              role='button'
-              onPress={onPress}
-              disabled={disabled ?? undefined}
-              {...props}
-          />
-      );
+    function onPress(ev: GestureResponderEvent) {
+      if (disabled) return
+      onOpenChange(false)
+      onPressProp?.(ev)
     }
-);
 
-Close.displayName = 'CloseToast';
+    const Component = asChild ? Slot.Pressable : Pressable
+    return (
+      <Component
+        ref={ref}
+        aria-disabled={disabled ?? undefined}
+        role="button"
+        onPress={onPress}
+        disabled={disabled ?? undefined}
+        {...props}
+      />
+    )
+  }
+)
+
+Close.displayName = 'CloseToast'
 
 const Action = React.forwardRef<PressableRef, SlottablePressableProps>(
-    ({ asChild, onPress: onPressProp, disabled = false, ...props }, ref) => {
-      const { onOpenChange } = useToastContext();
+  ({ asChild, onPress: onPressProp, disabled = false, ...props }, ref) => {
+    const { onOpenChange } = useToastContext()
 
-      function onPress(ev: GestureResponderEvent) {
-        if (disabled) return;
-        onOpenChange(false);
-        onPressProp?.(ev);
-      }
-
-      const Component = asChild ? Slot.Pressable : Pressable;
-      return (
-          <Component
-              ref={ref}
-              aria-disabled={disabled ?? undefined}
-              role='button'
-              onPress={onPress}
-              disabled={disabled ?? undefined}
-              {...props}
-          />
-      );
+    function onPress(ev: GestureResponderEvent) {
+      if (disabled) return
+      onOpenChange(false)
+      onPressProp?.(ev)
     }
-);
 
-Action.displayName = 'ActionToast';
+    const Component = asChild ? Slot.Pressable : Pressable
+    return (
+      <Component
+        ref={ref}
+        aria-disabled={disabled ?? undefined}
+        role="button"
+        onPress={onPress}
+        disabled={disabled ?? undefined}
+        {...props}
+      />
+    )
+  }
+)
 
-const Title = React.forwardRef<TextRef, SlottableTextProps>(({ asChild, ...props }, ref) => {
-  const { nativeID } = useToastContext();
+Action.displayName = 'ActionToast'
 
-  const Component = asChild ? Slot.Text : Text;
-  return <Component ref={ref} role='heading' nativeID={`${nativeID}_label`} {...props} />;
-});
+const Title = React.forwardRef<TextRef, SlottableTextProps>(
+  ({ asChild, ...props }, ref) => {
+    const { nativeID } = useToastContext()
 
-Title.displayName = 'TitleToast';
+    const Component = asChild ? Slot.Text : Text
+    return (
+      <Component
+        ref={ref}
+        role="heading"
+        nativeID={`${nativeID}_label`}
+        {...props}
+      />
+    )
+  }
+)
 
-const Description = React.forwardRef<TextRef, SlottableTextProps>(({ asChild, ...props }, ref) => {
-  const { nativeID } = useToastContext();
+Title.displayName = 'TitleToast'
 
-  const Component = asChild ? Slot.Text : Text;
-  return <Component ref={ref} nativeID={`${nativeID}_desc`} {...props} />;
-});
+const Description = React.forwardRef<TextRef, SlottableTextProps>(
+  ({ asChild, ...props }, ref) => {
+    const { nativeID } = useToastContext()
 
-Description.displayName = 'DescriptionToast';
+    const Component = asChild ? Slot.Text : Text
+    return <Component ref={ref} nativeID={`${nativeID}_desc`} {...props} />
+  }
+)
 
-export { Action, Close, Description, Root, Title };
+Description.displayName = 'DescriptionToast'
+
+export { Action, Close, Description, Root, Title }

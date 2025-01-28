@@ -1,7 +1,6 @@
-components/primitives
-components/ui
 .github
 .next
 .idea
 node_modules
 .expo
+pnpm-lock.yaml

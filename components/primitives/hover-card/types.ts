@@ -1,43 +1,48 @@
-import type { ForceMountable } from '~/components/primitives/types';
-import React from "react";
+import type { ForceMountable } from '~/components/primitives/types'
+import React from 'react'
 
 interface RootContext {
-  open: boolean;
-  onOpenChange: (value: boolean) => void;
-  openDelay?: number;
-  closeDelay?: number;
+  open: boolean
+  onOpenChange: (value: boolean) => void
+  openDelay?: number
+  closeDelay?: number
 }
 
 interface HoverCardRootProps {
-  open?: boolean;
-  defaultOpen?: boolean;
-  onOpenChange?: (value: boolean) => void;
+  open?: boolean
+  defaultOpen?: boolean
+  onOpenChange?: (value: boolean) => void
   /**
    * Platform: WEB ONLY
    * @default 700
    */
-  openDelay?: number;
+  openDelay?: number
   /**
    * Platform: WEB ONLY
    * @default 300
    */
-  closeDelay?: number;
+  closeDelay?: number
 }
 
 interface HoverCardPortalProps extends ForceMountable {
-  children: React.ReactNode;
+  children: React.ReactNode
   /**
    * Platform: NATIVE ONLY
    */
-  hostName?: string;
+  hostName?: string
   /**
    * Platform: WEB ONLY
    */
-  container?: HTMLElement | null | undefined;
+  container?: HTMLElement | null | undefined
 }
 
 interface HoverCardOverlayProps extends ForceMountable {
-  closeOnPress?: boolean;
+  closeOnPress?: boolean
 }
 
-export type { HoverCardRootProps, HoverCardOverlayProps, HoverCardPortalProps, RootContext };
+export type {
+  HoverCardRootProps,
+  HoverCardOverlayProps,
+  HoverCardPortalProps,
+  RootContext,
+}

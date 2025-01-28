@@ -1,11 +1,11 @@
-import type { ForceMountable } from '~/components/primitives/types';
+import type { ForceMountable } from '~/components/primitives/types'
 
 interface CheckboxRootProps {
-  checked: boolean;
-  onCheckedChange: (checked: boolean) => void;
-  disabled?: boolean;
+  checked: boolean
+  onCheckedChange: (checked: boolean) => void
+  disabled?: boolean
 }
 
-type CheckboxIndicator = ForceMountable;
+type CheckboxIndicator = ForceMountable
 
-export type { CheckboxRootProps, CheckboxIndicator };
+export type { CheckboxRootProps, CheckboxIndicator }
