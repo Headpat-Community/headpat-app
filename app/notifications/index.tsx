@@ -10,8 +10,10 @@ import { useUser } from '~/components/contexts/UserContext'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { useFocusEffect } from '@react-navigation/core'
 import { router } from 'expo-router'
+import { useDataCache } from '~/components/contexts/DataCacheContext'
+import { i18n } from '~/components/system/i18n'
 
-export default function CommunitiesPage() {
+export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<
     Notifications.NotificationsDocumentsType[]
   >([])
@@ -19,11 +21,23 @@ export default function CommunitiesPage() {
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
   const [offset, setOffset] = useState<number>(0)
   const [hasMore, setHasMore] = useState<boolean>(true)
-  const { showAlertModal, showLoadingModal, hideLoadingModal } = useAlertModal()
+  const { showAlertModal } = useAlertModal()
   const { current } = useUser()
+  const { getAllCache, saveAllCache } = useDataCache()
 
   const fetchNotifications = useCallback(
     async (newOffset: number = 0) => {
+      const cachedNotifications =
+        await getAllCache<Notifications.NotificationsDocumentsType>(
+          'notifications'
+        )
+      if (cachedNotifications && typeof cachedNotifications === 'object') {
+        const notificationsArray = Object.values(cachedNotifications).map(
+          (item) => item.data
+        )
+        setNotifications(notificationsArray)
+        setRefreshing(false)
+      }
       try {
         const data = await functions.createExecution(
           'user-endpoints',
@@ -38,13 +52,15 @@ export default function CommunitiesPage() {
 
         if (newOffset === 0) {
           setNotifications(response)
+          saveAllCache('notifications', response)
         } else {
+          saveAllCache('notifications', [...notifications, ...response])
           setNotifications((prev) => [...prev, ...response])
         }
 
-        // Update hasMore based on the response length
         setHasMore(response.length === 20)
       } catch (error) {
+        console.log(error)
         showAlertModal(
           'FAILED',
           'Failed to fetch notifications. Please try again later.'
@@ -55,8 +71,7 @@ export default function CommunitiesPage() {
         setLoadingMore(false)
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [current?.$id]
+    [current?.$id, getAllCache, saveAllCache]
   )
 
   // Handle refresh
@@ -86,10 +101,8 @@ export default function CommunitiesPage() {
 
   // Initial fetch when component mounts
   useEffect(() => {
-    showLoadingModal()
     setRefreshing(true)
     fetchNotifications(0).then()
-    hideLoadingModal()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current?.$id])
 
@@ -137,7 +150,7 @@ export default function CommunitiesPage() {
       onEndReached={loadMore}
       onEndReachedThreshold={0.5}
       ListFooterComponent={
-        loadingMore && hasMore ? <Text>Loading...</Text> : null
+        loadingMore && hasMore ? <Text>{i18n.t('main.loading')}</Text> : null
       }
     />
   )

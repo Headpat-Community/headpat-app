@@ -10,6 +10,7 @@ import GalleryItem from '~/components/gallery/GalleryItem'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { Skeleton } from '~/components/ui/skeleton'
 import FeatureAccess from '~/components/FeatureAccess'
+import { i18n } from '~/components/system/i18n'
 
 export default function GalleryPage() {
   const { current } = useUser()
@@ -223,7 +224,7 @@ export default function GalleryPage() {
                   alignItems: 'center',
                 }}
               >
-                <Text>Loading...</Text>
+                <Text>{i18n.t('main.loading')}</Text>
               </View>
             )
           }

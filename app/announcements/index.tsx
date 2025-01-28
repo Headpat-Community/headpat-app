@@ -11,6 +11,7 @@ import { ScrollView } from 'react-native-gesture-handler'
 import { Text } from '~/components/ui/text'
 import AnnouncementItem from '~/components/FlatlistItems/AnnouncementItem'
 import { useFocusEffect } from '@react-navigation/core'
+import { i18n } from '~/components/system/i18n'
 
 export default function AnnouncementsPage() {
   const [announcements, setAnnouncements] =
@@ -113,7 +114,9 @@ export default function AnnouncementsPage() {
       contentInsetAdjustmentBehavior={'automatic'}
       onEndReached={loadMore}
       onEndReachedThreshold={0.5}
-      ListFooterComponent={loadingMore ? <Text>Loading...</Text> : null}
+      ListFooterComponent={
+        loadingMore ? <Text>{i18n.t('main.loading')}</Text> : null
+      }
       renderItem={({ item }) => <AnnouncementItem announcement={item} />}
     />
   )

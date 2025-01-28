@@ -14,6 +14,7 @@ import ConversationSearchItem from '~/components/FlatlistItems/ConversationSearc
 import { useFocusEffect } from '@react-navigation/core'
 import FeatureAccess from '~/components/FeatureAccess'
 import * as Sentry from '@sentry/react-native'
+import { i18n } from '~/components/system/i18n'
 
 export default function ConversationsView() {
   const [refreshing, setRefreshing] = React.useState(false)
@@ -153,7 +154,7 @@ export default function ConversationsView() {
         <View>
           {isLoading ? (
             <View>
-              <Text>Loading...</Text>
+              <Text>{i18n.t('main.loading')}</Text>
             </View>
           ) : (
             <FlatList
@@ -175,7 +176,7 @@ export default function ConversationsView() {
           //onEndReached={loadMore}
           //onEndReachedThreshold={0.5}
           //ListFooterComponent={
-          //  loadingMore && hasMore ? <Text>Loading...</Text> : null
+          //  loadingMore && hasMore ? <Text>{i18n.t('main.loading')}</Text> : null
           //}
         />
       )}

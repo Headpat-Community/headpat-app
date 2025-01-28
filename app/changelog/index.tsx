@@ -7,6 +7,7 @@ import { databases } from '~/lib/appwrite-client'
 import * as Sentry from '@sentry/react-native'
 import { Query } from 'react-native-appwrite'
 import ChangelogItem from '~/components/FlatlistItems/ChangelogItem'
+import { i18n } from '~/components/system/i18n'
 
 export default function ListComponent() {
   const [openVersions, setOpenVersions] = useState<string[]>([])
@@ -51,7 +52,7 @@ export default function ListComponent() {
     return (
       <View className={'flex flex-1 justify-center items-center h-full'}>
         <View className={'p-4 gap-6 text-center'}>
-          <H1 className={'text-2xl font-semibold'}>Loading...</H1>
+          <H1 className={'text-2xl font-semibold'}>{i18n.t('main.loading')}</H1>
           <Text className={'text-muted-foreground'}>
             Please wait while we fetch the latest updates.
           </Text>

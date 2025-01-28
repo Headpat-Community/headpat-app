@@ -75,11 +75,6 @@ export default function ChatView() {
 
         const newMessages = result.documents
 
-        if (!newMessages) {
-          console.error('newMessages is undefined')
-          return
-        }
-
         // Sort messages by $createdAt
         newMessages.sort(
           (a, b) =>
@@ -375,7 +370,7 @@ export default function ChatView() {
                   source={{
                     uri: getConversationAvatar(),
                   }}
-                  style={{ width: 32, height: 32, borderRadius: 12 }}
+                  style={{ width: 32, height: 32, borderRadius: 50 }}
                 />
                 <AvatarFallback>
                   <Text>{getConversationName()}</Text>

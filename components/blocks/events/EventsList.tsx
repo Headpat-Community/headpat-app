@@ -8,6 +8,7 @@ import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { useFocusEffect } from '@react-navigation/core'
 import EventItem from '~/components/FlatlistItems/EventItem'
 import { Text } from '~/components/ui/text'
+import { i18n } from '~/components/system/i18n'
 
 interface EventsListProps {
   endpoint: string
@@ -108,7 +109,9 @@ const EventsList: React.FC<EventsListProps> = ({ endpoint }) => {
         contentInsetAdjustmentBehavior={'automatic'}
         onEndReached={loadMore}
         onEndReachedThreshold={0.5}
-        ListFooterComponent={loadingMore ? <Text>Loading...</Text> : null}
+        ListFooterComponent={
+          loadingMore ? <Text>{i18n.t('main.loading')}</Text> : null
+        }
         renderItem={({ item }) => <EventItem event={item} />}
       />
     </View>

@@ -10,6 +10,7 @@ import { H1, Muted } from '~/components/ui/typography'
 import { router, useLocalSearchParams } from 'expo-router'
 import { Skeleton } from '~/components/ui/skeleton'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
+import { i18n } from '~/components/system/i18n'
 
 export default function FollowingPage() {
   const [users, setUsers] = useState<UserData.UserDataDocumentsType[]>(null)
@@ -57,6 +58,8 @@ export default function FollowingPage() {
     } catch (error) {
       toast('Failed to fetch users. Please try again later.')
       Sentry.captureException(error)
+    } finally {
+      setRefreshing(false)
     }
   }
 
@@ -78,7 +81,6 @@ export default function FollowingPage() {
       return
     }
     fetchUsers().then()
-    setRefreshing(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [local?.userId])
 
@@ -163,7 +165,7 @@ export default function FollowingPage() {
       onEndReached={loadMore}
       onEndReachedThreshold={0.5}
       ListFooterComponent={
-        loadingMore && hasMore ? <Text>Loading...</Text> : null
+        loadingMore && hasMore ? <Text>{i18n.t('main.loading')}</Text> : null
       }
     />
   )
