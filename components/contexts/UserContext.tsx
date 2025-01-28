@@ -65,6 +65,7 @@ export function UserProvider(props: any) {
       setIsLoadingUser(true)
       const loggedIn = await account.get()
       setUser(loggedIn)
+      await kv.setItem('userId', loggedIn.$id)
       setIsLoadingUser(false)
       await loggedInPushNotifications()
       // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -17,7 +17,9 @@
       "iosDisplayInForeground": true
     },
     "githubUrl": "https://github.com/Headpat-Community/headpat-app",
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "entitlements": {
         "aps-environment": "production"
@@ -32,7 +34,11 @@
       },
       "appStoreUrl": "https://apps.apple.com/app/headpat/id6502715063",
       "infoPlist": {
-        "UIBackgroundModes": ["fetch", "remote-notification", "processing"],
+        "UIBackgroundModes": [
+          "fetch",
+          "remote-notification",
+          "processing"
+        ],
         "NSLocationWhenInUseUsageDescription": "This app requires access to your location to show you on the map.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "This app requires access to your location to show you on the map.",
         "NSLocationAlwaysUsageDescription": "This app requires access to your location to show you on the map.",
@@ -46,7 +52,7 @@
         "applinks:headpat.place",
         "applinks:api.headpat.place"
       ],
-      "buildNumber": "134",
+      "buildNumber": "140",
       "appleTeamId": "S243K37R5M"
     },
     "android": {
@@ -54,7 +60,6 @@
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_BACKGROUND_LOCATION",
-        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
         "android.permission.WAKE_LOCK"
       ],
       "icon": "./assets/images/headpat_logo.png",
@@ -69,7 +74,7 @@
         }
       },
       "package": "com.headpat.app",
-      "versionCode": 134
+      "versionCode": 140
     },
     "extra": {
       "router": {
@@ -80,9 +85,6 @@
       }
     },
     "owner": "expo-headpat",
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
     "updates": {
       "url": "https://u.expo.dev/904378a3-321c-4abe-9c08-48274d5f6267",
       "enabled": true,
@@ -145,7 +147,8 @@
       "expo-video",
       "expo-router",
       "expo-secure-store",
-      "expo-sqlite"
+      "expo-sqlite",
+      "expo-font"
     ]
   }
 }
