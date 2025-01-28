@@ -46,7 +46,7 @@
         "applinks:headpat.place",
         "applinks:api.headpat.place"
       ],
-      "buildNumber": "132",
+      "buildNumber": "133",
       "appleTeamId": "S243K37R5M"
     },
     "android": {
@@ -55,6 +55,7 @@
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.FOREGROUND_SERVICE_LOCATION",
         "android.permission.ACCESS_BACKGROUND_LOCATION",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
         "android.permission.WAKE_LOCK"
       ],
       "icon": "./assets/images/headpat_logo.png",
@@ -69,7 +70,7 @@
         }
       },
       "package": "com.headpat.app",
-      "versionCode": 132
+      "versionCode": 133
     },
     "extra": {
       "router": {
