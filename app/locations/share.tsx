@@ -191,11 +191,7 @@ export default function ShareLocationView() {
               'absolute flex-row gap-2 bottom-16 mb-4 justify-center items-center h-12 w-12 right-6 self-end rounded'
             }
           >
-            <ArrowDownIcon
-              className={'animate-bounce'}
-              color={theme}
-              size={32}
-            />
+            <ArrowDownIcon color={theme} size={32} />
           </View>
         </View>
       ) : (

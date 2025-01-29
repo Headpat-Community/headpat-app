@@ -107,6 +107,11 @@ export default function MutualLocationsPage() {
   }, [])
 
   useEffect(() => {
+    const intervalId = setInterval(onRefresh, 10000)
+    return () => clearInterval(intervalId)
+  }, [onRefresh])
+
+  useEffect(() => {
     let watcher = null
     const startWatching = async () => {
       let { status } = await Location.getForegroundPermissionsAsync()
@@ -152,86 +157,8 @@ export default function MutualLocationsPage() {
   useFocusEffect(
     useCallback(() => {
       onRefresh()
-      const locationsSubscribed = client.subscribe(
-        ['databases.hp_db.collections.locations.documents'],
-        async (response) => {
-          const eventType = response.events[0].split('.').pop()
-          const updatedDocument: any = response.payload
-
-          switch (eventType) {
-            case 'update':
-              if (current && updatedDocument.$id === current.$id) {
-                setUserStatus(updatedDocument)
-              }
-              setFriendsLocations((prevLocations) => {
-                if (!prevLocations) {
-                  prevLocations = []
-                }
-                const existingLocation = prevLocations.find(
-                  (location) => location?.$id === updatedDocument.$id
-                )
-                if (existingLocation) {
-                  return prevLocations.map((location) =>
-                    location?.$id === updatedDocument.$id
-                      ? {
-                          ...location,
-                          ...updatedDocument,
-                          userData: location.userData,
-                        }
-                      : location
-                  )
-                } else {
-                  return [...prevLocations, updatedDocument]
-                }
-              })
-              break
-            case 'delete':
-              if (current && updatedDocument.$id === current.$id) {
-                setUserStatus(null)
-              }
-              setFriendsLocations((prevLocations) => {
-                return prevLocations.filter(
-                  (location) => location?.$id !== updatedDocument.$id
-                )
-              })
-              break
-            case 'create':
-              if (current && updatedDocument.$id === current.$id) {
-                setUserStatus(updatedDocument)
-              }
-              const userData: UserData.UserDataDocumentsType =
-                await databases.getDocument(
-                  'hp_db',
-                  'userdata',
-                  `${updatedDocument.$id}`
-                )
-              const updatedLocationWithUserData = {
-                ...updatedDocument,
-                userData,
-              }
-              setFriendsLocations((prevLocations) => {
-                const locationExists = prevLocations.some(
-                  (location) => location?.$id === updatedDocument.$id
-                )
-                if (locationExists) {
-                  return prevLocations.map((location) =>
-                    location.$id === updatedDocument.$id
-                      ? updatedLocationWithUserData
-                      : location
-                  )
-                } else {
-                  return [...prevLocations, updatedLocationWithUserData]
-                }
-              })
-              break
-            default:
-              Sentry.captureException('Unknown event type:', updatedDocument)
-          }
-        }
-      )
       return () => {
         setUserStatus(null)
-        locationsSubscribed()
       }
     }, [current, onRefresh])
   )
@@ -290,7 +217,7 @@ export default function MutualLocationsPage() {
           provider={
             Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
           }
-          showsUserLocation={true}
+          showsUserLocation={Platform.OS === 'android' ? true : !userStatus}
         >
           {filters.showUsers &&
             friendsLocations?.map((user, index: number) => {
