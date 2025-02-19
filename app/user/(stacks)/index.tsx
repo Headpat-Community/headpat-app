@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { FlatList } from 'react-native'
 import { databases } from '~/lib/appwrite-client'
-import { toast } from '~/lib/toast'
 import * as Sentry from '@sentry/react-native'
-import { Community, UserData } from '~/lib/types/collections'
+import { UserData } from '~/lib/types/collections'
 import { Query } from 'react-native-appwrite'
 import UserItem from '~/components/user/UserItem'
-import { Text } from 'react-native'
 import { useDataCache } from '~/components/contexts/DataCacheContext'
 import { i18n } from '~/components/system/i18n'
+import { useAlertModal } from '~/components/contexts/AlertModalProvider'
+import { Text } from '~/components/ui/text'
 
 export default function UserListPage() {
   const [users, setUsers] = useState<UserData.UserDataDocumentsType[]>([])
@@ -17,6 +17,7 @@ export default function UserListPage() {
   const [offset, setOffset] = useState<number>(0)
   const [hasMore, setHasMore] = useState<boolean>(true)
   const { getAllCache, saveAllCache } = useDataCache()
+  const { showAlert } = useAlertModal()
 
   const fetchUsers = async (newOffset: number = 0) => {
     const cachedUsers =
@@ -50,7 +51,7 @@ export default function UserListPage() {
       // Check if there are more users to load
       setHasMore(newUsers.length === 20)
     } catch (error) {
-      toast('Failed to fetch users. Please try again later.')
+      showAlert('FAILED', 'Failed to fetch users. Please try again later.')
       Sentry.captureException(error)
     }
   }

@@ -27,7 +27,7 @@ export default function ShareLocationView() {
   const theme = isDarkColorScheme ? 'white' : 'black'
   const [refreshing, setRefreshing] = React.useState(false)
   const [sharedItems, setSharedItems] = React.useState([])
-  const { showAlertModal } = useAlertModal()
+  const { showAlert } = useAlertModal()
   const { getCache, saveCache } = useDataCache()
   const {
     status,
@@ -132,7 +132,7 @@ export default function ShareLocationView() {
         registerBackgroundFetch().then()
       }
     } else {
-      showAlertModal('FAILED', 'Location sharing is not available')
+      showAlert('FAILED', 'Location sharing is not available')
     }
   }
 

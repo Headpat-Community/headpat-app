@@ -14,7 +14,6 @@ import { account, databases } from '~/lib/appwrite-client'
 import { Separator } from '~/components/ui/separator'
 import { H1, H4, Muted } from '~/components/ui/typography'
 import React, { useCallback, useState } from 'react'
-import { toast } from '~/lib/toast'
 import { useUser } from '~/components/contexts/UserContext'
 import * as Sentry from '@sentry/react-native'
 import { UserData } from '~/lib/types/collections'
@@ -53,7 +52,7 @@ export default function UserprofilePage() {
     useState<UserData.UserDataDocumentsType | null>(null)
   const [nsfw, setNsfw] = useState<boolean>(false)
   const [indexable, setIndexable] = useState<boolean>(false)
-  const { showAlertModal, hideLoadingModal } = useAlertModal()
+  const { showAlert } = useAlertModal()
 
   const fetchUserData = async () => {
     try {
@@ -66,10 +65,7 @@ export default function UserprofilePage() {
       setNsfw(current.prefs.nsfw)
       setIndexable(current.prefs.indexingEnabled)
     } catch (error) {
-      showAlertModal(
-        'FAILED',
-        'Failed to fetch user data. Please try again later.'
-      )
+      showAlert('FAILED', 'Failed to fetch user data. Please try again later.')
       Sentry.captureException(error)
     } finally {
       setRefreshing(false)
@@ -91,8 +87,7 @@ export default function UserprofilePage() {
       try {
         schema.parse(userData)
       } catch (error) {
-        toast(error.errors[0].message)
-        hideLoadingModal()
+        showAlert('FAILED', error.errors[0].message)
         setIsDisabled(false)
         return
       }
@@ -107,9 +102,9 @@ export default function UserprofilePage() {
           location: userData.location,
           bio: userData.bio,
         })
-        showAlertModal('SUCCESS', 'User data updated successfully.')
+        showAlert('SUCCESS', 'User data updated successfully.')
       } catch (error) {
-        showAlertModal('FAILED', 'Failed to save user data')
+        showAlert('FAILED', 'Failed to save user data')
         Sentry.captureException(error)
       }
       setIsDisabled(false)
@@ -117,7 +112,7 @@ export default function UserprofilePage() {
       setIsDisabled(false)
       console.error(error)
       Sentry.captureException(error)
-      showAlertModal('FAILED', 'An error occurred. Please try again later.')
+      showAlert('FAILED', 'An error occurred. Please try again later.')
     }
   }
 
@@ -134,9 +129,9 @@ export default function UserprofilePage() {
         ...prev,
         prefs: body,
       }))
-      showAlertModal('SUCCESS', 'Preference updated successfully.')
+      showAlert('SUCCESS', 'Preference updated successfully.')
     } catch (error) {
-      showAlertModal('FAILED', 'Failed to update preference.')
+      showAlert('FAILED', 'Failed to update preference.')
       console.error(error)
       Sentry.captureException(error)
     }

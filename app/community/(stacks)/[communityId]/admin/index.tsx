@@ -16,7 +16,6 @@ import { databases } from '~/lib/appwrite-client'
 import { Community } from '~/lib/types/collections'
 import { useFocusEffect } from '@react-navigation/core'
 import { z } from 'zod'
-import { toast } from '~/lib/toast'
 import * as Sentry from '@sentry/react-native'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { Input } from '~/components/ui/input'
@@ -39,7 +38,7 @@ export default function Page() {
   const [community, setCommunity] =
     useState<Community.CommunityDocumentsType>(null)
   const [isDisabled, setIsDisabled] = useState(false)
-  const { showLoadingModal, showAlertModal } = useAlertModal()
+  const { showAlert } = useAlertModal()
 
   const fetchData = useCallback(async () => {
     const data: Community.CommunityDocumentsType = await databases.getDocument(
@@ -58,7 +57,6 @@ export default function Page() {
   )
 
   const handleUpdate = async (name: string, value: string) => {
-    showLoadingModal()
     try {
       setIsDisabled(true)
 
@@ -71,7 +69,7 @@ export default function Page() {
         // Validate only the field that triggered the event
         dynamicSchema.parse({ [name]: value })
       } catch (error) {
-        toast(error.errors[0].message)
+        showAlert('FAILED', error.errors[0].message)
         return
       }
 
@@ -84,9 +82,9 @@ export default function Page() {
             [name]: value,
           }
         )
-        showAlertModal('SUCCESS', 'Community data updated successfully.')
+        showAlert('SUCCESS', 'Community data updated successfully.')
       } catch (error) {
-        showAlertModal('FAILED', 'Failed to save community data')
+        showAlert('FAILED', 'Failed to save community data')
         Sentry.captureException(error)
       }
       setIsDisabled(false)
@@ -94,7 +92,7 @@ export default function Page() {
       setIsDisabled(false)
       console.error(error)
       Sentry.captureException(error)
-      showAlertModal('FAILED', 'An error occurred. Please try again later.')
+      showAlert('FAILED', 'An error occurred. Please try again later.')
     }
   }
 
@@ -162,7 +160,7 @@ export default function Page() {
                 <View>
                   <View
                     className={
-                      'flex-row items-center h-10 native:h-12 rounded-md border border-input bg-background px-3 text-base lg:text-sm native:text-lg native:leading-[1.25] text-foreground placeholder:text-muted-foreground file:border-0 file:bg-transparent file:font-medium'
+                      'flex-row items-center h-10 native:h-12 rounded-md border border-input bg-background px-3 text-base lg:text-sm native:text-lg native:leading-[1.25] text-foreground file:border-0 file:bg-transparent file:font-medium'
                     }
                   >
                     <Input
@@ -197,7 +195,7 @@ export default function Page() {
                 <View>
                   <View
                     className={
-                      'flex-row items-center h-10 native:h-12 rounded-md border border-input bg-background px-3 text-base lg:text-sm native:text-lg native:leading-[1.25] text-foreground placeholder:text-muted-foreground file:border-0 file:bg-transparent file:font-medium'
+                      'flex-row items-center h-10 native:h-12 rounded-md border border-input bg-background px-3 text-base lg:text-sm native:text-lg native:leading-[1.25] text-foreground file:border-0 file:bg-transparent file:font-medium'
                     }
                   >
                     <Input

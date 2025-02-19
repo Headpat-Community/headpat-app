@@ -26,7 +26,6 @@ import DiscordIcon from '~/components/icons/DiscordIcon'
 import XIcon from '~/components/icons/XIcon'
 import TwitchIcon from '~/components/icons/TwitchIcon'
 import FuraffinityIcon from '~/components/icons/FuraffinityIcon'
-import { toast } from '~/lib/toast'
 import * as WebBrowser from 'expo-web-browser'
 import * as Sentry from '@sentry/react-native'
 import * as Clipboard from 'expo-clipboard'
@@ -37,6 +36,7 @@ import HTMLView from 'react-native-htmlview'
 import { Badge } from '~/components/ui/badge'
 import { Skeleton } from '~/components/ui/skeleton'
 import { useDataCache } from '~/components/contexts/DataCacheContext'
+import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 
 const UserActions = React.lazy(() => import('~/components/user/UserActions'))
 
@@ -49,6 +49,7 @@ export default function UserPage() {
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const { current } = useUser()
   const { getCache, saveCache } = useDataCache()
+  const { showAlert } = useAlertModal()
 
   const fetchUser = useCallback(async () => {
     setRefreshing(true)
@@ -309,7 +310,7 @@ export default function UserPage() {
             className={'flex-row items-center gap-4'}
             onPress={() => {
               Clipboard.setStringAsync(userData?.discordname).then()
-              toast('Copied name!')
+              showAlert('INFO', 'Copied name!')
             }}
           >
             <DiscordIcon

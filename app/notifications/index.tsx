@@ -21,7 +21,7 @@ export default function NotificationsPage() {
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
   const [offset, setOffset] = useState<number>(0)
   const [hasMore, setHasMore] = useState<boolean>(true)
-  const { showAlertModal } = useAlertModal()
+  const { showAlert } = useAlertModal()
   const { current } = useUser()
   const { getAllCache, saveAllCache } = useDataCache()
 
@@ -61,7 +61,7 @@ export default function NotificationsPage() {
         setHasMore(response.length === 20)
       } catch (error) {
         console.log(error)
-        showAlertModal(
+        showAlert(
           'FAILED',
           'Failed to fetch notifications. Please try again later.'
         )

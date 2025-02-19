@@ -8,7 +8,6 @@ import { account } from '~/lib/appwrite-client'
 import { useUser } from '~/components/contexts/UserContext'
 import { router } from 'expo-router'
 import { OAuthProvider } from 'react-native-appwrite'
-import { toast } from '~/lib/toast'
 import SocialLoginButton from '~/components/SocialLoginButton'
 import DiscordIcon from '~/components/icons/DiscordIcon'
 import AppleIcon from '~/components/icons/AppleIcon'
@@ -21,9 +20,11 @@ import * as Sentry from '@sentry/react-native'
 import MicrosoftIcon from '~/components/icons/MicrosoftIcon'
 import TwitchIcon from '~/components/icons/TwitchIcon'
 import FeatureAccess from '~/components/FeatureAccess'
+import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 
 export default function ModalScreen() {
   const { current, loginOAuth, register } = useUser()
+  const { showAlert } = useAlertModal()
 
   const [data, setData] = useState({
     email: '',
@@ -41,15 +42,15 @@ export default function ModalScreen() {
 
   const handleEmailLogin = async () => {
     if (data.username.length < 3) {
-      toast('Username should be at least 3 characters')
+      showAlert('FAILED', 'Username should be at least 3 characters')
       return
     }
     if (data.email.length < 1) {
-      toast('E-Mail is required')
+      showAlert('FAILED', 'E-Mail is required')
       return
     }
     if (data.password.length < 8) {
-      toast('Password should be at least 8 characters')
+      showAlert('FAILED', 'Password should be at least 8 characters')
       return
     }
 
@@ -60,11 +61,11 @@ export default function ModalScreen() {
       Sentry.captureException(error)
 
       if (error.type === 'general_argument_invalid') {
-        toast('Invalid E-Mail or password.')
+        showAlert('FAILED', 'Invalid E-Mail or password.')
       } else if (error.type === 'user_blocked') {
-        toast('User is blocked.')
+        showAlert('FAILED', 'User is blocked.')
       } else {
-        toast('E-Mail or Password incorrect.')
+        showAlert('FAILED', 'E-Mail or Password incorrect.')
       }
     }
   }
@@ -95,7 +96,7 @@ export default function ModalScreen() {
         router.push('/account')
       }
     } catch (error) {
-      toast('An error occurred.')
+      showAlert('FAILED', 'An error occurred.')
       Sentry.captureException(error)
     }
   }

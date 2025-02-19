@@ -14,7 +14,6 @@ import { databases } from '~/lib/appwrite-client'
 import { Separator } from '~/components/ui/separator'
 import { H4 } from '~/components/ui/typography'
 import React, { useCallback, useState } from 'react'
-import { toast } from '~/lib/toast'
 import { useUser } from '~/components/contexts/UserContext'
 import * as Sentry from '@sentry/react-native'
 import { UserData } from '~/lib/types/collections'
@@ -38,7 +37,7 @@ export default function UserprofilePage() {
 
   const [userData, setUserData] =
     useState<UserData.UserDataDocumentsType | null>(null)
-  const { showAlertModal } = useAlertModal()
+  const { showAlert } = useAlertModal()
 
   const fetchUserData = async () => {
     try {
@@ -49,10 +48,7 @@ export default function UserprofilePage() {
       )
       setUserData(data)
     } catch (error) {
-      showAlertModal(
-        'FAILED',
-        'Failed to fetch user data. Please try again later.'
-      )
+      showAlert('FAILED', 'Failed to fetch user data. Please try again later.')
       Sentry.captureException(error)
     } finally {
       setRefreshing(false)
@@ -68,38 +64,32 @@ export default function UserprofilePage() {
   useFocusEffect(memoizedCallback)
 
   const handleUpdate = async () => {
+    setIsDisabled(true)
+
     try {
-      setIsDisabled(true)
-
-      try {
-        // parse the data
-        schema.parse(userData)
-      } catch (error) {
-        toast(error.errors[0].message)
-        return
-      }
-
-      try {
-        await databases.updateDocument('hp_db', 'userdata', current.$id, {
-          discordname: userData.discordname,
-          telegramname: userData.telegramname,
-          furaffinityname: userData.furaffinityname,
-          X_name: userData.X_name,
-          twitchname: userData.twitchname,
-        })
-        showAlertModal('SUCCESS', 'User data updated successfully.')
-      } catch (error) {
-        console.log(error)
-        showAlertModal('FAILED', 'Failed to save social data')
-        Sentry.captureException(error)
-      }
+      // parse the data
+      schema.parse(userData)
+    } catch (error) {
+      showAlert('FAILED', error.errors[0].message)
       setIsDisabled(false)
+      return
+    }
+
+    try {
+      await databases.updateDocument('hp_db', 'userdata', current.$id, {
+        discordname: userData.discordname,
+        telegramname: userData.telegramname,
+        furaffinityname: userData.furaffinityname,
+        X_name: userData.X_name,
+        twitchname: userData.twitchname,
+      })
+      showAlert('SUCCESS', 'User data updated successfully.')
     } catch (error) {
       console.log(error)
-      setIsDisabled(false)
-      console.error(error)
+      showAlert('FAILED', 'Failed to save social data')
       Sentry.captureException(error)
-      showAlertModal('FAILED', 'An error occurred. Please try again later.')
+    } finally {
+      setIsDisabled(false)
     }
   }
 

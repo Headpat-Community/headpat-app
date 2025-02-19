@@ -17,7 +17,6 @@ import { databases, functions } from '~/lib/appwrite-client'
 import { Community } from '~/lib/types/collections'
 import { useFocusEffect } from '@react-navigation/core'
 import { z } from 'zod'
-import { toast } from '~/lib/toast'
 import * as Sentry from '@sentry/react-native'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { ExecutionMethod } from 'react-native-appwrite'
@@ -42,7 +41,7 @@ const schema = z.object({
 export default function Page() {
   const [communitySettings, setCommunitySettings] =
     useState<Community.CommunitySettingsDocumentsType>(null)
-  const { showLoadingModal, showAlertModal } = useAlertModal()
+  const { showAlert, hideAlert } = useAlertModal()
   const local = useGlobalSearchParams()
 
   const fetchData = useCallback(async () => {
@@ -63,7 +62,7 @@ export default function Page() {
   )
 
   const handleUpdate = async () => {
-    showLoadingModal()
+    showAlert('LOADING', 'Saving community settings...')
     try {
       try {
         // Validate the entire communitySettings object
@@ -73,7 +72,7 @@ export default function Page() {
           nsfw: communitySettings.nsfw,
         })
       } catch (error) {
-        toast(error.errors[0].message)
+        showAlert('FAILED', error.errors[0].message)
         return
       }
 
@@ -88,32 +87,33 @@ export default function Page() {
         const response = JSON.parse(data.responseBody)
 
         if (response.type === 'unauthorized') {
-          return showAlertModal('FAILED', 'Unauthorized')
+          return showAlert('FAILED', 'Unauthorized')
         } else if (response.type === 'community_settings_update_missing_id') {
-          return showAlertModal('FAILED', 'Community ID is missing')
+          return showAlert('FAILED', 'Community ID is missing')
         } else if (response.type === 'community_settings_update_error') {
-          return showAlertModal(
+          return showAlert(
             'FAILED',
             'Failed to update community settings, please try again later'
           )
         } else if (response.type === 'success') {
-          return showAlertModal(
+          return showAlert(
             'SUCCESS',
             'Community settings updated successfully.'
           )
         }
       } catch (error) {
-        showAlertModal('FAILED', 'Failed to save community settings')
+        showAlert('FAILED', 'Failed to save community settings')
         Sentry.captureException(error)
       }
     } catch (error) {
       Sentry.captureException(error)
-      showAlertModal('FAILED', 'An error occurred. Please try again later.')
+      showAlert('FAILED', 'An error occurred. Please try again later.')
+    } finally {
     }
   }
 
   const handleDelete = async () => {
-    showLoadingModal()
+    showAlert('LOADING', 'Deleting community...')
     try {
       const data = await functions.createExecution(
         'community-endpoints',
@@ -124,28 +124,31 @@ export default function Page() {
       )
       const response = JSON.parse(data.responseBody)
 
+      hideAlert()
+
       if (response.type === 'community_delete_missing_id') {
-        showAlertModal('FAILED', 'Community ID is missing')
+        showAlert('FAILED', 'Community ID is missing')
         return
       } else if (response.type === 'unauthorized') {
-        showAlertModal('FAILED', 'Unauthorized')
+        showAlert('FAILED', 'Unauthorized')
         return
       } else if (response.type === 'community_delete_no_permission') {
-        showAlertModal('FAILED', 'No permission')
+        showAlert('FAILED', 'No permission')
         return
       } else if (response.type === 'community_delete_error') {
-        showAlertModal(
+        showAlert(
           'FAILED',
           'Failed to delete community, please try again later'
         )
         return
       } else if (response.type === 'community_deleted') {
         router.push('/')
-        showAlertModal('SUCCESS', 'Community deleted successfully')
+        showAlert('SUCCESS', 'Community deleted successfully')
         return
       }
     } catch (error) {
-      showAlertModal('FAILED', 'Failed to delete community')
+      hideAlert()
+      showAlert('FAILED', 'Failed to delete community')
       Sentry.captureException(error)
     }
   }

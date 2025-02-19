@@ -41,7 +41,7 @@ const ConversationItem = React.memo(
     const isCommunity = !!displayData?.name
     const timeSince = useTimeSince(item?.$updatedAt)
     const [openModal, setOpenModal] = React.useState(false)
-    const { showAlertModal } = useAlertModal()
+    const { showAlert } = useAlertModal()
 
     const deleteConversation = async () => {
       try {
@@ -54,18 +54,15 @@ const ConversationItem = React.memo(
         )
         const response = JSON.parse(data.responseBody)
         if (response.type === 'unauthorized') {
-          showAlertModal('FAILED', 'Unauthorized')
+          showAlert('FAILED', 'Unauthorized')
         } else if (response.type === 'userchat_conversation_deleted') {
-          showAlertModal('SUCCESS', 'Conversation deleted successfully')
+          showAlert('SUCCESS', 'Conversation deleted successfully')
         } else if (response.type === 'userchat_failed_to_delete_conversation') {
-          showAlertModal('FAILED', 'Failed to delete the conversation')
+          showAlert('FAILED', 'Failed to delete the conversation')
         }
       } catch (e) {
         Sentry.captureException(e)
-        showAlertModal(
-          'FAILED',
-          'An error occurred while deleting the conversation'
-        )
+        showAlert('FAILED', 'An error occurred while deleting the conversation')
       } finally {
         setOpenModal(false)
       }

@@ -1,7 +1,6 @@
 import { ID } from 'react-native-appwrite'
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { account } from '~/lib/appwrite-client'
-import { toast } from '~/lib/toast'
 import { Account } from '~/lib/types/collections'
 import kv from 'expo-sqlite/kv-store'
 import * as Sentry from '@sentry/react-native'
@@ -14,7 +13,6 @@ interface UserContextValue {
   loginOAuth: (userId: string, secret: string) => Promise<void>
   logout: () => Promise<void>
   register: (email: string, password: string, username: string) => Promise<void>
-  toast: (message: string) => void
 }
 
 const UserContext = createContext<UserContextValue | undefined>(undefined)
@@ -89,7 +87,6 @@ export function UserProvider(props: any) {
         loginOAuth,
         logout,
         register,
-        toast,
       }}
     >
       {props.children}

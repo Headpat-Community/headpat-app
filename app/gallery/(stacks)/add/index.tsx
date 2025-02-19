@@ -37,7 +37,7 @@ export default function GalleryAdd() {
   const [description, setDescription] = useState<string>('')
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const [progress, setProgress] = useState<number>(0)
-  const { showAlertModal } = useAlertModal()
+  const { showAlert } = useAlertModal()
   const { current } = useUser()
 
   const openBrowser = async (url: string) => {
@@ -56,15 +56,12 @@ export default function GalleryAdd() {
       })
 
       if (result?.assets?.length === 0 || !result?.assets[0].uri) {
-        showAlertModal('FAILED', 'No image selected!')
+        showAlert('FAILED', 'No image selected!')
         return
       }
 
       if (result?.assets[0]?.fileSize > maxFileSize) {
-        showAlertModal(
-          'FAILED',
-          'Image size is too large. Has to be under 8 MB'
-        )
+        showAlert('FAILED', 'Image size is too large. Has to be under 8 MB')
         return
       }
 
@@ -92,7 +89,7 @@ export default function GalleryAdd() {
   async function uploadImageAsync() {
     setIsUploading(true)
     if (!image.uri) {
-      showAlertModal('FAILED', 'Please select an image to upload!')
+      showAlert('FAILED', 'Please select an image to upload!')
       setIsUploading(false)
       return
     }
@@ -100,7 +97,7 @@ export default function GalleryAdd() {
     try {
       gallerySchema.parse({ name: title, longText: description })
     } catch (error) {
-      showAlertModal('FAILED', error.errors[0].message)
+      showAlert('FAILED', error.errors[0].message)
       setIsUploading(false)
       return
     }
@@ -143,11 +140,11 @@ export default function GalleryAdd() {
       handleFinish(storageData.$id)
     } catch (error) {
       if (error.type === 'storage_file_type_unsupported') {
-        showAlertModal('FAILED', 'Unsupported file type.')
+        showAlert('FAILED', 'Unsupported file type.')
       } else {
         console.log(error.type)
         Sentry.captureException(error)
-        showAlertModal('FAILED', 'Error uploading image.')
+        showAlert('FAILED', 'Error uploading image.')
       }
     } finally {
       setIsUploading(false)

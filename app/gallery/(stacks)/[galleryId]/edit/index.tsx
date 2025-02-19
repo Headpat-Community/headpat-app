@@ -40,13 +40,12 @@ export default function HomeView() {
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [modalVisible, setModalVisible] = useState(false)
   const ref = useRef(null)
-  const { hideLoadingModal, showLoadingModal, showAlertModal } = useAlertModal()
+  const { showAlert } = useAlertModal()
   const { current } = useUser()
 
   const fetchGallery = async () => {
     try {
       setRefreshing(true)
-      showLoadingModal()
       const data: GalleryType.GalleryDocumentsType =
         await databases.getDocument(
           'hp_db',
@@ -56,10 +55,9 @@ export default function HomeView() {
 
       setImage(data)
       setRefreshing(false)
-      hideLoadingModal()
     } catch (error) {
       console.log(error)
-      showAlertModal('FAILED', 'Failed to fetch gallery data. Does it exist?')
+      showAlert('FAILED', 'Failed to fetch gallery data. Does it exist?')
       setRefreshing(false)
     }
   }
@@ -81,20 +79,19 @@ export default function HomeView() {
         }
       )
 
-      showAlertModal('SUCCESS', 'Gallery data saved successfully.')
+      showAlert('SUCCESS', 'Gallery data saved successfully.')
       router.back()
     } catch (error) {
       if (error instanceof z.ZodError) {
-        showAlertModal('FAILED', error.errors.map((e) => e.message).join(', '))
+        showAlert('FAILED', error.errors.map((e) => e.message).join(', '))
       } else {
-        showAlertModal('FAILED', 'Failed to save gallery data.')
+        showAlert('FAILED', 'Failed to save gallery data.')
         Sentry.captureException(error)
       }
     }
   }
 
   const deleteGalleryImage = async () => {
-    showLoadingModal()
     try {
       await databases.deleteDocument(
         'hp_db',
@@ -102,11 +99,11 @@ export default function HomeView() {
         `${local.galleryId}`
       )
       await storage.deleteFile('gallery', `${local.galleryId}`)
-      showAlertModal('SUCCESS', 'Gallery data deleted successfully.')
+      showAlert('SUCCESS', 'Gallery data deleted successfully.')
       // I have no clue how to go back 3 times...
       router.navigate('/')
     } catch (error) {
-      showAlertModal('FAILED', 'Failed to delete gallery data.')
+      showAlert('FAILED', 'Failed to delete gallery data.')
       Sentry.captureException(error)
     }
   }

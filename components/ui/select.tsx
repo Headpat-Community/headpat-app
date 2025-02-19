@@ -26,6 +26,7 @@ const SelectTrigger = React.forwardRef<
     )}
     {...props}
   >
+    {/* @ts-ignore */}
     <>{children}</>
     <ChevronDown
       size={16}

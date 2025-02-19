@@ -30,25 +30,26 @@ export default function ReportGalleryModal({
 }) {
   const [reportReason, setReportReason] = useState<string>('')
   const [otherReason, setOtherReason] = useState<string>('')
-  const { showLoadingModal, hideLoadingModal, showAlertModal } = useAlertModal()
+  const { showAlert, hideAlert } = useAlertModal()
 
   const reportUser = async () => {
-    showLoadingModal()
+    showAlert('LOADING', 'Reporting image...')
     try {
       const data = await reportGalleryImage({
         reportedGalleryId: image.$id,
         reason: reportReason === 'Other' ? otherReason : reportReason,
       })
       setOpen(false)
+      hideAlert()
       if (data.type === 'report_success') {
-        hideLoadingModal()
-        showAlertModal('SUCCESS', 'Thanks for keeping the community safe!')
+        showAlert('SUCCESS', 'Thanks for keeping the community safe!')
         setReportReason('')
         setOtherReason('')
       }
     } catch (e) {
+      hideAlert()
       Sentry.captureException(e)
-      showAlertModal('FAILED', 'Failed to report user. Please try again later.')
+      showAlert('FAILED', 'Failed to report user. Please try again later.')
     }
   }
 

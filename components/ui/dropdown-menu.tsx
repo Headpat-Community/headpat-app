@@ -50,6 +50,7 @@ const DropdownMenuSubTrigger = React.forwardRef<
         )}
         {...props}
       >
+        {/* @ts-ignore */}
         <>{children}</>
         <Icon size={18} className="ml-auto text-foreground" />
       </DropdownMenuPrimitive.SubTrigger>
@@ -161,6 +162,7 @@ const DropdownMenuCheckboxItem = React.forwardRef<
         <Check size={14} strokeWidth={3} className="text-foreground" />
       </DropdownMenuPrimitive.ItemIndicator>
     </View>
+    {/* @ts-ignore */}
     <>{children}</>
   </DropdownMenuPrimitive.CheckboxItem>
 ))
@@ -185,6 +187,7 @@ const DropdownMenuRadioItem = React.forwardRef<
         <View className="bg-foreground h-2 w-2 rounded-full" />
       </DropdownMenuPrimitive.ItemIndicator>
     </View>
+    {/* @ts-ignore */}
     <>{children}</>
   </DropdownMenuPrimitive.RadioItem>
 ))

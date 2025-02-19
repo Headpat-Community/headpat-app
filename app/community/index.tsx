@@ -1,9 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { FlatList, Text, View, ScrollView } from 'react-native'
+import { FlatList, ScrollView, Text, View } from 'react-native'
 import { functions } from '~/lib/appwrite-client'
-import { toast } from '~/lib/toast'
 import * as Sentry from '@sentry/react-native'
-import { Community, Notifications } from '~/lib/types/collections'
+import { Community } from '~/lib/types/collections'
 import { ExecutionMethod } from 'react-native-appwrite'
 import CommunityItem from '~/components/community/CommunityItem'
 import { Skeleton } from '~/components/ui/skeleton'
@@ -20,7 +19,7 @@ export default function CommunitiesPage() {
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
   const [offset, setOffset] = useState<number>(0)
   const [hasMore, setHasMore] = useState<boolean>(true)
-  const { showAlertModal } = useAlertModal()
+  const { showAlert } = useAlertModal()
 
   // Fetch communities function
   const fetchCommunities = useCallback(
@@ -59,7 +58,7 @@ export default function CommunitiesPage() {
 
         setHasMore(newCommunities.length === 20)
       } catch (error) {
-        showAlertModal(
+        showAlert(
           'FAILED',
           'Failed to fetch notifications. Please try again later.'
         )

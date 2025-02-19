@@ -31,9 +31,10 @@ export default function ReportMessageModal({
 }) {
   const [reportReason, setReportReason] = useState<string>('')
   const [otherReason, setOtherReason] = useState<string>('')
-  const { showAlertModal } = useAlertModal()
+  const { showAlert, hideAlert } = useAlertModal()
 
   const reportUser = async () => {
+    showAlert('LOADING', 'Reporting message...')
     try {
       const body = {
         reportedMessageId: message.$id,
@@ -50,20 +51,19 @@ export default function ReportMessageModal({
       )
       const response = JSON.parse(data.responseBody)
       setOpen(false)
+      hideAlert()
       if (response.type === 'report_success') {
-        showAlertModal('SUCCESS', 'Thanks for keeping the community safe!')
+        showAlert('SUCCESS', 'Thanks for keeping the community safe!')
         setReportReason('')
         setOtherReason('')
       } else if (response.type === 'report_error') {
-        showAlertModal(
-          'FAILED',
-          'An error occurred while reporting the message'
-        )
+        showAlert('FAILED', 'An error occurred while reporting the message')
         Sentry.captureException(response)
       }
     } catch (e) {
+      hideAlert()
       console.error(e)
-      showAlertModal('FAILED', 'An error occurred while reporting the message')
+      showAlert('FAILED', 'An error occurred while reporting the message')
       Sentry.captureException(e)
     }
   }

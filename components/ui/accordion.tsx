@@ -85,6 +85,7 @@ const AccordionTrigger = React.forwardRef<
               className
             )}
           >
+            {/* @ts-ignore */}
             <>{children}</>
             <Animated.View style={chevronStyle}>
               <ChevronDown size={18} className={'text-foreground shrink-0'} />

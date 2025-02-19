@@ -39,7 +39,7 @@ const LocationSharedItem = React.memo(
     const isCommunity = !!item?.name
     const timeLeft = useTimeLeft(timeUntil)
     const [openModal, setOpenModal] = React.useState(false)
-    const { showAlertModal } = useAlertModal()
+    const { showAlert } = useAlertModal()
 
     const stopSharing = async () => {
       try {
@@ -48,7 +48,7 @@ const LocationSharedItem = React.memo(
           'locations-permissions',
           documentId
         )
-        showAlertModal(
+        showAlert(
           'SUCCESS',
           'Removed location sharing with ' + isCommunity
             ? item?.name
@@ -58,10 +58,7 @@ const LocationSharedItem = React.memo(
       } catch (e) {
         console.log(e)
         Sentry.captureException(e)
-        showAlertModal(
-          'FAILED',
-          'An error occurred while deleting the conversation'
-        )
+        showAlert('FAILED', 'An error occurred while deleting the conversation')
       } finally {
         setOpenModal(false)
       }

@@ -20,9 +20,10 @@ const EventsList: React.FC<EventsListProps> = ({ endpoint }) => {
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
   const [offset, setOffset] = useState<number>(0)
   const [hasMore, setHasMore] = useState<boolean>(true)
-  const { showAlertModal, showLoadingModal, hideLoadingModal } = useAlertModal()
+  const { showAlert, hideAlert } = useAlertModal()
 
   const fetchEvents = async (newOffset: number = 0) => {
+    showAlert('LOADING', 'Fetching events...')
     try {
       const data = await functions.createExecution(
         'event-endpoints',
@@ -42,13 +43,10 @@ const EventsList: React.FC<EventsListProps> = ({ endpoint }) => {
       }
 
       setHasMore(response.length === 20)
-      hideLoadingModal()
     } catch {
-      showAlertModal(
-        'FAILED',
-        'Failed to fetch events. Please try again later.'
-      )
+      showAlert('FAILED', 'Failed to fetch events. Please try again later.')
     } finally {
+      hideAlert()
       setRefreshing(false)
     }
   }
@@ -74,10 +72,6 @@ const EventsList: React.FC<EventsListProps> = ({ endpoint }) => {
       onRefresh()
     }, [])
   )
-
-  useEffect(() => {
-    showLoadingModal()
-  }, [])
 
   if (events?.length === 0 || !events)
     return (

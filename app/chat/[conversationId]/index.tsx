@@ -37,7 +37,7 @@ export default function ChatView() {
   const { current } = useUser()
   const { messages, setMessages } = useRealtimeChat()
   const { getCache, getCacheSync, saveCache } = useDataCache()
-  const { showAlertModal } = useAlertModal()
+  const { showAlert } = useAlertModal()
   const [participants, setParticipants] = useState<string[]>([])
   const [communityId, setCommunityId] = useState<string | null>(null)
   const [hasMore, setHasMore] = useState(true)
@@ -329,10 +329,10 @@ export default function ChatView() {
 
       const response = JSON.parse(data.responseBody)
       if (response.code === 500) {
-        showAlertModal('FAILED', 'An error occurred while sending the message')
+        showAlert('FAILED', 'An error occurred while sending the message')
         return
       } else if (response.type === 'userchat_user_not_in_conversation') {
-        showAlertModal('FAILED', 'You are not in this conversation')
+        showAlert('FAILED', 'You are not in this conversation')
         return
       } else if (response.type === 'userchat_message_sent') {
         // Clear the message and attachments
@@ -345,10 +345,10 @@ export default function ChatView() {
         prev.filter((msg) => msg.$id !== `pending_${Date.now()}`)
       )
       if (error instanceof z.ZodError) {
-        showAlertModal('FAILED', error.errors[0].message)
+        showAlert('FAILED', error.errors[0].message)
       } else {
         Sentry.captureException(error)
-        showAlertModal('FAILED', 'An error occurred while sending the message')
+        showAlert('FAILED', 'An error occurred while sending the message')
         console.error('Error sending message:', error)
       }
     }

@@ -26,7 +26,7 @@ export default function EventPage() {
   const [refreshing, setRefreshing] = React.useState<boolean>(true)
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
-  const { showAlertModal } = useAlertModal()
+  const { showAlert } = useAlertModal()
 
   const fetchEvents = async () => {
     try {
@@ -53,7 +53,7 @@ export default function EventPage() {
         isAttending: event?.isAttending,
       })
     } catch {
-      showAlertModal('FAILED', i18n.t('events.failedtofetch'))
+      showAlert('FAILED', i18n.t('events.failedtofetch'))
       setRefreshing(false)
     }
   }
@@ -77,12 +77,12 @@ export default function EventPage() {
           isAttending: true,
         }))
       } else if (event.type === 'event_ended') {
-        showAlertModal('FAILED', i18n.t('time.eventHasEnded'))
+        showAlert('FAILED', i18n.t('time.eventHasEnded'))
       } else {
-        showAlertModal('FAILED', i18n.t('events.failedToAttend'))
+        showAlert('FAILED', i18n.t('events.failedToAttend'))
       }
     } catch {
-      showAlertModal('FAILED', i18n.t('events.failedToFetch'))
+      showAlert('FAILED', i18n.t('events.failedToFetch'))
     }
   }
 
@@ -105,12 +105,12 @@ export default function EventPage() {
           isAttending: false,
         }))
       } else if (event.type === 'event_ended') {
-        showAlertModal('FAILED', i18n.t('time.eventHasEnded'))
+        showAlert('FAILED', i18n.t('time.eventHasEnded'))
       } else {
-        showAlertModal('FAILED', i18n.t('events.failedCancelAttendance'))
+        showAlert('FAILED', i18n.t('events.failedCancelAttendance'))
       }
     } catch {
-      showAlertModal('FAILED', i18n.t('events.failedToFetch'))
+      showAlert('FAILED', i18n.t('events.failedToFetch'))
     }
   }
 
@@ -122,7 +122,7 @@ export default function EventPage() {
   useFocusEffect(
     React.useCallback(() => {
       if (!local?.eventId)
-        return () => showAlertModal('FAILED', i18n.t('events.idNotFound'))
+        return () => showAlert('FAILED', i18n.t('events.idNotFound'))
       fetchEvents().then()
       return () => {
         setEvent(null)

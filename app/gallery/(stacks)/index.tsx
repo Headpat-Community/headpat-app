@@ -25,7 +25,7 @@ export default function GalleryPage() {
   )
   const [offset, setOffset] = React.useState<number>(0)
   const [loadingMore, setLoadingMore] = React.useState<boolean>(false)
-  const { showAlertModal } = useAlertModal()
+  const { showAlert } = useAlertModal()
   const { width } = Dimensions.get('window')
   const maxColumns = width > 600 ? 4 : 2
   const startCount = width > 600 ? 27 : 9
@@ -92,10 +92,7 @@ export default function GalleryPage() {
         })
       } catch (error) {
         console.log(error)
-        showAlertModal(
-          'FAILED',
-          'Failed to fetch gallery. Please try again later.'
-        )
+        showAlert('FAILED', 'Failed to fetch gallery. Please try again later.')
         Sentry.captureException(error)
       }
     },

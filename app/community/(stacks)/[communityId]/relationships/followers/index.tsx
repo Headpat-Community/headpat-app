@@ -1,4 +1,3 @@
-import { toast } from '~/lib/toast'
 import { functions } from '~/lib/appwrite-client'
 import { ExecutionMethod } from 'react-native-appwrite'
 import React, { useEffect, useState } from 'react'
@@ -19,7 +18,7 @@ export default function FollowingPage() {
   const [offset, setOffset] = useState<number>(0)
   const [hasMore, setHasMore] = useState<boolean>(true)
   const local = useLocalSearchParams()
-  const { showAlertModal } = useAlertModal()
+  const { showAlert } = useAlertModal()
 
   useEffect(() => {
     setUsers([]) // Clear the old users
@@ -56,7 +55,7 @@ export default function FollowingPage() {
       // Update hasMore based on the response length
       setHasMore(response.length === 20)
     } catch (error) {
-      toast('Failed to fetch users. Please try again later.')
+      showAlert('FAILED', 'Failed to fetch users. Please try again later.')
       Sentry.captureException(error)
     }
   }
@@ -74,7 +73,7 @@ export default function FollowingPage() {
   useEffect(() => {
     setRefreshing(true)
     if (!local?.communityId) {
-      showAlertModal('FAILED', 'Does this community exist?')
+      showAlert('FAILED', 'Does this community exist?')
       router.back()
       return
     }

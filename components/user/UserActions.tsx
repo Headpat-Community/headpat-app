@@ -1,21 +1,20 @@
 import React, { Suspense, useCallback, useState } from 'react'
 import { Button } from '~/components/ui/button'
-import { toast } from '~/lib/toast'
 import {
   AlertDialog,
-  AlertDialogTrigger,
+  AlertDialogAction,
   AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
   AlertDialogDescription,
   AlertDialogFooter,
-  AlertDialogAction,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from '~/components/ui/alert-dialog'
 import {
-  ShieldAlertIcon,
-  UserPlusIcon,
   MailIcon,
+  ShieldAlertIcon,
   UserMinusIcon,
+  UserPlusIcon,
 } from 'lucide-react-native'
 import { blockUser } from '~/components/user/api/blockUser'
 import { View } from 'react-native'
@@ -24,6 +23,7 @@ import { Account, UserData } from '~/lib/types/collections'
 import { addFollow } from '~/components/user/api/addFollow'
 import { removeFollow } from '~/components/user/api/removeFollow'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
+
 const ReportUserModal = React.lazy(
   () => import('~/components/user/moderation/ReportUserModal')
 )
@@ -41,26 +41,22 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
   ({ userData, setUserData, current }) => {
     const [moderationModalOpen, setModerationModalOpen] = useState(false)
     const [reportUserModalOpen, setReportUserModalOpen] = useState(false)
-    const { showLoadingModal, hideLoadingModal, showAlertModal } =
-      useAlertModal()
+    const { showAlert, hideAlert } = useAlertModal()
 
     const handleFollow = useCallback(() => {
       if (userData.isFollowing) {
-        showLoadingModal()
+        showAlert('LOADING', 'Unfollowing...')
         removeFollow(userData?.$id).then(() => {
-          hideLoadingModal()
+          hideAlert()
           setUserData((prev) => ({ ...prev, isFollowing: false }))
-          showAlertModal(
-            'SUCCESS',
-            `You have unfollowed ${userData?.displayName}.`
-          )
+          showAlert('SUCCESS', `You have unfollowed ${userData?.displayName}.`)
         })
       } else {
-        showLoadingModal()
+        showAlert('LOADING', 'Following...')
         addFollow(userData?.$id).then(() => {
-          hideLoadingModal()
+          hideAlert()
           setUserData((prev) => ({ ...prev, isFollowing: true }))
-          showAlertModal(
+          showAlert(
             'SUCCESS',
             `You are now following ${userData?.displayName}.`
           )
@@ -70,7 +66,7 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
     }, [userData])
 
     const handleMessage = useCallback(() => {
-      toast('Ha! You thought this was a real button!')
+      showAlert('INFO', 'Ha! You thought this was a real button!')
     }, [])
 
     const handleReport = useCallback(() => {
@@ -80,14 +76,14 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
 
     const handleBlockClick = useCallback(() => {
       setModerationModalOpen(false)
-      showLoadingModal()
+      showAlert('LOADING', 'Processing...')
       blockUser({
         userId: userData?.$id,
         isBlocked: !userData?.prefs?.isBlocked,
       }).then((response) => {
-        hideLoadingModal()
+        hideAlert()
         setUserData((prev) => ({ ...prev, prefs: response }))
-        showAlertModal(
+        showAlert(
           'SUCCESS',
           userData?.prefs?.isBlocked
             ? `You have unblocked ${userData?.displayName}.`

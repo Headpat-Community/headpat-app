@@ -13,7 +13,7 @@ import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 
 export default function AvatarAdd() {
   const [image, setImage] = useState<ImagePicker.ImageOrVideo>(null)
-  const { showLoadingModal, hideLoadingModal, showAlertModal } = useAlertModal()
+  const { showAlert, hideAlert } = useAlertModal()
   const maxFileSize = 1.5 * 1024 * 1024 // 1.5 MB in bytes
 
   const pickImage = async () => {
@@ -24,7 +24,7 @@ export default function AvatarAdd() {
       })
 
       if (!result || !result?.path) {
-        showAlertModal('FAILED', 'No image selected!')
+        showAlert('FAILED', 'No image selected!')
         return
       }
 
@@ -72,10 +72,7 @@ export default function AvatarAdd() {
       const compressedImage = await compressImage(image.path)
 
       if (compressedImage.size > maxFileSize) {
-        showAlertModal(
-          'FAILED',
-          'Image size is too large. Has to be under 1.5 MB'
-        )
+        showAlert('FAILED', 'Image size is too large. Has to be under 1.5 MB')
         return
       }
 
@@ -87,7 +84,7 @@ export default function AvatarAdd() {
         uri: compressedImage.path,
       }
 
-      showLoadingModal()
+      showAlert('LOADING', 'Uploading image...')
       const storageData = await storage.createFile(
         'avatars',
         ID.unique(),
@@ -101,10 +98,10 @@ export default function AvatarAdd() {
         ExecutionMethod.POST
       )
 
-      hideLoadingModal()
+      hideAlert()
       handleFinish()
     } catch (error) {
-      showAlertModal('FAILED', 'Error uploading image.')
+      showAlert('FAILED', 'Error uploading image.')
       Sentry.captureMessage(error, 'log')
     }
   }

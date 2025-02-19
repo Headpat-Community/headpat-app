@@ -1,7 +1,6 @@
 import kv from 'expo-sqlite/kv-store'
 import { Theme, ThemeProvider } from '@react-navigation/native'
 import { PortalHost } from '~/components/primitives/portal'
-import { ToastProvider } from '~/components/primitives/deprecated-ui/toast'
 import {
   router,
   SplashScreen,
@@ -36,6 +35,7 @@ import { LocationProvider } from '~/components/contexts/SharingContext'
 import { LanguageProvider } from '~/components/contexts/LanguageProvider'
 import '../components/system/backgroundTasks'
 import { DataCacheProvider } from '~/components/contexts/DataCacheContext'
+import { NotifierWrapper } from 'react-native-notifier'
 
 const LIGHT_THEME: Theme = {
   fonts: {
@@ -192,49 +192,50 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={theme}>
-      <LanguageProvider>
-        <AlertModalProvider>
-          <UserProvider>
-            <DataCacheProvider>
-              <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
-              <EulaModal
-                isOpen={openEulaModal}
-                setOpen={setOpenEulaModal}
-                versionData={versionData}
-              />
-              <LocationProvider>
-                <GestureHandlerRootView style={{ flex: 1 }}>
-                  <BottomSheetModalProvider>
-                    <Stack>
-                      {DrawerScreensData.map((screen: DrawerProps) => (
-                        <Stack.Screen
-                          key={screen.location}
-                          name={screen.location}
-                          options={{
-                            keyboardHandlingEnabled: true,
-                            headerTitleAlign: 'left',
-                            headerShown: screen.headerShown,
-                            headerTitle: screen.title,
-                            headerLargeTitle: screen.headerLargeTitle,
-                            headerLeft: () =>
-                              screen.headerLeft || <HeaderMenuSidebar />,
-                            headerRight: () =>
-                              screen.headerRight || <ProfileThemeToggle />,
-                          }}
-                        />
-                      ))}
-                    </Stack>
-                  </BottomSheetModalProvider>
-                </GestureHandlerRootView>
-              </LocationProvider>
-              <PortalHost />
-              <ToastProvider />
-            </DataCacheProvider>
-          </UserProvider>
-        </AlertModalProvider>
-      </LanguageProvider>
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ThemeProvider value={theme}>
+        <LanguageProvider>
+          <NotifierWrapper>
+            <AlertModalProvider>
+              <UserProvider>
+                <DataCacheProvider>
+                  <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
+                  <EulaModal
+                    isOpen={openEulaModal}
+                    setOpen={setOpenEulaModal}
+                    versionData={versionData}
+                  />
+                  <LocationProvider>
+                    <BottomSheetModalProvider>
+                      <Stack>
+                        {DrawerScreensData.map((screen: DrawerProps) => (
+                          <Stack.Screen
+                            key={screen.location}
+                            name={screen.location}
+                            options={{
+                              keyboardHandlingEnabled: true,
+                              headerTitleAlign: 'left',
+                              headerShown: screen.headerShown,
+                              headerTitle: screen.title,
+                              headerLargeTitle: screen.headerLargeTitle,
+                              headerLeft: () =>
+                                screen.headerLeft || <HeaderMenuSidebar />,
+                              headerRight: () =>
+                                screen.headerRight || <ProfileThemeToggle />,
+                            }}
+                          />
+                        ))}
+                      </Stack>
+                    </BottomSheetModalProvider>
+                  </LocationProvider>
+                  <PortalHost />
+                </DataCacheProvider>
+              </UserProvider>
+            </AlertModalProvider>
+          </NotifierWrapper>
+        </LanguageProvider>
+      </ThemeProvider>
+    </GestureHandlerRootView>
   )
 }
 

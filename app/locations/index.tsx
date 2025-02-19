@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import MapView, {
   Marker,
   Polygon,
@@ -13,9 +13,8 @@ import {
   Location as LocationType,
   UserData,
 } from '~/lib/types/collections'
-import { databases, client } from '~/lib/appwrite-client'
+import { databases } from '~/lib/appwrite-client'
 import { Query } from 'react-native-appwrite'
-import { toast } from '~/lib/toast'
 import { useFocusEffect } from '@react-navigation/core'
 import { Text } from '~/components/ui/text'
 import {
@@ -36,9 +35,11 @@ import SettingsModal from '~/components/locations/SettingsModal'
 import { LocationFrontPermissionModal } from '~/components/locations/LocationPermissionModal'
 import sanitizeHtml from 'sanitize-html'
 import { generatePolygonCoords } from '~/components/locations/generatePolygonCoords'
+import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 
 export default function MutualLocationsPage() {
   const { current } = useUser()
+  const { showAlert } = useAlertModal()
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
 
@@ -74,7 +75,7 @@ export default function MutualLocationsPage() {
       setEvents(data)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      toast('Failed to fetch events. Please try again later.')
+      showAlert('FAILED', 'Failed to fetch events. Please try again later.')
     }
   }, [])
 
@@ -97,7 +98,7 @@ export default function MutualLocationsPage() {
       setFriendsLocations(results)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      toast('Failed to fetch locations. Please try again later.')
+      showAlert('FAILED', 'Failed to fetch locations. Please try again later.')
     }
   }, [current])
 

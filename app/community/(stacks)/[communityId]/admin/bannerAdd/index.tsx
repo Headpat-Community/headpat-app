@@ -13,7 +13,7 @@ import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 
 export default function BannerAdd() {
   const [image, setImage] = useState<ImagePicker.ImageOrVideo>(null)
-  const { showLoadingModal, hideLoadingModal, showAlertModal } = useAlertModal()
+  const { showAlert, hideAlert } = useAlertModal()
   const maxFileSize = 5 * 1024 * 1024 // 1.5 MB in bytes
   const local = useGlobalSearchParams()
 
@@ -24,7 +24,7 @@ export default function BannerAdd() {
       })
 
       if (!result || !result?.path) {
-        showAlertModal('FAILED', 'No image selected!')
+        showAlert('FAILED', 'No image selected!')
         return
       }
 
@@ -69,7 +69,7 @@ export default function BannerAdd() {
 
   async function uploadImageAsync() {
     if (!image.path) {
-      showAlertModal('FAILED', 'Please select an image to upload')
+      showAlert('FAILED', 'Please select an image to upload')
       return
     }
 
@@ -77,10 +77,7 @@ export default function BannerAdd() {
       const compressedImage = await compressImage(image.path)
 
       if (compressedImage.size > maxFileSize) {
-        showAlertModal(
-          'FAILED',
-          'Image size is too large. Has to be under 1.5 MB'
-        )
+        showAlert('FAILED', 'Image size is too large. Has to be under 1.5 MB')
         return
       }
 
@@ -91,7 +88,7 @@ export default function BannerAdd() {
         uri: compressedImage.path,
       }
 
-      showLoadingModal()
+      showAlert('LOADING', 'Uploading image...')
 
       const data = await functions.createExecution(
         'community-endpoints',
@@ -103,14 +100,17 @@ export default function BannerAdd() {
       const response = JSON.parse(data.responseBody)
 
       if (response.type === 'community_upload_missing_id') {
-        return showAlertModal(
+        hideAlert()
+        return showAlert(
           'FAILED',
           'Community ID is missing. Please try again later.'
         )
       } else if (response.type === 'unauthorized') {
-        return showAlertModal('FAILED', 'You are not authorized to upload.')
+        hideAlert()
+        return showAlert('FAILED', 'You are not authorized to upload.')
       } else if (response.type === 'community_upload_missing_type') {
-        return showAlertModal(
+        hideAlert()
+        return showAlert(
           'FAILED',
           'Missing upload type. Please try again later.'
         )
@@ -134,10 +134,9 @@ export default function BannerAdd() {
             }
           )
 
-          showAlertModal(
-            'SUCCESS',
-            'Your banner has been uploaded successfully.'
-          )
+          hideAlert()
+
+          showAlert('SUCCESS', 'Your banner has been uploaded successfully.')
 
           await functions.createExecution(
             'community-endpoints',
@@ -146,41 +145,38 @@ export default function BannerAdd() {
             `/community/upload/finish?communityId=${local?.communityId}`,
             ExecutionMethod.POST
           )
-          hideLoadingModal()
           handleFinish()
         },
         function (error) {
+          hideAlert()
           if (error.type === 'storage_file_empty') {
-            showAlertModal('FAILED', 'Missing file.')
+            showAlert('FAILED', 'Missing file.')
           } else if (error.type === 'storage_invalid_file_size') {
-            showAlertModal(
+            showAlert(
               'FAILED',
               'The file size is either not valid or exceeds the maximum allowed size.'
             )
           } else if (error.type === 'storage_file_type_unsupported') {
-            showAlertModal(
-              'FAILED',
-              'The given file extension is not supported.'
-            )
+            showAlert('FAILED', 'The given file extension is not supported.')
           } else if (error.type === 'storage_invalid_file') {
-            showAlertModal(
+            showAlert(
               'FAILED',
               'The uploaded file is invalid. Please check the file and try again.'
             )
           } else if (error.type === 'storage_device_not_found') {
-            showAlertModal(
+            showAlert(
               'FAILED',
               'The requested storage device could not be found.'
             )
           } else {
-            showAlertModal('FAILED', 'Error uploading image.')
+            showAlert('FAILED', 'Error uploading image.')
             Sentry.captureException(error)
           }
         }
       )
     } catch (error) {
       //console.log(error)
-      showAlertModal('FAILED', 'Error picking image.')
+      showAlert('FAILED', 'Error picking image.')
       Sentry.captureMessage(error, 'log')
     }
   }

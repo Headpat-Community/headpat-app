@@ -25,7 +25,7 @@ import { getAvatarImageUrlPreview } from '~/components/api/getStorageItem'
 const MessageItem = ({ message }) => {
   const { current } = useUser()
   const { getCacheSync } = useDataCache()
-  const { showAlertModal } = useAlertModal()
+  const { showAlert } = useAlertModal()
   const [openModal, setOpenModal] = useState(false)
   const [openReportModal, setOpenReportModal] = useState(false)
   const userData = getCacheSync<UserData.UserDataDocumentsType>(
@@ -42,12 +42,9 @@ const MessageItem = ({ message }) => {
       await databases.deleteDocument('hp_db', 'messages', message.$id)
     } catch (e) {
       if (e.code === 401) {
-        showAlertModal(
-          'FAILED',
-          'You are not authorized to delete this message'
-        )
+        showAlert('FAILED', 'You are not authorized to delete this message')
       } else {
-        showAlertModal('FAILED', 'An error occurred while deleting the message')
+        showAlert('FAILED', 'An error occurred while deleting the message')
       }
     }
   }

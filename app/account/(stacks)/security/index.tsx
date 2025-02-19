@@ -32,7 +32,7 @@ export default function SecurityPage() {
   const [emailPassword, setEmailPassword] = useState('')
   const [oldPassword, setOldPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
-  const { showLoadingModal, showAlertModal } = useAlertModal()
+  const { showAlert, hideAlert } = useAlertModal()
   const { setUser } = useUser()
 
   const changeEmail = async () => {
@@ -40,22 +40,21 @@ export default function SecurityPage() {
     const passwordValidation = passwordSchema.safeParse(emailPassword)
 
     if (!emailValidation.success) {
-      showAlertModal('FAILED', 'Invalid email format')
+      showAlert('FAILED', 'Invalid email format')
       return
     }
     if (!passwordValidation.success) {
-      showAlertModal('FAILED', 'Password must be at least 8 characters long')
+      showAlert('FAILED', 'Password must be at least 8 characters long')
       return
     }
 
-    showLoadingModal()
     try {
       await account.updateEmail(email, emailPassword)
-      showAlertModal('SUCCESS', 'Email changed successfully')
+      showAlert('SUCCESS', 'Email changed successfully')
       setEmail('')
       setEmailPassword('')
     } catch (error) {
-      showAlertModal('FAILED', 'Failed to change email')
+      showAlert('FAILED', 'Failed to change email')
       console.error(error)
     }
   }
@@ -65,24 +64,23 @@ export default function SecurityPage() {
     const newPasswordValidation = passwordSchema.safeParse(newPassword)
 
     if (!oldPasswordValidation.success || !newPasswordValidation.success) {
-      showAlertModal('FAILED', 'Password must be at least 8 characters long')
+      showAlert('FAILED', 'Password must be at least 8 characters long')
       return
     }
 
-    showLoadingModal()
     try {
       await account.updatePassword(newPassword, oldPassword)
-      showAlertModal('SUCCESS', 'Password changed successfully')
+      showAlert('SUCCESS', 'Password changed successfully')
       setOldPassword('')
       setNewPassword('')
     } catch (error) {
-      showAlertModal('FAILED', 'Failed to change password')
+      showAlert('FAILED', 'Failed to change password')
       console.error(error)
     }
   }
 
   const deleteAccount = async () => {
-    showLoadingModal()
+    showAlert('LOADING', 'Deleting account...')
     try {
       await functions.createExecution(
         'user-endpoints',
@@ -92,14 +90,16 @@ export default function SecurityPage() {
         ExecutionMethod.DELETE
       )
       router.navigate('/')
-      showAlertModal(
+      showAlert(
         'SUCCESS',
         'Account deletion is in progress. You will be logged out.'
       )
       setUser(null)
     } catch (error) {
-      showAlertModal('FAILED', 'Failed to delete account')
+      showAlert('FAILED', 'Failed to delete account')
       Sentry.captureException(error)
+    } finally {
+      hideAlert()
     }
   }
 

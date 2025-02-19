@@ -1,4 +1,3 @@
-import { toast } from '~/lib/toast'
 import { functions } from '~/lib/appwrite-client'
 import { ExecutionMethod } from 'react-native-appwrite'
 import React, { useEffect, useState } from 'react'
@@ -19,7 +18,7 @@ export default function FollowingPage() {
   const [offset, setOffset] = useState<number>(0)
   const [hasMore, setHasMore] = useState<boolean>(true)
   const local = useLocalSearchParams()
-  const { showAlertModal } = useAlertModal()
+  const { showAlert, hideAlert } = useAlertModal()
 
   useEffect(() => {
     setUsers([]) // Clear the old users
@@ -35,6 +34,7 @@ export default function FollowingPage() {
   }
 
   const fetchUsers = async (newOffset: number = 0) => {
+    showAlert('LOADING', 'Fetching users...')
     try {
       const data = await functions.createExecution(
         'user-endpoints',
@@ -46,6 +46,7 @@ export default function FollowingPage() {
       const response: UserData.UserDataDocumentsType[] = JSON.parse(
         data.responseBody
       )
+      hideAlert()
 
       if (newOffset === 0) {
         setUsers(response)
@@ -56,10 +57,9 @@ export default function FollowingPage() {
       // Update hasMore based on the response length
       setHasMore(response.length === 20)
     } catch (error) {
-      toast('Failed to fetch users. Please try again later.')
+      hideAlert()
       Sentry.captureException(error)
-    } finally {
-      setRefreshing(false)
+      showAlert('FAILED', 'Failed to fetch users. Please try again later.')
     }
   }
 
@@ -76,11 +76,12 @@ export default function FollowingPage() {
   useEffect(() => {
     setRefreshing(true)
     if (!local?.userId) {
-      showAlertModal('FAILED', 'Does this user exist?')
+      showAlert('FAILED', 'Does this user exist?')
       router.back()
       return
     }
     fetchUsers().then()
+    setRefreshing(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [local?.userId])
 

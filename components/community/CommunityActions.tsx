@@ -39,10 +39,10 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
   ({ data, setData, hasPermissions, current }: UserActionsProps) => {
     const [moderationModalOpen, setModerationModalOpen] = useState(false)
     const [reportModalOpen, setReportModalOpen] = useState(false)
-    const { showLoadingModal, showAlertModal } = useAlertModal()
+    const { showAlert, hideAlert } = useAlertModal()
 
     const handleFollow = async () => {
-      showLoadingModal()
+      showAlert('LOADING', 'Following...')
       try {
         const dataResponse = await functions.createExecution(
           'community-endpoints',
@@ -54,41 +54,37 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
         const response = JSON.parse(dataResponse.responseBody)
 
         if (response.type === 'unauthorized') {
-          return showAlertModal(
+          return showAlert(
             'FAILED',
             'You must be logged in to follow a community'
           )
         } else if (response.type === 'community_follow_missing_id') {
-          return showAlertModal(
+          return showAlert(
             'FAILED',
             'Community ID is missing. Please try again later.'
           )
         } else if (response.type === 'community_follow_already_following') {
           setData((prev) => ({ ...prev, isFollowing: true }))
-          return showAlertModal(
-            'FAILED',
-            'You are already following this community'
-          )
+          return showAlert('FAILED', 'You are already following this community')
         } else if (response.type === 'community_follow_error') {
-          return showAlertModal(
+          return showAlert(
             'FAILED',
             'An error occurred while following this community'
           )
         } else if (response.type === 'community_followed') {
-          showAlertModal('SUCCESS', `You have joined ${data.name}`)
+          showAlert('SUCCESS', `You have joined ${data.name}`)
           setData((prev) => ({ ...prev, isFollowing: true }))
         }
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        showAlertModal(
-          'FAILED',
-          'An error occurred while following this community'
-        )
+        showAlert('FAILED', 'An error occurred while following this community')
+      } finally {
+        hideAlert()
       }
     }
 
     const handleUnfollow = async () => {
-      showLoadingModal()
+      showAlert('LOADING', 'Unfollowing...')
       const dataResponse = await functions.createExecution(
         'community-endpoints',
         '',
@@ -98,31 +94,29 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
       )
       const response = JSON.parse(dataResponse.responseBody)
 
+      hideAlert()
       if (response.type === 'community_unfollow_missing_id') {
-        return showAlertModal(
+        return showAlert(
           'FAILED',
           'Community ID is missing. Please try again later.'
         )
       } else if (response.type === 'community_unfollow_owner') {
-        return showAlertModal(
-          'FAILED',
-          'You cannot unfollow a community you own'
-        )
+        return showAlert('FAILED', 'You cannot unfollow a community you own')
       } else if (response.type === 'community_unfollow_unauthorized') {
-        return showAlertModal(
+        return showAlert(
           'FAILED',
           'You must be logged in to unfollow a community'
         )
       } else if (response.type === 'community_unfollow_not_following') {
         setData((prev) => ({ ...prev, isFollowing: false }))
-        return showAlertModal('FAILED', 'You are not following this community')
+        return showAlert('FAILED', 'You are not following this community')
       } else if (response.type === 'community_unfollow_error') {
-        return showAlertModal(
+        return showAlert(
           'FAILED',
           'An error occurred while unfollowing this community'
         )
       } else {
-        showAlertModal('SUCCESS', `You have left ${data.name}`)
+        showAlert('SUCCESS', `You have left ${data.name}`)
         setData((prev) => ({ ...prev, isFollowing: false }))
       }
     }

@@ -10,17 +10,18 @@ import {
   ShieldAlertIcon,
 } from 'lucide-react-native'
 import { useColorScheme } from '~/lib/useColorScheme'
-import { toast } from '~/lib/toast'
+import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 
 export default function AccountPage() {
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
   const { logout } = useUser()
+  const { showAlert } = useAlertModal()
 
   const handleLogout = async () => {
     try {
       await logout()
-      router.push('/')
+      router.replace('/')
     } catch (error) {
       console.error(error)
     }
@@ -56,7 +57,7 @@ export default function AccountPage() {
         </Card>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => toast('Coming soon!')}>
+      <TouchableOpacity onPress={() => showAlert('INFO', 'Coming soon!')}>
         <Card>
           <CardContent className={'py-8'}>
             <CardFooter className={'p-0 justify-between flex flex-wrap'}>
@@ -69,7 +70,7 @@ export default function AccountPage() {
         </Card>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => toast('Coming soon!')}>
+      <TouchableOpacity onPress={() => showAlert('INFO', 'Coming soon!')}>
         <Card>
           <CardContent className={'py-8'}>
             <CardFooter className={'p-0 justify-between flex flex-wrap'}>

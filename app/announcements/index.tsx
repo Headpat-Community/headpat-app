@@ -20,7 +20,7 @@ export default function AnnouncementsPage() {
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
   const [offset, setOffset] = useState<number>(0)
   const [hasMore, setHasMore] = useState<boolean>(true)
-  const { showAlertModal } = useAlertModal()
+  const { showAlert } = useAlertModal()
 
   const fetchAnnouncements = async (newOffset: number = 0) => {
     try {
@@ -48,10 +48,7 @@ export default function AnnouncementsPage() {
       // Check if there are more announcements to load
       setHasMore(newAnnouncements.length === 20)
     } catch (error) {
-      showAlertModal(
-        'FAILED',
-        'Failed to fetch events. Please try again later.'
-      )
+      showAlert('FAILED', 'Failed to fetch events. Please try again later.')
       Sentry.captureException(error)
     } finally {
       setRefreshing(false)

@@ -23,10 +23,10 @@ export default function GalleryAdd() {
     isPrivate: false,
     nsfw: false,
   })
-  const { showLoadingModal, hideLoadingModal, showAlertModal } = useAlertModal()
+  const { showAlert, hideAlert } = useAlertModal()
 
   const handleSubmit = async () => {
-    showLoadingModal()
+    showAlert('LOADING', 'Creating community...')
     try {
       const data = await functions.createExecution(
         'community-endpoints',
@@ -38,27 +38,28 @@ export default function GalleryAdd() {
       const resultCreate: Models.Team<Models.Preferences> | HeadpatException =
         JSON.parse(data.responseBody)
 
+      hideAlert()
+
       if ('type' in resultCreate) {
         if (resultCreate.type === 'community_create_unauthorized') {
-          showAlertModal(
+          showAlert(
             'FAILED',
             'You are not signed in. Please sign in to create a community.'
           )
           return
         } else if (resultCreate.type === 'community_create_no_name') {
-          showAlertModal('FAILED', 'No name provided for the community.')
+          showAlert('FAILED', 'No name provided for the community.')
         }
       } else {
-        showAlertModal('SUCCESS', 'Community created successfully')
+        showAlert('SUCCESS', 'Community created successfully')
         // @ts-ignore
         router.navigate(`/community/${resultCreate.$id}`)
       }
 
-      hideLoadingModal()
-      showAlertModal('SUCCESS', 'Community created successfully')
+      showAlert('SUCCESS', 'Community created successfully')
     } catch (error) {
-      hideLoadingModal()
-      showAlertModal('FAILED', 'Failed to create community')
+      hideAlert()
+      showAlert('FAILED', 'Failed to create community')
       Sentry.captureException(error)
     }
   }

@@ -28,7 +28,7 @@ export default function AddSharing() {
   const [selectedItems, setSelectedItems] = React.useState([])
   const { getCache, saveCache } = useDataCache()
   const debouncedSearchTerm = useDebounce(searchTerm, 500)
-  const { showAlertModal } = useAlertModal()
+  const { showAlert } = useAlertModal()
   const [isLoading, setIsLoading] = React.useState(false)
   const { current } = useUser()
   const { isDarkColorScheme } = useColorScheme()
@@ -147,7 +147,7 @@ export default function AddSharing() {
 
   const handleNext = () => {
     if (selectedItems.length === 0) {
-      showAlertModal('FAILED', 'Please select at least one user or community')
+      showAlert('FAILED', 'Please select at least one user or community')
       return
     }
     setPage(1)
@@ -155,7 +155,7 @@ export default function AddSharing() {
 
   const handleConfirm = async () => {
     if (selectedItems.length === 0) {
-      showAlertModal('FAILED', 'Please select at least one user or community')
+      showAlert('FAILED', 'Please select at least one user or community')
       return
     }
 
@@ -185,7 +185,7 @@ export default function AddSharing() {
     } catch (error) {
       router.back()
       console.error('Error sharing location', error)
-      showAlertModal('FAILED', 'Failed to share location')
+      showAlert('FAILED', 'Failed to share location')
       Sentry.captureException(error)
     }
   }

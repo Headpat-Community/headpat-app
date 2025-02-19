@@ -8,7 +8,6 @@ import { account } from '~/lib/appwrite-client'
 import { useUser } from '~/components/contexts/UserContext'
 import { router } from 'expo-router'
 import { OAuthProvider } from 'react-native-appwrite'
-import { toast } from '~/lib/toast'
 import AppleIcon from '~/components/icons/AppleIcon'
 import DiscordIcon from '~/components/icons/DiscordIcon'
 import GithubIcon from '~/components/icons/GithubIcon'
@@ -21,9 +20,11 @@ import { makeRedirectUri } from 'expo-auth-session'
 import * as WebBrowser from 'expo-web-browser'
 import * as Sentry from '@sentry/react-native'
 import { useFocusEffect } from '@react-navigation/core'
+import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 
 export default function ModalScreen() {
   const { current, login, loginOAuth } = useUser()
+  const { showAlert } = useAlertModal()
 
   const [data, setData] = React.useState({
     email: '',
@@ -33,18 +34,18 @@ export default function ModalScreen() {
   useFocusEffect(
     React.useCallback(() => {
       if (current) {
-        router.push('/')
+        router.replace('/')
       }
     }, [current])
   )
 
   const handleEmailLogin = async () => {
     if (data.email.length < 1) {
-      toast('E-Mail is required')
+      showAlert('FAILED', 'E-Mail is required')
       return
     }
     if (data.password.length < 8) {
-      toast('Password should be at least 8 characters')
+      showAlert('FAILED', 'Password should be at least 8 characters')
       return
     }
 
@@ -52,11 +53,11 @@ export default function ModalScreen() {
       await login(data.email, data.password)
     } catch (error) {
       if (error.type === 'user_invalid_credentials') {
-        toast('E-Mail or Password incorrect.')
+        showAlert('FAILED', 'E-Mail or Password incorrect.')
       } else if (error.type === 'user_blocked') {
-        toast('User is blocked.')
+        showAlert('FAILED', 'User is blocked.')
       } else {
-        toast('E-Mail or Password incorrect.')
+        showAlert('FAILED', 'E-Mail or Password incorrect.')
       }
     }
   }
@@ -84,10 +85,10 @@ export default function ModalScreen() {
         const userId = params.get('userId')
 
         await loginOAuth(userId, secret)
-        router.push('/')
+        router.replace('/')
       }
     } catch (error) {
-      toast('An error occurred.')
+      showAlert('FAILED', 'An error occurred.')
       Sentry.captureException(error)
     }
   }

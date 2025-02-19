@@ -77,6 +77,7 @@ const MenubarSubTrigger = React.forwardRef<
         )}
         {...props}
       >
+        {/* @ts-ignore */}
         <>{children}</>
         <Icon size={18} className="ml-auto text-foreground" />
       </MenubarPrimitive.SubTrigger>
@@ -170,6 +171,7 @@ const MenubarCheckboxItem = React.forwardRef<
         <Check size={14} strokeWidth={3} className="text-foreground" />
       </MenubarPrimitive.ItemIndicator>
     </View>
+    {/* @ts-ignore */}
     <>{children}</>
   </MenubarPrimitive.CheckboxItem>
 ))
@@ -193,6 +195,7 @@ const MenubarRadioItem = React.forwardRef<
         <View className="bg-foreground h-2 w-2 rounded-full" />
       </MenubarPrimitive.ItemIndicator>
     </View>
+    {/* @ts-ignore */}
     <>{children}</>
   </MenubarPrimitive.RadioItem>
 ))

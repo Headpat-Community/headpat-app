@@ -13,7 +13,7 @@ import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 
 export default function BannerAdd() {
   const [image, setImage] = useState<ImagePicker.ImageOrVideo>(null)
-  const { showLoadingModal, hideLoadingModal, showAlertModal } = useAlertModal()
+  const { showAlert, hideAlert } = useAlertModal()
   const maxFileSize = 5 * 1024 * 1024 // 1.5 MB in bytes
 
   const pickImage = async () => {
@@ -23,7 +23,7 @@ export default function BannerAdd() {
       })
 
       if (!result || !result?.path) {
-        showAlertModal('FAILED', 'No image selected!')
+        showAlert('FAILED', 'No image selected!')
         return
       }
 
@@ -69,7 +69,7 @@ export default function BannerAdd() {
 
   async function uploadImageAsync() {
     if (!image.path) {
-      showAlertModal('FAILED', 'Please select an image to upload')
+      showAlert('FAILED', 'Please select an image to upload')
       return
     }
 
@@ -77,10 +77,7 @@ export default function BannerAdd() {
       const compressedImage = await compressImage(image.path)
 
       if (compressedImage.size > maxFileSize) {
-        showAlertModal(
-          'FAILED',
-          'Image size is too large. Has to be under 1.5 MB'
-        )
+        showAlert('FAILED', 'Image size is too large. Has to be under 1.5 MB')
         return
       }
 
@@ -90,7 +87,7 @@ export default function BannerAdd() {
         size: compressedImage.size,
         uri: compressedImage.path,
       }
-      showLoadingModal()
+      showAlert('LOADING', 'Uploading image...')
       const storageData = await storage.createFile(
         'banners',
         ID.unique(),
@@ -105,11 +102,12 @@ export default function BannerAdd() {
         ExecutionMethod.POST
       )
 
-      hideLoadingModal()
+      hideAlert()
       handleFinish()
     } catch (error) {
+      hideAlert()
       //console.log(error)
-      showAlertModal('FAILED', 'Error picking image.')
+      showAlert('FAILED', 'Error picking image.')
       Sentry.captureMessage(error, 'log')
     }
   }

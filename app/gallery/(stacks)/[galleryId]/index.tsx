@@ -48,7 +48,7 @@ export default function HomeView() {
   const [moderationModalOpen, setModerationModalOpen] = useState(false)
   const [reportGalleryModalOpen, setReportGalleryModalOpen] = useState(false)
   const ref = useRef(null)
-  const { showAlertModal, showLoadingModal, hideLoadingModal } = useAlertModal()
+  const { showAlert, hideAlert } = useAlertModal()
   const { current } = useUser()
 
   // Get device dimensions
@@ -136,7 +136,7 @@ export default function HomeView() {
 
   const handleHide = useCallback(async () => {
     setModerationModalOpen(false)
-    showLoadingModal()
+    showAlert('LOADING', 'Please wait...')
     try {
       const data = await functions.createExecution(
         'gallery-endpoints',
@@ -149,22 +149,19 @@ export default function HomeView() {
         ExecutionMethod.PUT
       )
       const response = JSON.parse(data.responseBody)
+      hideAlert()
       if (response.code === 200) {
-        hideLoadingModal()
-        showAlertModal(
+        showAlert(
           'SUCCESS',
           `${imagePrefs?.isHidden ? 'Unhidden' : 'Hidden'} image successfully`
         )
         setImagePrefs({ ...imagePrefs, isHidden: !imagePrefs?.isHidden })
         //router.back()
       } else {
-        showAlertModal(
-          'FAILED',
-          'Failed to hide image. Please try again later.'
-        )
+        showAlert('FAILED', 'Failed to hide image. Please try again later.')
       }
     } catch (error) {
-      showAlertModal(
+      showAlert(
         'FAILED',
         `Failed to ${
           imagePrefs?.isHidden ? 'unhide' : 'hide'

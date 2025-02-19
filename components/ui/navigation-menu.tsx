@@ -81,6 +81,7 @@ const NavigationMenuTrigger = React.forwardRef<
       )}
       {...props}
     >
+      {/* @ts-ignore */}
       <>{children}</>
       <Animated.View style={chevronStyle}>
         <ChevronDown
