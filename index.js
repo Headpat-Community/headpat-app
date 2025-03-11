@@ -10,7 +10,7 @@ import { ExpoRoot } from 'expo-router'
 // Must be exported or Fast Refresh won't update the context
 export function App() {
   Sentry.init({
-    dsn: 'https://ced9dff6e3abde898b0326c222866bc0@sentry.fayevr.dev/10',
+    dsn: 'https://509e7edd878409fed0b19d08c0ee4476@sentry.fayevr.dev/4',
   })
 
   const ctx = require.context('./app')
