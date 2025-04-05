@@ -69,6 +69,7 @@ export const DrawerScreensData: DrawerProps[] = [
   {
     location: 'index',
     title: i18n.t('screens.home'),
+    swipeEnabled: false,
   },
   {
     location: 'languages/index',
