@@ -222,6 +222,7 @@ export default function RootLayout() {
                                 screen.headerLeft || <HeaderMenuSidebar />,
                               headerRight: () =>
                                 screen.headerRight || <ProfileThemeToggle />,
+                              gestureEnabled: screen.swipeEnabled,
                             }}
                           />
                         ))}

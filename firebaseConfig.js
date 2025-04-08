@@ -10,5 +10,5 @@ const firebaseConfig = {
 if (firebase.apps.length === 0) {
   firebase.initializeApp(firebaseConfig).then()
 } else {
-  firebase.app() // if already initialized, use that one
+  firebase.getApp() // if already initialized, use that one
 }

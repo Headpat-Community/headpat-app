@@ -34,7 +34,7 @@ export default function ModalScreen() {
   useFocusEffect(
     React.useCallback(() => {
       if (current) {
-        router.replace('/')
+        router.dismissAll()
       }
     }, [current])
   )
