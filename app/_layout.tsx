@@ -24,7 +24,7 @@ import {
 import { DrawerScreensData } from '~/components/data/DrawerScreensData'
 import { databases } from '~/lib/appwrite-client'
 import { toast } from '~/lib/toast'
-import messaging from '@react-native-firebase/messaging'
+import { getInitialNotification, getMessaging, onMessage, onNotificationOpenedApp, onTokenRefresh } from '@react-native-firebase/messaging'
 import { requestUserPermission } from '~/components/system/pushNotifications'
 import { AlertModalProvider } from '~/components/contexts/AlertModalProvider'
 import * as Sentry from '@sentry/react-native'
@@ -36,51 +36,8 @@ import { LanguageProvider } from '~/components/contexts/LanguageProvider'
 import '../components/system/backgroundTasks'
 import { DataCacheProvider } from '~/components/contexts/DataCacheContext'
 import { NotifierWrapper } from 'react-native-notifier'
-
-const LIGHT_THEME: Theme = {
-  fonts: {
-    regular: {
-      fontFamily: 'Inter_400Regular',
-      fontWeight: '400',
-    },
-    medium: {
-      fontFamily: 'Inter_500Medium',
-      fontWeight: '500',
-    },
-    bold: {
-      fontFamily: 'Inter_700Bold',
-      fontWeight: '700',
-    },
-    heavy: {
-      fontFamily: 'Inter_800Heavy',
-      fontWeight: '800',
-    },
-  },
-  dark: false,
-  colors: NAV_THEME.light,
-}
-const DARK_THEME: Theme = {
-  fonts: {
-    regular: {
-      fontFamily: 'Inter_400Regular',
-      fontWeight: '400',
-    },
-    medium: {
-      fontFamily: 'Inter_500Medium',
-      fontWeight: '500',
-    },
-    bold: {
-      fontFamily: 'Inter_700Bold',
-      fontWeight: '700',
-    },
-    heavy: {
-      fontFamily: 'Inter_800Heavy',
-      fontWeight: '800',
-    },
-  },
-  dark: true,
-  colors: NAV_THEME.dark,
-}
+import '../globals.css'
+import '../components/init/sentryInit'
 
 export { ErrorBoundary } from 'expo-router'
 
@@ -97,9 +54,31 @@ export default function RootLayout() {
   const [openEulaModal, setOpenEulaModal] = useState(false)
   const [versionData, setVersionData] = useState(null)
   const [isMounted, setIsMounted] = useState(false)
+  const messaging = getMessaging();
 
   const theme = useMemo(
-    () => (isDarkColorScheme ? DARK_THEME : LIGHT_THEME),
+    () => ({
+      fonts: {
+        regular: {
+          fontFamily: 'Inter_400Regular',
+          fontWeight: '400',
+        },
+        medium: {
+          fontFamily: 'Inter_500Medium',
+          fontWeight: '500',
+        },
+        bold: {
+          fontFamily: 'Inter_700Bold',
+          fontWeight: '700',
+        },
+        heavy: {
+          fontFamily: 'Inter_800Heavy',
+          fontWeight: '800',
+        },
+      },
+      dark: isDarkColorScheme,
+      colors: isDarkColorScheme ? NAV_THEME.dark : NAV_THEME.light,
+    }),
     [isDarkColorScheme]
   )
 
@@ -145,10 +124,10 @@ export default function RootLayout() {
 
   useEffect(() => {
     const handleMessaging = async () => {
-      messaging().onMessage(async (remoteMessage) => {
+      onMessage(messaging, async (remoteMessage) => {
         console.log(remoteMessage)
       })
-      messaging().onNotificationOpenedApp(async (remoteMessage) => {
+      onNotificationOpenedApp(messaging, async (remoteMessage) => {
         if (remoteMessage?.data?.type === 'newFollower') {
           router.navigate(`/user/(stacks)/${remoteMessage.data.userId}`)
         } else if (remoteMessage?.data?.type === 'newMessage') {
@@ -156,7 +135,7 @@ export default function RootLayout() {
         }
       })
       requestUserPermission().then()
-      messaging().onTokenRefresh(async (newFcmToken) => {
+      onTokenRefresh(messaging, async (newFcmToken) => {
         if (!newFcmToken) return
         await kv.setItem('fcmToken', newFcmToken)
         await updatePushTargetWithAppwrite(newFcmToken)
@@ -183,7 +162,7 @@ export default function RootLayout() {
     }
     if (isMounted) {
       getEulaVersion().then()
-      bootstrap().then()
+      bootstrap(messaging).then()
     }
   }, [isMounted])
 
@@ -240,8 +219,8 @@ export default function RootLayout() {
   )
 }
 
-async function bootstrap() {
-  const initialNotification = await messaging().getInitialNotification()
+async function bootstrap(messaging) {
+  const initialNotification = await getInitialNotification(messaging)
   if (initialNotification?.data?.type === 'newFollower') {
     router.navigate(`/user/(stacks)/${initialNotification.data.userId}`)
   }

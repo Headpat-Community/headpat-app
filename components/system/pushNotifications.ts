@@ -1,5 +1,6 @@
 import messaging, {
   FirebaseMessagingTypes,
+  getMessaging,
 } from '@react-native-firebase/messaging'
 import kv from 'expo-sqlite/kv-store'
 import * as Device from 'expo-device'
@@ -37,11 +38,13 @@ export async function requestUserPermission() {
 }
 
 const getFcmToken = async () => {
-  !messaging().isDeviceRegisteredForRemoteMessages &&
-    (await messaging().registerDeviceForRemoteMessages())
+  const messagingInstance = getMessaging()
+  if (!messagingInstance.isDeviceRegisteredForRemoteMessages) {
+    await messagingInstance.registerDeviceForRemoteMessages()
+  }
   // wait 500ms for the device to be registered
   await new Promise((resolve) => setTimeout(resolve, 500))
-  const fcmToken = await messaging().getToken()
+  const fcmToken = await messagingInstance.getToken()
   if (fcmToken) {
     await kv.setItem('fcmToken', fcmToken)
   } else {
