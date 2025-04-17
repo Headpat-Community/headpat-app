@@ -1,5 +1,6 @@
 import React from 'react'
-import { Dimensions, FlatList, Text, View } from 'react-native'
+import { Dimensions, Text, View } from 'react-native'
+import { FlashList } from '@shopify/flash-list'
 import { databases, storage } from '~/lib/appwrite-client'
 import * as Sentry from '@sentry/react-native'
 import { Gallery } from '~/lib/types/collections'
@@ -195,7 +196,7 @@ export default function GalleryPage() {
   return (
     <FeatureAccess featureName={'gallery'}>
       <View style={{ flex: 1 }}>
-        <FlatList
+        <FlashList
           data={images}
           keyExtractor={(item) => item.$id}
           renderItem={({ item }) => (
@@ -208,10 +209,8 @@ export default function GalleryPage() {
           )}
           onRefresh={onRefresh}
           refreshing={refreshing}
+          estimatedItemSize={200}
           numColumns={maxColumns}
-          contentContainerStyle={{ flexGrow: 1 }}
-          //onEndReached={loadMore}
-          //onEndReachedThreshold={0.5}
           ListFooterComponent={
             loadingMore && (
               <View

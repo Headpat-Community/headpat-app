@@ -19,6 +19,7 @@ import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import FeatureAccess from '~/components/FeatureAccess'
 import { z } from 'zod'
 import { Progress } from '~/components/ui/progress'
+import { Blurhash } from 'react-native-blurhash'
 
 const gallerySchema = z.object({
   name: z
@@ -103,6 +104,9 @@ export default function GalleryAdd() {
     }
 
     try {
+      // Generate Blurhash from the image
+      const blurhash = await Blurhash.encode(image.uri, 4, 3)
+
       // name is galleryFile + mimeType
       const name =
         image.fileName || 'galleryFile.' + image.mimeType.split('/')[1]
@@ -134,6 +138,7 @@ export default function GalleryAdd() {
           userId: current.$id,
           mimeType: fileData.type,
           galleryId: storageData.$id,
+          blurHash: blurhash,
         }
       )
 

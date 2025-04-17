@@ -37,6 +37,7 @@ import { ExecutionMethod } from 'react-native-appwrite'
 import * as Sentry from '@sentry/react-native'
 import { Badge } from '~/components/ui/badge'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
+import { Blurhash } from 'react-native-blurhash'
 
 export default function HomeView() {
   const local = useLocalSearchParams()
@@ -161,6 +162,7 @@ export default function HomeView() {
         showAlert('FAILED', 'Failed to hide image. Please try again later.')
       }
     } catch (error) {
+      console.log(error)
       showAlert(
         'FAILED',
         `Failed to ${
@@ -211,7 +213,15 @@ export default function HomeView() {
       )}
       <View style={{ flex: 1 }}>
         {imagePrefs?.isHidden ? (
-          <Skeleton className={'h-72'} />
+          image?.blurHash ? (
+            <Blurhash
+              blurhash={image.blurHash}
+              style={{ height: imageHeight, width: '100%' }}
+              resizeMode="cover"
+            />
+          ) : (
+            <Skeleton className={'h-72'} />
+          )
         ) : image?.mimeType.includes('video') ? (
           <VideoView
             ref={ref}
@@ -220,6 +230,22 @@ export default function HomeView() {
             allowsFullscreen
             allowsPictureInPicture
           />
+        ) : image?.nsfw ? (
+          image?.blurHash ? (
+            <Blurhash
+              blurhash={image.blurHash}
+              style={{ height: imageHeight, width: '100%' }}
+              resizeMode="cover"
+            />
+          ) : (
+            <TouchableOpacity onPress={() => setModalVisible(true)}>
+              <Image
+                source={{ uri: getGalleryUrl(image?.galleryId) }}
+                style={{ height: imageHeight }}
+                contentFit={'contain'}
+              />
+            </TouchableOpacity>
+          )
         ) : (
           <TouchableOpacity onPress={() => setModalVisible(true)}>
             <Image
@@ -244,9 +270,11 @@ export default function HomeView() {
               </Button>
             </Link>
           )}
-          <ReportGalleryModal
-            image={image}
-            open={reportGalleryModalOpen}
+          {current?.$id && (
+            <>
+              <ReportGalleryModal
+                image={image}
+                open={reportGalleryModalOpen}
             setOpen={setReportGalleryModalOpen}
           />
           <AlertDialog
@@ -286,8 +314,10 @@ export default function HomeView() {
                   <Text>Cancel</Text>
                 </AlertDialogAction>
               </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+              </AlertDialogContent>
+            </AlertDialog>
+            </>
+          )}
         </View>
 
         <H4 className={'text-center mx-8'}>{image?.name}</H4>

@@ -29,25 +29,24 @@ const GalleryItem = React.memo(
     const { width } = Dimensions.get('window')
 
     // Define height based on device size
-    const widthColumns = width > 600 ? '24%' : '48%'
+    const widthColumns = width > 600 ? '50%' : '100%'
     const isHidden: boolean = imagePrefs[image.$id]?.isHidden
 
     return (
-      <Link
-        href={{
-          pathname: '/gallery/(stacks)/[galleryId]',
-          params: { galleryId: image.$id },
-        }}
-        asChild
-      >
-        <TouchableWithoutFeedback>
+      <TouchableWithoutFeedback>
+        <Link
+          href={{
+            pathname: '/gallery/(stacks)/[galleryId]',
+            params: { galleryId: image.$id },
+          }}
+          asChild
+        >
           <View
             style={{
               position: 'relative',
               width: widthColumns,
               height: 200,
               marginBottom: 10,
-              margin: 5,
             }}
           >
             {isHidden ? (
@@ -89,8 +88,8 @@ const GalleryItem = React.memo(
               </>
             )}
           </View>
-        </TouchableWithoutFeedback>
-      </Link>
+        </Link>
+      </TouchableWithoutFeedback>
     )
   }
 )
