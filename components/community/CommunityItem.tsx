@@ -32,7 +32,7 @@ const CommunityItem = React.memo(
             <Image
               source={
                 getUserAvatar(community?.avatarId) ||
-                require('../../assets/images/headpat_logo.png')
+                require('~/assets/logos/hp_logo_x512.webp')
               }
               style={{
                 width: 80,

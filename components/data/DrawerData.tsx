@@ -97,12 +97,13 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
           <XIcon size={20} color={theme} />
         </TouchableOpacity>
         <Image
-          source={require('../../assets/images/headpat_logo.png')}
-          style={{ height: 90, width: 90, borderRadius: 65, marginBottom: 10 }}
+          source={
+            isDarkColorScheme
+              ? require('~/assets/logos/place_dark_x250.webp')
+              : require('~/assets/logos/place_light_x250.webp')
+          }
+          style={{ height: 90, width: 250, marginBottom: 10 }}
         />
-        <Text style={{ color: theme, marginBottom: 20 }}>
-          Headpat Community
-        </Text>
       </View>
 
       <BottomSheetScrollView>
@@ -200,8 +201,6 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
           onPress={() => {
             const newTheme = isDarkColorScheme ? 'light' : 'dark'
             setColorScheme(newTheme)
-            setAndroidNavigationBar(newTheme).then()
-            kv.setItem('theme', newTheme).then()
           }}
         >
           {isDarkColorScheme ? (
@@ -267,7 +266,7 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
         </Link>
         <Separator />
         <Text style={{ color: theme, padding: 10, textAlign: 'center' }}>
-          Headpat App v0.8.8
+          Headpat Place v0.8.8
         </Text>
         <Muted style={{ textAlign: 'center', paddingBottom: 16 }}>BETA</Muted>
       </BottomSheetScrollView>

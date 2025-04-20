@@ -123,7 +123,7 @@ const ConversationItem = React.memo(
                       <AvatarImage
                         src={
                           isLoading
-                            ? require('~/assets/images/headpat_logo.png')
+                            ? require('~/assets/logos/hp_logo_x512.webp')
                             : isCommunity
                               ? getCommunityAvatarUrlPreview(
                                   displayData?.avatarId,
@@ -132,7 +132,7 @@ const ConversationItem = React.memo(
                               : getAvatarImageUrlPreview(
                                   displayData?.avatarId,
                                   'width=100&height=100'
-                                ) || require('~/assets/images/headpat_logo.png')
+                                ) || require('~/assets/logos/hp_logo_x512.webp')
                         }
                       />
                       <AvatarFallback>

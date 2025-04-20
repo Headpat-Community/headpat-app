@@ -1,6 +1,6 @@
 export const getAvatarImageUrlView = (
   galleryId: string,
-  defaultImage: string = '/logos/Headpat_Logo_web_1024x1024_240518-02.png'
+  defaultImage: string = require('~/assets/logos/hp_logo_x512.webp')
 ) => {
   if (!galleryId) {
     return defaultImage

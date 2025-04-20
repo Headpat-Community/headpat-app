@@ -1,14 +1,12 @@
-import kv from 'expo-sqlite/kv-store'
 import { View } from 'react-native'
 import { CircleUserRound, MoonStar, Sun } from '~/components/Icons'
-import { setAndroidNavigationBar } from '~/lib/android-navigation-bar'
 import { useColorScheme } from '~/lib/useColorScheme'
 import { Link } from 'expo-router'
 import { useUser } from '~/components/contexts/UserContext'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 
 export function ProfileThemeToggle() {
-  const { isDarkColorScheme, setColorScheme } = useColorScheme()
+  const { isDarkColorScheme, setColorScheme, isLoading } = useColorScheme()
   const { current } = useUser()
 
   return (
@@ -31,10 +29,9 @@ export function ProfileThemeToggle() {
 
       <TouchableOpacity
         onPress={() => {
+          if (isLoading) return
           const newTheme = isDarkColorScheme ? 'light' : 'dark'
           setColorScheme(newTheme)
-          setAndroidNavigationBar(newTheme).then()
-          kv.setItem('theme', newTheme).then()
         }}
         className="pl-4"
       >

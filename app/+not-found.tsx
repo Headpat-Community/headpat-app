@@ -9,7 +9,7 @@ export default function NotFoundScreen() {
     <>
       <View className="flex-1 justify-center gap-3 items-center">
         <Image
-          source={'./assets/images/headpat_logo.png'}
+          source={require('~/assets/logos/hp_logo_x512.webp')}
           style={{ width: 200, height: 200 }}
         />
         <Text className="text-3xl">This page doesn't exist.</Text>
