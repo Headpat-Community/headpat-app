@@ -1,9 +1,10 @@
 import React from 'react'
-import { TouchableWithoutFeedback, View } from 'react-native'
+import { View } from 'react-native'
 import { Image } from 'expo-image'
-import { Link } from 'expo-router'
 import { Text } from '~/components/ui/text'
 import { UserData } from '~/lib/types/collections'
+import { Pressable } from 'react-native-gesture-handler'
+import { router } from 'expo-router'
 
 // eslint-disable-next-line react/display-name
 const UserItem = React.memo(
@@ -14,31 +15,37 @@ const UserItem = React.memo(
     }
 
     return (
-      <Link
-        href={{
-          pathname: '/user/(stacks)/[userId]',
-          params: { userId: user.$id },
+      <Pressable
+        onPress={() => {
+          router.push({
+            pathname: '/user/(stacks)/[userId]',
+            params: { userId: user.$id },
+          })
         }}
-        asChild
+        style={{ flex: 1 }}
       >
-        <TouchableWithoutFeedback>
-          <View className={'w-[30%] m-[1.66%] p-2.5 items-center'}>
-            <Image
-              source={
-                getUserAvatar(user?.avatarId) ||
-                require('~/assets/pfp-placeholder.png')
-              }
-              style={{
-                width: 100,
-                height: 100,
-                borderRadius: 25,
-              }}
-              contentFit={'cover'}
-            />
-            <Text className={'text-center mt-2'}>{user?.displayName}</Text>
-          </View>
-        </TouchableWithoutFeedback>
-      </Link>
+        <View className="items-center p-2" style={{ flex: 1 }}>
+          <Image
+            source={
+              getUserAvatar(user?.avatarId) ||
+              require('~/assets/pfp-placeholder.png')
+            }
+            style={{
+              width: 100,
+              height: 100,
+              borderRadius: 25,
+            }}
+            contentFit={'cover'}
+          />
+          <Text
+            className="text-center mt-2"
+            numberOfLines={1}
+            style={{ width: 100 }}
+          >
+            {user?.displayName}
+          </Text>
+        </View>
+      </Pressable>
     )
   }
 )

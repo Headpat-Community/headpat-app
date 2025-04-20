@@ -21,7 +21,7 @@ export default function AccountPage() {
   const handleLogout = async () => {
     try {
       await logout()
-      router.replace('/')
+      router.dismissAll()
     } catch (error) {
       console.error(error)
     }

@@ -5,6 +5,7 @@
   },
   "screens": {
     "home": "Startpagina",
+    "profile": "Profiel",
     "chat": "Chat",
     "conversations": "Conversaties",
     "gallery": "Galerij",
@@ -56,6 +57,7 @@
   "home": {
     "welcomenew": "Welkom bij Headpat!",
     "welcomeback": "Welkom terug",
+    "profiledescription": "Bekijk je profiel",
     "announcementsdescription": "Blijf op de hoogte met ons nieuws!",
     "chatdescription": "Stuur je vrienden een bericht",
     "notificationsdescription": "Blijf op de hoogte met je meldingen",

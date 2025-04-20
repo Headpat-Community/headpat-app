@@ -5,6 +5,7 @@
   },
   "screens": {
     "home": "Startseite",
+    "profile": "Profil",
     "chat": "Chat",
     "conversations": "Konversationen",
     "gallery": "Galerie",
@@ -56,6 +57,7 @@
   "home": {
     "welcomenew": "Willkommen bei Headpat!",
     "welcomeback": "Willkommen zurück",
+    "profiledescription": "Schau dir dein Profil an",
     "announcementsdescription": "Bleibe auf dem Laufenden!",
     "chatdescription": "Schreibe deinen Freunden",
     "notificationsdescription": "Bleibe auf dem Laufenden",

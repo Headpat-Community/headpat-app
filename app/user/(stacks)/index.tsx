@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { FlatList } from 'react-native'
+import { FlashList } from '@shopify/flash-list'
 import { databases } from '~/lib/appwrite-client'
 import * as Sentry from '@sentry/react-native'
 import { UserData } from '~/lib/types/collections'
@@ -9,6 +9,7 @@ import { useDataCache } from '~/components/contexts/DataCacheContext'
 import { i18n } from '~/components/system/i18n'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { Text } from '~/components/ui/text'
+import { View } from 'react-native'
 
 export default function UserListPage() {
   const [users, setUsers] = useState<UserData.UserDataDocumentsType[]>([])
@@ -20,13 +21,6 @@ export default function UserListPage() {
   const { showAlert } = useAlertModal()
 
   const fetchUsers = async (newOffset: number = 0) => {
-    const cachedUsers =
-      await getAllCache<UserData.UserDataDocumentsType>('users')
-    if (cachedUsers && typeof cachedUsers === 'object') {
-      const usersArray = Object.values(cachedUsers).map((item) => item.data)
-      setUsers(usersArray)
-      setRefreshing(false)
-    }
     try {
       const data: UserData.UserDataType = await databases.listDocuments(
         'hp_db',
@@ -82,20 +76,23 @@ export default function UserListPage() {
   )
 
   return (
-    <FlatList
-      data={users}
-      keyExtractor={(item) => item.$id}
-      renderItem={renderItem}
-      onRefresh={onRefresh}
-      refreshing={refreshing}
-      numColumns={3}
-      contentContainerStyle={{ justifyContent: 'space-between' }}
-      onEndReached={loadMore}
-      onEndReachedThreshold={0.5}
-      ListFooterComponent={
-        loadingMore ? <Text>{i18n.t('main.loading')}</Text> : null
-      }
-      contentInsetAdjustmentBehavior={'automatic'}
-    />
+    <View style={{ flex: 1, alignItems: 'center' }}>
+      <View style={{ flex: 1, width: '100%', maxWidth: 400 }}>
+        <FlashList
+          data={users}
+          keyExtractor={(item) => item.$id}
+          renderItem={renderItem}
+          onRefresh={onRefresh}
+          refreshing={refreshing}
+          numColumns={3}
+          estimatedItemSize={150}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            loadingMore ? <Text>{i18n.t('main.loading')}</Text> : null
+          }
+        />
+      </View>
+    </View>
   )
 }

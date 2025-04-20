@@ -21,7 +21,7 @@ const SocialLoginButton: React.FC<SocialLoginButtonProps> = ({
 }) => {
   return (
     <Button
-      className={`w-36 border dark:border-white`}
+      className={`w-full border dark:border-white`}
       style={{
         backgroundColor: color,
       }}

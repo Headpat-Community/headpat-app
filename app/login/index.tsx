@@ -15,12 +15,13 @@ import GoogleIcon from '~/components/icons/GoogleIcon'
 import SpotifyIcon from '~/components/icons/SpotifyIcon'
 import TwitchIcon from '~/components/icons/TwitchIcon'
 import MicrosoftIcon from '~/components/icons/MicrosoftIcon'
-import SocialLoginButton from '~/components/SocialLoginButton'
 import { makeRedirectUri } from 'expo-auth-session'
 import * as WebBrowser from 'expo-web-browser'
 import * as Sentry from '@sentry/react-native'
 import { useFocusEffect } from '@react-navigation/core'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
+import { ScrollView } from 'react-native-gesture-handler'
+import { SocialLoginGrid } from '~/components/SocialLoginGrid'
 
 export default function ModalScreen() {
   const { current, login, loginOAuth } = useUser()
@@ -94,94 +95,95 @@ export default function ModalScreen() {
   }
 
   return (
-    <View className="flex-1 justify-center items-center">
-      <View className="p-4 native:pb-24 max-w-md gap-4">
-        <View className="gap-1">
-          <H1 className="text-foreground text-center">Login</H1>
-          <Muted className="text-base text-center">
-            Enter you data below to register your account
-          </Muted>
-          <Muted className="text-base text-center">No account yet?</Muted>
-          <Button variant={'outline'} onPress={() => router.push('/register')}>
-            <Text>Register</Text>
+    <ScrollView>
+      <View className="flex-1 justify-center items-center">
+        <View className="p-4 native:pb-24 max-w-md gap-4">
+          <View className="gap-1">
+            <H1 className="text-foreground text-center">Login</H1>
+            <Muted className="text-base text-center">
+              Enter you data below to register your account
+            </Muted>
+            <Muted className="text-base text-center">No account yet?</Muted>
+            <Button
+              variant={'outline'}
+              onPress={() => router.push('/register')}
+            >
+              <Text>Register</Text>
+            </Button>
+          </View>
+          <Input
+            textContentType={'emailAddress'}
+            placeholder={'Email'}
+            onChangeText={(newEmail) => setData({ ...data, email: newEmail })}
+          />
+          <Input
+            textContentType={'password'}
+            placeholder={'Password'}
+            secureTextEntry={true}
+            onChangeText={(newPassword) =>
+              setData({ ...data, password: newPassword })
+            }
+          />
+
+          <Button onPress={handleEmailLogin}>
+            <Text>Login</Text>
           </Button>
-        </View>
-        <Input
-          textContentType={'emailAddress'}
-          placeholder={'Email'}
-          onChangeText={(newEmail) => setData({ ...data, email: newEmail })}
-        />
-        <Input
-          textContentType={'password'}
-          placeholder={'Password'}
-          secureTextEntry={true}
-          onChangeText={(newPassword) =>
-            setData({ ...data, password: newPassword })
-          }
-        />
 
-        <Button onPress={handleEmailLogin}>
-          <Text>Login</Text>
-        </Button>
-        <View className="flex-row items-center gap-3">
-          <View className="flex-1 h-px bg-muted" />
-          <Muted>OR CONTINUE WITH</Muted>
-          <View className="flex-1 h-px bg-muted" />
-        </View>
-        <View
-          className={'flex flex-row flex-wrap gap-2 mx-auto justify-center'}
-        >
-          <SocialLoginButton
-            color="#5865F2"
-            onPress={() => handleOAuth2Login(OAuthProvider.Discord)}
-            Icon={DiscordIcon}
-            title="Discord"
-          />
-          <SocialLoginButton
-            color="#005953"
-            Image={require('~/assets/logos/eurofurence.webp')}
-            onPress={() => handleOAuth2Login(OAuthProvider.Oidc)}
-            title="Eurofurence"
-          />
-          <SocialLoginButton
-            color="#24292F"
-            onPress={() => handleOAuth2Login(OAuthProvider.Github)}
-            Icon={GithubIcon}
-            title="GitHub"
-          />
-          <SocialLoginButton
-            color="#000000"
-            onPress={() => handleOAuth2Login(OAuthProvider.Apple)}
-            Icon={AppleIcon}
-            title="Apple"
-          />
-
-          <SocialLoginButton
-            color="#131314"
-            onPress={() => handleOAuth2Login(OAuthProvider.Google)}
-            Icon={GoogleIcon}
-            title="Google"
-          />
-          <SocialLoginButton
-            color="#1DB954"
-            onPress={() => handleOAuth2Login(OAuthProvider.Spotify)}
-            Icon={SpotifyIcon}
-            title="Spotify"
-          />
-          <SocialLoginButton
-            color="#01A6F0"
-            onPress={() => handleOAuth2Login(OAuthProvider.Microsoft)}
-            Icon={MicrosoftIcon}
-            title="Microsoft"
-          />
-          <SocialLoginButton
-            color="#6441A5"
-            onPress={() => handleOAuth2Login(OAuthProvider.Twitch)}
-            Icon={TwitchIcon}
-            title="Twitch"
+          <SocialLoginGrid
+            onLogin={handleOAuth2Login}
+            buttons={[
+              {
+                provider: OAuthProvider.Discord,
+                color: '#5865F2',
+                Icon: DiscordIcon,
+                title: 'Discord',
+              },
+              {
+                provider: OAuthProvider.Oidc,
+                color: '#005953',
+                Image: require('~/assets/logos/eurofurence.webp'),
+                title: 'Eurofurence',
+              },
+              {
+                provider: OAuthProvider.Github,
+                color: '#24292F',
+                Icon: GithubIcon,
+                title: 'GitHub',
+              },
+              {
+                provider: OAuthProvider.Apple,
+                color: '#000000',
+                Icon: AppleIcon,
+                title: 'Apple',
+              },
+              {
+                provider: OAuthProvider.Google,
+                color: '#131314',
+                Icon: GoogleIcon,
+                title: 'Google',
+              },
+              {
+                provider: OAuthProvider.Spotify,
+                color: '#1DB954',
+                Icon: SpotifyIcon,
+                title: 'Spotify',
+              },
+              {
+                provider: OAuthProvider.Microsoft,
+                color: '#01A6F0',
+                Icon: MicrosoftIcon,
+                title: 'Microsoft',
+              },
+              {
+                provider: OAuthProvider.Twitch,
+                color: '#6441A5',
+                Icon: TwitchIcon,
+                title: 'Twitch',
+              },
+            ]}
           />
         </View>
       </View>
-    </View>
+    </ScrollView>
   )
 }
