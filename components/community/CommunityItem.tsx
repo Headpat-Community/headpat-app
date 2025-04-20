@@ -1,11 +1,12 @@
 import React from 'react'
-import { TouchableWithoutFeedback, View } from 'react-native'
+import { View } from 'react-native'
 import { Image } from 'expo-image'
-import { Link } from 'expo-router'
+import { router } from 'expo-router'
 import { Text } from '~/components/ui/text'
 import { Community } from '~/lib/types/collections'
 import { UserIcon } from 'lucide-react-native'
 import { useColorScheme } from '~/lib/useColorScheme'
+import { Pressable } from 'react-native-gesture-handler'
 
 // eslint-disable-next-line react/display-name
 const CommunityItem = React.memo(
@@ -18,42 +19,41 @@ const CommunityItem = React.memo(
     const theme = isDarkColorScheme ? 'white' : 'black'
 
     return (
-      <Link
-        href={{
-          pathname: '/community/[communityId]',
-          params: { communityId: community?.$id },
-        }}
-        asChild
-      >
-        <TouchableWithoutFeedback>
-          <View className={'px-4 m-4 w-full flex flex-row items-center'}>
+      <View className="px-4 py-2">
+        <Pressable
+          onPress={() =>
+            router.push({
+              pathname: '/community/[communityId]',
+              params: { communityId: community?.$id },
+            })
+          }
+        >
+          <View className="flex flex-row items-center">
             <Image
               source={
                 getUserAvatar(community?.avatarId) ||
                 require('../../assets/images/headpat_logo.png')
               }
               style={{
-                width: 100,
-                height: 100,
-                borderRadius: 25,
+                width: 80,
+                height: 80,
+                borderRadius: 20,
               }}
               contentFit={'cover'}
             />
-            <View className={'flex flex-col gap-3 ml-6'}>
-              <Text className={'font-bold'}>{community?.name}</Text>
-              <Text className={''}>{community?.status}</Text>
-              <View className={'flex flex-row items-center gap-4'}>
-                <View className={'flex flex-row items-center gap-2'}>
-                  <UserIcon color={theme} />
-                  <Text className={'flex items-center gap-2'}>
-                    {community?.followersCount}
-                  </Text>
-                </View>
+            <View className="ml-4 flex-1">
+              <Text className="text-lg font-medium">{community?.name}</Text>
+              <Text className="text-sm text-gray-500 mt-1">
+                {community?.status}
+              </Text>
+              <View className="flex flex-row items-center mt-2">
+                <UserIcon size={16} color={theme} />
+                <Text className="ml-2">{community?.followersCount}</Text>
               </View>
             </View>
           </View>
-        </TouchableWithoutFeedback>
-      </Link>
+        </Pressable>
+      </View>
     )
   }
 )
