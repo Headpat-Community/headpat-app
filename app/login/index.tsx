@@ -22,38 +22,39 @@ import { useFocusEffect } from '@react-navigation/core'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { ScrollView } from 'react-native-gesture-handler'
 import { SocialLoginGrid } from '~/components/SocialLoginGrid'
+import { z } from 'zod'
 
-export default function ModalScreen() {
+const loginSchema = z.object({
+  email: z.string().min(1, 'E-Mail is required').email('Invalid email format'),
+  password: z.string().min(8, 'Password should be at least 8 characters'),
+})
+
+export default function LoginScreen() {
   const { current, login, loginOAuth } = useUser()
   const { showAlert } = useAlertModal()
 
-  const [data, setData] = React.useState({
-    email: '',
-    password: '',
-  })
+  const [email, setEmail] = React.useState('')
+  const [password, setPassword] = React.useState('')
 
   useFocusEffect(
     React.useCallback(() => {
       if (current) {
-        router.dismissAll()
+        router.back()
       }
     }, [current])
   )
 
   const handleEmailLogin = async () => {
-    if (data.email.length < 1) {
-      showAlert('FAILED', 'E-Mail is required')
-      return
-    }
-    if (data.password.length < 8) {
-      showAlert('FAILED', 'Password should be at least 8 characters')
-      return
-    }
-
     try {
-      await login(data.email, data.password)
+      const validatedData = loginSchema.parse({
+        email,
+        password,
+      })
+      await login(validatedData.email, validatedData.password)
     } catch (error) {
-      if (error.type === 'user_invalid_credentials') {
+      if (error instanceof z.ZodError) {
+        showAlert('FAILED', error.errors[0].message)
+      } else if (error.type === 'user_invalid_credentials') {
         showAlert('FAILED', 'E-Mail or Password incorrect.')
       } else if (error.type === 'user_blocked') {
         showAlert('FAILED', 'User is blocked.')
@@ -99,14 +100,13 @@ export default function ModalScreen() {
       <View className="flex-1 justify-center items-center">
         <View className="p-4 native:pb-24 max-w-md gap-4">
           <View className="gap-1">
-            <H1 className="text-foreground text-center">Login</H1>
             <Muted className="text-base text-center">
-              Enter you data below to register your account
+              Enter you data below to login your account
             </Muted>
             <Muted className="text-base text-center">No account yet?</Muted>
             <Button
               variant={'outline'}
-              onPress={() => router.push('/register')}
+              onPress={() => router.replace('/register')}
             >
               <Text>Register</Text>
             </Button>
@@ -114,15 +114,13 @@ export default function ModalScreen() {
           <Input
             textContentType={'emailAddress'}
             placeholder={'Email'}
-            onChangeText={(newEmail) => setData({ ...data, email: newEmail })}
+            onChangeText={setEmail}
           />
           <Input
             textContentType={'password'}
             placeholder={'Password'}
             secureTextEntry={true}
-            onChangeText={(newPassword) =>
-              setData({ ...data, password: newPassword })
-            }
+            onChangeText={setPassword}
           />
 
           <Button onPress={handleEmailLogin}>

@@ -22,16 +22,21 @@ import GithubIcon from '~/components/icons/GithubIcon'
 import GoogleIcon from '~/components/icons/GoogleIcon'
 import SpotifyIcon from '~/components/icons/SpotifyIcon'
 import { ScrollView } from 'react-native-gesture-handler'
+import { z } from 'zod'
 
-export default function ModalScreen() {
+const registerSchema = z.object({
+  username: z.string().min(3, 'Username should be at least 3 characters'),
+  email: z.string().min(1, 'E-Mail is required').email('Invalid email format'),
+  password: z.string().min(8, 'Password should be at least 8 characters'),
+})
+
+export default function RegisterScreen() {
   const { current, loginOAuth, register } = useUser()
   const { showAlert } = useAlertModal()
 
-  const [data, setData] = useState({
-    email: '',
-    password: '',
-    username: '',
-  })
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [username, setUsername] = useState('')
 
   useEffect(() => {
     if (current) {
@@ -42,26 +47,24 @@ export default function ModalScreen() {
   }, [])
 
   const handleEmailLogin = async () => {
-    if (data.username.length < 3) {
-      showAlert('FAILED', 'Username should be at least 3 characters')
-      return
-    }
-    if (data.email.length < 1) {
-      showAlert('FAILED', 'E-Mail is required')
-      return
-    }
-    if (data.password.length < 8) {
-      showAlert('FAILED', 'Password should be at least 8 characters')
-      return
-    }
-
     try {
-      await register(data.email, data.password, data.username)
+      const validatedData = registerSchema.parse({
+        email,
+        password,
+        username,
+      })
+      await register(
+        validatedData.email,
+        validatedData.password,
+        validatedData.username
+      )
       router.push('/account')
     } catch (error) {
       Sentry.captureException(error)
 
-      if (error.type === 'general_argument_invalid') {
+      if (error instanceof z.ZodError) {
+        showAlert('FAILED', error.errors[0].message)
+      } else if (error.type === 'general_argument_invalid') {
         showAlert('FAILED', 'Invalid E-Mail or password.')
       } else if (error.type === 'user_blocked') {
         showAlert('FAILED', 'User is blocked.')
@@ -108,36 +111,34 @@ export default function ModalScreen() {
         <View className="flex-1 justify-center items-center">
           <View className="p-4 native:pb-24 max-w-md gap-6">
             <View className="gap-1">
-              <H1 className="text-foreground text-center">Register</H1>
               <Muted className="text-base text-center">
-                Enter you email below to login your account
+                Enter you data below to create an account
               </Muted>
               <Muted className="text-base text-center">
                 Already have an account?
               </Muted>
-              <Button variant={'outline'} onPress={() => router.push('/login')}>
+              <Button
+                variant={'outline'}
+                onPress={() => router.replace('/login')}
+              >
                 <Text>Login</Text>
               </Button>
             </View>
             <Input
               textContentType={'username'}
               placeholder={'Username'}
-              onChangeText={(newUsername) =>
-                setData({ ...data, username: newUsername })
-              }
+              onChangeText={setUsername}
             />
             <Input
               textContentType={'emailAddress'}
               placeholder={'Email'}
-              onChangeText={(newEmail) => setData({ ...data, email: newEmail })}
+              onChangeText={setEmail}
             />
             <Input
               textContentType={'password'}
               placeholder={'Password'}
               secureTextEntry={true}
-              onChangeText={(newPassword) =>
-                setData({ ...data, password: newPassword })
-              }
+              onChangeText={setPassword}
               maxLength={256}
             />
 
@@ -153,6 +154,12 @@ export default function ModalScreen() {
                   color: '#5865F2',
                   Icon: DiscordIcon,
                   title: 'Discord',
+                },
+                {
+                  provider: OAuthProvider.Oidc,
+                  color: '#005953',
+                  Image: require('~/assets/logos/eurofurence.webp'),
+                  title: 'Eurofurence',
                 },
                 {
                   provider: OAuthProvider.Github,
