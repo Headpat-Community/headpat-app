@@ -36,6 +36,7 @@ import { LocationFrontPermissionModal } from '~/components/locations/LocationPer
 import sanitizeHtml from 'sanitize-html'
 import { generatePolygonCoords } from '~/components/locations/generatePolygonCoords'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
+import { i18n } from '~/components/system/i18n'
 
 export default function MutualLocationsPage() {
   const { current } = useUser()
@@ -64,6 +65,7 @@ export default function MutualLocationsPage() {
         'hp_db',
         'events',
         [
+          Query.limit(1000),
           Query.orderAsc('date'),
           Query.greaterThanEqual('dateUntil', currentDate.toISOString()),
           Query.or([
@@ -73,9 +75,9 @@ export default function MutualLocationsPage() {
         ]
       )
       setEvents(data)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      showAlert('FAILED', 'Failed to fetch events. Please try again later.')
+      showAlert('FAILED', i18n.t('location.map.failedToFetchEvents'))
+      Sentry.captureException(error)
     }
   }, [])
 
@@ -84,7 +86,7 @@ export default function MutualLocationsPage() {
       const data: LocationType.LocationType = await databases.listDocuments(
         'hp_db',
         'locations',
-        []
+        [Query.limit(1000)]
       )
       const promises = data.documents.map(async (doc) => {
         if (current?.$id === doc.$id) {
@@ -96,9 +98,9 @@ export default function MutualLocationsPage() {
       })
       const results = await Promise.all(promises)
       setFriendsLocations(results)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      showAlert('FAILED', 'Failed to fetch locations. Please try again later.')
+      showAlert('FAILED', i18n.t('location.map.failedToFetchLocations'))
+      Sentry.captureException(error)
     }
   }, [current])
 
