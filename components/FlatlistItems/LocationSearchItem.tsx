@@ -71,8 +71,8 @@ const LocationSearchItem = React.memo(
                   </View>
                 </View>
                 {isSelected && (
-                  <View className="ml-4 mr-16">
-                    <CheckIcon color={theme} />
+                  <View className="ml-4 mr-16 bg-primary p-2 rounded-full">
+                    <CheckIcon color={theme} size={20} />
                   </View>
                 )}
               </View>
