@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { FlatList, Text, View, ScrollView } from 'react-native'
+import { Text, View, ScrollView } from 'react-native'
+import { FlashList } from '@shopify/flash-list'
 import { functions } from '~/lib/appwrite-client'
 import * as Sentry from '@sentry/react-native'
 import { Notifications } from '~/lib/types/collections'
@@ -36,7 +37,6 @@ export default function NotificationsPage() {
           (item) => item.data
         )
         setNotifications(notificationsArray)
-        setRefreshing(false)
       }
       try {
         const data = await functions.createExecution(
@@ -112,7 +112,7 @@ export default function NotificationsPage() {
     item: Notifications.NotificationsDocumentsType
   }) => <NotificationItem notification={item} />
 
-  if (refreshing || !notifications.length)
+  if (!notifications.length)
     return (
       <ScrollView>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -139,16 +139,17 @@ export default function NotificationsPage() {
     )
 
   return (
-    <FlatList
+    <FlashList
       data={notifications}
       keyExtractor={(item) => item.$id}
       renderItem={renderItem}
       onRefresh={onRefresh}
       refreshing={refreshing}
       numColumns={1}
-      contentContainerStyle={{ justifyContent: 'space-between' }}
       onEndReached={loadMore}
       onEndReachedThreshold={0.5}
+      estimatedItemSize={100}
+      contentContainerClassName="mt-2 pb-8"
       ListFooterComponent={
         loadingMore && hasMore ? <Text>{i18n.t('main.loading')}</Text> : null
       }
