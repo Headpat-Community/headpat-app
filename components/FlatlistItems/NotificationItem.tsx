@@ -28,35 +28,31 @@ const NotificationItem = React.memo(
         }}
         asChild
       >
-        <TouchableOpacity>
-          <Card className={'my-2'}>
-            <CardContent className={'pb-0'}>
-              <View className={'flex flex-row items-center my-4'}>
-                <View className={''}>
-                  <Avatar alt={'User Avatar'}>
-                    <AvatarImage
-                      src={
-                        getUserAvatar(notification.userData.avatarId) || null
-                      }
-                    />
-                    <AvatarFallback>
-                      {notification.userData.displayName
-                        .charAt(0)
-                        .toUpperCase() || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                </View>
-                <View className={'ml-4'}>
-                  <Text>
-                    {notification?.userData?.displayName || 'Someone'} followed
-                    you! 🎉
-                  </Text>
-                  <Muted>{formatDate(new Date(notification.$createdAt))}</Muted>
-                </View>
+        <Card className={'my-2'}>
+          <CardContent className={'pb-0'}>
+            <View className={'flex flex-row items-center my-4'}>
+              <View className={''}>
+                <Avatar alt={'User Avatar'}>
+                  <AvatarImage
+                    src={getUserAvatar(notification.userData.avatarId) || null}
+                  />
+                  <AvatarFallback>
+                    {notification.userData.displayName
+                      .charAt(0)
+                      .toUpperCase() || 'U'}
+                  </AvatarFallback>
+                </Avatar>
               </View>
-            </CardContent>
-          </Card>
-        </TouchableOpacity>
+              <View className={'ml-4'}>
+                <Text>
+                  {notification?.userData?.displayName || 'Someone'} followed
+                  you! 🎉
+                </Text>
+                <Muted>{formatDate(new Date(notification.$createdAt))}</Muted>
+              </View>
+            </View>
+          </CardContent>
+        </Card>
       </Link>
     ) : (
       <Card className={'my-2'}>
