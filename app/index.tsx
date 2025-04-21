@@ -152,7 +152,7 @@ export default function HomeView() {
         />
 
         <HomeCard
-          title="Gallery"
+          title={i18n.t('screens.gallery')}
           description={i18n.t('home.gallerydescription')}
           icon={LayoutDashboardIcon}
           route="/gallery/(stacks)"
@@ -160,7 +160,7 @@ export default function HomeView() {
         />
 
         <HomeCard
-          title="Locations"
+          title={i18n.t('screens.locations')}
           description={i18n.t('home.locationsdescription')}
           icon={MapPinnedIcon}
           route="/locations"
@@ -168,7 +168,7 @@ export default function HomeView() {
         />
 
         <HomeCard
-          title="Announcements"
+          title={i18n.t('screens.announcements')}
           description={i18n.t('home.announcementsdescription')}
           icon={MegaphoneIcon}
           route="/announcements"
@@ -176,7 +176,7 @@ export default function HomeView() {
         />
 
         <HomeCard
-          title="Events"
+          title={i18n.t('screens.events')}
           description={i18n.t('home.eventsDescription')}
           icon={CalendarClockIcon}
           route="/events/(tabs)"
