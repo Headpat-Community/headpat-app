@@ -26,7 +26,7 @@ export function HeaderSidebarBackButton() {
         <ArrowLeftIcon aria-label={'Go back'} size={20} color={theme} />
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => router.navigate('/')}
+        onPress={() => router.dismissAll()}
         style={{
           padding: 10,
         }}
