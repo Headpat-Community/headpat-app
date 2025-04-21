@@ -6,7 +6,7 @@ import { useDebounce } from '~/lib/hooks/useDebounce'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import LocationSearchItem from '~/components/FlatlistItems/LocationSearchItem'
 import { Input } from '~/components/ui/input'
-import { FlatList, View } from 'react-native'
+import { ScrollView, View } from 'react-native'
 import { Text } from '~/components/ui/text'
 import { useFocusEffect } from '@react-navigation/core'
 import { i18n } from '~/components/system/i18n'
@@ -15,10 +15,14 @@ import { router } from 'expo-router'
 import { useUser } from '~/components/contexts/UserContext'
 import { ArrowLeftIcon } from 'lucide-react-native'
 import { useColorScheme } from '~/lib/useColorScheme'
-import { H2, Muted } from '~/components/ui/typography'
+import { H1, Muted } from '~/components/ui/typography'
 import DatePicker from 'react-native-date-picker'
 import * as Sentry from '@sentry/react-native'
-import { Community } from '~/lib/types/collections'
+import { FlashList } from '@shopify/flash-list'
+import { RadioGroup } from '~/components/ui/radio-group'
+import { RadioGroupItemWithLabel } from '~/components/RadioGroupItemWithLabel'
+import ConfirmSharingItem from '~/components/FlatlistItems/ConfirmSharingItem'
+import { Community, UserData } from '~/lib/types/collections'
 
 export default function AddSharing() {
   const [page, setPage] = React.useState(0)
@@ -26,6 +30,8 @@ export default function AddSharing() {
   const [searchTerm, setSearchTerm] = React.useState('')
   const [selectedTime, setSelectedTime] = React.useState(new Date())
   const [selectedItems, setSelectedItems] = React.useState([])
+  const [selectedDuration, setSelectedDuration] = React.useState('7d')
+  const [showCustomPicker, setShowCustomPicker] = React.useState(false)
   const { getCache, saveCache } = useDataCache()
   const debouncedSearchTerm = useDebounce(searchTerm, 500)
   const { showAlert } = useAlertModal()
@@ -36,12 +42,67 @@ export default function AddSharing() {
   const [dateOpen, setDateOpen] = React.useState(false)
   const [timeOpen, setTimeOpen] = React.useState(false)
 
+  // Memoize the processResults function
+  const processResults = React.useCallback(
+    async (results, type) => {
+      return Promise.all(
+        results.documents.map(async (item) => {
+          const cacheKey = type === 'users' ? 'users' : 'communities'
+          let cachedData = await getCache<
+            UserData.UserDataDocumentsType | Community.CommunityDocumentsType
+          >(cacheKey, item.$id)
+
+          if (!cachedData?.data) {
+            const freshData:
+              | UserData.UserDataDocumentsType
+              | Community.CommunityDocumentsType = await databases.getDocument(
+              'hp_db',
+              type === 'users' ? 'userdata' : 'community',
+              item.$id
+            )
+            await saveCache(cacheKey, item.$id, freshData)
+            return freshData
+          }
+
+          return cachedData.data
+        })
+      )
+    },
+    [getCache, saveCache]
+  )
+
+  // Memoize the search queries creation
+  const createSearchQueries = React.useCallback(
+    (alreadySharedUserIds, alreadySharedCommunityIds) => {
+      const userQueries = [
+        Query.contains('profileUrl', debouncedSearchTerm),
+        Query.notEqual('$id', current.$id),
+        ...alreadySharedUserIds.map((id) => Query.notEqual('$id', id)),
+        Query.limit(10),
+      ]
+
+      const communityQueries = [
+        Query.contains('name', debouncedSearchTerm),
+        ...alreadySharedCommunityIds.map((id) => Query.notEqual('$id', id)),
+        Query.limit(10),
+      ]
+
+      return { userQueries, communityQueries }
+    },
+    [debouncedSearchTerm, current.$id]
+  )
+
+  // Split the search effect into two parts
+  React.useEffect(() => {
+    if (!debouncedSearchTerm) {
+      setSearchResults([])
+      return
+    }
+  }, [debouncedSearchTerm])
+
   React.useEffect(() => {
     const searchUsers = async () => {
-      if (!debouncedSearchTerm) {
-        setSearchResults([])
-        return
-      }
+      if (!debouncedSearchTerm) return
 
       setIsLoading(true)
       try {
@@ -50,6 +111,7 @@ export default function AddSharing() {
           'locations-permissions',
           [Query.limit(1000)]
         )
+
         const alreadySharedUserIds = alreadyShared.documents
           .filter((item) => !item.isCommunity)
           .map((item) => item.requesterId)
@@ -58,18 +120,10 @@ export default function AddSharing() {
           .filter((item) => item.isCommunity)
           .map((item) => item.requesterId)
 
-        const userQueries = [
-          Query.contains('profileUrl', debouncedSearchTerm),
-          Query.notEqual('$id', current.$id),
-          ...alreadySharedUserIds.map((id) => Query.notEqual('$id', id)),
-          Query.limit(10),
-        ]
-
-        const communityQueries = [
-          Query.contains('name', debouncedSearchTerm),
-          ...alreadySharedCommunityIds.map((id) => Query.notEqual('$id', id)),
-          Query.limit(10),
-        ]
+        const { userQueries, communityQueries } = createSearchQueries(
+          alreadySharedUserIds,
+          alreadySharedCommunityIds
+        )
 
         const [resultsUsers, resultsCommunity] = await Promise.all([
           databases.listDocuments('hp_db', 'userdata', userQueries),
@@ -77,54 +131,25 @@ export default function AddSharing() {
         ])
 
         const [userDataResults, communityDataResults] = await Promise.all([
-          Promise.all(
-            resultsUsers.documents.map(async (user) => {
-              let userData: any = await getCache('users', user.$id)
-              userData = userData?.data
-              if (!userData) {
-                userData = await databases.getDocument(
-                  'hp_db',
-                  'userdata',
-                  user.$id
-                )
-                saveCache('users', user.$id, userData)
-              }
-              return userData
-            })
-          ),
-          Promise.all(
-            resultsCommunity.documents.map(async (community) => {
-              let communityData: any =
-                await getCache<Community.CommunityDocumentsType>(
-                  'communities',
-                  community.$id
-                )
-              communityData = communityData?.data
-              if (!communityData) {
-                communityData = await databases.getDocument(
-                  'hp_db',
-                  'community',
-                  community.$id
-                )
-                saveCache('communities', community.$id, communityData)
-              }
-              return communityData
-            })
-          ),
+          processResults(resultsUsers, 'users'),
+          processResults(resultsCommunity, 'communities'),
         ])
 
         setSearchResults([...userDataResults, ...communityDataResults])
       } catch (error) {
-        console.error('Error searching users', error)
+        console.error('Error searching users:', error)
+        Sentry.captureException(error)
+        showAlert('FAILED', i18n.t('location.add.failedToSearch'))
       } finally {
         setIsLoading(false)
       }
     }
 
-    searchUsers().then()
-  }, [current.$id, debouncedSearchTerm, getCache, saveCache])
+    searchUsers()
+  }, [debouncedSearchTerm, processResults, createSearchQueries, showAlert])
 
-  const handleSelectItem = (item: any) => {
+  // Memoize the handleSelectItem function
+  const handleSelectItem = React.useCallback((item: any) => {
     setSelectedItems((prevSelectedItems) => {
       const isCommunity = !!item?.name
       const itemId = item.$id
@@ -139,7 +164,48 @@ export default function AddSharing() {
         return [...prevSelectedItems, { id: itemId, isCommunity }]
       }
     })
-  }
+  }, [])
+
+  // Memoize the handleRemoveItem function
+  const handleRemoveItem = React.useCallback((itemId: string) => {
+    setSelectedItems((prev) => prev.filter((item) => item.id !== itemId))
+  }, [])
+
+  // Memoize the calculateEndTime function
+  const calculateEndTime = React.useCallback(
+    (duration: string) => {
+      const now = new Date()
+      switch (duration) {
+        case '1h':
+          return new Date(now.getTime() + 60 * 60 * 1000)
+        case '24h':
+          return new Date(now.getTime() + 24 * 60 * 60 * 1000)
+        case '7d':
+          return new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
+        case '30d':
+          return new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
+        case 'unlimited':
+          return new Date('2100-01-01T00:00:00.000Z')
+        default:
+          return selectedTime
+      }
+    },
+    [selectedTime]
+  )
+
+  // Memoize the handleDurationChange function
+  const handleDurationChange = React.useCallback(
+    (duration: string) => {
+      setSelectedDuration(duration)
+      if (duration === 'custom') {
+        setShowCustomPicker(true)
+      } else {
+        setSelectedTime(calculateEndTime(duration))
+        setShowCustomPicker(false)
+      }
+    },
+    [calculateEndTime]
+  )
 
   const handleBack = () => {
     setPage(0)
@@ -147,15 +213,15 @@ export default function AddSharing() {
 
   const handleNext = () => {
     if (selectedItems.length === 0) {
-      showAlert('FAILED', 'Please select at least one user or community')
+      showAlert('FAILED', i18n.t('location.add.failedToSelect'))
       return
     }
-    setPage(1)
+    setPage(page + 1)
   }
 
   const handleConfirm = async () => {
     if (selectedItems.length === 0) {
-      showAlert('FAILED', 'Please select at least one user or community')
+      showAlert('FAILED', i18n.t('location.add.failedToSelect'))
       return
     }
 
@@ -185,19 +251,22 @@ export default function AddSharing() {
     } catch (error) {
       router.back()
       console.error('Error sharing location', error)
-      showAlert('FAILED', 'Failed to share location')
+      showAlert('FAILED', i18n.t('location.add.failedToShare'))
       Sentry.captureException(error)
     }
   }
 
-  const renderSearchItem = ({ item }) => (
-    <LocationSearchItem
-      item={item}
-      isSelected={selectedItems.some(
-        (selectedItem) => selectedItem.id === item.$id
-      )}
-      onSelectItem={() => handleSelectItem(item)}
-    />
+  const renderSearchItem = React.useCallback(
+    ({ item }) => (
+      <LocationSearchItem
+        item={item}
+        isSelected={selectedItems.some(
+          (selectedItem) => selectedItem.id === item.$id
+        )}
+        onSelectItem={() => handleSelectItem(item)}
+      />
+    ),
+    [selectedItems, handleSelectItem]
   )
 
   useFocusEffect(
@@ -229,12 +298,16 @@ export default function AddSharing() {
                     <Text>{i18n.t('main.loading')}</Text>
                   </View>
                 ) : (
-                  <FlatList
-                    data={searchResults}
-                    keyExtractor={(item) => item.$id}
-                    renderItem={renderSearchItem}
-                    className={'mb-24'}
-                  />
+                  <View className="h-full">
+                    <FlashList
+                      data={searchResults}
+                      keyExtractor={(item) => item.$id}
+                      renderItem={renderSearchItem}
+                      className={'mb-24'}
+                      estimatedItemSize={100}
+                      extraData={selectedItems}
+                    />
+                  </View>
                 )}
               </View>
             )}
@@ -243,54 +316,199 @@ export default function AddSharing() {
       )}
 
       {page === 1 && (
-        <View className={'flex-1 justify-center items-center'}>
-          <Text>
-            Thanks! Please choose how long you want to share your location with
-            them.
-          </Text>
-          <Button onPress={() => setDateOpen(true)}>
-            <Text>Select date and time</Text>
-          </Button>
-          <DatePicker
-            modal
-            open={dateOpen}
-            date={selectedTime || new Date()}
-            mode="date"
-            onConfirm={(date) => {
-              setDateOpen(false)
-              setSelectedTime(date)
-              setTimeOpen(true)
-            }}
-            onCancel={() => {
-              setDateOpen(false)
-            }}
-          />
-          <DatePicker
-            modal
-            open={timeOpen}
-            date={selectedTime || new Date()}
-            mode="time"
-            onConfirm={(time) => {
-              setTimeOpen(false)
-              selectedTime.setHours(time.getHours())
-              selectedTime.setMinutes(time.getMinutes())
-              setSelectedTime(selectedTime)
-            }}
-            onCancel={() => {
-              setTimeOpen(false)
-            }}
-          />
-        </View>
+        <ScrollView>
+          <View className="flex-1 justify-center items-center">
+            <View className="p-4 native:pb-24 max-w-md gap-4">
+              <View className="gap-1">
+                <H1 className="text-foreground text-center">
+                  {i18n.t('location.add.selectDuration')}
+                </H1>
+                <Muted className="text-base text-center">
+                  {i18n.t('location.add.selectDurationDescription')}
+                </Muted>
+              </View>
+              <View className="">
+                <RadioGroup
+                  value={selectedDuration}
+                  onValueChange={handleDurationChange}
+                >
+                  <RadioGroupItemWithLabel
+                    value="1h"
+                    label={i18n.t('location.add.1hour')}
+                    description={i18n.t('location.add.1hourDescription')}
+                    onLabelPress={() => handleDurationChange('1h')}
+                  />
+                  <RadioGroupItemWithLabel
+                    value="24h"
+                    label={i18n.t('location.add.24hours')}
+                    description={i18n.t('location.add.24hoursDescription')}
+                    onLabelPress={() => handleDurationChange('24h')}
+                  />
+                  <RadioGroupItemWithLabel
+                    value="7d"
+                    label={i18n.t('location.add.7days')}
+                    description={i18n.t('location.add.7daysDescription')}
+                    onLabelPress={() => handleDurationChange('7d')}
+                  />
+                  <RadioGroupItemWithLabel
+                    value="30d"
+                    label={i18n.t('location.add.30days')}
+                    description={i18n.t('location.add.30daysDescription')}
+                    onLabelPress={() => handleDurationChange('30d')}
+                  />
+                  <RadioGroupItemWithLabel
+                    value="unlimited"
+                    label={i18n.t('location.add.unlimited')}
+                    description={i18n.t('location.add.unlimitedDescription')}
+                    onLabelPress={() => handleDurationChange('unlimited')}
+                  />
+                  <RadioGroupItemWithLabel
+                    value="custom"
+                    label={i18n.t('location.add.custom')}
+                    description={i18n.t('location.add.customDescription')}
+                    onLabelPress={() => handleDurationChange('custom')}
+                  />
+                </RadioGroup>
+              </View>
+
+              {showCustomPicker && (
+                <View className="w-full gap-4 mt-4">
+                  <View className="flex-row justify-between items-center">
+                    <Text className="text-lg font-semibold">
+                      {i18n.t('location.add.customDateTime')}
+                    </Text>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onPress={() => setDateOpen(true)}
+                    >
+                      <Text>{i18n.t('location.add.selectDate')}</Text>
+                    </Button>
+                  </View>
+                  <View className="flex-row justify-between items-center">
+                    <Text className="text-lg font-semibold">
+                      {i18n.t('location.add.selectedTime')}
+                    </Text>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onPress={() => setTimeOpen(true)}
+                    >
+                      <Text>{i18n.t('location.add.selectTime')}</Text>
+                    </Button>
+                  </View>
+                  <View className="bg-muted p-4 rounded-lg">
+                    <Text className="text-center text-lg">
+                      {selectedTime?.toLocaleDateString() ||
+                        i18n.t('location.add.noDateSelected')}{' '}
+                      at{' '}
+                      {selectedTime?.toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      }) || i18n.t('location.add.noTimeSelected')}
+                    </Text>
+                  </View>
+                </View>
+              )}
+
+              <DatePicker
+                modal
+                open={dateOpen}
+                date={selectedTime || new Date()}
+                mode="date"
+                minimumDate={new Date()}
+                onConfirm={(date) => {
+                  setDateOpen(false)
+                  setSelectedTime(date)
+                  setTimeOpen(true)
+                }}
+                onCancel={() => {
+                  setDateOpen(false)
+                }}
+              />
+              <DatePicker
+                modal
+                open={timeOpen}
+                date={selectedTime || new Date()}
+                mode="time"
+                onConfirm={(time) => {
+                  setTimeOpen(false)
+                  const newTime = new Date(selectedTime || new Date())
+                  newTime.setHours(time.getHours())
+                  newTime.setMinutes(time.getMinutes())
+                  setSelectedTime(newTime)
+                }}
+                onCancel={() => {
+                  setTimeOpen(false)
+                }}
+              />
+            </View>
+          </View>
+        </ScrollView>
       )}
       {page === 2 && (
-        <View className={'flex-1 justify-center items-center'}>
-          <H2>Please wait...</H2>
-          <View className={'m-3 gap-4 flex items-center'}>
-            <Muted>
-              Your location is being shared with the selected users...
-            </Muted>
+        <>
+          <View className="flex-1">
+            <View className="p-4 native:pb-24 gap-4">
+              <View className="gap-1">
+                <H1 className="text-foreground text-center">
+                  {i18n.t('location.add.confirmSharing')}
+                </H1>
+                <Muted className="text-base text-center">
+                  {i18n.t('location.add.confirmSharingDescription')}
+                </Muted>
+              </View>
+
+              <View className="w-full">
+                {selectedItems.map((item) => {
+                  const user = searchResults.find((u) => u.$id === item.id)
+                  if (!user) return null
+
+                  return (
+                    <ConfirmSharingItem
+                      key={item.id}
+                      item={user}
+                      onRemove={() => handleRemoveItem(item.id)}
+                    />
+                  )
+                })}
+              </View>
+
+              <View className="mt-4">
+                <Muted className="text-center">
+                  {i18n.t('location.add.locationWillBeSharedUntil')}
+                  {selectedDuration === 'custom'
+                    ? selectedTime?.toLocaleDateString() +
+                      ' at ' +
+                      selectedTime?.toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })
+                    : selectedDuration === 'unlimited'
+                      ? 'January 1, 2100'
+                      : i18n.t('location.add.theSelectedDurationExpires')}
+                </Muted>
+              </View>
+            </View>
           </View>
-        </View>
+
+          <Button
+            className={
+              'absolute flex-row gap-2 left-6 bottom-4 mb-4 justify-center items-center h-12 w-12 self-start bg-primary rounded border border-primary'
+            }
+            onPress={handleBack}
+          >
+            <ArrowLeftIcon color={theme} />
+          </Button>
+          <Button
+            className={
+              'absolute flex-row gap-2 bottom-4 right-6 mb-4 justify-center items-center h-12 w-32 self-end bg-primary rounded border border-primary'
+            }
+            onPress={handleConfirm}
+          >
+            <Text>{i18n.t('main.confirm')}</Text>
+          </Button>
+        </>
       )}
       {selectedItems.length > 0 && page === 0 && (
         <Button
@@ -299,7 +517,7 @@ export default function AddSharing() {
           }
           onPress={handleNext}
         >
-          <Text>Next</Text>
+          <Text>{i18n.t('main.next')}</Text>
         </Button>
       )}
       {selectedItems.length > 0 && page === 1 && (
@@ -316,9 +534,9 @@ export default function AddSharing() {
             className={
               'absolute flex-row gap-2 bottom-4 right-6 mb-4 justify-center items-center h-12 w-32 self-end bg-primary rounded border border-primary'
             }
-            onPress={handleConfirm}
+            onPress={handleNext}
           >
-            <Text>Confirm</Text>
+            <Text>{i18n.t('main.next')}</Text>
           </Button>
         </>
       )}
