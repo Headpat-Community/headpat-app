@@ -33,7 +33,11 @@
   },
   "main": {
     "refreshing": "Refreshing...",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "next": "Next",
+    "back": "Back",
+    "confirm": "Confirm",
+    "cancel": "Cancel"
   },
   "time": {
     "ended": "Ended",
@@ -84,9 +88,39 @@
       }
     },
     "add": {
-      "search": "Search..."
+      "search": "Search...",
+      "failedToSearch": "Failed to search users or communities.",
+      "failedToSelect": "Failed to select user or community.",
+      "failedToShare": "Failed to share location.",
+      "selectDuration": "Select duration",
+      "selectDurationDescription": "Please select how long you want to share your location with them.",
+      "1hour": "1 hour",
+      "1hourDescription": "Share for one hour",
+      "24hours": "24 hours",
+      "24hoursDescription": "Share for one day",
+      "7days": "7 days",
+      "7daysDescription": "Share for one week",
+      "30days": "30 days",
+      "30daysDescription": "Share for one month",
+      "unlimited": "Unlimited",
+      "unlimitedDescription": "Share until manually revoked",
+      "custom": "Custom",
+      "customDescription": "Choose a specific date and time",
+      "customDateTime": "Custom Date & Time",
+      "selectedTime": "Selected Time",
+      "selectTime": "Select Time",
+      "selectDate": "Select Date",
+      "noDateSelected": "No date selected",
+      "noTimeSelected": "No time selected",
+      "selectDateAndTime": "Select Date & Time",
+      "confirmSharing": "Confirm Sharing",
+      "confirmSharingDescription": "You're about to share your location with the following users:",
+      "locationWillBeSharedUntil": "Your location will be shared until",
+      "theSelectedDurationExpires": "The selected duration expires"
     },
     "map": {
+      "failedToFetchEvents": "Failed to fetch events.",
+      "failedToFetchLocations": "Failed to fetch locations.",
       "status": {
         "title": "What are you up to?",
         "description": "Let others know what you are up to. You can always change this later.",

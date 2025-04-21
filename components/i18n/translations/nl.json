@@ -33,7 +33,11 @@
   },
   "main": {
     "refreshing": "Vernieuwen...",
-    "loading": "Laden..."
+    "loading": "Laden...",
+    "next": "Volgende",
+    "back": "Terug",
+    "confirm": "Bevestigen",
+    "cancel": "Annuleren"
   },
   "time": {
     "ended": "Beëindigd",
@@ -84,9 +88,39 @@
       }
     },
     "add": {
-      "search": "Zoek..."
+      "search": "Zoeken...",
+      "failedToSearch": "Zoeken naar gebruikers of communities is mislukt.",
+      "failedToSelect": "Gebruiker of community selecteren is mislukt.",
+      "failedToShare": "Locatie delen is mislukt.",
+      "selectDuration": "Duratie selecteren",
+      "selectDurationDescription": "Selecteer hoe lang je je locatie wilt delen met hen.",
+      "1hour": "1 uur",
+      "1hourDescription": "Deel voor 1 uur",
+      "24hours": "24 uur",
+      "24hoursDescription": "Deel voor 1 dag",
+      "7days": "7 dagen",
+      "7daysDescription": "Deel voor 1 week",
+      "30days": "30 dagen",
+      "30daysDescription": "Deel voor 1 maand",
+      "unlimited": "Onbeperkt",
+      "unlimitedDescription": "Deel tot je het handmatig intrekt",
+      "custom": "Aangepast",
+      "customDescription": "Kies een specifiek datum en tijd",
+      "customDateTime": "Aangepast datum & tijd",
+      "selectedTime": "Geselecteerde tijd",
+      "selectTime": "Tijd selecteren",
+      "selectDate": "Datum selecteren",
+      "noDateSelected": "Geen datum geselecteerd",
+      "noTimeSelected": "Geen tijd geselecteerd",
+      "selectDateAndTime": "Datum & tijd selecteren",
+      "confirmSharing": "Delen bevestigen",
+      "confirmSharingDescription": "Je gaat je locatie delen met de volgende gebruikers:",
+      "locationWillBeSharedUntil": "Je locatie wordt gedeeld tot",
+      "theSelectedDurationExpires": "De geselecteerde duur verloopt"
     },
     "map": {
+      "failedToFetchEvents": "Evenementen ophalen is mislukt.",
+      "failedToFetchLocations": "Locaties ophalen is mislukt.",
       "status": {
         "title": "Wat ben je aan het doen?",
         "description": "Laat anderen weten wat je aan het doen bent. Je kunt dit later altijd wijzigen.",

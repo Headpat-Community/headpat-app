@@ -33,7 +33,11 @@
   },
   "main": {
     "refreshing": "Aktualisieren...",
-    "loading": "Laden..."
+    "loading": "Laden...",
+    "next": "Weiter",
+    "back": "Zurück",
+    "confirm": "Bestätigen",
+    "cancel": "Abbrechen"
   },
   "time": {
     "ended": "Beendet",
@@ -84,9 +88,39 @@
       }
     },
     "add": {
-      "search": "Suchen..."
+      "search": "Suchen...",
+      "failedToSearch": "Fehler beim Suchen von Benutzern oder Communities.",
+      "failedToSelect": "Fehler beim Auswählen von Benutzer oder Community.",
+      "failedToShare": "Fehler beim Teilen des Standorts.",
+      "selectDuration": "Dauer auswählen",
+      "selectDurationDescription": "Bitte wähle aus, wie lange du deinen Standort mit ihnen teilen möchtest.",
+      "1hour": "1 Stunde",
+      "1hourDescription": "Teile für eine Stunde",
+      "24hours": "24 Stunden",
+      "24hoursDescription": "Teile für einen Tag",
+      "7days": "7 Tage",
+      "7daysDescription": "Teile für eine Woche",
+      "30days": "30 Tage",
+      "30daysDescription": "Teile für einen Monat",
+      "unlimited": "Unbegrenzt",
+      "unlimitedDescription": "Teile bis du es manuell widerrufst",
+      "custom": "Benutzerdefiniert",
+      "customDescription": "Wähle einen bestimmten Datum und eine Uhrzeit",
+      "customDateTime": "Benutzerdefiniertes Datum & Zeit",
+      "selectedTime": "Ausgewählte Zeit",
+      "selectTime": "Zeit auswählen",
+      "selectDate": "Datum auswählen",
+      "noDateSelected": "Kein Datum ausgewählt",
+      "noTimeSelected": "Keine Uhrzeit ausgewählt",
+      "selectDateAndTime": "Datum & Zeit auswählen",
+      "confirmSharing": "Bestätigen",
+      "confirmSharingDescription": "Du teilst deinen Standort mit den folgenden Benutzern:",
+      "locationWillBeSharedUntil": "Dein Standort wird bis",
+      "theSelectedDurationExpires": "Die ausgewählte Dauer läuft ab"
     },
     "map": {
+      "failedToFetchEvents": "Fehler beim Abrufen der Veranstaltungen.",
+      "failedToFetchLocations": "Fehler beim Abrufen der Standorte.",
       "status": {
         "title": "Was machst du gerade?",
         "description": "Lass andere wissen, was du gerade machst. Du kannst dies später jederzeit ändern.",
