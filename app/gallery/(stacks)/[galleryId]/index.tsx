@@ -230,7 +230,7 @@ export default function HomeView() {
             allowsFullscreen
             allowsPictureInPicture
           />
-        ) : image?.nsfw ? (
+        ) : image?.nsfw && !current?.prefs?.nsfw ? (
           image?.blurHash ? (
             <Blurhash
               blurhash={image.blurHash}
@@ -275,47 +275,47 @@ export default function HomeView() {
               <ReportGalleryModal
                 image={image}
                 open={reportGalleryModalOpen}
-            setOpen={setReportGalleryModalOpen}
-          />
-          <AlertDialog
-            onOpenChange={setModerationModalOpen}
-            open={moderationModalOpen}
-          >
-            <AlertDialogTrigger asChild>
-              <Button className={'text-center'} variant={'destructive'}>
-                <ShieldAlertIcon color={'white'} />
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent className={'w-full'}>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Moderation</AlertDialogTitle>
-                <AlertDialogDescription>
-                  What would you like to do?
-                </AlertDialogDescription>
-                <View className={'gap-4'}>
-                  <Button
-                    className={'text-center flex flex-row items-center'}
-                    variant={'destructive'}
-                    onPress={handleReport}
-                  >
-                    <Text>Report</Text>
+                setOpen={setReportGalleryModalOpen}
+              />
+              <AlertDialog
+                onOpenChange={setModerationModalOpen}
+                open={moderationModalOpen}
+              >
+                <AlertDialogTrigger asChild>
+                  <Button className={'text-center'} variant={'destructive'}>
+                    <ShieldAlertIcon color={'white'} />
                   </Button>
-                  <Button
-                    className={'text-center flex flex-row items-center'}
-                    variant={'destructive'}
-                    onPress={handleHide}
-                  >
-                    <Text>{imagePrefs?.isHidden ? 'Unhide' : 'Hide'}</Text>
-                  </Button>
-                </View>
-              </AlertDialogHeader>
-              <AlertDialogFooter className={'mt-8'}>
-                <AlertDialogAction>
-                  <Text>Cancel</Text>
-                </AlertDialogAction>
-              </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+                </AlertDialogTrigger>
+                <AlertDialogContent className={'w-full'}>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Moderation</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      What would you like to do?
+                    </AlertDialogDescription>
+                    <View className={'gap-4'}>
+                      <Button
+                        className={'text-center flex flex-row items-center'}
+                        variant={'destructive'}
+                        onPress={handleReport}
+                      >
+                        <Text>Report</Text>
+                      </Button>
+                      <Button
+                        className={'text-center flex flex-row items-center'}
+                        variant={'destructive'}
+                        onPress={handleHide}
+                      >
+                        <Text>{imagePrefs?.isHidden ? 'Unhide' : 'Hide'}</Text>
+                      </Button>
+                    </View>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter className={'mt-8'}>
+                    <AlertDialogAction>
+                      <Text>Cancel</Text>
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </>
           )}
         </View>
