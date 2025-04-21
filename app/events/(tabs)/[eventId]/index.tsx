@@ -1,6 +1,6 @@
 import { RefreshControl, ScrollView, View } from 'react-native'
 import { H1, Muted } from '~/components/ui/typography'
-import { Stack, useLocalSearchParams } from 'expo-router'
+import { router, Stack, useLocalSearchParams } from 'expo-router'
 import { Events } from '~/lib/types/collections'
 import { databases, functions } from '~/lib/appwrite-client'
 import React from 'react'
@@ -19,6 +19,7 @@ import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { useFocusEffect } from '@react-navigation/core'
 import { Button } from '~/components/ui/button'
 import { i18n } from '~/components/system/i18n'
+import { useUser } from '~/components/contexts/UserContext'
 
 export default function EventPage() {
   const local = useLocalSearchParams()
@@ -27,6 +28,7 @@ export default function EventPage() {
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
   const { showAlert } = useAlertModal()
+  const { current } = useUser()
 
   const fetchEvents = async () => {
     try {
@@ -256,11 +258,13 @@ export default function EventPage() {
               variant={'default'}
               className={'flex-1 p-0'}
               onPress={
-                isEventEnded
-                  ? null
-                  : event.isAttending
-                    ? unattendEvent
-                    : attendEvent
+                !current
+                  ? () => router.push('/login')
+                  : isEventEnded
+                    ? null
+                    : event.isAttending
+                      ? unattendEvent
+                      : attendEvent
               }
               disabled={isEventEnded}
             >
