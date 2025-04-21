@@ -102,8 +102,8 @@ const loggedInPushNotifications = async () => {
 
 export const updatePushTargetWithAppwrite = async (fcmToken: string) => {
   // If is simulator, don't update push target
-  const targetId = await kv.getItem('targetId')
   if (!fcmToken) return
+  const targetId = await kv.getItem('targetId')
   let session: Account.AccountPrefs
   try {
     session = await account.get()
