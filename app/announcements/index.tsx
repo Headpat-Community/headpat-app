@@ -1,6 +1,6 @@
-import { RefreshControl, FlatList, View } from 'react-native'
+import { RefreshControl, View } from 'react-native'
 import { H1 } from '~/components/ui/typography'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useState, useMemo } from 'react'
 import { Announcements } from '~/lib/types/collections'
 import { databases } from '~/lib/appwrite-client'
 import { Query } from 'react-native-appwrite'
@@ -12,77 +12,110 @@ import { Text } from '~/components/ui/text'
 import AnnouncementItem from '~/components/FlatlistItems/AnnouncementItem'
 import { useFocusEffect } from '@react-navigation/core'
 import { i18n } from '~/components/system/i18n'
+import { FlashList } from '@shopify/flash-list'
+
+const PAGE_SIZE = 50
 
 export default function AnnouncementsPage() {
   const [announcements, setAnnouncements] =
-    useState<Announcements.AnnouncementDataType>(null)
+    useState<Announcements.AnnouncementDataType | null>(null)
   const [refreshing, setRefreshing] = useState<boolean>(false)
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
   const [offset, setOffset] = useState<number>(0)
   const [hasMore, setHasMore] = useState<boolean>(true)
   const { showAlert } = useAlertModal()
 
-  const fetchAnnouncements = async (newOffset: number = 0) => {
-    try {
-      const currentDate = new Date()
-
-      const data: Announcements.AnnouncementDataType =
-        await databases.listDocuments('hp_db', 'announcements', [
+  const fetchAnnouncements = useCallback(
+    async (newOffset: number = 0) => {
+      try {
+        const currentDate = new Date()
+        const queries = [
           Query.orderAsc('validUntil'),
           Query.greaterThanEqual('validUntil', currentDate.toISOString()),
-          Query.limit(20),
+          Query.limit(PAGE_SIZE),
           Query.offset(newOffset),
-        ])
+        ]
 
-      const newAnnouncements = data.documents
+        const data =
+          await databases.listDocuments<Announcements.AnnouncementDocumentsType>(
+            'hp_db',
+            'announcements',
+            queries
+          )
 
-      if (newOffset === 0) {
-        setAnnouncements(data)
-      } else {
-        setAnnouncements((prev) => ({
-          ...prev,
-          documents: [...prev.documents, ...newAnnouncements],
-        }))
+        if (!data || !data.documents) {
+          throw new Error('Invalid response from server')
+        }
+
+        setAnnouncements((prev) => {
+          if (newOffset === 0) {
+            return {
+              total: data.total,
+              documents: data.documents,
+            }
+          }
+          return {
+            total: data.total,
+            documents: [...(prev?.documents || []), ...data.documents],
+          }
+        })
+
+        setHasMore(data.documents.length === PAGE_SIZE)
+      } catch (error) {
+        console.error('Error fetching announcements:', error)
+        showAlert(
+          'FAILED',
+          'Failed to fetch announcements. Please try again later.'
+        )
+        Sentry.captureException(error)
+      } finally {
+        setRefreshing(false)
+        setLoadingMore(false)
       }
-
-      // Check if there are more announcements to load
-      setHasMore(newAnnouncements.length === 20)
-    } catch (error) {
-      showAlert('FAILED', 'Failed to fetch events. Please try again later.')
-      Sentry.captureException(error)
-    } finally {
-      setRefreshing(false)
-    }
-  }
+    },
+    [showAlert]
+  )
 
   useFocusEffect(
     useCallback(() => {
       onRefresh()
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
   )
 
-  const onRefresh = () => {
+  const onRefresh = useCallback(() => {
     setRefreshing(true)
     setOffset(0)
-    fetchAnnouncements(0).then()
-  }
+    fetchAnnouncements(0)
+  }, [fetchAnnouncements])
 
-  const loadMore = async () => {
+  const loadMore = useCallback(async () => {
     if (!loadingMore && hasMore) {
       setLoadingMore(true)
-      const newOffset = offset + 20
+      const newOffset = offset + PAGE_SIZE
       setOffset(newOffset)
       await fetchAnnouncements(newOffset)
-      setLoadingMore(false)
     }
-  }
+  }, [loadingMore, hasMore, offset, fetchAnnouncements])
+
+  const renderItem = useCallback(
+    ({ item }: { item: Announcements.AnnouncementDocumentsType }) => (
+      <AnnouncementItem announcement={item} />
+    ),
+    []
+  )
+
+  const keyExtractor = useCallback(
+    (item: Announcements.AnnouncementDocumentsType) => item.$id,
+    []
+  )
+
+  const estimatedItemSize = useMemo(() => 200, []) // Adjust based on your average item height
 
   if (refreshing && !announcements) {
     return <SlowInternet />
   }
 
-  if ((!refreshing && announcements?.total === 0) || !announcements)
+  if ((!refreshing && announcements?.total === 0) || !announcements) {
     return (
       <ScrollView
         refreshControl={
@@ -100,21 +133,25 @@ export default function AnnouncementsPage() {
         </View>
       </ScrollView>
     )
+  }
 
   return (
-    <FlatList
-      data={!refreshing && announcements?.documents}
-      keyExtractor={(item) => item.$id}
-      onRefresh={onRefresh}
-      refreshing={refreshing}
-      contentContainerStyle={{ padding: 8 }}
-      contentInsetAdjustmentBehavior={'automatic'}
-      onEndReached={loadMore}
-      onEndReachedThreshold={0.5}
-      ListFooterComponent={
-        loadingMore ? <Text>{i18n.t('main.loading')}</Text> : null
-      }
-      renderItem={({ item }) => <AnnouncementItem announcement={item} />}
-    />
+    <View style={{ flex: 1 }}>
+      <FlashList
+        data={!refreshing ? announcements?.documents : []}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+        estimatedItemSize={estimatedItemSize}
+        onRefresh={onRefresh}
+        refreshing={refreshing}
+        contentContainerStyle={{ padding: 8 }}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.5}
+        contentInsetAdjustmentBehavior={'automatic'}
+        ListFooterComponent={
+          loadingMore ? <Text>{i18n.t('main.loading')}</Text> : null
+        }
+      />
+    </View>
   )
 }
