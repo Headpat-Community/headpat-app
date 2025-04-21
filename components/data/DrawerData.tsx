@@ -33,8 +33,6 @@ import DiscordIcon from '~/components/icons/DiscordIcon'
 import { Muted } from '~/components/ui/typography'
 import * as React from 'react'
 import { i18n } from '~/components/system/i18n'
-import { setAndroidNavigationBar } from '~/lib/android-navigation-bar'
-import kv from 'expo-sqlite/kv-store'
 
 export function HeaderMenuSidebar() {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null)
