@@ -3,7 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react'
 import { account } from '~/lib/appwrite-client'
 import { Account } from '~/lib/types/collections'
 import kv from 'expo-sqlite/kv-store'
-import * as Sentry from '@sentry/react-native'
+import { captureException } from '@sentry/react-native'
 
 interface UserContextValue {
   current: Account.AccountType | null
@@ -126,6 +126,6 @@ export const updatePushTargetWithAppwrite = async (fcmToken: string) => {
     await kv.setItem('targetId', target.$id)
   } catch (error) {
     console.error('Failed to create push target in Appwrite:', error)
-    Sentry.captureException(error)
+    captureException(error)
   }
 }

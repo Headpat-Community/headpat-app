@@ -1,14 +1,22 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { Alert } from 'react-native'
-import * as Location from 'expo-location'
-import * as BackgroundFetch from 'expo-background-fetch'
-import * as TaskManager from 'expo-task-manager'
+import {
+  requestForegroundPermissionsAsync,
+  requestBackgroundPermissionsAsync,
+  getForegroundPermissionsAsync,
+  getBackgroundPermissionsAsync,
+  startLocationUpdatesAsync,
+  stopLocationUpdatesAsync,
+  Accuracy,
+} from 'expo-location'
+import { BackgroundFetchStatus, getStatusAsync } from 'expo-background-fetch'
+import { isTaskRegisteredAsync } from 'expo-task-manager'
 import { databases } from '~/lib/appwrite-client'
 import { useUser } from '~/components/contexts/UserContext'
-import * as Sentry from '@sentry/react-native'
+import { addBreadcrumb, captureException } from '@sentry/react-native'
 
 interface LocationContextValue {
-  status: BackgroundFetch.BackgroundFetchStatus | null
+  status: BackgroundFetchStatus | null
   isRegistered: boolean
   checkStatus: () => Promise<void>
   requestPermissions: () => Promise<void>
@@ -35,8 +43,7 @@ interface LocationProviderProps {
 export const LocationProvider: React.FC<LocationProviderProps> = ({
   children,
 }) => {
-  const [status, setStatus] =
-    useState<BackgroundFetch.BackgroundFetchStatus | null>(null)
+  const [status, setStatus] = useState<BackgroundFetchStatus | null>(null)
   const [isRegistered, setIsRegistered] = useState<boolean | null>(null)
   const { current } = useUser()
 
@@ -48,8 +55,8 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
   }, [])
 
   const checkStatus = async () => {
-    const BackgroundStatus = await BackgroundFetch.getStatusAsync()
-    const isRegisteredTask = await TaskManager.isTaskRegisteredAsync(
+    const BackgroundStatus = await getStatusAsync()
+    const isRegisteredTask = await isTaskRegisteredAsync(
       'background-location-task'
     )
     setStatus(BackgroundStatus)
@@ -65,16 +72,14 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
   }
 
   const requestPermissions = async () => {
-    const { granted: fgGranted } =
-      await Location.requestForegroundPermissionsAsync()
+    const { granted: fgGranted } = await requestForegroundPermissionsAsync()
     if (!fgGranted) {
       return Alert.alert(
         'Location Access Required',
         'Headpat requires your location to share with users.'
       )
     }
-    const { granted: bgGranted } =
-      await Location.requestBackgroundPermissionsAsync()
+    const { granted: bgGranted } = await requestBackgroundPermissionsAsync()
     if (!bgGranted) {
       return Alert.alert(
         'Location Access Required',
@@ -84,6 +89,10 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
   }
 
   const registerBackgroundFetch = async () => {
+    addBreadcrumb({
+      message: 'registerBackgroundFetch',
+      level: 'info',
+    })
     if (isRegistered) {
       await checkStatus()
       return Alert.alert('Error', 'You are already sharing your location.')
@@ -93,10 +102,14 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
       return Alert.alert('Error', 'No user ID found. Are you logged in?')
     }
 
+    addBreadcrumb({
+      message: 'requestPermissions',
+      level: 'info',
+    })
     await requestPermissions()
 
-    let foreground = await Location.getForegroundPermissionsAsync()
-    let background = await Location.getBackgroundPermissionsAsync()
+    let foreground = await getForegroundPermissionsAsync()
+    let background = await getBackgroundPermissionsAsync()
     if (foreground.status !== 'granted' || background.status !== 'granted') {
       return Alert.alert('Error', 'Location permissions not granted')
     }
@@ -111,14 +124,18 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
       })
     }
 
-    await Location.startLocationUpdatesAsync('background-location-task', {
-      accuracy: Location.Accuracy.Balanced,
+    addBreadcrumb({
+      message: 'startLocationUpdatesAsync',
+      level: 'info',
+    })
+    await startLocationUpdatesAsync('background-location-task', {
+      accuracy: Accuracy.Balanced,
       showsBackgroundLocationIndicator: false,
       pausesUpdatesAutomatically: true,
       distanceInterval: 10,
       timeInterval: 10000,
     }).catch((e) => {
-      Sentry.captureException(e)
+      captureException(e)
       Alert.alert('Error', 'Failed to start location updates')
       return
     })
@@ -128,17 +145,22 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
   }
 
   const unregisterBackgroundFetch = async () => {
+    addBreadcrumb({
+      message: 'unregisterBackgroundFetch',
+      level: 'info',
+    })
     if (!isRegistered) {
       await checkStatus()
       return Alert.alert('Error', 'You are not sharing your location.')
     }
-    await Location.stopLocationUpdatesAsync('background-location-task')
+    await stopLocationUpdatesAsync('background-location-task')
 
     try {
       console.log('deleting location document')
       await databases.deleteDocument('hp_db', 'locations', current?.$id)
     } catch (e) {
       console.error('Failed to delete document:', e)
+      captureException(e)
     }
 
     setIsRegistered(false)

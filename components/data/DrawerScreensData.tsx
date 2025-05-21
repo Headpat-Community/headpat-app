@@ -99,7 +99,7 @@ export const DrawerScreensData: DrawerProps[] = [
     headerLeft: <HeaderSidebarBackButton />,
   },
   {
-    location: 'gallery/(stacks)/index',
+    location: 'gallery/(stacks)/(list)',
     title: i18n.t('screens.gallery'),
     headerLeft: <HeaderSidebarBackButton />,
     headerRight: <GalleryAddButton />,
