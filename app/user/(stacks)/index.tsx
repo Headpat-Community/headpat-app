@@ -17,7 +17,7 @@ export default function UserListPage() {
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
   const [offset, setOffset] = useState<number>(0)
   const [hasMore, setHasMore] = useState<boolean>(true)
-  const { getAllCache, saveAllCache } = useDataCache()
+  const { saveAllCache } = useDataCache()
   const { showAlert } = useAlertModal()
 
   const fetchUsers = async (newOffset: number = 0) => {
@@ -27,7 +27,7 @@ export default function UserListPage() {
         'userdata',
         [
           Query.orderDesc('$createdAt'),
-          Query.limit(20),
+          Query.limit(50),
           Query.offset(newOffset),
         ]
       )
@@ -43,7 +43,7 @@ export default function UserListPage() {
       }
 
       // Check if there are more users to load
-      setHasMore(newUsers.length === 20)
+      setHasMore(newUsers.length === 50)
     } catch (error) {
       showAlert('FAILED', 'Failed to fetch users. Please try again later.')
       Sentry.captureException(error)
@@ -60,7 +60,7 @@ export default function UserListPage() {
   const loadMore = async () => {
     if (!loadingMore && hasMore) {
       setLoadingMore(true)
-      const newOffset = offset + 20
+      const newOffset = offset + 50
       setOffset(newOffset)
       await fetchUsers(newOffset)
       setLoadingMore(false)
