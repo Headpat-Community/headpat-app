@@ -38,8 +38,7 @@ import { Skeleton } from '~/components/ui/skeleton'
 import { useDataCache } from '~/components/contexts/DataCacheContext'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { useQuery } from '@tanstack/react-query'
-
-const UserActions = React.lazy(() => import('~/components/user/UserActions'))
+import UserActions from '~/components/user/UserActions'
 
 export default function UserPage() {
   const { isDarkColorScheme } = useColorScheme()

@@ -23,10 +23,7 @@ import { Account, UserData } from '~/lib/types/collections'
 import { addFollow } from '~/components/user/api/addFollow'
 import { removeFollow } from '~/components/user/api/removeFollow'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
-
-const ReportUserModal = React.lazy(
-  () => import('~/components/user/moderation/ReportUserModal')
-)
+import ReportUserModal from '~/components/user/moderation/ReportUserModal'
 
 interface UserActionsProps {
   userData: UserData.UserDataDocumentsType

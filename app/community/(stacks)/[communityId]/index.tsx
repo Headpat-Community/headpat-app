@@ -17,10 +17,7 @@ import { Badge } from '~/components/ui/badge'
 import { Skeleton } from '~/components/ui/skeleton'
 import { hasAdminPanelAccess } from '~/components/community/hasPermission'
 import { useDataCache } from '~/components/contexts/DataCacheContext'
-
-const CommunityActions = React.lazy(
-  () => import('~/components/community/CommunityActions')
-)
+import CommunityActions from '~/components/community/CommunityActions'
 
 export default function UserPage() {
   const { isDarkColorScheme } = useColorScheme()
