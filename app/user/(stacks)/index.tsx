@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { FlashList } from '@shopify/flash-list'
 import { databases } from '~/lib/appwrite-client'
 import * as Sentry from '@sentry/react-native'
@@ -10,66 +10,61 @@ import { i18n } from '~/components/system/i18n'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { Text } from '~/components/ui/text'
 import { View } from 'react-native'
+import { useInfiniteQuery } from '@tanstack/react-query'
+
+const PAGE_SIZE = 50
 
 export default function UserListPage() {
-  const [users, setUsers] = useState<UserData.UserDataDocumentsType[]>([])
-  const [refreshing, setRefreshing] = useState<boolean>(false)
-  const [loadingMore, setLoadingMore] = useState<boolean>(false)
-  const [offset, setOffset] = useState<number>(0)
-  const [hasMore, setHasMore] = useState<boolean>(true)
   const { saveAllCache } = useDataCache()
   const { showAlert } = useAlertModal()
 
-  const fetchUsers = async (newOffset: number = 0) => {
-    try {
-      const data: UserData.UserDataType = await databases.listDocuments(
-        'hp_db',
-        'userdata',
-        [
-          Query.orderDesc('$createdAt'),
-          Query.limit(50),
-          Query.offset(newOffset),
-        ]
-      )
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isRefetching,
+    refetch,
+  } = useInfiniteQuery({
+    queryKey: ['users'],
+    queryFn: async ({ pageParam = 0 }) => {
+      try {
+        const data: UserData.UserDataType = await databases.listDocuments(
+          'hp_db',
+          'userdata',
+          [
+            Query.orderDesc('$createdAt'),
+            Query.limit(PAGE_SIZE),
+            Query.offset(pageParam * PAGE_SIZE),
+          ]
+        )
 
-      const newUsers = data.documents
-
-      if (newOffset === 0) {
-        setUsers(newUsers)
-        saveAllCache('users', newUsers)
-      } else {
-        saveAllCache('users', [...users, ...newUsers])
-        setUsers((prevUsers) => [...prevUsers, ...newUsers])
+        // Save to cache
+        saveAllCache('users', data.documents)
+        return data.documents
+      } catch (error) {
+        showAlert('FAILED', 'Failed to fetch users. Please try again later.')
+        Sentry.captureException(error)
+        throw error
       }
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === PAGE_SIZE ? allPages.length : undefined
+    },
+    initialPageParam: 0,
+  })
 
-      // Check if there are more users to load
-      setHasMore(newUsers.length === 50)
-    } catch (error) {
-      showAlert('FAILED', 'Failed to fetch users. Please try again later.')
-      Sentry.captureException(error)
+  const users = data?.pages.flat() ?? []
+
+  const onRefresh = () => {
+    refetch()
+  }
+
+  const loadMore = () => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage()
     }
   }
-
-  const onRefresh = async () => {
-    setRefreshing(true)
-    setOffset(0)
-    await fetchUsers(0)
-    setRefreshing(false)
-  }
-
-  const loadMore = async () => {
-    if (!loadingMore && hasMore) {
-      setLoadingMore(true)
-      const newOffset = offset + 50
-      setOffset(newOffset)
-      await fetchUsers(newOffset)
-      setLoadingMore(false)
-    }
-  }
-
-  useEffect(() => {
-    fetchUsers(0).then()
-  }, [])
 
   const renderItem = ({ item }: { item: UserData.UserDataDocumentsType }) => (
     <UserItem user={item} />
@@ -83,13 +78,13 @@ export default function UserListPage() {
           keyExtractor={(item) => item.$id}
           renderItem={renderItem}
           onRefresh={onRefresh}
-          refreshing={refreshing}
+          refreshing={isRefetching}
           numColumns={3}
           estimatedItemSize={150}
           onEndReached={loadMore}
           onEndReachedThreshold={0.5}
           ListFooterComponent={
-            loadingMore ? <Text>{i18n.t('main.loading')}</Text> : null
+            isFetchingNextPage ? <Text>{i18n.t('main.loading')}</Text> : null
           }
         />
       </View>

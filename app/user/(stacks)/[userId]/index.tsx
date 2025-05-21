@@ -7,9 +7,9 @@ import {
 } from 'react-native'
 import { H3, Muted } from '~/components/ui/typography'
 import { Link, useLocalSearchParams } from 'expo-router'
-import React, { Suspense, useCallback, useEffect, useState } from 'react'
+import React, { Suspense } from 'react'
 import { UserData } from '~/lib/types/collections'
-import { functions } from '~/lib/appwrite-client'
+import { databases } from '~/lib/appwrite-client'
 import { Image } from 'expo-image'
 import { Text } from '~/components/ui/text'
 import {
@@ -30,13 +30,14 @@ import * as WebBrowser from 'expo-web-browser'
 import * as Sentry from '@sentry/react-native'
 import * as Clipboard from 'expo-clipboard'
 import { useUser } from '~/components/contexts/UserContext'
-import { ExecutionMethod } from 'react-native-appwrite'
+import { Query } from 'react-native-appwrite'
 import sanitizeHtml from 'sanitize-html'
 import HTMLView from 'react-native-htmlview'
 import { Badge } from '~/components/ui/badge'
 import { Skeleton } from '~/components/ui/skeleton'
 import { useDataCache } from '~/components/contexts/DataCacheContext'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
+import { useQuery } from '@tanstack/react-query'
 
 const UserActions = React.lazy(() => import('~/components/user/UserActions'))
 
@@ -44,41 +45,88 @@ export default function UserPage() {
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
   const local = useLocalSearchParams()
-  const [userData, setUserData] =
-    useState<UserData.UserProfileDocumentsType>(null)
-  const [refreshing, setRefreshing] = useState<boolean>(false)
   const { current } = useUser()
-  const { getCache, saveCache } = useDataCache()
+  const { saveCache, getCacheSync } = useDataCache()
   const { showAlert } = useAlertModal()
 
-  const fetchUser = useCallback(async () => {
-    setRefreshing(true)
-    const cache = await getCache<UserData.UserDataDocumentsType>(
-      'users',
-      `${local?.userId}`
-    )
-    if (cache) {
-      setUserData(cache.data as UserData.UserProfileDocumentsType)
-      setRefreshing(false)
-    }
+  const {
+    data: userData,
+    isLoading,
+    isRefetching,
+    refetch,
+  } = useQuery<UserData.UserProfileDocumentsType>({
+    queryKey: ['user', local?.userId],
+    queryFn: async () => {
+      try {
+        console.log('Fetching fresh data for user:', local?.userId)
+        const [userData, followers, following] = await Promise.all([
+          // Get user data
+          databases.getDocument<UserData.UserProfileDocumentsType>(
+            'hp_db',
+            'userdata',
+            local?.userId as string
+          ),
+          // Get followers
+          databases.listDocuments('hp_db', 'followers', [
+            Query.equal('followerId', local?.userId as string),
+            Query.limit(1),
+          ]),
+          // Get following
+          databases.listDocuments('hp_db', 'followers', [
+            Query.equal('userId', local?.userId as string),
+            Query.limit(1),
+          ]),
+        ])
 
-    try {
-      const dataUser = await functions.createExecution(
-        'user-endpoints',
-        '',
-        false,
-        `/user/profile?userId=${local?.userId}`,
-        ExecutionMethod.GET
+        console.log('Raw data:', { userData, followers, following })
+
+        // Combine the data
+        const combinedData: UserData.UserProfileDocumentsType = {
+          ...userData,
+          followersCount: followers.total,
+          followingCount: following.total,
+        }
+
+        console.log('Combined data:', combinedData)
+
+        // Save to cache
+        saveCache('users', `${local?.userId}`, combinedData)
+        return combinedData
+      } catch (error) {
+        console.error('Error fetching user data:', error)
+        Sentry.captureException(error)
+        throw error
+      }
+    },
+    initialData: () => {
+      // Try to get from cache first
+      const cache = getCacheSync<UserData.UserDataDocumentsType>(
+        'users',
+        `${local?.userId}`
       )
-      const dataUserJson = JSON.parse(dataUser.responseBody)
-      saveCache('users', `${local?.userId}`, dataUserJson)
-      setUserData(dataUserJson)
-    } catch (error) {
-      Sentry.captureException(error)
-    } finally {
-      setRefreshing(false)
-    }
-  }, [getCache, local?.userId, saveCache])
+      console.log('Cache data:', cache)
+
+      if (cache?.data) {
+        // Ensure the cached data has the counts
+        const cachedData = cache.data as UserData.UserProfileDocumentsType
+        if (
+          cachedData.followersCount === undefined ||
+          cachedData.followingCount === undefined
+        ) {
+          console.log('Cache missing counts, will fetch fresh data')
+          return undefined // Force a fresh fetch if counts are missing
+        }
+        return cachedData
+      }
+      return undefined
+    },
+    enabled: !!local?.userId,
+    // For social media, we want to keep data fresh
+    staleTime: 300 * 1000, // Consider data stale after 5 minutes
+    refetchOnMount: true, // Always refetch when component mounts
+    refetchOnWindowFocus: true, // Refetch when window regains focus
+    refetchOnReconnect: true, // Refetch when network reconnects
+  })
 
   const getUserAvatar = (avatarId: string) => {
     return avatarId
@@ -92,16 +140,11 @@ export default function UserPage() {
       : null
   }
 
-  useEffect(() => {
-    fetchUser().then()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [local.userId])
-
-  if (refreshing || !userData)
+  if (isLoading || !userData)
     return (
       <ScrollView
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={fetchUser} />
+          <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
         }
       >
         <View style={{ padding: 16, gap: 16 }}>
@@ -145,7 +188,7 @@ export default function UserPage() {
   return (
     <ScrollView
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={fetchUser} />
+        <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
       }
     >
       {userData.prefs?.isBlocked && (
@@ -182,7 +225,10 @@ export default function UserPage() {
             <Suspense>
               <UserActions
                 userData={userData}
-                setUserData={setUserData}
+                setUserData={(data) => {
+                  // Update the query cache with new data
+                  saveCache('users', `${local?.userId}`, data)
+                }}
                 current={current}
               />
             </Suspense>
@@ -248,11 +294,7 @@ export default function UserPage() {
                       color={theme}
                       style={{ marginRight: 4 }}
                     />
-                    {userData.followersCount !== undefined ? (
-                      <Muted>{userData?.followersCount} Followers</Muted>
-                    ) : (
-                      <Skeleton className={'w-16 h-4'} />
-                    )}
+                    <Muted>{userData?.followersCount} Followers</Muted>
                   </View>
                 </Link>
               </Muted>
@@ -264,11 +306,7 @@ export default function UserPage() {
                       color={theme}
                       style={{ marginRight: 4 }}
                     />
-                    {userData.followingCount !== undefined ? (
-                      <Muted>{userData?.followingCount} Following</Muted>
-                    ) : (
-                      <Skeleton className={'w-16 h-4'} />
-                    )}
+                    <Muted>{userData?.followingCount} Following</Muted>
                   </View>
                 </Link>
               </Muted>
