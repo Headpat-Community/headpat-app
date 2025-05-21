@@ -1,7 +1,8 @@
 {
   "cli": {
     "version": ">= 9.0.6",
-    "appVersionSource": "local"
+    "appVersionSource": "remote",
+    "promptToConfigurePushNotifications": false
   },
   "build": {
     "development": {
@@ -16,7 +17,10 @@
       "channel": "preview"
     },
     "production": {
-      "autoIncrement": true
+      "android": {
+        "buildType": "app-bundle",
+        "autoIncrement": "versionCode"
+      }
     }
   },
   "submit": {
