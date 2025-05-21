@@ -59,6 +59,7 @@ export default function FollowingPage() {
     } catch (error) {
       hideAlert()
       Sentry.captureException(error)
+      console.log(error)
       showAlert('FAILED', 'Failed to fetch users. Please try again later.')
     }
   }
