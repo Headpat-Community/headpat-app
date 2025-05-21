@@ -155,7 +155,7 @@ export default function HomeView() {
           title={i18n.t('screens.gallery')}
           description={i18n.t('home.gallerydescription')}
           icon={LayoutDashboardIcon}
-          route="/gallery/(stacks)"
+          route="/gallery/(stacks)/(list)/newest"
           theme={theme}
         />
 

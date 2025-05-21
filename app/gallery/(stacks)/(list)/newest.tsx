@@ -12,9 +12,11 @@ import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { Skeleton } from '~/components/ui/skeleton'
 import FeatureAccess from '~/components/FeatureAccess'
 import { i18n } from '~/components/system/i18n'
+import { useRouter } from 'expo-router'
 
 export default function GalleryPage() {
   const { current } = useUser()
+  const router = useRouter()
 
   const [images, setImages] = React.useState<Gallery.GalleryDocumentsType[]>([])
   const [imagePrefs, setImagePrefs] = React.useState<{
@@ -24,36 +26,29 @@ export default function GalleryPage() {
   const [thumbnails, setThumbnails] = React.useState<{ [key: string]: string }>(
     {}
   )
-  const [offset, setOffset] = React.useState<number>(0)
+  const [currentPage, setCurrentPage] = React.useState<number>(1)
+  const [totalPages, setTotalPages] = React.useState<number>(1)
   const [loadingMore, setLoadingMore] = React.useState<boolean>(false)
   const { showAlert } = useAlertModal()
   const { width } = Dimensions.get('window')
   const maxColumns = width > 600 ? 4 : 2
-  const startCount = width > 600 ? 27 : 9
-  // Define height based on device size
+  const pageSize = 48 // Number of items per page
   const widthColumns = width > 600 ? '24%' : '48%'
 
-  const shuffleArray = (array: any) => {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-      ;[array[i], array[j]] = [array[j], array[i]]
-    }
-    return array
-  }
-
   const fetchGallery = React.useCallback(
-    async (newOffset: number = 0, limit: number = 20) => {
+    async (page: number = 1, append: boolean = false) => {
       try {
+        const offset = (page - 1) * pageSize
         const nsfwPreference = current?.prefs?.nsfw ?? false
         let query = nsfwPreference
           ? [
-              Query.limit(limit),
-              Query.offset(newOffset),
+              Query.limit(pageSize),
+              Query.offset(offset),
               Query.orderDesc('$createdAt'),
             ]
           : [
-              Query.limit(limit),
-              Query.offset(newOffset),
+              Query.limit(pageSize),
+              Query.offset(offset),
               Query.equal('nsfw', false),
               Query.orderDesc('$createdAt'),
             ]
@@ -78,15 +73,15 @@ export default function GalleryPage() {
 
         setImagePrefs(parsedImagePrefs)
 
-        const shuffledImages = shuffleArray(imageData.documents)
-
-        if (newOffset === 0) {
-          setImages(shuffledImages)
+        if (append) {
+          setImages((prevImages) => [...prevImages, ...imageData.documents])
         } else {
-          setImages((prevImages) => [...prevImages, ...shuffledImages])
+          setImages(imageData.documents)
         }
 
-        shuffledImages.forEach((image) => {
+        setTotalPages(Math.ceil(imageData.total / pageSize))
+
+        imageData.documents.forEach((image) => {
           if (image.mimeType.includes('video')) {
             generateThumbnail(image.$id)
           }
@@ -97,8 +92,7 @@ export default function GalleryPage() {
         Sentry.captureException(error)
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [current]
+    [current, pageSize]
   )
 
   const getGalleryUrl = React.useCallback(
@@ -126,27 +120,24 @@ export default function GalleryPage() {
 
   const onRefresh = async () => {
     setRefreshing(true)
-    setOffset(0)
-    await fetchGallery(0, 5000)
+    setCurrentPage(1)
+    await fetchGallery(1, false)
     setRefreshing(false)
   }
 
   const loadMore = async () => {
-    if (!loadingMore) {
+    if (!loadingMore && currentPage < totalPages) {
       setLoadingMore(true)
-      const newOffset = offset + 10
-      setOffset(newOffset)
-      await fetchGallery(newOffset)
+      const nextPage = currentPage + 1
+      setCurrentPage(nextPage)
+      await fetchGallery(nextPage, true)
       setLoadingMore(false)
     }
   }
 
   React.useEffect(() => {
-    // TODO: Use this in the future
-    //fetchGallery(0, startCount).then()
-    fetchGallery(0, 5000).then()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [current, startCount])
+    fetchGallery(1, false)
+  }, [current])
 
   const generateThumbnail = React.useCallback(async (galleryId: string) => {
     try {
@@ -211,6 +202,8 @@ export default function GalleryPage() {
           refreshing={refreshing}
           estimatedItemSize={200}
           numColumns={maxColumns}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.5}
           ListFooterComponent={
             loadingMore && (
               <View
