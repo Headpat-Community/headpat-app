@@ -178,9 +178,7 @@ export default function UserprofilePage() {
                 <View>
                   <Button
                     onPress={() =>
-                      router.push(
-                        '/account/(stacks)/userprofile/(tabs)/avatarAdd'
-                      )
+                      router.push('/account/(stacks)/userprofile/avatarAdd')
                     }
                     disabled={isDisabled}
                   >
@@ -200,9 +198,7 @@ export default function UserprofilePage() {
                 <View>
                   <Button
                     onPress={() =>
-                      router.push(
-                        '/account/(stacks)/userprofile/(tabs)/bannerAdd'
-                      )
+                      router.push('/account/(stacks)/userprofile/bannerAdd')
                     }
                     disabled={isDisabled}
                   >

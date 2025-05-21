@@ -16,7 +16,7 @@ const _layout = () => {
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="userprofile/(tabs)" />
+      <Stack.Screen name="userprofile" />
       <Stack.Screen name="security/index" />
     </Stack>
   )
