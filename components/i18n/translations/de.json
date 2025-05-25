@@ -41,6 +41,7 @@
   },
   "time": {
     "ended": "Beendet",
+    "infinite": "Unbegrenzt",
     "eventHasEnded": "Veranstaltung ist beendet",
     "secondsLeft": "Sekunden übrig",
     "minutesLeft": "Minuten übrig",

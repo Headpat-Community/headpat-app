@@ -24,47 +24,110 @@ import { addFollow } from '~/components/user/api/addFollow'
 import { removeFollow } from '~/components/user/api/removeFollow'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import ReportUserModal from '~/components/user/moderation/ReportUserModal'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 interface UserActionsProps {
   userData: UserData.UserDataDocumentsType
-  setUserData: React.Dispatch<
-    React.SetStateAction<UserData.UserProfileDocumentsType>
-  >
   current: Account.AccountType | null
 }
 
 // eslint-disable-next-line react/display-name
 const UserActions: React.FC<UserActionsProps> = React.memo(
-  ({ userData, setUserData, current }) => {
+  ({ userData, current }) => {
     const [moderationModalOpen, setModerationModalOpen] = useState(false)
     const [reportUserModalOpen, setReportUserModalOpen] = useState(false)
     const { showAlert, hideAlert } = useAlertModal()
+    const queryClient = useQueryClient()
+
+    const followMutation = useMutation({
+      mutationFn: async () => {
+        showAlert('LOADING', 'Following...')
+        await addFollow(userData.$id)
+      },
+      onSuccess: () => {
+        hideAlert()
+        queryClient.setQueryData(
+          ['user', userData.$id],
+          (old: UserData.UserProfileDocumentsType) => ({
+            ...old,
+            isFollowing: true,
+          })
+        )
+        showAlert('SUCCESS', `You are now following ${userData.displayName}.`)
+      },
+      onError: () => {
+        hideAlert()
+        showAlert('FAILED', 'Failed to follow user. Please try again later.')
+      },
+    })
+
+    const unfollowMutation = useMutation({
+      mutationFn: async () => {
+        showAlert('LOADING', 'Unfollowing...')
+        await removeFollow(userData.$id)
+      },
+      onSuccess: () => {
+        hideAlert()
+        queryClient.setQueryData(
+          ['user', userData.$id],
+          (old: UserData.UserProfileDocumentsType) => ({
+            ...old,
+            isFollowing: false,
+          })
+        )
+        showAlert('SUCCESS', `You have unfollowed ${userData.displayName}.`)
+      },
+      onError: () => {
+        hideAlert()
+        showAlert('FAILED', 'Failed to unfollow user. Please try again later.')
+      },
+    })
+
+    const blockMutation = useMutation({
+      mutationFn: async () => {
+        showAlert('LOADING', 'Processing...')
+        const response = await blockUser({
+          userId: userData.$id,
+          isBlocked: !userData.prefs?.isBlocked,
+        })
+        return response
+      },
+      onSuccess: (response) => {
+        hideAlert()
+        queryClient.setQueryData(
+          ['user', userData.$id],
+          (old: UserData.UserProfileDocumentsType) => ({
+            ...old,
+            prefs: response,
+          })
+        )
+        showAlert(
+          'SUCCESS',
+          userData.prefs?.isBlocked
+            ? `You have unblocked ${userData.displayName}.`
+            : `You have blocked ${userData.displayName}.`
+        )
+      },
+      onError: () => {
+        hideAlert()
+        showAlert(
+          'FAILED',
+          'Failed to update block status. Please try again later.'
+        )
+      },
+    })
 
     const handleFollow = useCallback(() => {
       if (userData.isFollowing) {
-        showAlert('LOADING', 'Unfollowing...')
-        removeFollow(userData?.$id).then(() => {
-          hideAlert()
-          setUserData((prev) => ({ ...prev, isFollowing: false }))
-          showAlert('SUCCESS', `You have unfollowed ${userData?.displayName}.`)
-        })
+        unfollowMutation.mutate()
       } else {
-        showAlert('LOADING', 'Following...')
-        addFollow(userData?.$id).then(() => {
-          hideAlert()
-          setUserData((prev) => ({ ...prev, isFollowing: true }))
-          showAlert(
-            'SUCCESS',
-            `You are now following ${userData?.displayName}.`
-          )
-        })
+        followMutation.mutate()
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [userData])
+    }, [userData.isFollowing, followMutation, unfollowMutation])
 
     const handleMessage = useCallback(() => {
       showAlert('INFO', 'Ha! You thought this was a real button!')
-    }, [])
+    }, [showAlert])
 
     const handleReport = useCallback(() => {
       setModerationModalOpen(false)
@@ -73,22 +136,8 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
 
     const handleBlockClick = useCallback(() => {
       setModerationModalOpen(false)
-      showAlert('LOADING', 'Processing...')
-      blockUser({
-        userId: userData?.$id,
-        isBlocked: !userData?.prefs?.isBlocked,
-      }).then((response) => {
-        hideAlert()
-        setUserData((prev) => ({ ...prev, prefs: response }))
-        showAlert(
-          'SUCCESS',
-          userData?.prefs?.isBlocked
-            ? `You have unblocked ${userData?.displayName}.`
-            : `You have blocked ${userData?.displayName}.`
-        )
-      })
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [userData])
+      blockMutation.mutate()
+    }, [blockMutation])
 
     if (current?.$id === userData?.$id) return null
 

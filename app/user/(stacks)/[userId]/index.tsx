@@ -35,17 +35,16 @@ import sanitizeHtml from 'sanitize-html'
 import HTMLView from 'react-native-htmlview'
 import { Badge } from '~/components/ui/badge'
 import { Skeleton } from '~/components/ui/skeleton'
-import { useDataCache } from '~/components/contexts/DataCacheContext'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { useQuery } from '@tanstack/react-query'
 import UserActions from '~/components/user/UserActions'
+import BlueskyIcon from '~/components/icons/BlueskyIcon'
 
 export default function UserPage() {
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
   const local = useLocalSearchParams()
   const { current } = useUser()
-  const { saveCache, getCacheSync } = useDataCache()
   const { showAlert } = useAlertModal()
 
   const {
@@ -57,67 +56,47 @@ export default function UserPage() {
     queryKey: ['user', local?.userId],
     queryFn: async () => {
       try {
-        console.log('Fetching fresh data for user:', local?.userId)
-        const [userData, followers, following] = await Promise.all([
-          // Get user data
-          databases.getDocument<UserData.UserProfileDocumentsType>(
-            'hp_db',
-            'userdata',
-            local?.userId as string
-          ),
-          // Get followers
-          databases.listDocuments('hp_db', 'followers', [
-            Query.equal('followerId', local?.userId as string),
-            Query.limit(1),
-          ]),
-          // Get following
-          databases.listDocuments('hp_db', 'followers', [
-            Query.equal('userId', local?.userId as string),
-            Query.limit(1),
-          ]),
-        ])
-
-        console.log('Raw data:', { userData, followers, following })
+        const [userData, followers, following, isFollowing] = await Promise.all(
+          [
+            // Get user data
+            databases.getDocument<UserData.UserProfileDocumentsType>(
+              'hp_db',
+              'userdata',
+              local?.userId as string
+            ),
+            // Get followers
+            databases.listDocuments('hp_db', 'followers', [
+              Query.equal('followerId', local?.userId),
+              Query.limit(1),
+            ]),
+            // Get following
+            databases.listDocuments('hp_db', 'followers', [
+              Query.equal('userId', local?.userId),
+              Query.limit(1),
+            ]),
+            databases.listDocuments('hp_db', 'followers', [
+              Query.and([
+                Query.equal('userId', local?.userId),
+                Query.equal('followerId', current?.$id),
+              ]),
+            ]),
+          ]
+        )
 
         // Combine the data
         const combinedData: UserData.UserProfileDocumentsType = {
           ...userData,
+          isFollowing: isFollowing.total > 0,
           followersCount: followers.total,
           followingCount: following.total,
         }
 
-        console.log('Combined data:', combinedData)
-
-        // Save to cache
-        saveCache('users', `${local?.userId}`, combinedData)
         return combinedData
       } catch (error) {
         console.error('Error fetching user data:', error)
         Sentry.captureException(error)
         throw error
       }
-    },
-    initialData: () => {
-      // Try to get from cache first
-      const cache = getCacheSync<UserData.UserDataDocumentsType>(
-        'users',
-        `${local?.userId}`
-      )
-      console.log('Cache data:', cache)
-
-      if (cache?.data) {
-        // Ensure the cached data has the counts
-        const cachedData = cache.data as UserData.UserProfileDocumentsType
-        if (
-          cachedData.followersCount === undefined ||
-          cachedData.followingCount === undefined
-        ) {
-          console.log('Cache missing counts, will fetch fresh data')
-          return undefined // Force a fresh fetch if counts are missing
-        }
-        return cachedData
-      }
-      return undefined
     },
     enabled: !!local?.userId,
     // For social media, we want to keep data fresh
@@ -129,13 +108,13 @@ export default function UserPage() {
 
   const getUserAvatar = (avatarId: string) => {
     return avatarId
-      ? `https://api.headpat.place/v1/storage/buckets/avatars/files/${avatarId}/view?project=hp-main`
+      ? `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/avatars/files/${avatarId}/view?project=hp-main`
       : null
   }
 
   const getUserBanner = (bannerId: string) => {
     return bannerId
-      ? `https://api.headpat.place/v1/storage/buckets/banners/files/${bannerId}/preview?project=hp-main&width=1200&height=250&output=webp`
+      ? `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/banners/files/${bannerId}/preview?project=hp-main&width=1200&height=250&output=webp`
       : null
   }
 
@@ -222,14 +201,7 @@ export default function UserPage() {
           <Text className={'mb-4 flex-row flex-wrap'}>{userData?.status}</Text>
           <View className={'flex-row gap-2'}>
             <Suspense>
-              <UserActions
-                userData={userData}
-                setUserData={(data) => {
-                  // Update the query cache with new data
-                  saveCache('users', `${local?.userId}`, data)
-                }}
-                current={current}
-              />
+              <UserActions userData={userData} current={current} />
             </Suspense>
           </View>
         </View>
@@ -409,6 +381,24 @@ export default function UserPage() {
               style={{ marginRight: 4 }}
             />
             <Text>{userData?.furaffinityname}</Text>
+          </TouchableOpacity>
+        )}
+        {userData?.blueskyname && (
+          <TouchableOpacity
+            className={'flex-row items-center gap-4'}
+            onPress={() =>
+              WebBrowser.openBrowserAsync(
+                `https://bsky.app/profile/${userData?.blueskyname}`
+              )
+            }
+          >
+            <BlueskyIcon
+              size={32}
+              color={theme}
+              title={'Bluesky'}
+              style={{ marginRight: 4 }}
+            />
+            <Text>{userData?.blueskyname}</Text>
           </TouchableOpacity>
         )}
       </View>

@@ -41,6 +41,7 @@
   },
   "time": {
     "ended": "Beëindigd",
+    "infinite": "Onbeperkt",
     "eventHasEnded": "Evenement is afgelopen",
     "secondsLeft": "seconden over",
     "minutesLeft": "minuten over",

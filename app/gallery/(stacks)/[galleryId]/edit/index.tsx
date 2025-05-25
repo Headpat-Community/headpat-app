@@ -114,13 +114,13 @@ export default function HomeView() {
 
   const getGalleryUrl = (galleryId: string) => {
     if (!galleryId) return
-    return `https://api.headpat.place/v1/storage/buckets/gallery/files/${galleryId}/view?project=hp-main`
+    return `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/gallery/files/${galleryId}/view?project=hp-main`
   }
 
   const handleModalImage = (galleryId: string) => {
     if (!galleryId) return
     return [
-      `https://api.headpat.place/v1/storage/buckets/gallery/files/${galleryId}/view?project=hp-main`,
+      `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/gallery/files/${galleryId}/view?project=hp-main`,
     ]
   }
 

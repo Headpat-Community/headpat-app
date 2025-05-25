@@ -1,7 +1,7 @@
 import { RefreshControl, ScrollView, View, Dimensions } from 'react-native'
 import { H1, H3, Muted } from '~/components/ui/typography'
 import { Link, useLocalSearchParams } from 'expo-router'
-import React, { Suspense, useEffect, useState } from 'react'
+import React, { Suspense, useCallback } from 'react'
 import { Community } from '~/lib/types/collections'
 import { functions } from '~/lib/appwrite-client'
 import { Image } from 'expo-image'
@@ -16,74 +16,71 @@ import HTMLView from 'react-native-htmlview'
 import { Badge } from '~/components/ui/badge'
 import { Skeleton } from '~/components/ui/skeleton'
 import { hasAdminPanelAccess } from '~/components/community/hasPermission'
-import { useDataCache } from '~/components/contexts/DataCacheContext'
 import CommunityActions from '~/components/community/CommunityActions'
+import { useQuery } from '@tanstack/react-query'
 
 export default function UserPage() {
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
   const local = useLocalSearchParams()
-  const [communityData, setCommunityData] =
-    useState<Community.CommunityDocumentsType>(null)
-  const [hasPermissions, setHasPermissions] = useState<boolean>(false)
-  const [refreshing, setRefreshing] = useState<boolean>(false)
   const { current } = useUser()
-  const { getCache, saveCache } = useDataCache()
 
-  const fetchCommunity = async () => {
-    setRefreshing(true)
-    const cache = await getCache<Community.CommunityDocumentsType>(
-      'communities',
-      `${local?.communityId}`
-    )
-    if (cache) {
-      setCommunityData(cache?.data)
-      setRefreshing(false)
-      setHasPermissions(await hasAdminPanelAccess(cache?.data?.roles))
-    }
+  const {
+    data: communityData,
+    isLoading,
+    isRefetching,
+    refetch,
+  } = useQuery({
+    queryKey: ['community', local.communityId],
+    queryFn: async () => {
+      try {
+        const data = await functions.createExecution(
+          'community-endpoints',
+          '',
+          false,
+          `/community?communityId=${local?.communityId}`,
+          ExecutionMethod.GET
+        )
+        const dataCommunityJson = JSON.parse(data.responseBody)
+        return dataCommunityJson as Community.CommunityDocumentsType
+      } catch (error) {
+        Sentry.captureException(error)
+        throw error
+      }
+    },
+    //staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnMount: true,
+  })
 
-    try {
-      const data = await functions.createExecution(
-        'community-endpoints',
-        '',
-        false,
-        `/community?communityId=${local?.communityId}`,
-        ExecutionMethod.GET
-      )
-      const dataCommunityJson = JSON.parse(data.responseBody)
+  const { data: permissions } = useQuery({
+    queryKey: ['community-permissions', communityData?.roles],
+    queryFn: async () => {
+      if (!communityData?.roles) {
+        return false
+      }
+      const hasAccess = await hasAdminPanelAccess(communityData.roles)
+      return hasAccess
+    },
+    enabled: !!communityData?.roles,
+  })
 
-      saveCache('communities', `${local?.communityId}`, dataCommunityJson)
-      setCommunityData(dataCommunityJson)
-      setHasPermissions(await hasAdminPanelAccess(dataCommunityJson.roles))
-    } catch (error) {
-      Sentry.captureException(error)
-    } finally {
-      setRefreshing(false)
-    }
-  }
-
-  const getAvatar = (avatarId: string) => {
+  const getAvatar = useCallback((avatarId: string) => {
     return avatarId
-      ? `https://api.headpat.place/v1/storage/buckets/community-avatars/files/${avatarId}/view?project=hp-main`
+      ? `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/community-avatars/files/${avatarId}/view?project=hp-main`
       : null
-  }
+  }, [])
 
-  const getBanner = (bannerId: string) => {
+  const getBanner = useCallback((bannerId: string) => {
     return bannerId
-      ? `https://api.headpat.place/v1/storage/buckets/community-banners/files/${bannerId}/preview?project=hp-main&width=1200&height=250&output=webp`
+      ? `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/community-banners/files/${bannerId}/preview?project=hp-main&width=1200&height=250&output=webp`
       : null
-  }
+  }, [])
 
-  useEffect(() => {
-    fetchCommunity().then()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [local.communityId])
-
-  if (!communityData)
+  if (isLoading)
     return (
       <ScrollView
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={fetchCommunity} />
+          <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
         }
       >
         <View style={{ padding: 16, gap: 16 }}>
@@ -120,30 +117,30 @@ export default function UserPage() {
       </ScrollView>
     )
 
-  const sanitizedBio = sanitizeHtml(communityData.description)
-  const { width } = Dimensions.get('window')
-  const bannerHeight = width > 600 ? 250 : 100
-
-  if (!communityData && !refreshing)
+  if (!communityData && !isLoading)
     return (
       <ScrollView
         contentContainerClassName={'flex-1 justify-center items-center h-full'}
       >
         <View className={'p-4 native:pb-24 max-w-md gap-6'}>
           <View className={'gap-1'}>
-            <H1 className={'text-foreground text-center'}>Followers</H1>
+            <H1 className={'text-foreground text-center'}>Community</H1>
             <Muted className={'text-base text-center'}>
-              This user does not exist.
+              This community does not exist.
             </Muted>
           </View>
         </View>
       </ScrollView>
     )
 
+  const sanitizedBio = sanitizeHtml(communityData.description)
+  const { width } = Dimensions.get('window')
+  const bannerHeight = width > 600 ? 250 : 100
+
   return (
     <ScrollView
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={fetchCommunity} />
+        <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
       }
     >
       {communityData?.prefs?.isBlocked && (
@@ -182,8 +179,7 @@ export default function UserPage() {
             <Suspense>
               <CommunityActions
                 data={communityData}
-                setData={setCommunityData}
-                hasPermissions={hasPermissions}
+                hasPermissions={permissions ?? false}
                 current={current}
               />
             </Suspense>

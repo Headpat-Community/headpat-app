@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback } from 'react'
 import { Text, View, ScrollView } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
 import { functions } from '~/lib/appwrite-client'
@@ -11,85 +11,51 @@ import { useUser } from '~/components/contexts/UserContext'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { useFocusEffect } from '@react-navigation/core'
 import { router } from 'expo-router'
-import { useDataCache } from '~/components/contexts/DataCacheContext'
 import { i18n } from '~/components/system/i18n'
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
 
 export default function NotificationsPage() {
-  const [notifications, setNotifications] = useState<
-    Notifications.NotificationsDocumentsType[]
-  >([])
-  const [refreshing, setRefreshing] = useState<boolean>(false)
-  const [loadingMore, setLoadingMore] = useState<boolean>(false)
-  const [offset, setOffset] = useState<number>(0)
-  const [hasMore, setHasMore] = useState<boolean>(true)
   const { showAlert } = useAlertModal()
   const { current } = useUser()
-  const { getAllCache, saveAllCache } = useDataCache()
+  const queryClient = useQueryClient()
 
-  const fetchNotifications = useCallback(
-    async (newOffset: number = 0) => {
-      const cachedNotifications =
-        await getAllCache<Notifications.NotificationsDocumentsType>(
-          'notifications'
-        )
-      if (cachedNotifications && typeof cachedNotifications === 'object') {
-        const notificationsArray = Object.values(cachedNotifications).map(
-          (item) => item.data
-        )
-        setNotifications(notificationsArray)
-      }
-      try {
-        const data = await functions.createExecution(
-          'user-endpoints',
-          '',
-          false,
-          `/user/notifications`,
-          ExecutionMethod.GET
-        )
-        const response: Notifications.NotificationsDocumentsType[] = JSON.parse(
-          data.responseBody
-        )
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isRefetching } =
+    useInfiniteQuery<Notifications.NotificationsDocumentsType[]>({
+      queryKey: ['notifications', current?.$id],
+      queryFn: async ({ pageParam = 0 }) => {
+        try {
+          const data = await functions.createExecution(
+            'user-endpoints',
+            '',
+            false,
+            `/user/notifications?offset=${pageParam}&limit=20`,
+            ExecutionMethod.GET
+          )
+          const response: Notifications.NotificationsDocumentsType[] =
+            JSON.parse(data.responseBody)
 
-        if (newOffset === 0) {
-          setNotifications(response)
-          saveAllCache('notifications', response)
-        } else {
-          saveAllCache('notifications', [...notifications, ...response])
-          setNotifications((prev) => [...prev, ...response])
+          return response
+        } catch (error) {
+          console.error(error)
+          showAlert(
+            'FAILED',
+            'Failed to fetch notifications. Please try again later.'
+          )
+          Sentry.captureException(error)
+          return []
         }
+      },
+      getNextPageParam: (lastPage, allPages) => {
+        return lastPage.length === 20 ? allPages.length * 20 : undefined
+      },
+      initialPageParam: 0,
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      enabled: !!current?.$id,
+    })
 
-        setHasMore(response.length === 20)
-      } catch (error) {
-        console.log(error)
-        showAlert(
-          'FAILED',
-          'Failed to fetch notifications. Please try again later.'
-        )
-        Sentry.captureException(error)
-      } finally {
-        setRefreshing(false)
-        setLoadingMore(false)
-      }
-    },
-    [current?.$id, getAllCache, saveAllCache]
-  )
-
-  // Handle refresh
-  const onRefresh = async () => {
-    setRefreshing(true)
-    setOffset(0)
-    await fetchNotifications(0)
-  }
-
-  // Handle loading more communities
-  const loadMore = async () => {
-    if (!loadingMore && hasMore) {
-      setLoadingMore(true)
-      const newOffset = offset + 20
-      setOffset(newOffset)
-      await fetchNotifications(newOffset)
-    }
-  }
+  const onRefresh = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['notifications', current?.$id] })
+  }, [queryClient, current?.$id])
 
   useFocusEffect(
     React.useCallback(() => {
@@ -99,20 +65,16 @@ export default function NotificationsPage() {
     }, [current])
   )
 
-  // Initial fetch when component mounts
-  useEffect(() => {
-    setRefreshing(true)
-    fetchNotifications(0).then()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [current?.$id])
+  const renderItem = useCallback(
+    ({ item }: { item: Notifications.NotificationsDocumentsType }) => (
+      <NotificationItem notification={item} />
+    ),
+    []
+  )
 
-  const renderItem = ({
-    item,
-  }: {
-    item: Notifications.NotificationsDocumentsType
-  }) => <NotificationItem notification={item} />
+  const notifications = data?.pages.flat() ?? []
 
-  if (!notifications.length)
+  if (!notifications.length && !isRefetching)
     return (
       <ScrollView>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -144,14 +106,20 @@ export default function NotificationsPage() {
       keyExtractor={(item) => item.$id}
       renderItem={renderItem}
       onRefresh={onRefresh}
-      refreshing={refreshing}
+      refreshing={isRefetching}
       numColumns={1}
-      onEndReached={loadMore}
+      onEndReached={() => {
+        if (hasNextPage && !isFetchingNextPage) {
+          fetchNextPage()
+        }
+      }}
       onEndReachedThreshold={0.5}
       estimatedItemSize={100}
       contentContainerClassName="mt-2 pb-8"
       ListFooterComponent={
-        loadingMore && hasMore ? <Text>{i18n.t('main.loading')}</Text> : null
+        isFetchingNextPage && hasNextPage ? (
+          <Text>{i18n.t('main.loading')}</Text>
+        ) : null
       }
     />
   )

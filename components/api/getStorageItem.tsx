@@ -5,21 +5,21 @@ export const getAvatarImageUrlView = (
   if (!galleryId) {
     return defaultImage
   }
-  return `https://api.headpat.place/v1/storage/buckets/avatars/files/${galleryId}/view?project=hp-main`
+  return `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/avatars/files/${galleryId}/view?project=hp-main`
 }
 
 export const getAvatarImageUrlPreview = (
   galleryId: string,
   attributes: string
 ) => {
-  return `https://api.headpat.place/v1/storage/buckets/avatars/files/${galleryId}/preview?project=hp-main&${attributes}`
+  return `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/avatars/files/${galleryId}/preview?project=hp-main&${attributes}`
 }
 
 export const getBannerImageUrlView = (galleryId: string) => {
   if (!galleryId) {
     return
   }
-  return `https://api.headpat.place/v1/storage/buckets/banners/files/${galleryId}/view?project=hp-main`
+  return `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/banners/files/${galleryId}/view?project=hp-main`
 }
 
 export const getBannerImageUrlPreview = (
@@ -29,12 +29,12 @@ export const getBannerImageUrlPreview = (
   if (!galleryId) {
     return
   }
-  return `https://api.headpat.place/v1/storage/buckets/banners/files/${galleryId}/preview?project=hp-main&${attributes}`
+  return `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/banners/files/${galleryId}/preview?project=hp-main&${attributes}`
 }
 
 export const getGalleryImageUrlView = (galleryId: string) => {
   if (!galleryId) return
-  return `https://api.headpat.place/v1/storage/buckets/gallery/files/${galleryId}/view?project=hp-main`
+  return `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/gallery/files/${galleryId}/view?project=hp-main`
 }
 
 export const getGalleryImageUrlPreview = (
@@ -42,28 +42,28 @@ export const getGalleryImageUrlPreview = (
   attributes: string
 ) => {
   if (!galleryId) return
-  return `https://api.headpat.place/v1/storage/buckets/gallery/files/${galleryId}/preview?project=hp-main&${attributes}`
+  return `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/gallery/files/${galleryId}/preview?project=hp-main&${attributes}`
 }
 
 export const getCommunityAvatarUrlView = (galleryId: string) => {
-  return `https://api.headpat.place/v1/storage/buckets/community-avatars/files/${galleryId}/view?project=hp-main`
+  return `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/community-avatars/files/${galleryId}/view?project=hp-main`
 }
 
 export const getCommunityAvatarUrlPreview = (
   galleryId: string,
   attributes: string
 ) => {
-  return `https://api.headpat.place/v1/storage/buckets/community-avatars/files/${galleryId}/preview?project=hp-main&${attributes}`
+  return `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/community-avatars/files/${galleryId}/preview?project=hp-main&${attributes}`
 }
 
 export const getCommunityBannerUrlView = (galleryId: string) => {
   if (!galleryId) return
-  return `https://api.headpat.place/v1/storage/buckets/community-banners/files/${galleryId}/view?project=hp-main`
+  return `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/community-banners/files/${galleryId}/view?project=hp-main`
 }
 
 export const getCommunityBannerUrlPreview = (
   galleryId: string,
   attributes: string
 ) => {
-  return `https://api.headpat.place/v1/storage/buckets/community-banners/files/${galleryId}/preview?project=hp-main&${attributes}`
+  return `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/community-banners/files/${galleryId}/preview?project=hp-main&${attributes}`
 }

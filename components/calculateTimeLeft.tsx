@@ -9,6 +9,12 @@ export const calculateTimeLeftEvent = (
   const now = new Date()
   const eventStart = new Date(eventDate)
   const eventEnd = new Date(eventEndDate)
+
+  // Check if the year is 2100
+  if (eventEnd.getFullYear() === 2100) {
+    return i18n.t('time.infinite')
+  }
+
   const upcomingTime = eventStart.getTime() - now.getTime()
   const differenceInTime = eventEnd.getTime() - now.getTime()
 
@@ -54,6 +60,12 @@ export const calculateTimeLeftEvent = (
 export const calculateTimeLeft = (date: string) => {
   const now = new Date()
   const eventEnd = new Date(date)
+
+  // Check if the year is 2100
+  if (eventEnd.getFullYear() === 2100) {
+    return i18n.t('time.infinite')
+  }
+
   const differenceInTime = eventEnd.getTime() - now.getTime()
 
   // Event hasn't started yet

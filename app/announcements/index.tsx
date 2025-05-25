@@ -1,6 +1,6 @@
 import { RefreshControl, View } from 'react-native'
 import { H1 } from '~/components/ui/typography'
-import React, { useCallback, useState, useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { Announcements } from '~/lib/types/collections'
 import { databases } from '~/lib/appwrite-client'
 import { Query } from 'react-native-appwrite'
@@ -13,89 +13,88 @@ import AnnouncementItem from '~/components/FlatlistItems/AnnouncementItem'
 import { useFocusEffect } from '@react-navigation/core'
 import { i18n } from '~/components/system/i18n'
 import { FlashList } from '@shopify/flash-list'
+import {
+  useInfiniteQuery,
+  useQueryClient,
+  InfiniteData,
+} from '@tanstack/react-query'
 
 const PAGE_SIZE = 50
 
+type AnnouncementPage = {
+  total: number
+  documents: Announcements.AnnouncementDocumentsType[]
+}
+
 export default function AnnouncementsPage() {
-  const [announcements, setAnnouncements] =
-    useState<Announcements.AnnouncementDataType | null>(null)
-  const [refreshing, setRefreshing] = useState<boolean>(false)
-  const [loadingMore, setLoadingMore] = useState<boolean>(false)
-  const [offset, setOffset] = useState<number>(0)
-  const [hasMore, setHasMore] = useState<boolean>(true)
   const { showAlert } = useAlertModal()
+  const queryClient = useQueryClient()
 
-  const fetchAnnouncements = useCallback(
-    async (newOffset: number = 0) => {
-      try {
-        const currentDate = new Date()
-        const queries = [
-          Query.orderAsc('validUntil'),
-          Query.greaterThanEqual('validUntil', currentDate.toISOString()),
-          Query.limit(PAGE_SIZE),
-          Query.offset(newOffset),
-        ]
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isRefetching } =
+    useInfiniteQuery<
+      AnnouncementPage,
+      Error,
+      InfiniteData<AnnouncementPage>,
+      string[],
+      number
+    >({
+      queryKey: ['announcements'],
+      queryFn: async ({ pageParam = 0 }) => {
+        try {
+          const currentDate = new Date()
+          const queries = [
+            Query.orderAsc('validUntil'),
+            Query.greaterThanEqual('validUntil', currentDate.toISOString()),
+            Query.limit(PAGE_SIZE),
+            Query.offset(pageParam),
+          ]
 
-        const data =
-          await databases.listDocuments<Announcements.AnnouncementDocumentsType>(
-            'hp_db',
-            'announcements',
-            queries
-          )
+          const data =
+            await databases.listDocuments<Announcements.AnnouncementDocumentsType>(
+              'hp_db',
+              'announcements',
+              queries
+            )
 
-        if (!data || !data.documents) {
-          throw new Error('Invalid response from server')
-        }
-
-        setAnnouncements((prev) => {
-          if (newOffset === 0) {
-            return {
-              total: data.total,
-              documents: data.documents,
-            }
+          if (!data || !data.documents) {
+            throw new Error('Invalid response from server')
           }
+
           return {
             total: data.total,
-            documents: [...(prev?.documents || []), ...data.documents],
+            documents: data.documents,
           }
-        })
+        } catch (error) {
+          console.error('Error fetching announcements:', error)
+          showAlert(
+            'FAILED',
+            'Failed to fetch announcements. Please try again later.'
+          )
+          Sentry.captureException(error)
+          return {
+            total: 0,
+            documents: [],
+          }
+        }
+      },
+      getNextPageParam: (lastPage, allPages) => {
+        return lastPage.documents.length === PAGE_SIZE
+          ? allPages.length * PAGE_SIZE
+          : undefined
+      },
+      initialPageParam: 0,
+      staleTime: 1000 * 60 * 5, // 5 minutes
+    })
 
-        setHasMore(data.documents.length === PAGE_SIZE)
-      } catch (error) {
-        console.error('Error fetching announcements:', error)
-        showAlert(
-          'FAILED',
-          'Failed to fetch announcements. Please try again later.'
-        )
-        Sentry.captureException(error)
-      } finally {
-        setRefreshing(false)
-        setLoadingMore(false)
-      }
-    },
-    [showAlert]
-  )
+  const onRefresh = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['announcements'] })
+  }, [queryClient])
 
   useFocusEffect(
     useCallback(() => {
       onRefresh()
-    }, [])
+    }, [onRefresh])
   )
-
-  const onRefresh = useCallback(() => {
-    setRefreshing(true)
-    setOffset(0)
-    fetchAnnouncements(0)
-  }, [fetchAnnouncements])
-
-  const loadMore = useCallback(async () => {
-    if (!loadingMore && hasMore) {
-      setLoadingMore(true)
-      const newOffset = offset + PAGE_SIZE
-      setOffset(newOffset)
-      await fetchAnnouncements(newOffset)
-    }
-  }, [loadingMore, hasMore, offset, fetchAnnouncements])
 
   const renderItem = useCallback(
     ({ item }: { item: Announcements.AnnouncementDocumentsType }) => (
@@ -111,15 +110,18 @@ export default function AnnouncementsPage() {
 
   const estimatedItemSize = useMemo(() => 200, []) // Adjust based on your average item height
 
-  if (refreshing && !announcements) {
+  const announcements = data?.pages[0]
+  const allDocuments = data?.pages.flatMap((page) => page.documents) ?? []
+
+  if (isRefetching && !announcements) {
     return <SlowInternet />
   }
 
-  if ((!refreshing && announcements?.total === 0) || !announcements) {
+  if ((!isRefetching && announcements?.total === 0) || !announcements) {
     return (
       <ScrollView
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl refreshing={isRefetching} onRefresh={onRefresh} />
         }
         contentInsetAdjustmentBehavior={'automatic'}
       >
@@ -138,18 +140,22 @@ export default function AnnouncementsPage() {
   return (
     <View style={{ flex: 1 }}>
       <FlashList
-        data={!refreshing ? announcements?.documents : []}
+        data={!isRefetching ? allDocuments : []}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         estimatedItemSize={estimatedItemSize}
         onRefresh={onRefresh}
-        refreshing={refreshing}
+        refreshing={isRefetching}
         contentContainerStyle={{ padding: 8 }}
-        onEndReached={loadMore}
+        onEndReached={() => {
+          if (hasNextPage && !isFetchingNextPage) {
+            fetchNextPage()
+          }
+        }}
         onEndReachedThreshold={0.5}
         contentInsetAdjustmentBehavior={'automatic'}
         ListFooterComponent={
-          loadingMore ? <Text>{i18n.t('main.loading')}</Text> : null
+          isFetchingNextPage ? <Text>{i18n.t('main.loading')}</Text> : null
         }
       />
     </View>

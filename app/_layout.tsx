@@ -24,7 +24,13 @@ import {
 import { DrawerScreensData } from '~/components/data/DrawerScreensData'
 import { databases } from '~/lib/appwrite-client'
 import { toast } from '~/lib/toast'
-import { getInitialNotification, getMessaging, onMessage, onNotificationOpenedApp, onTokenRefresh } from '@react-native-firebase/messaging'
+import {
+  getInitialNotification,
+  getMessaging,
+  onMessage,
+  onNotificationOpenedApp,
+  onTokenRefresh,
+} from '@react-native-firebase/messaging'
 import { requestUserPermission } from '~/components/system/pushNotifications'
 import { AlertModalProvider } from '~/components/contexts/AlertModalProvider'
 import * as Sentry from '@sentry/react-native'
@@ -33,9 +39,9 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { HeaderMenuSidebar } from '~/components/data/DrawerData'
 import { LocationProvider } from '~/components/contexts/SharingContext'
 import { LanguageProvider } from '~/components/contexts/LanguageProvider'
-import '../components/system/backgroundTasks'
-import { DataCacheProvider } from '~/components/contexts/DataCacheContext'
+import CacheProvider from '~/components/contexts/cacheProvider'
 import { NotifierWrapper } from 'react-native-notifier'
+import '../components/system/backgroundTasks'
 import '../globals.css'
 import '../components/init/sentryInit'
 
@@ -54,7 +60,7 @@ export default function RootLayout() {
   const [openEulaModal, setOpenEulaModal] = useState(false)
   const [versionData, setVersionData] = useState(null)
   const [isMounted, setIsMounted] = useState(false)
-  const messaging = getMessaging();
+  const messaging = getMessaging()
 
   const theme = useMemo(
     () => ({
@@ -173,11 +179,11 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={theme}>
-        <LanguageProvider>
-          <NotifierWrapper>
-            <AlertModalProvider>
-              <UserProvider>
-                <DataCacheProvider>
+        <NotifierWrapper>
+          <UserProvider>
+            <CacheProvider>
+              <LanguageProvider>
+                <AlertModalProvider>
                   <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
                   <EulaModal
                     isOpen={openEulaModal}
@@ -209,11 +215,11 @@ export default function RootLayout() {
                     </BottomSheetModalProvider>
                   </LocationProvider>
                   <PortalHost />
-                </DataCacheProvider>
-              </UserProvider>
-            </AlertModalProvider>
-          </NotifierWrapper>
-        </LanguageProvider>
+                </AlertModalProvider>
+              </LanguageProvider>
+            </CacheProvider>
+          </UserProvider>
+        </NotifierWrapper>
       </ThemeProvider>
     </GestureHandlerRootView>
   )

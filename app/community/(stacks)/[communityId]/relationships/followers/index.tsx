@@ -1,86 +1,59 @@
 import { functions } from '~/lib/appwrite-client'
 import { ExecutionMethod } from 'react-native-appwrite'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { UserData } from '~/lib/types/collections'
-import * as Sentry from '@sentry/react-native'
+import { captureException } from '@sentry/react-native'
 import UserItem from '~/components/user/UserItem'
 import { FlatList, RefreshControl, ScrollView, Text, View } from 'react-native'
 import { H1, Muted } from '~/components/ui/typography'
-import { router, useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams } from 'expo-router'
 import { Skeleton } from '~/components/ui/skeleton'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { i18n } from '~/components/system/i18n'
+import { useInfiniteQuery } from '@tanstack/react-query'
+
+const PAGE_SIZE = 20
 
 export default function FollowingPage() {
-  const [users, setUsers] = useState<UserData.UserDataDocumentsType[]>(null)
-  const [refreshing, setRefreshing] = useState<boolean>(false)
-  const [loadingMore, setLoadingMore] = useState<boolean>(false)
-  const [offset, setOffset] = useState<number>(0)
-  const [hasMore, setHasMore] = useState<boolean>(true)
   const local = useLocalSearchParams()
   const { showAlert } = useAlertModal()
 
-  useEffect(() => {
-    setUsers([]) // Clear the old users
-    setOffset(0) // Reset the offset
-    setHasMore(true) // Reset hasMore
-  }, [local?.communityId])
-
-  const onRefresh = async () => {
-    setRefreshing(true)
-    setOffset(0)
-    await fetchUsers(0)
-    setRefreshing(false)
-  }
-
-  const fetchUsers = async (newOffset: number = 0) => {
-    try {
-      const data = await functions.createExecution(
-        'community-endpoints',
-        '',
-        false,
-        `/community/followers?communityId=${local?.communityId}&limit=20&offset=${newOffset}`,
-        ExecutionMethod.GET
-      )
-      const response: UserData.UserDataDocumentsType[] = JSON.parse(
-        data.responseBody
-      )
-
-      if (newOffset === 0) {
-        setUsers(response)
-      } else {
-        setUsers((prevUsers) => [...prevUsers, ...response])
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isRefetching,
+    isLoading,
+    refetch,
+  } = useInfiniteQuery({
+    queryKey: ['community-followers', local.communityId],
+    queryFn: async ({ pageParam = 0 }) => {
+      try {
+        const data = await functions.createExecution(
+          'community-endpoints',
+          '',
+          false,
+          `/community/followers?communityId=${local?.communityId}&limit=${PAGE_SIZE}&offset=${pageParam}`,
+          ExecutionMethod.GET
+        )
+        return JSON.parse(data.responseBody) as UserData.UserDataDocumentsType[]
+      } catch (error) {
+        showAlert('FAILED', 'Failed to fetch users. Please try again later.')
+        captureException(error)
+        return []
       }
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === PAGE_SIZE
+        ? allPages.length * PAGE_SIZE
+        : undefined
+    },
+    initialPageParam: 0,
+    enabled: !!local?.communityId,
+  })
 
-      // Update hasMore based on the response length
-      setHasMore(response.length === 20)
-    } catch (error) {
-      showAlert('FAILED', 'Failed to fetch users. Please try again later.')
-      Sentry.captureException(error)
-    }
-  }
-
-  const loadMore = async () => {
-    if (!loadingMore && hasMore) {
-      setLoadingMore(true)
-      const newOffset = offset + 20
-      setOffset(newOffset)
-      await fetchUsers(newOffset)
-      setLoadingMore(false)
-    }
-  }
-
-  useEffect(() => {
-    setRefreshing(true)
-    if (!local?.communityId) {
-      showAlert('FAILED', 'Does this community exist?')
-      router.back()
-      return
-    }
-    fetchUsers().then()
-    setRefreshing(false)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [local?.communityId])
+  const users = data?.pages.flat() ?? []
 
   if (!local?.communityId)
     return (
@@ -98,7 +71,7 @@ export default function FollowingPage() {
       </ScrollView>
     )
 
-  if (refreshing) {
+  if (isLoading) {
     return (
       <View style={{ flex: 1 }}>
         {Array.from({ length: 16 }).map((_, index) => (
@@ -127,11 +100,11 @@ export default function FollowingPage() {
     )
   }
 
-  if (refreshing && users && users.length === 0)
+  if (users.length === 0)
     return (
       <ScrollView
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
         }
       >
         <View className={'flex-1 justify-center items-center'}>
@@ -156,14 +129,20 @@ export default function FollowingPage() {
       data={users}
       keyExtractor={(item) => item.$id}
       renderItem={renderItem}
-      onRefresh={onRefresh}
-      refreshing={refreshing}
+      onRefresh={refetch}
+      refreshing={isRefetching}
       numColumns={3}
       contentContainerStyle={{ justifyContent: 'space-between' }}
-      onEndReached={loadMore}
+      onEndReached={() => {
+        if (hasNextPage && !isFetchingNextPage) {
+          fetchNextPage()
+        }
+      }}
       onEndReachedThreshold={0.5}
       ListFooterComponent={
-        loadingMore && hasMore ? <Text>{i18n.t('main.loading')}</Text> : null
+        isFetchingNextPage && hasNextPage ? (
+          <Text>{i18n.t('main.loading')}</Text>
+        ) : null
       }
     />
   )

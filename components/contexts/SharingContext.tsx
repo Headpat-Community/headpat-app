@@ -120,7 +120,6 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
       await databases.createDocument('hp_db', 'locations', current.$id, {
         long: null,
         lat: null,
-        timeUntilEnd: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
       })
     }
 

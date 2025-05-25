@@ -154,16 +154,24 @@ export default function MutualLocationsPage() {
   }, [userLocation])
 
   const getUserAvatar = useCallback((avatarId: string) => {
-    return `https://api.headpat.place/v1/storage/buckets/avatars/files/${avatarId}/preview?project=hp-main&width=100&height=100`
+    return `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/avatars/files/${avatarId}/preview?project=hp-main&width=100&height=100`
   }, [])
 
   useFocusEffect(
     useCallback(() => {
       onRefresh()
+      if (userLocation && mapRef.current) {
+        mapRef.current.animateToRegion({
+          latitude: userLocation.latitude,
+          longitude: userLocation.longitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        })
+      }
       return () => {
         setUserStatus(null)
       }
-    }, [current, onRefresh])
+    }, [current, onRefresh, userLocation])
   )
 
   const sanitizedDescription = useMemo(

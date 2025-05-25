@@ -35,7 +35,6 @@ TaskManager.defineTask(
       await databases.updateDocument('hp_db', 'locations', userId, {
         long: locations[0].coords.longitude,
         lat: locations[0].coords.latitude,
-        updatedAt: new Date().toISOString(),
       })
     } catch (error) {
       console.error('Error in background location task:', error)

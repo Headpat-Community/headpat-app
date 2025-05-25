@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Changelog } from '~/lib/types/collections'
 import { FlatList, View } from 'react-native'
 import { Text } from '~/components/ui/text'
@@ -8,37 +8,32 @@ import * as Sentry from '@sentry/react-native'
 import { Query } from 'react-native-appwrite'
 import ChangelogItem from '~/components/FlatlistItems/ChangelogItem'
 import { i18n } from '~/components/system/i18n'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 export default function ListComponent() {
   const [openVersions, setOpenVersions] = useState<string[]>([])
-  const [changelogData, setChangelogData] =
-    useState<Changelog.ChangelogDocumentsType[]>()
-  const [refreshing, setRefreshing] = useState(false)
+  const queryClient = useQueryClient()
 
-  const fetchData = async () => {
-    try {
-      const changelogData: Changelog.ChangelogType =
-        await databases.listDocuments('hp_db', 'changelog', [
-          Query.orderDesc('version'),
-        ])
-
-      setChangelogData(changelogData.documents)
-    } catch (error) {
-      Sentry.captureException(error)
-    } finally {
-      setRefreshing(false)
-    }
-  }
-
-  const onRefresh = () => {
-    setRefreshing(true)
-    fetchData().then()
-  }
-
-  useEffect(() => {
-    setRefreshing(true)
-    fetchData().then()
-  }, [])
+  const {
+    data: changelogData,
+    isLoading,
+    isRefetching,
+  } = useQuery({
+    queryKey: ['changelog'],
+    queryFn: async () => {
+      try {
+        const changelogData: Changelog.ChangelogType =
+          await databases.listDocuments('hp_db', 'changelog', [
+            Query.orderDesc('version'),
+          ])
+        return changelogData.documents
+      } catch (error) {
+        Sentry.captureException(error)
+        throw error
+      }
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  })
 
   const toggleVersion = (version: string) => {
     setOpenVersions((prev) =>
@@ -48,7 +43,7 @@ export default function ListComponent() {
     )
   }
 
-  if (refreshing && (!changelogData || changelogData.length === 0)) {
+  if (isLoading) {
     return (
       <View className={'flex flex-1 justify-center items-center h-full'}>
         <View className={'p-4 gap-6 text-center'}>
@@ -61,7 +56,7 @@ export default function ListComponent() {
     )
   }
 
-  if (!refreshing && (!changelogData || changelogData.length === 0)) {
+  if (!isLoading && (!changelogData || changelogData.length === 0)) {
     return (
       <View className={'flex flex-1 justify-center items-center h-full'}>
         <View className={'p-4 gap-6 text-center'}>
@@ -79,8 +74,10 @@ export default function ListComponent() {
       <FlatList
         data={changelogData}
         keyExtractor={(item) => item.$id}
-        onRefresh={onRefresh}
-        refreshing={refreshing}
+        onRefresh={() => {
+          queryClient.invalidateQueries({ queryKey: ['changelog'] })
+        }}
+        refreshing={isRefetching}
         contentContainerStyle={{ padding: 8 }}
         contentInsetAdjustmentBehavior={'automatic'}
         renderItem={({ item }) => (

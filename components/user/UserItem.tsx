@@ -11,7 +11,7 @@ const UserItem = React.memo(
   ({ user }: { user: UserData.UserDataDocumentsType }) => {
     const getUserAvatar = (avatarId: string) => {
       if (!avatarId) return require('~/assets/pfp-placeholder.png')
-      return `https://api.headpat.place/v1/storage/buckets/avatars/files/${avatarId}/preview?project=hp-main&width=250&height=250`
+      return `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/avatars/files/${avatarId}/preview?project=hp-main&width=250&height=250`
     }
 
     return (

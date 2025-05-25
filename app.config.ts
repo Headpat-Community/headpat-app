@@ -2,7 +2,7 @@ export default ({ config }) => ({
   ...config,
   name: 'Headpat',
   slug: 'headpat-app',
-  version: '0.8.8',
+  version: '0.8.9',
   orientation: 'portrait',
   icon: './assets/images/icon.png',
   scheme: 'headpatapp',
@@ -31,7 +31,7 @@ export default ({ config }) => ({
     googleServicesFile: './GoogleService-Info.plist',
     config: {
       usesNonExemptEncryption: false,
-      googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || '',
+      googleMapsApiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY || '',
     },
     appStoreUrl: 'https://apps.apple.com/app/headpat/id6502715063',
     infoPlist: {
@@ -73,7 +73,7 @@ export default ({ config }) => ({
     },
     config: {
       googleMaps: {
-        apiKey: process.env.GOOGLE_MAPS_API_KEY || '',
+        apiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY || '',
       },
     },
     package: 'com.headpat.app',

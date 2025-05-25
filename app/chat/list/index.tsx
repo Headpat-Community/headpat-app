@@ -1,12 +1,11 @@
 import { FlatList, View } from 'react-native'
-import React from 'react'
+import React, { useMemo, useCallback } from 'react'
 import { databases } from '~/lib/appwrite-client'
 import { Query } from 'react-native-appwrite'
 import { Community, Messaging, UserData } from '~/lib/types/collections'
 import ConversationItem from '~/components/FlatlistItems/ConversationItem'
 import { useRealtimeChat } from '~/lib/hooks/useRealtimeChat'
 import { useUser } from '~/components/contexts/UserContext'
-import { useDataCache } from '~/components/contexts/DataCacheContext'
 import { Input } from '~/components/ui/input'
 import { useDebounce } from '~/lib/hooks/useDebounce'
 import { Text } from '~/components/ui/text'
@@ -15,37 +14,40 @@ import { useFocusEffect } from '@react-navigation/core'
 import FeatureAccess from '~/components/FeatureAccess'
 import * as Sentry from '@sentry/react-native'
 import { i18n } from '~/components/system/i18n'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 export default function ConversationsView() {
   const [refreshing, setRefreshing] = React.useState(false)
-  const [displayData, setDisplayData] = React.useState({})
   const [searchTerm, setSearchTerm] = React.useState('')
-  const [searchResults, setSearchResults] = React.useState([])
-  const [isLoading, setIsLoading] = React.useState(true)
   const debouncedSearchTerm = useDebounce(searchTerm, 500)
   const { conversations, fetchInitialData } = useRealtimeChat()
-  const { getCache, saveCache } = useDataCache()
   const { current } = useUser()
+  const queryClient = useQueryClient()
 
-  React.useEffect(() => {
-    const updateDisplayUsers = async () => {
+  // Memoize the conversation IDs to prevent unnecessary re-renders
+  const conversationIds = useMemo(
+    () => conversations.map((c) => c.$id),
+    [conversations]
+  )
+
+  const { data: displayData, isLoading } = useQuery({
+    queryKey: ['conversation-display-data', conversationIds],
+    queryFn: async () => {
       const newDisplayUsers = {}
-      for (const conversation of conversations) {
+      const promises = conversations.map(async (conversation) => {
         if (conversation.communityId) {
-          let communityData = await getCache<Community.CommunityDocumentsType>(
-            'communities',
-            conversation.communityId
-          ).then((res) => res?.data)
-          if (!communityData) {
-            const response: Community.CommunityDocumentsType =
-              await databases.getDocument(
+          const communityData = await queryClient.fetchQuery({
+            queryKey: ['community', conversation.communityId],
+            queryFn: async () => {
+              const response = await databases.getDocument(
                 'hp_db',
                 'community',
                 conversation.communityId
               )
-            saveCache('communities', conversation.communityId, response)
-            communityData = response
-          }
+              return response as Community.CommunityDocumentsType
+            },
+            staleTime: 1000 * 60 * 5, // 5 minutes
+          })
           if (communityData) {
             newDisplayUsers[conversation.$id] = {
               isCommunity: true,
@@ -57,90 +59,96 @@ export default function ConversationsView() {
             (participant) => participant !== current.$id
           )
           if (otherParticipantId) {
-            let userData = await getCache<UserData.UserDataDocumentsType>(
-              'users',
-              otherParticipantId
-            ).then((res) => res?.data)
-            if (!userData) {
-              const response: UserData.UserDataDocumentsType =
-                await databases.getDocument(
+            const userData = await queryClient.fetchQuery({
+              queryKey: ['user', otherParticipantId],
+              queryFn: async () => {
+                const response = await databases.getDocument(
                   'hp_db',
                   'userdata',
                   otherParticipantId
                 )
-              saveCache('users', otherParticipantId, response)
-              userData = response
-            }
+                return response as UserData.UserDataDocumentsType
+              },
+              staleTime: 1000 * 60 * 5, // 5 minutes
+            })
             if (userData) {
               newDisplayUsers[conversation.$id] = userData
             }
           }
         }
+      })
+
+      await Promise.all(promises)
+      return newDisplayUsers
+    },
+    enabled: conversations.length > 0,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  })
+
+  const { data: searchResults, isLoading: isSearching } = useQuery({
+    queryKey: ['user-search', debouncedSearchTerm],
+    queryFn: async () => {
+      if (!debouncedSearchTerm) return []
+      try {
+        const results = await databases.listDocuments('hp_db', 'userdata', [
+          Query.contains('profileUrl', debouncedSearchTerm),
+        ])
+        const userDataResults = await Promise.all(
+          results.documents.map(async (user) => {
+            return await databases.getDocument('hp_db', 'userdata', user.$id)
+          })
+        )
+        return userDataResults as UserData.UserDataDocumentsType[]
+      } catch (error) {
+        Sentry.captureException(error)
+        console.error('Error searching users', error)
+        throw error
       }
-      setDisplayData(newDisplayUsers)
-      setIsLoading(false)
+    },
+    enabled: !!debouncedSearchTerm,
+  })
+
+  const refreshData = useCallback(async () => {
+    try {
+      setRefreshing(true)
+      await fetchInitialData()
+      await queryClient.invalidateQueries({
+        queryKey: ['conversation-display-data'],
+      })
+    } finally {
+      setRefreshing(false)
     }
+  }, [fetchInitialData, queryClient])
 
-    updateDisplayUsers().then()
-  }, [conversations, current, getCache, saveCache])
+  const onRefresh = useCallback(() => {
+    refreshData()
+  }, [refreshData])
 
-  React.useEffect(() => {
-    const searchUsers = async () => {
-      if (debouncedSearchTerm) {
-        setIsLoading(true)
-        try {
-          const results = await databases.listDocuments('hp_db', 'userdata', [
-            Query.contains('profileUrl', debouncedSearchTerm),
-          ])
-          const userDataResults = await Promise.all(
-            results.documents.map(async (user) => {
-              return await databases.getDocument('hp_db', 'userdata', user.$id)
-            })
-          )
-          setSearchResults(userDataResults)
-        } catch (error) {
-          Sentry.captureException(error)
-          console.error('Error searching users', error)
-        } finally {
-          setIsLoading(false)
-        }
-      } else {
-        setSearchResults([])
-      }
-    }
-
-    searchUsers().then()
-  }, [debouncedSearchTerm])
-
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true)
-    fetchInitialData().then(() => setRefreshing(false))
-  }, [])
-
+  // Reset search and refresh data when screen comes into focus
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       setSearchTerm('')
-      onRefresh()
-    }, [])
+      refreshData()
+    }, [refreshData])
   )
 
-  const renderConversationItem = ({
-    item,
-  }: {
-    item: Messaging.MessageConversationsDocumentsType
-  }) => (
-    <ConversationItem
-      item={item}
-      displayData={displayData[item.$id]}
-      isLoading={isLoading}
-    />
+  const renderConversationItem = useCallback(
+    ({ item }: { item: Messaging.MessageConversationsDocumentsType }) => (
+      <ConversationItem
+        item={item}
+        displayData={displayData?.[item.$id]}
+        isLoading={isLoading}
+      />
+    ),
+    [displayData, isLoading]
   )
 
-  const renderSearchItem = ({
-    item,
-  }: {
-    item: UserData.UserDataDocumentsType
-  }) => <ConversationSearchItem item={item} />
+  const renderSearchItem = useCallback(
+    ({ item }: { item: UserData.UserDataDocumentsType }) => (
+      <ConversationSearchItem item={item} />
+    ),
+    []
+  )
 
   return (
     <FeatureAccess featureName={'messaging'}>
@@ -152,7 +160,7 @@ export default function ConversationsView() {
       />
       {searchTerm ? (
         <View>
-          {isLoading ? (
+          {isSearching ? (
             <View>
               <Text>{i18n.t('main.loading')}</Text>
             </View>
@@ -166,18 +174,13 @@ export default function ConversationsView() {
         </View>
       ) : (
         <FlatList
-          data={searchTerm ? searchResults : conversations}
+          data={conversations}
           keyExtractor={(item) => item.$id}
           renderItem={renderConversationItem}
           onRefresh={onRefresh}
           refreshing={refreshing}
           numColumns={1}
           contentContainerStyle={{ justifyContent: 'space-between' }}
-          //onEndReached={loadMore}
-          //onEndReachedThreshold={0.5}
-          //ListFooterComponent={
-          //  loadingMore && hasMore ? <Text>{i18n.t('main.loading')}</Text> : null
-          //}
         />
       )}
     </FeatureAccess>

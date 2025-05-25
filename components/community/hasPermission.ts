@@ -1,5 +1,5 @@
 export async function hasAdminPanelAccess(roles: string[]): Promise<boolean> {
-  if (!roles) return
+  if (!roles) return false
   return (
     roles.includes('owner') ||
     roles.includes('manage-general') ||
@@ -10,5 +10,6 @@ export async function hasAdminPanelAccess(roles: string[]): Promise<boolean> {
 export async function hasModeratorPanelAccess(
   roles: string[]
 ): Promise<boolean> {
+  if (!roles) return false
   return roles.includes('moderation')
 }

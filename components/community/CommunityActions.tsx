@@ -24,26 +24,24 @@ import ReportCommunityModal from '~/components/community/moderation/ReportCommun
 import { router } from 'expo-router'
 import { functions } from '~/lib/appwrite-client'
 import { ExecutionMethod } from 'react-native-appwrite'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 interface UserActionsProps {
   data: Community.CommunityDocumentsType
-  setData: React.Dispatch<
-    React.SetStateAction<Community.CommunityDocumentsType>
-  >
   hasPermissions: boolean
   current: Account.AccountType | null
 }
 
 // eslint-disable-next-line react/display-name
 const UserActions: React.FC<UserActionsProps> = React.memo(
-  ({ data, setData, hasPermissions, current }: UserActionsProps) => {
+  ({ data, hasPermissions, current }: UserActionsProps) => {
     const [moderationModalOpen, setModerationModalOpen] = useState(false)
     const [reportModalOpen, setReportModalOpen] = useState(false)
     const { showAlert, hideAlert } = useAlertModal()
+    const queryClient = useQueryClient()
 
-    const handleFollow = async () => {
-      showAlert('LOADING', 'Following...')
-      try {
+    const followMutation = useMutation({
+      mutationFn: async () => {
         const dataResponse = await functions.createExecution(
           'community-endpoints',
           '',
@@ -51,75 +49,97 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
           `/community/follow?communityId=${data.$id}`,
           ExecutionMethod.POST
         )
-        const response = JSON.parse(dataResponse.responseBody)
-
+        return JSON.parse(dataResponse.responseBody)
+      },
+      onMutate: () => {
+        showAlert('LOADING', 'Following...')
+      },
+      onSuccess: (response) => {
         if (response.type === 'unauthorized') {
-          return showAlert(
-            'FAILED',
-            'You must be logged in to follow a community'
-          )
+          showAlert('FAILED', 'You must be logged in to follow a community')
         } else if (response.type === 'community_follow_missing_id') {
-          return showAlert(
+          showAlert(
             'FAILED',
             'Community ID is missing. Please try again later.'
           )
         } else if (response.type === 'community_follow_already_following') {
-          setData((prev) => ({ ...prev, isFollowing: true }))
-          return showAlert('FAILED', 'You are already following this community')
+          showAlert('FAILED', 'You are already following this community')
         } else if (response.type === 'community_follow_error') {
-          return showAlert(
+          showAlert(
             'FAILED',
             'An error occurred while following this community'
           )
         } else if (response.type === 'community_followed') {
           showAlert('SUCCESS', `You have joined ${data.name}`)
-          setData((prev) => ({ ...prev, isFollowing: true }))
+          queryClient.setQueryData(
+            ['community', data.$id],
+            (old: Community.CommunityDocumentsType) => ({
+              ...old,
+              isFollowing: true,
+            })
+          )
         }
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch (error) {
+      },
+      onError: () => {
         showAlert('FAILED', 'An error occurred while following this community')
-      } finally {
+      },
+      onSettled: () => {
         hideAlert()
-      }
-    }
+      },
+    })
 
-    const handleUnfollow = async () => {
-      showAlert('LOADING', 'Unfollowing...')
-      const dataResponse = await functions.createExecution(
-        'community-endpoints',
-        '',
-        false,
-        `/community/follow?communityId=${data.$id}`,
-        ExecutionMethod.DELETE
-      )
-      const response = JSON.parse(dataResponse.responseBody)
-
-      hideAlert()
-      if (response.type === 'community_unfollow_missing_id') {
-        return showAlert(
-          'FAILED',
-          'Community ID is missing. Please try again later.'
+    const unfollowMutation = useMutation({
+      mutationFn: async () => {
+        const dataResponse = await functions.createExecution(
+          'community-endpoints',
+          '',
+          false,
+          `/community/follow?communityId=${data.$id}`,
+          ExecutionMethod.DELETE
         )
-      } else if (response.type === 'community_unfollow_owner') {
-        return showAlert('FAILED', 'You cannot unfollow a community you own')
-      } else if (response.type === 'community_unfollow_unauthorized') {
-        return showAlert(
-          'FAILED',
-          'You must be logged in to unfollow a community'
-        )
-      } else if (response.type === 'community_unfollow_not_following') {
-        setData((prev) => ({ ...prev, isFollowing: false }))
-        return showAlert('FAILED', 'You are not following this community')
-      } else if (response.type === 'community_unfollow_error') {
-        return showAlert(
+        return JSON.parse(dataResponse.responseBody)
+      },
+      onMutate: () => {
+        showAlert('LOADING', 'Unfollowing...')
+      },
+      onSuccess: (response) => {
+        if (response.type === 'community_unfollow_missing_id') {
+          showAlert(
+            'FAILED',
+            'Community ID is missing. Please try again later.'
+          )
+        } else if (response.type === 'community_unfollow_owner') {
+          showAlert('FAILED', 'You cannot unfollow a community you own')
+        } else if (response.type === 'community_unfollow_unauthorized') {
+          showAlert('FAILED', 'You must be logged in to unfollow a community')
+        } else if (response.type === 'community_unfollow_not_following') {
+          showAlert('FAILED', 'You are not following this community')
+        } else if (response.type === 'community_unfollow_error') {
+          showAlert(
+            'FAILED',
+            'An error occurred while unfollowing this community'
+          )
+        } else {
+          showAlert('SUCCESS', `You have left ${data.name}`)
+          queryClient.setQueryData(
+            ['community', data.$id],
+            (old: Community.CommunityDocumentsType) => ({
+              ...old,
+              isFollowing: false,
+            })
+          )
+        }
+      },
+      onError: () => {
+        showAlert(
           'FAILED',
           'An error occurred while unfollowing this community'
         )
-      } else {
-        showAlert('SUCCESS', `You have left ${data.name}`)
-        setData((prev) => ({ ...prev, isFollowing: false }))
-      }
-    }
+      },
+      onSettled: () => {
+        hideAlert()
+      },
+    })
 
     const handleManage = () => {
       router.navigate({
@@ -150,8 +170,8 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
             hasPermissions
               ? handleManage
               : data.isFollowing
-                ? handleUnfollow
-                : handleFollow
+                ? () => unfollowMutation.mutate()
+                : () => followMutation.mutate()
           }
         >
           {hasPermissions ? (

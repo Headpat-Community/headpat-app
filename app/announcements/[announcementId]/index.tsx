@@ -3,7 +3,7 @@ import { H1, H3, Muted } from '~/components/ui/typography'
 import { useLocalSearchParams } from 'expo-router'
 import { Announcements } from '~/lib/types/collections'
 import { databases } from '~/lib/appwrite-client'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Card, CardContent } from '~/components/ui/card'
 import { Text } from '~/components/ui/text'
 import { formatDate } from '~/components/calculateTimeLeft'
@@ -13,49 +13,43 @@ import sanitizeHtml from 'sanitize-html'
 import HTMLView from 'react-native-htmlview'
 import { useColorScheme } from '~/lib/useColorScheme'
 import { i18n } from '~/components/system/i18n'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 export default function AnnouncementSinglePage() {
   const local = useLocalSearchParams()
-  const [announcement, setAnnouncement] =
-    useState<Announcements.AnnouncementDocumentsType>(null)
-  const [refreshing, setRefreshing] = useState<boolean>(false)
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
+  const queryClient = useQueryClient()
 
-  const fetchAnnouncement = async () => {
-    try {
-      setRefreshing(true)
-      const data: Announcements.AnnouncementDocumentsType =
-        await databases.getDocument(
+  const {
+    data: announcement,
+    isRefetching,
+    refetch,
+  } = useQuery<Announcements.AnnouncementDocumentsType, Error>({
+    queryKey: ['announcement', local.announcementId],
+    queryFn: async () => {
+      const data =
+        await databases.getDocument<Announcements.AnnouncementDocumentsType>(
           'hp_db',
           'announcements',
           `${local.announcementId}`
         )
-
-      setAnnouncement(data)
-      setRefreshing(false)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
-      setRefreshing(false)
-    }
-  }
+      return data
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  })
 
   const onRefresh = () => {
-    setRefreshing(true)
-    fetchAnnouncement().then()
-    setRefreshing(false)
+    queryClient.invalidateQueries({
+      queryKey: ['announcement', local.announcementId],
+    })
   }
 
-  useEffect(() => {
-    fetchAnnouncement().then()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [local.announcementId])
-
-  if (refreshing)
+  if (isRefetching && !announcement)
     return (
       <ScrollView
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl refreshing={isRefetching} onRefresh={onRefresh} />
         }
       >
         <View className={'flex-1 justify-center items-center'}>
@@ -75,7 +69,7 @@ export default function AnnouncementSinglePage() {
     return (
       <ScrollView
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl refreshing={isRefetching} onRefresh={onRefresh} />
         }
       >
         <View className={'flex-1 justify-center items-center h-full'}>
@@ -96,14 +90,14 @@ export default function AnnouncementSinglePage() {
   return (
     <ScrollView
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        <RefreshControl refreshing={isRefetching} onRefresh={onRefresh} />
       }
     >
       <View className={'gap-4 mx-2 mt-4'}>
-        <H3 className={'text-foreground text-center'}>{announcement?.title}</H3>
-        {announcement?.sideText && (
+        <H3 className={'text-foreground text-center'}>{announcement.title}</H3>
+        {announcement.sideText && (
           <Badge>
-            <Text>{announcement?.sideText}</Text>
+            <Text>{announcement.sideText}</Text>
           </Badge>
         )}
         <Separator />
@@ -112,7 +106,7 @@ export default function AnnouncementSinglePage() {
             <CardContent className={'p-6'}>
               <Text className={'font-bold text-center'}>Valid until: </Text>
               <Text className={'text-center'}>
-                {formatDate(new Date(announcement?.validUntil))}
+                {formatDate(new Date(announcement.validUntil))}
               </Text>
             </CardContent>
           </Card>

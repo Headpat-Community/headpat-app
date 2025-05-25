@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 import { FlatList, View, Platform, KeyboardAvoidingView } from 'react-native'
 import { Stack, useLocalSearchParams } from 'expo-router'
 import { Text } from '~/components/ui/text'
 import { useFocusEffect } from '@react-navigation/core'
 import { useUser } from '~/components/contexts/UserContext'
 import { useRealtimeChat } from '~/lib/hooks/useRealtimeChat'
-import { useDataCache } from '~/components/contexts/DataCacheContext'
+import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { databases, functions } from '~/lib/appwrite-client'
 import { Community, Messaging, UserData } from '~/lib/types/collections'
 import { ExecutionMethod, Query } from 'react-native-appwrite'
@@ -17,11 +17,16 @@ import {
   getCommunityAvatarUrlPreview,
 } from '~/components/api/getStorageItem'
 import { z } from 'zod'
-import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { Button } from '~/components/ui/button'
 import { SendIcon } from 'lucide-react-native'
 import { useColorScheme } from '~/lib/useColorScheme'
-import * as Sentry from '@sentry/react-native'
+import { captureException } from '@sentry/react-native'
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
 
 const schema = z.object({
   message: z
@@ -32,229 +37,168 @@ const schema = z.object({
   attachments: z.array(z.instanceof(File)).optional(),
 })
 
+const MESSAGES_PER_PAGE = 1000
+
 export default function ChatView() {
   const local = useLocalSearchParams()
   const { current } = useUser()
   const { messages, setMessages } = useRealtimeChat()
-  const { getCache, getCacheSync, saveCache } = useDataCache()
   const { showAlert } = useAlertModal()
-  const [participants, setParticipants] = useState<string[]>([])
-  const [communityId, setCommunityId] = useState<string | null>(null)
-  const [hasMore, setHasMore] = useState(true)
-  const [page, setPage] = useState(1)
   const [messageText, setMessageText] = useState('')
   const [attachments, setAttachments] = useState<File[]>([])
   const [initialScrollDone, setInitialScrollDone] = useState(false)
   const [scrollTimeout, setScrollTimeout] = useState<NodeJS.Timeout | null>(
     null
   )
-  const [lastFetchedIndex, setLastFetchedIndex] = useState<number | null>(null)
   const flatListRef = useRef<FlatList>(null)
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
+  const queryClient = useQueryClient()
 
-  const fetchMessages = useCallback(
-    async (reset = false) => {
-      if (!hasMore && !reset) return
-      if (!local?.conversationId) return
-
-      const limit = 1000
-      const offset = reset ? 0 : page * limit
-
-      try {
-        const result: Messaging.MessagesType = await databases.listDocuments(
-          'hp_db',
-          'messages',
-          [
-            Query.equal('conversationId', `${local.conversationId}`),
-            Query.orderAsc('$createdAt'),
-            Query.limit(limit),
-            Query.offset(offset),
-          ]
-        )
-
-        const newMessages = result.documents
-
-        // Sort messages by $createdAt
-        newMessages.sort(
-          (a, b) =>
-            new Date(a.$createdAt).getTime() - new Date(b.$createdAt).getTime()
-        )
-
-        // Fetch user data for any new message senders
-        const newParticipants = newMessages.map((msg) => msg.senderId)
-        const participantPromises = newParticipants.map(async (userId) => {
-          if (!(await getCache('users', userId))) {
-            await databases
-              .getDocument('hp_db', 'userdata', userId)
-              .then((userData) => {
-                saveCache('users', userId, userData)
-              })
-          }
-        })
-        await Promise.all(participantPromises)
-
-        setMessages((prevMessages) => {
-          const updatedMessages = reset
-            ? newMessages
-            : [...newMessages, ...prevMessages]
-
-          // Unload the oldest 20 messages if the total exceeds 100
-          if (updatedMessages.length > 100) {
-            return updatedMessages.slice(0, 100)
-          }
-
-          return updatedMessages
-        })
-
-        if (newMessages.length > 0) {
-          setLastFetchedIndex(newMessages.length - 1)
-        }
-        setHasMore(newMessages.length === limit)
-        setPage((prevPage) => (reset ? 1 : prevPage + 1))
-      } catch (error) {
-        console.error('Error fetching messages:', error)
-      }
-    },
-    [local?.conversationId, hasMore, page, setMessages, getCache, saveCache]
-  )
-
-  const fetchConversation = useCallback(async () => {
-    try {
-      await fetchMessages(true)
-
-      const conversationData: Messaging.MessageConversationsDocumentsType =
-        await databases.getDocument(
+  const { data: conversationData, isLoading: isLoadingConversation } = useQuery(
+    {
+      queryKey: ['conversation', local?.conversationId],
+      queryFn: async () => {
+        const data = await databases.getDocument(
           'hp_db',
           'messages-conversations',
           `${local?.conversationId}`
         )
+        return data as Messaging.MessageConversationsDocumentsType
+      },
+      enabled: !!local?.conversationId,
+    }
+  )
 
-      if (conversationData.communityId) {
-        setCommunityId(conversationData.communityId)
-        if (!(await getCache('communities', conversationData.communityId))) {
-          await databases
-            .getDocument('hp_db', 'community', conversationData.communityId)
-            .then((communityData) => {
-              saveCache(
-                'communities',
-                conversationData.communityId,
-                communityData
-              )
-            })
+  const {
+    data: messagesData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ['messages', local?.conversationId],
+    queryFn: async ({ pageParam = 0 }) => {
+      const result = await databases.listDocuments('hp_db', 'messages', [
+        Query.equal('conversationId', `${local?.conversationId}`),
+        Query.orderAsc('$createdAt'),
+        Query.limit(MESSAGES_PER_PAGE),
+        Query.offset(pageParam * MESSAGES_PER_PAGE),
+      ])
+      return result.documents as Messaging.MessagesDocumentsType[]
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === MESSAGES_PER_PAGE
+        ? allPages.length * MESSAGES_PER_PAGE
+        : undefined
+    },
+    initialPageParam: 0,
+    enabled: !!local?.conversationId,
+  })
+
+  const { data: communityData } = useQuery({
+    queryKey: ['community', conversationData?.communityId],
+    queryFn: async () => {
+      if (!conversationData?.communityId) return null
+      const data = await databases.getDocument(
+        'hp_db',
+        'community',
+        conversationData.communityId
+      )
+      return data as Community.CommunityDocumentsType
+    },
+    enabled: !!conversationData?.communityId,
+  })
+
+  const { data: otherUserData } = useQuery({
+    queryKey: [
+      'user',
+      conversationData?.participants?.find((id) => id !== current.$id),
+    ],
+    queryFn: async () => {
+      const otherUserId = conversationData?.participants?.find(
+        (id) => id !== current.$id
+      )
+      if (!otherUserId) return null
+      const data = await databases.getDocument('hp_db', 'userdata', otherUserId)
+      return data as UserData.UserDataDocumentsType
+    },
+    enabled: !!conversationData?.participants?.find((id) => id !== current.$id),
+  })
+
+  const sendMessageMutation = useMutation({
+    mutationFn: async (messageData: {
+      message: string
+      attachments: File[]
+      messageType: string
+    }) => {
+      let endpointUrl = `/user/chat/message?conversationId=${local?.conversationId}`
+      if (!conversationData?.communityId) {
+        const recipientId = conversationData?.participants?.find(
+          (id) => id !== current.$id
+        )
+        if (recipientId) {
+          endpointUrl += `&recipientId=${recipientId}`
         }
       }
 
-      const messageParticipants = messages.map((msg) => msg.senderId)
-      const conversationParticipants = conversationData.participants || []
-      const allParticipants = [
-        ...new Set([...messageParticipants, ...conversationParticipants]),
-      ]
-
-      const participantPromises = allParticipants.map(async (userId) => {
-        if (!(await getCache('users', userId))) {
-          await databases
-            .getDocument('hp_db', 'userdata', userId)
-            .then((userData) => {
-              saveCache('users', userId, userData)
-            })
-        }
-      })
-
-      await Promise.all(participantPromises)
-
-      setParticipants(
-        conversationData.communityId
-          ? messageParticipants
-          : conversationData.participants || []
+      const data = await functions.createExecution(
+        'user-endpoints',
+        JSON.stringify(messageData),
+        false,
+        endpointUrl,
+        ExecutionMethod.POST
       )
-    } catch (error) {
-      console.error('Error fetching conversation:', error)
-    }
-  }, [fetchMessages, local?.conversationId, messages, getCache, saveCache])
-
-  useEffect(() => {
-    fetchConversation().then()
-  }, [local?.conversationId])
-
-  useEffect(() => {
-    const fetchParticipantsData = async () => {
-      const promises = participants.map((userId) => {
-        if (!getCache('users', userId)) {
-          return databases
-            .getDocument('hp_db', 'userdata', userId)
-            .then((userData) => {
-              saveCache('users', userId, userData)
-            })
-        }
-        return Promise.resolve()
-      })
-      await Promise.all(promises)
-    }
-
-    if (participants.length > 0) {
-      fetchParticipantsData().then()
-    }
-  }, [getCache, participants, saveCache])
+      return JSON.parse(data.responseBody)
+    },
+    onSuccess: (response) => {
+      if (response.code === 500) {
+        showAlert('FAILED', 'An error occurred while sending the message')
+      } else if (response.type === 'userchat_user_not_in_conversation') {
+        showAlert('FAILED', 'You are not in this conversation')
+      } else if (response.type === 'userchat_message_sent') {
+        setMessageText('')
+        setAttachments([])
+        queryClient.invalidateQueries({
+          queryKey: ['messages', local?.conversationId],
+        })
+      }
+    },
+    onError: (error) => {
+      captureException(error)
+      showAlert('FAILED', 'An error occurred while sending the message')
+    },
+  })
 
   useFocusEffect(
     useCallback(() => {
-      fetchConversation().then()
-    }, [])
+      queryClient.invalidateQueries({
+        queryKey: ['conversation', local?.conversationId],
+      })
+      queryClient.invalidateQueries({
+        queryKey: ['messages', local?.conversationId],
+      })
+    }, [local?.conversationId, queryClient])
   )
 
-  const getUserAvatar = (userId: string) => {
-    if (!userId) return undefined
-    const userCache = getCacheSync<UserData.UserDataDocumentsType>(
-      'users',
-      userId
-    )
+  const getConversationAvatar = () => {
+    if (conversationData?.communityId) {
+      return getCommunityAvatarUrlPreview(
+        communityData?.avatarId,
+        'width=100&height=100'
+      )
+    }
     return getAvatarImageUrlPreview(
-      userCache?.data?.avatarId,
+      otherUserData?.avatarId,
       'width=100&height=100'
     )
   }
 
-  const getConversationAvatar = () => {
-    if (communityId) {
-      const communityCache = getCacheSync<Community.CommunityDocumentsType>(
-        'communities',
-        communityId
-      )
-
-      return getCommunityAvatarUrlPreview(
-        communityCache?.data?.avatarId,
-        'width=100&height=100'
-      )
-    }
-    return getUserAvatar(participants.find((id) => id !== current.$id) || '')
-  }
-
   const getConversationName = () => {
-    if (communityId) {
-      const communityCache = getCacheSync<Community.CommunityDocumentsType>(
-        'communities',
-        communityId
-      )
-
-      return communityCache?.data?.name
+    if (conversationData?.communityId) {
+      return communityData?.name
     }
-    const userCache = getCacheSync<UserData.UserDataDocumentsType>(
-      'users',
-      participants.find((id) => id !== current.$id) || ''
-    )
-    return userCache?.data?.displayName
+    return otherUserData?.displayName
   }
-
-  useEffect(() => {
-    if (flatListRef.current && messages.length > 0) {
-      const timeout = setTimeout(() => {
-        flatListRef.current.scrollToEnd({ animated: false })
-      }, 250) // 100 milliseconds delay
-
-      return () => clearTimeout(timeout)
-    }
-  }, [messages])
 
   const handleScroll = (event: any) => {
     const { contentOffset } = event.nativeEvent
@@ -264,25 +208,16 @@ export default function ChatView() {
       }
       setScrollTimeout(
         setTimeout(() => {
-          fetchMessages().then(() => {
-            if (lastFetchedIndex !== null && lastFetchedIndex >= 0 && hasMore) {
-              flatListRef.current?.scrollToIndex({
-                index: lastFetchedIndex,
-                animated: false,
-              })
-            }
-          })
-        }, 100) // 100 milliseconds timeout
+          if (hasNextPage && !isFetchingNextPage) {
+            fetchNextPage()
+          }
+        }, 100)
       )
     }
   }
 
   const sendMessage = async () => {
-    //const maxFileSize = 8 * 1024 * 1024 // 8 MB in bytes
-    const conversationId = `${local?.conversationId}`
-
     try {
-      // Validate the message and attachments
       schema.parse({ message: messageText, attachments })
 
       // Create a pending message
@@ -290,7 +225,7 @@ export default function ChatView() {
         $id: `pending_${Date.now()}`,
         body: messageText,
         senderId: current.$id || '',
-        conversationId,
+        conversationId: `${local?.conversationId}`,
         messageType: 'text',
         attachments: [],
         $collectionId: 'messages',
@@ -299,57 +234,24 @@ export default function ChatView() {
         $createdAt: new Date().toISOString(),
         $updatedAt: new Date().toISOString(),
       }
-      setMessages((prev) => [...prev, pendingMessage]) // Update messages state immediately
+      setMessages((prev) => [...prev, pendingMessage])
 
-      // Prepare the endpoint URL
-      let endpointUrl = `/user/chat/message?conversationId=${local?.conversationId}`
-      if (!communityId) {
-        const recipientId = participants.find((id) => id !== current.$id)
-        if (recipientId) {
-          endpointUrl += `&recipientId=${recipientId}`
-        }
-      }
+      await sendMessageMutation.mutateAsync({
+        message: messageText,
+        attachments: [],
+        messageType: 'text',
+      })
 
-      const data = await functions.createExecution(
-        'user-endpoints',
-        JSON.stringify({
-          message: messageText,
-          attachments: [],
-          messageType: 'text',
-        }),
-        false,
-        endpointUrl,
-        ExecutionMethod.POST
-      )
-
-      // After successful send, remove the pending message
+      // Remove the pending message
       setMessages((prev) =>
         prev.filter((msg) => msg.$id !== pendingMessage.$id)
       )
-
-      const response = JSON.parse(data.responseBody)
-      if (response.code === 500) {
-        showAlert('FAILED', 'An error occurred while sending the message')
-        return
-      } else if (response.type === 'userchat_user_not_in_conversation') {
-        showAlert('FAILED', 'You are not in this conversation')
-        return
-      } else if (response.type === 'userchat_message_sent') {
-        // Clear the message and attachments
-        setMessageText('')
-        setAttachments([])
-      }
     } catch (error) {
-      // Remove the pending message in case of error
-      setMessages((prev) =>
-        prev.filter((msg) => msg.$id !== `pending_${Date.now()}`)
-      )
       if (error instanceof z.ZodError) {
         showAlert('FAILED', error.errors[0].message)
       } else {
-        Sentry.captureException(error)
+        captureException(error)
         showAlert('FAILED', 'An error occurred while sending the message')
-        console.error('Error sending message:', error)
       }
     }
   }
@@ -358,6 +260,8 @@ export default function ChatView() {
     if (!item) return null
     return <MessageItem message={item} />
   }
+
+  const allMessages = messagesData?.pages.flat() || []
 
   return (
     <View className={'flex-1'}>
@@ -390,7 +294,7 @@ export default function ChatView() {
       >
         <FlatList
           ref={flatListRef}
-          data={[...messages]}
+          data={[...messages, ...allMessages]}
           renderItem={renderItem}
           keyExtractor={(item) => item.$id}
           onScroll={handleScroll}
@@ -419,6 +323,7 @@ export default function ChatView() {
               variant={'ghost'}
               size={'icon'}
               onPress={sendMessage}
+              disabled={sendMessageMutation.isPending}
               className={'active:bg-transparent'}
             >
               <SendIcon color={theme} />

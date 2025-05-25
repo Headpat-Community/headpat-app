@@ -157,13 +157,15 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
         <Separator />
         {current && (
           <>
-            <DrawerLabel
-              icon={MessagesSquareIcon}
-              text={i18n.t('screens.chat')}
-              theme={theme}
-              route={'/chat/list'}
-              bottomSheetModalRef={bottomSheetModalRef}
-            />
+            {current.labels.includes('staff') && (
+              <DrawerLabel
+                icon={MessagesSquareIcon}
+                text={i18n.t('screens.chat')}
+                theme={theme}
+                route={'/chat/list'}
+                bottomSheetModalRef={bottomSheetModalRef}
+              />
+            )}
             <DrawerLabel
               icon={BellIcon}
               text={i18n.t('screens.notifications')}
@@ -264,7 +266,7 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
         </Link>
         <Separator />
         <Text style={{ color: theme, padding: 10, textAlign: 'center' }}>
-          Headpat Place v0.8.8
+          Headpat Place v0.8.9
         </Text>
         <Muted style={{ textAlign: 'center', paddingBottom: 16 }}>BETA</Muted>
       </BottomSheetScrollView>

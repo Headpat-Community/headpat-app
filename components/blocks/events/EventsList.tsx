@@ -1,5 +1,5 @@
 import { FlatList, RefreshControl, ScrollView, View } from 'react-native'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback } from 'react'
 import { functions } from '~/lib/appwrite-client'
 import { Events } from '~/lib/types/collections'
 import { Muted } from '~/components/ui/typography'
@@ -9,75 +9,64 @@ import { useFocusEffect } from '@react-navigation/core'
 import EventItem from '~/components/FlatlistItems/EventItem'
 import { Text } from '~/components/ui/text'
 import { i18n } from '~/components/system/i18n'
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
 
 interface EventsListProps {
   endpoint: string
 }
 
 const EventsList: React.FC<EventsListProps> = ({ endpoint }) => {
-  const [events, setEvents] = useState<Events.EventsDocumentsType[]>([])
-  const [refreshing, setRefreshing] = useState<boolean>(false)
-  const [loadingMore, setLoadingMore] = useState<boolean>(false)
-  const [offset, setOffset] = useState<number>(0)
-  const [hasMore, setHasMore] = useState<boolean>(true)
   const { showAlert, hideAlert } = useAlertModal()
+  const queryClient = useQueryClient()
 
-  const fetchEvents = async (newOffset: number = 0) => {
-    showAlert('LOADING', 'Fetching events...')
-    try {
-      const data = await functions.createExecution(
-        'event-endpoints',
-        '',
-        false,
-        `${endpoint}?offset=${newOffset}&limit=20`,
-        ExecutionMethod.GET
-      )
-      const response: Events.EventsDocumentsType[] = JSON.parse(
-        data.responseBody
-      )
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isRefetching } =
+    useInfiniteQuery<Events.EventsDocumentsType[]>({
+      queryKey: ['events', endpoint],
+      queryFn: async ({ pageParam = 0 }) => {
+        showAlert('LOADING', 'Fetching events...')
+        try {
+          const data = await functions.createExecution(
+            'event-endpoints',
+            '',
+            false,
+            `${endpoint}?offset=${pageParam}&limit=20`,
+            ExecutionMethod.GET
+          )
+          const response: Events.EventsDocumentsType[] = JSON.parse(
+            data.responseBody
+          )
+          return response
+        } catch (error) {
+          showAlert('FAILED', 'Failed to fetch events. Please try again later.')
+          return []
+        } finally {
+          hideAlert()
+        }
+      },
+      getNextPageParam: (lastPage, allPages) => {
+        return lastPage.length === 20 ? allPages.length * 20 : undefined
+      },
+      initialPageParam: 0,
+      staleTime: 1000 * 60 * 5, // 5 minutes
+    })
 
-      if (newOffset === 0) {
-        setEvents(response)
-      } else {
-        setEvents((prevEvents) => [...prevEvents, ...response])
-      }
-
-      setHasMore(response.length === 20)
-    } catch {
-      showAlert('FAILED', 'Failed to fetch events. Please try again later.')
-    } finally {
-      hideAlert()
-      setRefreshing(false)
-    }
-  }
-
-  const onRefresh = () => {
-    setRefreshing(true)
-    setOffset(0)
-    fetchEvents(0).then()
-  }
-
-  const loadMore = async () => {
-    if (!loadingMore && hasMore) {
-      setLoadingMore(true)
-      const newOffset = offset + 20
-      setOffset(newOffset)
-      await fetchEvents(newOffset)
-      setLoadingMore(false)
-    }
-  }
+  const onRefresh = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['events', endpoint] })
+  }, [queryClient, endpoint])
 
   useFocusEffect(
     useCallback(() => {
       onRefresh()
-    }, [])
+    }, [onRefresh])
   )
 
-  if (events?.length === 0 || !events)
+  const events = data?.pages.flat() ?? []
+
+  if (events.length === 0) {
     return (
       <ScrollView
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl refreshing={isRefetching} onRefresh={onRefresh} />
         }
       >
         <View className={'flex-1 justify-center items-center'}>
@@ -91,6 +80,7 @@ const EventsList: React.FC<EventsListProps> = ({ endpoint }) => {
         </View>
       </ScrollView>
     )
+  }
 
   return (
     <View className={'gap-4 mt-2 mx-2'}>
@@ -98,13 +88,17 @@ const EventsList: React.FC<EventsListProps> = ({ endpoint }) => {
         data={events}
         keyExtractor={(item) => item.$id}
         onRefresh={onRefresh}
-        refreshing={refreshing}
+        refreshing={isRefetching}
         contentContainerStyle={{ padding: 8 }}
         contentInsetAdjustmentBehavior={'automatic'}
-        onEndReached={loadMore}
+        onEndReached={() => {
+          if (hasNextPage && !isFetchingNextPage) {
+            fetchNextPage()
+          }
+        }}
         onEndReachedThreshold={0.5}
         ListFooterComponent={
-          loadingMore ? <Text>{i18n.t('main.loading')}</Text> : null
+          isFetchingNextPage ? <Text>{i18n.t('main.loading')}</Text> : null
         }
         renderItem={({ item }) => <EventItem event={item} />}
       />

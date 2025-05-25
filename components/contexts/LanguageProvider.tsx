@@ -1,17 +1,12 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from 'react'
+import React, { createContext, useContext, ReactNode } from 'react'
 import kv from 'expo-sqlite/kv-store'
 import { i18n } from '~/components/system/i18n'
 import { getLocales } from 'expo-localization'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 interface LanguageContextProps {
   language: string
-  setLanguage: (language: string) => void
+  setLanguage: (language: string) => Promise<void>
 }
 
 const LanguageContext = createContext<LanguageContextProps | undefined>(
@@ -22,33 +17,44 @@ interface LanguageProviderProps {
   children: ReactNode
 }
 
+const LANGUAGE_QUERY_KEY = 'app-language'
+
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({
   children,
 }) => {
-  const [language, setLanguage] = useState('en')
+  const queryClient = useQueryClient()
 
-  useEffect(() => {
-    const getLocale = async () => {
-      // Check language
+  const { data: language = 'en' } = useQuery({
+    queryKey: [LANGUAGE_QUERY_KEY],
+    queryFn: async () => {
       const locale =
         (await kv.getItem('locale')) || getLocales()[0].languageCode
       await kv.setItem('locale', locale)
       i18n.enableFallback = true
       i18n.defaultLocale = 'en'
-      setLanguage(locale)
       i18n.locale = locale
-    }
-    getLocale().then()
-  }, [])
+      return locale
+    },
+    staleTime: Infinity, // Language rarely changes
+  })
 
-  const changeLanguage = async (newLanguage: string) => {
-    setLanguage(newLanguage)
-    i18n.locale = newLanguage
-    await kv.setItem('locale', newLanguage)
+  const changeLanguageMutation = useMutation({
+    mutationFn: async (newLanguage: string) => {
+      await kv.setItem('locale', newLanguage)
+      i18n.locale = newLanguage
+      return newLanguage
+    },
+    onSuccess: (newLanguage) => {
+      queryClient.setQueryData([LANGUAGE_QUERY_KEY], newLanguage)
+    },
+  })
+
+  const setLanguage = async (newLanguage: string) => {
+    await changeLanguageMutation.mutateAsync(newLanguage)
   }
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage: changeLanguage }}>
+    <LanguageContext.Provider value={{ language, setLanguage }}>
       {children}
     </LanguageContext.Provider>
   )

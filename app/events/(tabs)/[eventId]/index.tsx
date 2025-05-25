@@ -20,48 +20,51 @@ import { useFocusEffect } from '@react-navigation/core'
 import { Button } from '~/components/ui/button'
 import { i18n } from '~/components/system/i18n'
 import { useUser } from '~/components/contexts/UserContext'
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 
 export default function EventPage() {
   const local = useLocalSearchParams()
-  const [event, setEvent] = React.useState<Events.EventsDocumentsType>(null)
-  const [refreshing, setRefreshing] = React.useState<boolean>(true)
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
   const { showAlert } = useAlertModal()
   const { current } = useUser()
+  const queryClient = useQueryClient()
 
-  const fetchEvents = async () => {
-    try {
-      const document: Events.EventsDocumentsType = await databases.getDocument(
-        'hp_db',
-        'events',
-        `${local?.eventId}`
-      )
+  const {
+    data: event,
+    isLoading,
+    isRefetching,
+  } = useQuery({
+    queryKey: ['event', local?.eventId],
+    queryFn: async () => {
+      try {
+        const document: Events.EventsDocumentsType =
+          await databases.getDocument('hp_db', 'events', `${local?.eventId}`)
 
-      setEvent(document)
-      setRefreshing(false)
+        const eventResponse = await functions.createExecution(
+          'event-endpoints',
+          '',
+          false,
+          `/event/attendees?eventId=${local?.eventId}`,
+          ExecutionMethod.GET
+        )
+        const eventData = JSON.parse(eventResponse.responseBody)
+        return {
+          ...document,
+          attendees: eventData?.attendees,
+          isAttending: eventData?.isAttending,
+        }
+      } catch (error) {
+        showAlert('FAILED', i18n.t('events.failedtofetch'))
+        throw error
+      }
+    },
+    enabled: !!local?.eventId,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  })
 
-      const eventResponse = await functions.createExecution(
-        'event-endpoints',
-        '',
-        false,
-        `/event/attendees?eventId=${local?.eventId}`,
-        ExecutionMethod.GET
-      )
-      const event = JSON.parse(eventResponse.responseBody)
-      setEvent({
-        ...document,
-        attendees: event?.attendees,
-        isAttending: event?.isAttending,
-      })
-    } catch {
-      showAlert('FAILED', i18n.t('events.failedtofetch'))
-      setRefreshing(false)
-    }
-  }
-
-  const attendEvent = async () => {
-    try {
+  const attendMutation = useMutation({
+    mutationFn: async () => {
       const eventResponse = await functions.createExecution(
         'event-endpoints',
         '',
@@ -69,27 +72,30 @@ export default function EventPage() {
         `/event/attendee?eventId=${local?.eventId}`,
         ExecutionMethod.POST
       )
-      const event = JSON.parse(eventResponse.responseBody)
-      if (event.type === 'event_attendee_add_success') {
-        setEvent((prev) => ({
-          ...prev,
-          attendees: Array.isArray(prev.attendees)
-            ? prev.attendees
-            : prev.attendees + 1,
+      return JSON.parse(eventResponse.responseBody)
+    },
+    onSuccess: (data) => {
+      if (data.type === 'event_attendee_add_success') {
+        queryClient.setQueryData(['event', local?.eventId], (old: any) => ({
+          ...old,
+          attendees: Array.isArray(old.attendees)
+            ? old.attendees
+            : old.attendees + 1,
           isAttending: true,
         }))
-      } else if (event.type === 'event_ended') {
+      } else if (data.type === 'event_ended') {
         showAlert('FAILED', i18n.t('time.eventHasEnded'))
       } else {
         showAlert('FAILED', i18n.t('events.failedToAttend'))
       }
-    } catch {
+    },
+    onError: () => {
       showAlert('FAILED', i18n.t('events.failedToFetch'))
-    }
-  }
+    },
+  })
 
-  const unattendEvent = async () => {
-    try {
+  const unattendMutation = useMutation({
+    mutationFn: async () => {
       const eventResponse = await functions.createExecution(
         'event-endpoints',
         '',
@@ -97,46 +103,48 @@ export default function EventPage() {
         `/event/attendee?eventId=${local?.eventId}`,
         ExecutionMethod.DELETE
       )
-      const event = JSON.parse(eventResponse.responseBody)
-      if (event.type === 'event_attendee_remove_success') {
-        setEvent((prev) => ({
-          ...prev,
-          attendees: Array.isArray(prev.attendees)
-            ? prev.attendees
-            : prev.attendees - 1,
+      return JSON.parse(eventResponse.responseBody)
+    },
+    onSuccess: (data) => {
+      if (data.type === 'event_attendee_remove_success') {
+        queryClient.setQueryData(['event', local?.eventId], (old: any) => ({
+          ...old,
+          attendees: Array.isArray(old.attendees)
+            ? old.attendees
+            : old.attendees - 1,
           isAttending: false,
         }))
-      } else if (event.type === 'event_ended') {
+      } else if (data.type === 'event_ended') {
         showAlert('FAILED', i18n.t('time.eventHasEnded'))
       } else {
         showAlert('FAILED', i18n.t('events.failedCancelAttendance'))
       }
-    } catch {
+    },
+    onError: () => {
       showAlert('FAILED', i18n.t('events.failedToFetch'))
-    }
-  }
-
-  const onRefresh = () => {
-    setRefreshing(true)
-    fetchEvents().then()
-  }
+    },
+  })
 
   useFocusEffect(
     React.useCallback(() => {
-      if (!local?.eventId)
-        return () => showAlert('FAILED', i18n.t('events.idNotFound'))
-      fetchEvents().then()
-      return () => {
-        setEvent(null)
+      if (!local?.eventId) {
+        showAlert('FAILED', i18n.t('events.idNotFound'))
       }
     }, [local?.eventId])
   )
 
-  if (refreshing)
+  if (isLoading) {
     return (
       <ScrollView
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={() =>
+              queryClient.invalidateQueries({
+                queryKey: ['event', local?.eventId],
+              })
+            }
+          />
         }
         contentContainerClassName={'flex-1 justify-center items-center h-full'}
       >
@@ -157,12 +165,20 @@ export default function EventPage() {
         </View>
       </ScrollView>
     )
+  }
 
-  if (!event)
+  if (!event) {
     return (
       <ScrollView
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={() =>
+              queryClient.invalidateQueries({
+                queryKey: ['event', local?.eventId],
+              })
+            }
+          />
         }
         contentContainerClassName={'flex-1 justify-center items-center h-full'}
       >
@@ -178,6 +194,7 @@ export default function EventPage() {
         </View>
       </ScrollView>
     )
+  }
 
   const sanitizedDescription = sanitizeHtml(event.description)
   const isEventEnded = new Date(event.dateUntil) < new Date()
@@ -191,7 +208,14 @@ export default function EventPage() {
       />
       <ScrollView
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={() =>
+              queryClient.invalidateQueries({
+                queryKey: ['event', local?.eventId],
+              })
+            }
+          />
         }
       >
         <View className={'gap-4 mx-2 mt-4'}>
@@ -263,10 +287,14 @@ export default function EventPage() {
                   : isEventEnded
                     ? null
                     : event.isAttending
-                      ? unattendEvent
-                      : attendEvent
+                      ? () => unattendMutation.mutate()
+                      : () => attendMutation.mutate()
               }
-              disabled={isEventEnded}
+              disabled={
+                isEventEnded ||
+                attendMutation.isPending ||
+                unattendMutation.isPending
+              }
             >
               <Text className={'font-bold'}>
                 {isEventEnded

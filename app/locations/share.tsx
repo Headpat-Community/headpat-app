@@ -18,17 +18,16 @@ import LocationSharedItem from '~/components/FlatlistItems/LocationSharedItem'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { router } from 'expo-router'
 import { i18n } from '~/components/system/i18n'
-import { useDataCache } from '~/components/contexts/DataCacheContext'
 import { Skeleton } from '~/components/ui/skeleton'
 import { Community } from '~/lib/types/collections'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 export default function ShareLocationView() {
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
   const [refreshing, setRefreshing] = React.useState(false)
-  const [sharedItems, setSharedItems] = React.useState([])
   const { showAlert } = useAlertModal()
-  const { getCache, saveCache } = useDataCache()
+  const queryClient = useQueryClient()
   const {
     status,
     isRegistered,
@@ -37,81 +36,85 @@ export default function ShareLocationView() {
     unregisterBackgroundFetch,
   } = useLocation()
 
+  const { data: sharedItems, isLoading } = useQuery({
+    queryKey: ['location-permissions'],
+    queryFn: async () => {
+      const result = await databases.listDocuments(
+        'hp_db',
+        'locations-permissions',
+        [
+          Query.limit(1000),
+          Query.select(['$id', 'isCommunity', 'requesterId', 'timeUntil']),
+        ]
+      )
+
+      const items = await Promise.all(
+        result.documents.map(async (item) => {
+          if (item.isCommunity) {
+            const communityData = await queryClient.fetchQuery({
+              queryKey: ['community', item.requesterId],
+              queryFn: async () => {
+                const response = await databases.getDocument(
+                  'hp_db',
+                  'community',
+                  item.requesterId
+                )
+                return response as Community.CommunityDocumentsType
+              },
+              staleTime: 1000 * 60 * 5, // 5 minutes
+            })
+
+            return {
+              ...communityData,
+              documentId: item.$id,
+              timeUntil: item.timeUntil,
+              isCommunity: true,
+            }
+          } else {
+            const userData = await queryClient.fetchQuery({
+              queryKey: ['user', item.requesterId],
+              queryFn: async () => {
+                const response = await databases.getDocument(
+                  'hp_db',
+                  'userdata',
+                  item.requesterId
+                )
+                return response
+              },
+              staleTime: 1000 * 60 * 5, // 5 minutes
+            })
+
+            return {
+              ...userData,
+              documentId: item.$id,
+              timeUntil: item.timeUntil,
+              isCommunity: false,
+            }
+          }
+        })
+      )
+
+      // Sort items by timeUntil
+      return items.sort(
+        (a, b) =>
+          new Date(a.timeUntil).getTime() - new Date(b.timeUntil).getTime()
+      )
+    },
+  })
+
   useFocusEffect(
     React.useCallback(() => {
       const initializeStatus = async () => {
         await checkStatus()
-        await fetchShared()
+        queryClient.invalidateQueries({ queryKey: ['location-permissions'] })
       }
       initializeStatus().then()
-    }, [])
+    }, [checkStatus, queryClient])
   )
 
-  const fetchShared = React.useCallback(async () => {
-    // Clear existing state before fetching new data
-    setSharedItems([])
-
-    const result = await databases.listDocuments(
-      'hp_db',
-      'locations-permissions',
-      [
-        Query.limit(1000),
-        Query.select(['$id', 'isCommunity', 'requesterId', 'timeUntil']),
-      ]
-    )
-    const items = []
-
-    for (const item of result.documents) {
-      if (item.isCommunity) {
-        let cache: any = await getCache('communities', item.requesterId)
-        if (!cache) {
-          const response: Community.CommunityDocumentsType =
-            await databases.getDocument('hp_db', 'community', item.requesterId)
-          saveCache('communities', item.requesterId, response)
-          cache = response
-        }
-        const communityData = cache.data
-        items.push({
-          ...communityData,
-          documentId: item.$id,
-          timeUntil: item.timeUntil,
-          isCommunity: true,
-        })
-      } else {
-        let cache: any = await getCache('users', item.requesterId)
-        if (!cache) {
-          const response: any = await databases.getDocument(
-            'hp_db',
-            'userdata',
-            item.requesterId
-          )
-          saveCache('users', item.requesterId, response)
-          cache = response
-        }
-        const userDataResults = cache.data
-        items.push({
-          ...userDataResults,
-          documentId: item.$id,
-          timeUntil: item.timeUntil,
-          isCommunity: false,
-        })
-      }
-    }
-
-    // Sort items by timeUntil
-    items.sort(
-      (a, b) =>
-        new Date(a.timeUntil).getTime() - new Date(b.timeUntil).getTime()
-    )
-
-    // Update state with new data
-    setSharedItems(items)
-    setRefreshing(false)
-  }, [getCache, saveCache])
-
   const handleRemoveItem = (documentId: string) => {
-    setSharedItems((prevUsers) =>
-      prevUsers.filter((user) => user.documentId !== documentId)
+    queryClient.setQueryData(['location-permissions'], (old: any[]) =>
+      old?.filter((user) => user.documentId !== documentId)
     )
   }
 
@@ -138,12 +141,13 @@ export default function ShareLocationView() {
 
   const onRefresh = () => {
     setRefreshing(true)
-    fetchShared().then()
+    queryClient.invalidateQueries({ queryKey: ['location-permissions'] })
+    setRefreshing(false)
   }
 
   return (
     <>
-      {refreshing && (
+      {isLoading && (
         <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
           {Array.from({ length: 8 }).map((_, index) => (
             <View
@@ -180,7 +184,7 @@ export default function ShareLocationView() {
             </View>
           </View>
         </>
-      ) : !refreshing && sharedItems.length === 0 ? (
+      ) : !isLoading && sharedItems?.length === 0 ? (
         <View className={'flex-1 justify-center items-center'}>
           <H3>{i18n.t('location.share.nobody.title')}</H3>
           <View className={'m-3 gap-4 flex items-center'}>
@@ -196,7 +200,7 @@ export default function ShareLocationView() {
         </View>
       ) : (
         <FlatList
-          data={[...sharedItems]}
+          data={sharedItems}
           keyExtractor={(item) => item.documentId}
           renderItem={renderConversationItem}
           onRefresh={onRefresh}

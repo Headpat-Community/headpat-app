@@ -46,7 +46,7 @@ const createConversation = async (recipientId: string) => {
 const ConversationSearchItem = React.memo(
   ({ item }: { item: UserData.UserDataDocumentsType }) => {
     const getUserAvatar = (avatarId: string) => {
-      return `https://api.headpat.place/v1/storage/buckets/avatars/files/${avatarId}/preview?project=hp-main&width=100&height=100`
+      return `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/avatars/files/${avatarId}/preview?project=hp-main&width=100&height=100`
     }
 
     return (

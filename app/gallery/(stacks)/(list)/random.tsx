@@ -260,7 +260,7 @@ export default function GalleryPage() {
   const generateThumbnail = React.useCallback(async (galleryId: string) => {
     try {
       const { uri } = await VideoThumbnails.getThumbnailAsync(
-        `https://api.headpat.place/v1/storage/buckets/gallery/files/${galleryId}/view?project=hp-main`
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/gallery/files/${galleryId}/view?project=hp-main`
       )
       setThumbnails((prevThumbnails) => ({
         ...prevThumbnails,

@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react'
 import { View, StyleSheet, TouchableOpacity } from 'react-native'
-import { useDataCache } from '~/components/contexts/DataCacheContext'
 import { Text } from '~/components/ui/text'
 import { timeSince } from '~/components/calculateTimeLeft'
 import {
@@ -21,17 +20,26 @@ import { Muted } from '~/components/ui/typography'
 import { UserData } from '~/lib/types/collections'
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
 import { getAvatarImageUrlPreview } from '~/components/api/getStorageItem'
+import { useQuery } from '@tanstack/react-query'
 
 const MessageItem = ({ message }) => {
   const { current } = useUser()
-  const { getCacheSync } = useDataCache()
   const { showAlert } = useAlertModal()
   const [openModal, setOpenModal] = useState(false)
   const [openReportModal, setOpenReportModal] = useState(false)
-  const userData = getCacheSync<UserData.UserDataDocumentsType>(
-    'users',
-    message.senderId
-  )?.data
+
+  const { data: userData } = useQuery<UserData.UserDataDocumentsType>({
+    queryKey: ['user', message.senderId],
+    queryFn: async () => {
+      const response = await databases.getDocument(
+        'hp_db',
+        'userdata',
+        message.senderId
+      )
+      return response as UserData.UserDataDocumentsType
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  })
 
   const handleLongPress = useCallback(() => {
     setOpenModal(true)

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { ScrollView, View } from 'react-native'
 import { functions } from '~/lib/appwrite-client'
 import * as Sentry from '@sentry/react-native'
@@ -6,93 +6,74 @@ import { Community } from '~/lib/types/collections'
 import { ExecutionMethod } from 'react-native-appwrite'
 import CommunityItem from '~/components/community/CommunityItem'
 import { Skeleton } from '~/components/ui/skeleton'
-import { useDataCache } from '~/components/contexts/DataCacheContext'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { i18n } from '~/components/system/i18n'
 import { FlashList } from '@shopify/flash-list'
 import { Text } from '~/components/ui/text'
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
+
+const PAGE_SIZE = 20
 
 export default function CommunitiesPage() {
-  const { saveAllCache } = useDataCache()
-  const [communities, setCommunities] = useState<
-    Community.CommunityDocumentsType[]
-  >([])
-  const [refreshing, setRefreshing] = useState<boolean>(false)
-  const [loadingMore, setLoadingMore] = useState<boolean>(false)
-  const [offset, setOffset] = useState<number>(0)
-  const [hasMore, setHasMore] = useState<boolean>(true)
   const { showAlert } = useAlertModal()
+  const queryClient = useQueryClient()
 
-  // Fetch communities function
-  const fetchCommunities = useCallback(
-    async (newOffset: number = 0, limit: number = 50) => {
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isRefetching,
+    isLoading,
+  } = useInfiniteQuery({
+    queryKey: ['communities'],
+    queryFn: async ({ pageParam = 0 }) => {
       try {
         const data = await functions.createExecution(
           'community-endpoints',
           '',
           false,
-          `/communities?limit=${limit}&offset=${newOffset}`, // Fetch with pagination
+          `/communities?limit=${PAGE_SIZE}&offset=${pageParam}`,
           ExecutionMethod.GET
         )
-        const newCommunities: Community.CommunityDocumentsType[] = JSON.parse(
+        return JSON.parse(
           data.responseBody
-        )
-
-        if (newOffset === 0) {
-          setCommunities(newCommunities)
-          saveAllCache('communities', newCommunities)
-        } else {
-          saveAllCache('communities', [...communities, ...newCommunities])
-          setCommunities((prevCommunities) => [
-            ...prevCommunities,
-            ...newCommunities,
-          ])
-        }
-
-        setHasMore(newCommunities.length === 20)
+        ) as Community.CommunityDocumentsType[]
       } catch (error) {
         showAlert(
           'FAILED',
-          'Failed to fetch notifications. Please try again later.'
+          'Failed to fetch communities. Please try again later.'
         )
         Sentry.captureException(error)
-      } finally {
-        setRefreshing(false)
-        setLoadingMore(false)
+        return []
       }
     },
-    [saveAllCache]
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === PAGE_SIZE
+        ? allPages.length * PAGE_SIZE
+        : undefined
+    },
+    initialPageParam: 0,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  })
+
+  const communities = data?.pages.flat() ?? []
+
+  const renderItem = useCallback(
+    ({ item }: { item: Community.CommunityDocumentsType }) => (
+      <CommunityItem community={item} />
+    ),
+    []
   )
 
-  // Handle refresh
-  const onRefresh = async () => {
-    setRefreshing(true)
-    setOffset(0)
-    await fetchCommunities(0)
-  }
-
-  // Handle loading more communities
-  const loadMore = async () => {
-    if (!loadingMore && hasMore) {
-      setLoadingMore(true)
-      const newOffset = offset + 20
-      setOffset(newOffset)
-      await fetchCommunities(newOffset)
-    }
-  }
-
-  // Initial fetch when component mounts
-  useEffect(() => {
-    setRefreshing(true)
-    fetchCommunities(0).then()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  const renderItem = ({ item }: { item: Community.CommunityDocumentsType }) => (
-    <CommunityItem community={item} />
+  const keyExtractor = useCallback(
+    (item: Community.CommunityDocumentsType) => item.$id,
+    []
   )
 
-  if (refreshing || !communities.length)
+  const estimatedItemSize = useMemo(() => 100, [])
+
+  if (isLoading) {
     return (
       <ScrollView contentInsetAdjustmentBehavior={'automatic'}>
         {Array.from({ length: 8 }).map((_, index) => (
@@ -112,20 +93,29 @@ export default function CommunitiesPage() {
         ))}
       </ScrollView>
     )
+  }
 
   return (
     <View style={{ flex: 1 }}>
       <FlashList
         data={communities}
-        keyExtractor={(item) => item.$id}
+        keyExtractor={keyExtractor}
         renderItem={renderItem}
-        onRefresh={onRefresh}
-        refreshing={refreshing}
-        estimatedItemSize={100}
-        onEndReached={loadMore}
+        onRefresh={() => {
+          queryClient.invalidateQueries({
+            queryKey: ['communities'],
+          })
+        }}
+        refreshing={isRefetching}
+        estimatedItemSize={estimatedItemSize}
+        onEndReached={() => {
+          if (hasNextPage && !isFetchingNextPage) {
+            fetchNextPage()
+          }
+        }}
         onEndReachedThreshold={0.5}
         ListFooterComponent={
-          loadingMore && hasMore ? (
+          isFetchingNextPage && hasNextPage ? (
             <Text className="p-4 text-center">{i18n.t('main.loading')}</Text>
           ) : null
         }

@@ -5,7 +5,6 @@ import * as Sentry from '@sentry/react-native'
 import { UserData } from '~/lib/types/collections'
 import { Query } from 'react-native-appwrite'
 import UserItem from '~/components/user/UserItem'
-import { useDataCache } from '~/components/contexts/DataCacheContext'
 import { i18n } from '~/components/system/i18n'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { Text } from '~/components/ui/text'
@@ -15,7 +14,6 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 const PAGE_SIZE = 50
 
 export default function UserListPage() {
-  const { saveAllCache } = useDataCache()
   const { showAlert } = useAlertModal()
 
   const {
@@ -39,8 +37,6 @@ export default function UserListPage() {
           ]
         )
 
-        // Save to cache
-        saveAllCache('users', data.documents)
         return data.documents
       } catch (error) {
         showAlert('FAILED', 'Failed to fetch users. Please try again later.')
@@ -52,6 +48,7 @@ export default function UserListPage() {
       return lastPage.length === PAGE_SIZE ? allPages.length : undefined
     },
     initialPageParam: 0,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   })
 
   const users = data?.pages.flat() ?? []

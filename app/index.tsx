@@ -24,75 +24,81 @@ import { Skeleton } from '~/components/ui/skeleton'
 import { i18n } from '~/components/system/i18n'
 import React from 'react'
 import { HomeCard } from '~/components/home/home-card'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 export default function HomeView() {
-  const [userData, setUserData] =
-    React.useState<UserData.UserDataDocumentsType>(null)
-  const [nextEvent, setNextEvent] =
-    React.useState<Events.EventsDocumentsType>(null)
   const [refreshing, setRefreshing] = React.useState<boolean>(false)
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
   const { current, isLoadingUser } = useUser()
-
-  const onRefresh = () => {
-    setRefreshing(true)
-    fetchUserData().then()
-    fetchNextEvent().then()
-    setRefreshing(false)
-  }
+  const queryClient = useQueryClient()
 
   const getAvatarUrl = (avatarId: string) => {
     if (!avatarId) return
-    return `https://api.headpat.place/v1/storage/buckets/avatars/files/${avatarId}/preview?project=hp-main&width=300&height=300`
+    return `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/avatars/files/${avatarId}/preview?project=hp-main&width=300&height=300`
   }
 
-  const fetchNextEvent = async () => {
-    try {
-      const data = await functions.createExecution(
-        'event-endpoints',
-        '',
-        false,
-        '/event/next',
-        ExecutionMethod.GET
-      )
-      const response: Events.EventsDocumentsType = JSON.parse(data.responseBody)
-
-      if (response?.title) {
-        setNextEvent(response)
-      } else {
-        setNextEvent(null)
+  const { data: nextEvent } = useQuery({
+    queryKey: ['nextEvent'],
+    queryFn: async () => {
+      try {
+        const data = await functions.createExecution(
+          'event-endpoints',
+          '',
+          false,
+          '/event/next',
+          ExecutionMethod.GET
+        )
+        const response: Events.EventsDocumentsType = JSON.parse(
+          data.responseBody
+        )
+        return response?.title ? response : null
+      } catch (error) {
+        console.error(error)
+        Sentry.captureException(error)
+        return null
       }
-    } catch (error) {
-      console.error(error)
-      Sentry.captureException(error)
-    }
-  }
+    },
+    enabled: true,
+    staleTime: 1000 * 60 * 5, // 2 minutes
+  })
 
-  React.useEffect(() => {
-    if (current?.$id) {
-      fetchUserData().then()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [current])
+  const { data: userData } = useQuery({
+    queryKey: ['userData', current?.$id],
+    queryFn: async () => {
+      if (!current?.$id) return null
+      try {
+        return await databases.getDocument(
+          'hp_db',
+          'userdata',
+          `${current.$id}`
+        )
+      } catch (error) {
+        Sentry.captureException(error)
+        return null
+      }
+    },
+    enabled: !!current?.$id,
+    staleTime: 1000 * 60 * 2, // 2 minutes
+  })
 
-  const fetchUserData = async () => {
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true)
     try {
-      const data: UserData.UserDataDocumentsType = await databases.getDocument(
-        'hp_db',
-        'userdata',
-        `${current.$id}`
-      )
-      setUserData(data)
-    } catch (error) {
-      Sentry.captureException(error)
+      // Invalidate and refetch both queries
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['nextEvent'] }),
+        queryClient.invalidateQueries({ queryKey: ['userData', current?.$id] }),
+      ])
+    } finally {
+      setRefreshing(false)
     }
-  }
+  }, [queryClient, current?.$id])
 
   useFocusEffect(
     React.useCallback(() => {
-      fetchNextEvent().then()
-    }, [])
+      queryClient.invalidateQueries({ queryKey: ['nextEvent'] })
+    }, [queryClient])
   )
 
   return (

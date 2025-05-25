@@ -1,7 +1,6 @@
 import React from 'react'
 import { databases } from '~/lib/appwrite-client'
 import { ID, Query } from 'react-native-appwrite'
-import { useDataCache } from '~/components/contexts/DataCacheContext'
 import { useDebounce } from '~/lib/hooks/useDebounce'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import LocationSearchItem from '~/components/FlatlistItems/LocationSearchItem'
@@ -23,88 +22,29 @@ import { RadioGroup } from '~/components/ui/radio-group'
 import { RadioGroupItemWithLabel } from '~/components/RadioGroupItemWithLabel'
 import ConfirmSharingItem from '~/components/FlatlistItems/ConfirmSharingItem'
 import { Community, UserData } from '~/lib/types/collections'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 export default function AddSharing() {
   const [page, setPage] = React.useState(0)
-  const [searchResults, setSearchResults] = React.useState([])
   const [searchTerm, setSearchTerm] = React.useState('')
-  const [selectedTime, setSelectedTime] = React.useState(new Date())
+  const [selectedTime, setSelectedTime] = React.useState(null)
   const [selectedItems, setSelectedItems] = React.useState([])
   const [selectedDuration, setSelectedDuration] = React.useState('7d')
   const [showCustomPicker, setShowCustomPicker] = React.useState(false)
-  const { getCache, saveCache } = useDataCache()
   const debouncedSearchTerm = useDebounce(searchTerm, 500)
   const { showAlert } = useAlertModal()
-  const [isLoading, setIsLoading] = React.useState(false)
   const { current } = useUser()
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
   const [dateOpen, setDateOpen] = React.useState(false)
   const [timeOpen, setTimeOpen] = React.useState(false)
+  const queryClient = useQueryClient()
 
-  // Memoize the processResults function
-  const processResults = React.useCallback(
-    async (results, type) => {
-      return Promise.all(
-        results.documents.map(async (item) => {
-          const cacheKey = type === 'users' ? 'users' : 'communities'
-          let cachedData = await getCache<
-            UserData.UserDataDocumentsType | Community.CommunityDocumentsType
-          >(cacheKey, item.$id)
+  const { data: searchResults, isLoading } = useQuery({
+    queryKey: ['location-share-search', debouncedSearchTerm],
+    queryFn: async () => {
+      if (!debouncedSearchTerm) return []
 
-          if (!cachedData?.data) {
-            const freshData:
-              | UserData.UserDataDocumentsType
-              | Community.CommunityDocumentsType = await databases.getDocument(
-              'hp_db',
-              type === 'users' ? 'userdata' : 'community',
-              item.$id
-            )
-            await saveCache(cacheKey, item.$id, freshData)
-            return freshData
-          }
-
-          return cachedData.data
-        })
-      )
-    },
-    [getCache, saveCache]
-  )
-
-  // Memoize the search queries creation
-  const createSearchQueries = React.useCallback(
-    (alreadySharedUserIds, alreadySharedCommunityIds) => {
-      const userQueries = [
-        Query.contains('profileUrl', debouncedSearchTerm),
-        Query.notEqual('$id', current.$id),
-        ...alreadySharedUserIds.map((id) => Query.notEqual('$id', id)),
-        Query.limit(10),
-      ]
-
-      const communityQueries = [
-        Query.contains('name', debouncedSearchTerm),
-        ...alreadySharedCommunityIds.map((id) => Query.notEqual('$id', id)),
-        Query.limit(10),
-      ]
-
-      return { userQueries, communityQueries }
-    },
-    [debouncedSearchTerm, current.$id]
-  )
-
-  // Split the search effect into two parts
-  React.useEffect(() => {
-    if (!debouncedSearchTerm) {
-      setSearchResults([])
-      return
-    }
-  }, [debouncedSearchTerm])
-
-  React.useEffect(() => {
-    const searchUsers = async () => {
-      if (!debouncedSearchTerm) return
-
-      setIsLoading(true)
       try {
         const alreadyShared = await databases.listDocuments(
           'hp_db',
@@ -120,10 +60,18 @@ export default function AddSharing() {
           .filter((item) => item.isCommunity)
           .map((item) => item.requesterId)
 
-        const { userQueries, communityQueries } = createSearchQueries(
-          alreadySharedUserIds,
-          alreadySharedCommunityIds
-        )
+        const userQueries = [
+          Query.contains('profileUrl', debouncedSearchTerm),
+          Query.notEqual('$id', current.$id),
+          ...alreadySharedUserIds.map((id) => Query.notEqual('$id', id)),
+          Query.limit(10),
+        ]
+
+        const communityQueries = [
+          Query.contains('name', debouncedSearchTerm),
+          ...alreadySharedCommunityIds.map((id) => Query.notEqual('$id', id)),
+          Query.limit(10),
+        ]
 
         const [resultsUsers, resultsCommunity] = await Promise.all([
           databases.listDocuments('hp_db', 'userdata', userQueries),
@@ -131,22 +79,50 @@ export default function AddSharing() {
         ])
 
         const [userDataResults, communityDataResults] = await Promise.all([
-          processResults(resultsUsers, 'users'),
-          processResults(resultsCommunity, 'communities'),
+          Promise.all(
+            resultsUsers.documents.map(async (item) => {
+              return await queryClient.fetchQuery({
+                queryKey: ['user', item.$id],
+                queryFn: async () => {
+                  const data = await databases.getDocument(
+                    'hp_db',
+                    'userdata',
+                    item.$id
+                  )
+                  return data as UserData.UserDataDocumentsType
+                },
+                staleTime: 1000 * 60 * 5, // 5 minutes
+              })
+            })
+          ),
+          Promise.all(
+            resultsCommunity.documents.map(async (item) => {
+              return await queryClient.fetchQuery({
+                queryKey: ['community', item.$id],
+                queryFn: async () => {
+                  const data = await databases.getDocument(
+                    'hp_db',
+                    'community',
+                    item.$id
+                  )
+                  return data as Community.CommunityDocumentsType
+                },
+                staleTime: 1000 * 60 * 5, // 5 minutes
+              })
+            })
+          ),
         ])
 
-        setSearchResults([...userDataResults, ...communityDataResults])
+        return [...userDataResults, ...communityDataResults]
       } catch (error) {
         console.error('Error searching users:', error)
         Sentry.captureException(error)
         showAlert('FAILED', i18n.t('location.add.failedToSearch'))
-      } finally {
-        setIsLoading(false)
+        throw error
       }
-    }
-
-    searchUsers()
-  }, [debouncedSearchTerm, processResults, createSearchQueries, showAlert])
+    },
+    enabled: !!debouncedSearchTerm,
+  })
 
   // Memoize the handleSelectItem function
   const handleSelectItem = React.useCallback((item: any) => {
@@ -200,7 +176,8 @@ export default function AddSharing() {
       if (duration === 'custom') {
         setShowCustomPicker(true)
       } else {
-        setSelectedTime(calculateEndTime(duration))
+        const newTime = calculateEndTime(duration)
+        setSelectedTime(newTime)
         setShowCustomPicker(false)
       }
     },
@@ -234,7 +211,7 @@ export default function AddSharing() {
             sharerUserId: current.$id,
             isCommunity: selectedItem.isCommunity,
             requesterId: selectedItem.id,
-            timeUntil: selectedTime || new Date(),
+            timeUntil: calculateEndTime(selectedDuration).toISOString(),
           }
           return databases.createDocument(
             'hp_db',
