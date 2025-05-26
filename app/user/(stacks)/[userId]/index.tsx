@@ -3,7 +3,7 @@ import {
   ScrollView,
   TouchableOpacity,
   View,
-  Dimensions,
+  Dimensions
 } from 'react-native'
 import { H3, Muted } from '~/components/ui/typography'
 import { Link, useLocalSearchParams } from 'expo-router'
@@ -17,7 +17,7 @@ import {
   EyeIcon,
   MapPinIcon,
   ScanEyeIcon,
-  TagIcon,
+  TagIcon
 } from 'lucide-react-native'
 import { useColorScheme } from '~/lib/useColorScheme'
 import { calculateBirthday } from '~/components/calculateTimeLeft'
@@ -51,7 +51,7 @@ export default function UserPage() {
     data: userData,
     isLoading,
     isRefetching,
-    refetch,
+    refetch
   } = useQuery<UserData.UserProfileDocumentsType>({
     queryKey: ['user', local?.userId],
     queryFn: async () => {
@@ -67,19 +67,19 @@ export default function UserPage() {
             // Get followers
             databases.listDocuments('hp_db', 'followers', [
               Query.equal('followerId', local?.userId),
-              Query.limit(1),
+              Query.limit(1)
             ]),
             // Get following
             databases.listDocuments('hp_db', 'followers', [
               Query.equal('userId', local?.userId),
-              Query.limit(1),
+              Query.limit(1)
             ]),
             databases.listDocuments('hp_db', 'followers', [
               Query.and([
                 Query.equal('userId', local?.userId),
-                Query.equal('followerId', current?.$id),
-              ]),
-            ]),
+                Query.equal('followerId', current?.$id)
+              ])
+            ])
           ]
         )
 
@@ -88,7 +88,7 @@ export default function UserPage() {
           ...userData,
           isFollowing: isFollowing.total > 0,
           followersCount: followers.total,
-          followingCount: following.total,
+          followingCount: following.total
         }
 
         return combinedData
@@ -103,7 +103,7 @@ export default function UserPage() {
     staleTime: 300 * 1000, // Consider data stale after 5 minutes
     refetchOnMount: true, // Always refetch when component mounts
     refetchOnWindowFocus: true, // Refetch when window regains focus
-    refetchOnReconnect: true, // Refetch when network reconnects
+    refetchOnReconnect: true // Refetch when network reconnects
   })
 
   const getUserAvatar = (avatarId: string) => {
@@ -290,7 +290,7 @@ export default function UserPage() {
           value={sanitizedBio}
           stylesheet={{
             p: { color: theme },
-            a: { color: 'hsl(208, 100%, 50%)' },
+            a: { color: 'hsl(208, 100%, 50%)' }
           }}
           textComponentProps={{ style: { color: theme } }}
         />

@@ -5,11 +5,11 @@ import {
   View,
   type GestureResponderEvent,
   type LayoutChangeEvent,
-  type LayoutRectangle,
+  type LayoutRectangle
 } from 'react-native'
 import {
   useRelativePosition,
-  type LayoutPosition,
+  type LayoutPosition
 } from '~/components/primitives/hooks'
 import { Portal as RNPPortal } from '~/components/primitives/portal'
 import * as Slot from '~/components/primitives/slot'
@@ -18,13 +18,13 @@ import type {
   PressableRef,
   SlottablePressableProps,
   SlottableViewProps,
-  ViewRef,
+  ViewRef
 } from '~/components/primitives/types'
 import type {
   NavigationMenuItemProps,
   NavigationMenuLinkProps,
   NavigationMenuPortalProps,
-  NavigationMenuRootProps,
+  NavigationMenuRootProps
 } from './types'
 
 interface INavigationMenuRootContext extends NavigationMenuRootProps {
@@ -57,7 +57,7 @@ const Root = React.forwardRef<
         contentLayout,
         setContentLayout,
         setTriggerPosition,
-        triggerPosition,
+        triggerPosition
       }}
     >
       <Component ref={ref} role="navigation" {...viewProps} />
@@ -101,7 +101,7 @@ const Item = React.forwardRef<
     <ItemContext.Provider
       value={{
         value,
-        nativeID,
+        nativeID
       }}
     >
       <Component ref={ref} role="menuitem" {...viewProps} />
@@ -228,7 +228,7 @@ const Content = React.forwardRef<
       triggerPosition,
       setTriggerPosition,
       contentLayout,
-      setContentLayout,
+      setContentLayout
     } = useRootContext()
     const { value: menuValue, nativeID } = useItemContext()
 
@@ -259,7 +259,7 @@ const Content = React.forwardRef<
       insets,
       sideOffset,
       side,
-      disablePositioningStyle,
+      disablePositioningStyle
     })
 
     function onLayout(event: LayoutChangeEvent) {
@@ -330,7 +330,7 @@ export {
   Trigger,
   Viewport,
   useItemContext,
-  useRootContext,
+  useRootContext
 }
 
 function onStartShouldSetResponder() {

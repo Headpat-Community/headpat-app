@@ -24,7 +24,7 @@ export default function AnnouncementSinglePage() {
   const {
     data: announcement,
     isRefetching,
-    refetch,
+    refetch
   } = useQuery<Announcements.AnnouncementDocumentsType, Error>({
     queryKey: ['announcement', local.announcementId],
     queryFn: async () => {
@@ -36,12 +36,12 @@ export default function AnnouncementSinglePage() {
         )
       return data
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5 // 5 minutes
   })
 
   const onRefresh = () => {
     queryClient.invalidateQueries({
-      queryKey: ['announcement', local.announcementId],
+      queryKey: ['announcement', local.announcementId]
     })
   }
 
@@ -119,16 +119,16 @@ export default function AnnouncementSinglePage() {
                 value={sanitizedDescription}
                 stylesheet={{
                   p: {
-                    color: theme,
+                    color: theme
                   },
                   a: {
-                    color: 'hsl(208, 100%, 50%)',
-                  },
+                    color: 'hsl(208, 100%, 50%)'
+                  }
                 }}
                 textComponentProps={{
                   style: {
-                    color: theme,
-                  },
+                    color: theme
+                  }
                 }}
               />
             </CardContent>

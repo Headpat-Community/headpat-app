@@ -4,7 +4,7 @@ import {
   Platform,
   ScrollView,
   TouchableWithoutFeedback,
-  View,
+  View
 } from 'react-native'
 import { Text } from '~/components/ui/text'
 import { H4, Muted } from '~/components/ui/typography'
@@ -30,7 +30,7 @@ const schema = z.object({
   status: z.string().max(24, 'Status must be 24 characters or less'),
   description: z
     .string()
-    .max(4096, 'Description must be 4096 characters or less'),
+    .max(4096, 'Description must be 4096 characters or less')
 })
 
 export default function Page() {
@@ -62,7 +62,7 @@ export default function Page() {
 
       // Dynamically create a schema with only the field that needs validation
       const dynamicSchema = z.object({
-        [name]: schema.shape[name],
+        [name]: schema.shape[name]
       })
 
       try {
@@ -79,7 +79,7 @@ export default function Page() {
           'community',
           `${local.communityId}`,
           {
-            [name]: value,
+            [name]: value
           }
         )
         showAlert('SUCCESS', 'Community data updated successfully.')
@@ -119,7 +119,7 @@ export default function Page() {
                     onPress={() =>
                       router.navigate({
                         pathname: '/community/[communityId]/admin/avatarAdd',
-                        params: { communityId: local?.communityId },
+                        params: { communityId: local?.communityId }
                       })
                     }
                   >
@@ -141,7 +141,7 @@ export default function Page() {
                     onPress={() =>
                       router.navigate({
                         pathname: '/community/[communityId]/admin/bannerAdd',
-                        params: { communityId: local?.communityId },
+                        params: { communityId: local?.communityId }
                       })
                     }
                   >
@@ -232,7 +232,7 @@ export default function Page() {
                     onChange={(e) =>
                       setCommunity({
                         ...community,
-                        description: e.nativeEvent.text,
+                        description: e.nativeEvent.text
                       })
                     }
                     value={community.description}

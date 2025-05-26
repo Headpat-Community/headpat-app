@@ -8,7 +8,7 @@ import {
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
-  AlertDialogTitle,
+  AlertDialogTitle
 } from '~/components/ui/alert-dialog'
 import { Button } from '~/components/ui/button'
 import { useUser } from '~/components/contexts/UserContext'
@@ -38,7 +38,7 @@ const MessageItem = ({ message }) => {
       )
       return response as UserData.UserDataDocumentsType
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5 // 5 minutes
   })
 
   const handleLongPress = useCallback(() => {
@@ -78,7 +78,7 @@ const MessageItem = ({ message }) => {
           <View>
             <TouchableOpacity
               style={{
-                gap: 12,
+                gap: 12
               }}
             >
               {current.$id === message.senderId && (
@@ -106,7 +106,7 @@ const MessageItem = ({ message }) => {
           <Link
             href={{
               pathname: '/user/(stacks)/[userId]',
-              params: { userId: userData?.$id },
+              params: { userId: userData?.$id }
             }}
           >
             <Avatar
@@ -143,32 +143,32 @@ const styles = StyleSheet.create({
   messageContainer: {
     flexDirection: 'row',
     padding: 10,
-    alignItems: 'flex-start',
+    alignItems: 'flex-start'
   },
   avatar: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    marginRight: 10,
+    marginRight: 10
   },
   messageContent: {
     marginLeft: 10,
-    flex: 1,
+    flex: 1
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-between'
   },
   senderName: {
     fontWeight: 'bold',
-    marginBottom: 2,
+    marginBottom: 2
   },
   timestamp: {
-    fontSize: 12,
+    fontSize: 12
   },
   messageText: {
-    fontSize: 14,
-  },
+    fontSize: 14
+  }
 })
 
 export default MessageItem

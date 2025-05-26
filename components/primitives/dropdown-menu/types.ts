@@ -68,5 +68,5 @@ export type {
   DropdownMenuRootProps,
   DropdownMenuSeparatorProps,
   DropdownMenuSubProps,
-  DropdownMenuSubTriggerProps,
+  DropdownMenuSubTriggerProps
 }

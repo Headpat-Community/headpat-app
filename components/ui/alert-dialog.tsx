@@ -64,7 +64,7 @@ AlertDialogOverlayNative.displayName = 'AlertDialogOverlayNative'
 
 const AlertDialogOverlay = Platform.select({
   web: AlertDialogOverlayWeb,
-  default: AlertDialogOverlayNative,
+  default: AlertDialogOverlayNative
 })
 
 const AlertDialogContent = React.forwardRef<
@@ -184,5 +184,5 @@ export {
   AlertDialogOverlay,
   AlertDialogPortal,
   AlertDialogTitle,
-  AlertDialogTrigger,
+  AlertDialogTrigger
 }

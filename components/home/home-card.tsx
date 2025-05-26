@@ -1,4 +1,9 @@
-import { Card, CardContent, CardDescription, CardFooter } from '~/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter
+} from '~/components/ui/card'
 import { Text } from '~/components/ui/text'
 import { LucideIcon } from 'lucide-react-native'
 import { TouchableOpacity } from '@gorhom/bottom-sheet'
@@ -22,7 +27,7 @@ export function HomeCard({
   route,
   theme,
   showSeparator = false,
-  additionalContent,
+  additionalContent
 }: HomeCardProps) {
   return (
     <Card className={'w-3/4 mt-4'}>
@@ -33,12 +38,14 @@ export function HomeCard({
               size={20}
               color={theme}
               style={{
-                marginRight: 4,
+                marginRight: 4
               }}
             />
             <Text>{title}</Text>
           </CardFooter>
-          <CardFooter className={'p-0 pb-2 justify-between flex flex-wrap ml-7'}>
+          <CardFooter
+            className={'p-0 pb-2 justify-between flex flex-wrap ml-7'}
+          >
             <CardDescription>
               <Text>{description}</Text>
             </CardDescription>
@@ -53,4 +60,4 @@ export function HomeCard({
       </TouchableOpacity>
     </Card>
   )
-} 
+}

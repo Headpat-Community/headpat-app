@@ -3,7 +3,7 @@ import {
   RefreshControl,
   StyleSheet,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native'
 import { databases, storage } from '~/lib/appwrite-client'
 import Gallery from 'react-native-awesome-gallery'
@@ -31,7 +31,7 @@ const gallerySchema = z.object({
     .trim()
     .min(1, 'Name is required')
     .max(32, 'Name is too long'),
-  longText: z.string().trim().max(2048, 'Description is too long').optional(),
+  longText: z.string().trim().max(2048, 'Description is too long').optional()
 })
 
 export default function HomeView() {
@@ -66,7 +66,7 @@ export default function HomeView() {
     try {
       gallerySchema.parse({
         name: image.name,
-        longText: image.longText,
+        longText: image.longText
       })
 
       await databases.updateDocument(
@@ -75,7 +75,7 @@ export default function HomeView() {
         `${local.galleryId}`,
         {
           name: image.name,
-          longText: image.longText || '',
+          longText: image.longText || ''
         }
       )
 
@@ -120,7 +120,7 @@ export default function HomeView() {
   const handleModalImage = (galleryId: string) => {
     if (!galleryId) return
     return [
-      `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/gallery/files/${galleryId}/view?project=hp-main`,
+      `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/gallery/files/${galleryId}/view?project=hp-main`
     ]
   }
 
@@ -201,7 +201,7 @@ export default function HomeView() {
               onChangeText={(text) => {
                 setImage({
                   ...image,
-                  name: text,
+                  name: text
                 })
               }}
             />
@@ -213,7 +213,7 @@ export default function HomeView() {
               onChangeText={(text) => {
                 setImage({
                   ...image,
-                  longText: text,
+                  longText: text
                 })
               }}
               numberOfLines={4}
@@ -260,12 +260,12 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 50,
+    paddingHorizontal: 50
   },
   video: {
-    height: 300,
+    height: 300
   },
   controlsContainer: {
-    padding: 10,
-  },
+    padding: 10
+  }
 })

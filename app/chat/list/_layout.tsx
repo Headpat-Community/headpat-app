@@ -17,7 +17,7 @@ export default function TabsLayout() {
           headerLeftContainerStyle: { paddingLeft: 15 },
           headerRightContainerStyle: { paddingRight: 15 },
           headerLeft: () => <HeaderSidebarBackButton />,
-          headerRight: () => <ProfileThemeToggle />,
+          headerRight: () => <ProfileThemeToggle />
         }}
       />
       <Tabs.Screen
@@ -31,7 +31,7 @@ export default function TabsLayout() {
           headerRightContainerStyle: { paddingRight: 15 },
           headerLeft: () => <HeaderSidebarBackButton />,
           headerRight: () => <ProfileThemeToggle />,
-          href: null,
+          href: null
         }}
       />
     </Tabs>

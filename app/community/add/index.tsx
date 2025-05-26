@@ -21,7 +21,7 @@ export default function GalleryAdd() {
     name: '',
     description: '',
     isPrivate: false,
-    nsfw: false,
+    nsfw: false
   })
   const { showAlert, hideAlert } = useAlertModal()
 
@@ -103,7 +103,7 @@ export default function GalleryAdd() {
                         onChangeText={(text) => {
                           setCommunityData({
                             ...communityData,
-                            name: text,
+                            name: text
                           })
                         }}
                       />
@@ -118,7 +118,7 @@ export default function GalleryAdd() {
                         onChangeText={(text) => {
                           setCommunityData({
                             ...communityData,
-                            description: text,
+                            description: text
                           })
                         }}
                       />
@@ -141,7 +141,7 @@ export default function GalleryAdd() {
                         onCheckedChange={() => {
                           setCommunityData({
                             ...communityData,
-                            isPrivate: !communityData.isPrivate,
+                            isPrivate: !communityData.isPrivate
                           })
                         }}
                       />
@@ -155,7 +155,7 @@ export default function GalleryAdd() {
                         onCheckedChange={() => {
                           setCommunityData({
                             ...communityData,
-                            nsfw: !communityData.nsfw,
+                            nsfw: !communityData.nsfw
                           })
                         }}
                       />

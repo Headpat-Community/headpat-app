@@ -5,7 +5,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialogTitle
 } from '~/components/ui/alert-dialog'
 import { View } from 'react-native'
 import { Switch } from '~/components/ui/switch'
@@ -18,7 +18,7 @@ export default function FiltersModal({
   openModal,
   setOpenModal,
   filters,
-  setFilters,
+  setFilters
 }) {
   return (
     <AlertDialog onOpenChange={setOpenModal} open={openModal}>
@@ -39,7 +39,7 @@ export default function FiltersModal({
               onCheckedChange={() =>
                 setFilters((prev) => ({
                   ...prev,
-                  showEvents: !prev.showEvents,
+                  showEvents: !prev.showEvents
                 }))
               }
             />
@@ -48,7 +48,7 @@ export default function FiltersModal({
               onPress={() => {
                 setFilters((prev) => ({
                   ...prev,
-                  showEvents: !prev.showEvents,
+                  showEvents: !prev.showEvents
                 }))
               }}
             >
@@ -62,7 +62,7 @@ export default function FiltersModal({
               onCheckedChange={() =>
                 setFilters((prev) => ({
                   ...prev,
-                  showUsers: !prev.showUsers,
+                  showUsers: !prev.showUsers
                 }))
               }
             />
@@ -71,7 +71,7 @@ export default function FiltersModal({
               onPress={() =>
                 setFilters((prev) => ({
                   ...prev,
-                  showUsers: !prev.showUsers,
+                  showUsers: !prev.showUsers
                 }))
               }
             >

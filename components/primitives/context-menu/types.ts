@@ -79,5 +79,5 @@ export type {
   ContextMenuRootProps,
   ContextMenuSeparatorProps,
   ContextMenuSubProps,
-  ContextMenuSubTriggerProps,
+  ContextMenuSubTriggerProps
 }

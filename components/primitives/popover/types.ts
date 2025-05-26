@@ -32,5 +32,5 @@ export type {
   PopoverRootProps,
   PopoverPortalProps,
   PopoverOverlayProps,
-  RootContext,
+  RootContext
 }

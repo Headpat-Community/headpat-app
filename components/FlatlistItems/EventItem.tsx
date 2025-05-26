@@ -6,14 +6,14 @@ import {
   CardContent,
   CardDescription,
   CardFooter,
-  CardTitle,
+  CardTitle
 } from '~/components/ui/card'
 import { ClockIcon, MapPinIcon, UsersIcon } from 'lucide-react-native'
 import { useColorScheme } from '~/lib/useColorScheme'
 import { Link } from 'expo-router'
 import {
   calculateTimeLeftEvent,
-  formatDateLocale,
+  formatDateLocale
 } from '~/components/calculateTimeLeft'
 import { Text } from '~/components/ui/text'
 
@@ -27,7 +27,7 @@ const EventItem = React.memo(
       <Link
         href={{
           pathname: '/events/[eventId]',
-          params: { eventId: event.$id, type: 'index' },
+          params: { eventId: event.$id, type: 'index' }
         }}
         asChild
       >

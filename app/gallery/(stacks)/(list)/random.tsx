@@ -46,7 +46,7 @@ export default function GalleryPage() {
           : [
               Query.limit(pageSize),
               Query.offset(offset),
-              Query.equal('nsfw', false),
+              Query.equal('nsfw', false)
             ]
 
         // Get total count first
@@ -264,7 +264,7 @@ export default function GalleryPage() {
       )
       setThumbnails((prevThumbnails) => ({
         ...prevThumbnails,
-        [galleryId]: uri,
+        [galleryId]: uri
       }))
     } catch (e) {
       console.warn(e)
@@ -280,7 +280,7 @@ export default function GalleryPage() {
             style={{
               flexDirection: 'row',
               justifyContent: 'space-between',
-              marginBottom: 10,
+              marginBottom: 10
             }}
           >
             {[...Array(2)].map((_, i) => (
@@ -290,7 +290,7 @@ export default function GalleryPage() {
                   position: 'relative',
                   width: widthColumns,
                   height: 200,
-                  margin: 5,
+                  margin: 5
                 }}
               >
                 <Skeleton className={'w-full h-full'} />
@@ -328,7 +328,7 @@ export default function GalleryPage() {
                 style={{
                   padding: 10,
                   justifyContent: 'center',
-                  alignItems: 'center',
+                  alignItems: 'center'
                 }}
               >
                 <Text>{i18n.t('main.loading')}</Text>

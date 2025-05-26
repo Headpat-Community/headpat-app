@@ -23,7 +23,7 @@ import {
   UserIcon,
   UserSearchIcon,
   UsersIcon,
-  XIcon,
+  XIcon
 } from 'lucide-react-native'
 import { useUser } from '~/components/contexts/UserContext'
 import { Text } from '~/components/ui/text'
@@ -63,7 +63,7 @@ export function HeaderMenuSidebar() {
         enableDynamicSizing={false}
         handleStyle={{ display: 'none' }}
         backgroundStyle={{
-          backgroundColor: isDarkColorScheme ? 'hsl(0 0% 7%)' : '#fff',
+          backgroundColor: isDarkColorScheme ? 'hsl(0 0% 7%)' : '#fff'
         }}
       >
         <CustomDrawerContent bottomSheetModalRef={bottomSheetModalRef} />
@@ -85,7 +85,7 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
           justifyContent: 'center',
           alignItems: 'center',
           borderBottomColor: '#aaa',
-          borderBottomWidth: 1,
+          borderBottomWidth: 1
         }}
       >
         <TouchableOpacity
@@ -196,7 +196,7 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
             alignItems: 'center',
             gap: 12,
             padding: 12,
-            paddingLeft: 20,
+            paddingLeft: 20
           }}
           onPress={() => {
             const newTheme = isDarkColorScheme ? 'light' : 'dark'
@@ -256,7 +256,7 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
             style={{
               backgroundColor: 'transparent',
               flexDirection: 'row',
-              alignItems: 'center',
+              alignItems: 'center'
             }}
             variant={'ghost'}
           >
@@ -279,7 +279,7 @@ const DrawerLabel = ({
   text,
   theme,
   route,
-  bottomSheetModalRef,
+  bottomSheetModalRef
 }) => {
   const handleNavigation = useCallback(
     ({ route, params = {} }) => {
@@ -296,7 +296,7 @@ const DrawerLabel = ({
         alignItems: 'center',
         gap: 12,
         padding: 12,
-        paddingLeft: 20,
+        paddingLeft: 20
       }}
       onPress={() => handleNavigation({ route })}
     >

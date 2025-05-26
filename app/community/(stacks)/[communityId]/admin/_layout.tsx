@@ -11,7 +11,7 @@ export default function TabsLayout() {
           tabBarIcon({ color, size }) {
             return <CogIcon color={color} size={size} />
           },
-          headerShown: false,
+          headerShown: false
         }}
       />
       <Tabs.Screen
@@ -21,21 +21,21 @@ export default function TabsLayout() {
           tabBarIcon({ color, size }) {
             return <ServerCogIcon color={color} size={size} />
           },
-          headerShown: false,
+          headerShown: false
         }}
       />
       <Tabs.Screen
         name="avatarAdd/index"
         options={{
           title: 'Avatar Add',
-          href: null,
+          href: null
         }}
       />
       <Tabs.Screen
         name="bannerAdd/index"
         options={{
           title: 'Banner Add',
-          href: null,
+          href: null
         }}
       />
     </Tabs>

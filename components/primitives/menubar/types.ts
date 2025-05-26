@@ -73,5 +73,5 @@ export type {
   MenubarRootProps,
   MenubarSeparatorProps,
   MenubarSubProps,
-  MenubarSubTriggerProps,
+  MenubarSubTriggerProps
 }

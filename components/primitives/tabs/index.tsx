@@ -4,7 +4,7 @@ import * as Slot from '~/components/primitives/slot'
 import type {
   ComponentPropsWithAsChild,
   SlottableViewProps,
-  ViewRef,
+  ViewRef
 } from '~/components/primitives/types'
 import type { TabsContentProps, TabsRootProps } from './types'
 
@@ -34,7 +34,7 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & TabsRootProps>(
         value={{
           value,
           onValueChange,
-          nativeID,
+          nativeID
         }}
       >
         <Component ref={ref} {...viewProps} />
@@ -96,7 +96,7 @@ const Trigger = React.forwardRef<
           onPress={onPress}
           accessibilityState={{
             selected: rootValue === tabValue,
-            disabled: !!disabled,
+            disabled: !!disabled
           }}
           disabled={!!disabled}
           {...props}

@@ -14,7 +14,7 @@ export default function TabsLayout() {
           tabBarIcon({ color, size }) {
             return <PersonStandingIcon color={color} size={size} />
           },
-          headerShown: false,
+          headerShown: false
         }}
       />
       <Tabs.Screen
@@ -24,7 +24,7 @@ export default function TabsLayout() {
           tabBarIcon({ color, size }) {
             return <MapIcon color={color} size={size} />
           },
-          headerShown: false,
+          headerShown: false
         }}
       />
       <Tabs.Screen
@@ -34,7 +34,7 @@ export default function TabsLayout() {
           tabBarIcon({ color, size }) {
             return <UsersIcon color={color} size={size} />
           },
-          headerShown: false,
+          headerShown: false
         }}
       />
     </Tabs>

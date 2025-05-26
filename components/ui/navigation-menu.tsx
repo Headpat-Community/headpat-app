@@ -9,7 +9,7 @@ import Animated, {
   interpolate,
   useAnimatedStyle,
   useDerivedValue,
-  withTiming,
+  withTiming
 } from 'react-native-reanimated'
 import { ChevronDown } from '~/components/Icons'
 import { cn } from '~/lib/utils'
@@ -67,7 +67,7 @@ const NavigationMenuTrigger = React.forwardRef<
   )
   const chevronStyle = useAnimatedStyle(() => ({
     transform: [{ rotate: `${progress.value * 180}deg` }],
-    opacity: interpolate(progress.value, [0, 1], [1, 0.8], Extrapolation.CLAMP),
+    opacity: interpolate(progress.value, [0, 1], [1, 0.8], Extrapolation.CLAMP)
   }))
 
   return (
@@ -185,5 +185,5 @@ export {
   NavigationMenuList,
   NavigationMenuTrigger,
   NavigationMenuViewport,
-  navigationMenuTriggerStyle,
+  navigationMenuTriggerStyle
 }

@@ -5,7 +5,7 @@ import {
   RefreshControl,
   ScrollView,
   TouchableWithoutFeedback,
-  View,
+  View
 } from 'react-native'
 import { Text } from '~/components/ui/text'
 import { Input } from '~/components/ui/input'
@@ -39,7 +39,7 @@ const schema = z.object({
   pronouns: z.string().max(16, 'Max length is 16'),
   birthday: z.string().max(32, 'Max length is 32'),
   location: z.string().max(48, 'Max length is 48'),
-  bio: z.string().max(2048, 'Max length is 2048'),
+  bio: z.string().max(2048, 'Max length is 2048')
 })
 
 export default function UserprofilePage() {
@@ -100,7 +100,7 @@ export default function UserprofilePage() {
           pronouns: userData.pronouns,
           birthday: userData.birthday,
           location: userData.location,
-          bio: userData.bio,
+          bio: userData.bio
         })
         showAlert('SUCCESS', 'User data updated successfully.')
       } catch (error) {
@@ -121,13 +121,13 @@ export default function UserprofilePage() {
     const body = {
       ...prefs,
       nsfw: newNsfw,
-      indexingEnabled: newIndexable,
+      indexingEnabled: newIndexable
     }
     try {
       await account.updatePrefs(body)
       setUser((prev: any) => ({
         ...prev,
-        prefs: body,
+        prefs: body
       }))
       showAlert('SUCCESS', 'Preference updated successfully.')
     } catch (error) {
@@ -308,7 +308,7 @@ export default function UserprofilePage() {
                     onChange={(e) =>
                       setUserData({
                         ...userData,
-                        displayName: e.nativeEvent.text,
+                        displayName: e.nativeEvent.text
                       })
                     }
                     textContentType={'name'}
@@ -375,7 +375,7 @@ export default function UserprofilePage() {
                         onDateChange={(date) => {
                           setUserData({
                             ...userData,
-                            birthday: date.toISOString(),
+                            birthday: date.toISOString()
                           })
                         }}
                         mode="date"
@@ -399,7 +399,7 @@ export default function UserprofilePage() {
                     onChange={(e) =>
                       setUserData({
                         ...userData,
-                        location: e.nativeEvent.text,
+                        location: e.nativeEvent.text
                       })
                     }
                     textContentType={'location'}
@@ -423,7 +423,7 @@ export default function UserprofilePage() {
                     onChange={(e) =>
                       setUserData({
                         ...userData,
-                        bio: e.nativeEvent.text,
+                        bio: e.nativeEvent.text
                       })
                     }
                     value={userData.bio}

@@ -19,7 +19,7 @@ export default function BannerAdd() {
   const pickImage = async () => {
     try {
       let result = await ImagePicker.openPicker({
-        mediaType: 'photo',
+        mediaType: 'photo'
       })
 
       if (!result || !result?.path) {
@@ -63,7 +63,7 @@ export default function BannerAdd() {
       mediaType: 'photo',
       width: 2400,
       height: 500,
-      compressImageQuality: 0.8,
+      compressImageQuality: 0.8
     })
   }
 
@@ -85,7 +85,7 @@ export default function BannerAdd() {
         name: image.filename || 'upload' + Math.random().toString(16) + '.jpg',
         type: compressedImage.mime,
         size: compressedImage.size,
-        uri: compressedImage.path,
+        uri: compressedImage.path
       }
       showAlert('LOADING', 'Uploading image...')
       const storageData = await storage.createFile(

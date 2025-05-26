@@ -12,12 +12,12 @@ const alertVariants = cva(
       variant: {
         default: 'border-muted-foreground',
         destructive: 'border-destructive',
-        success: 'border-emerald-500',
-      },
+        success: 'border-emerald-500'
+      }
     },
     defaultVariants: {
-      variant: 'default',
-    },
+      variant: 'default'
+    }
   }
 )
 

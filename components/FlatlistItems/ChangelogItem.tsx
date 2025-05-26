@@ -6,7 +6,7 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from '~/components/ui/card'
 import { H2, H4 } from '~/components/ui/typography'
 import {
@@ -14,13 +14,13 @@ import {
   ChevronDown,
   ChevronUp,
   Sparkles,
-  Wrench,
+  Wrench
 } from 'lucide-react-native'
 import { useColorScheme } from '~/lib/useColorScheme'
 import {
   Collapsible,
   CollapsibleContent,
-  CollapsibleTrigger,
+  CollapsibleTrigger
 } from '~/components/ui/collapsible'
 import { Badge } from '~/components/ui/badge'
 import { Text } from '~/components/ui/text'
@@ -33,7 +33,7 @@ const ChangelogItem = React.memo(
   ({
     changelog,
     openVersions,
-    toggleVersion,
+    toggleVersion
   }: {
     changelog: Changelog.ChangelogDocumentsType
     openVersions: string[]
@@ -43,7 +43,7 @@ const ChangelogItem = React.memo(
     const theme = isDarkColorScheme ? 'white' : 'black'
 
     const ChangeIcon = ({
-      type,
+      type
     }: {
       type: 'feature' | 'improvement' | 'bugfix'
     }) => {
@@ -95,7 +95,7 @@ const ChangelogItem = React.memo(
                             {
                               month: 'short',
                               day: 'numeric',
-                              year: 'numeric',
+                              year: 'numeric'
                             }
                           )}
                         </Text>
@@ -119,7 +119,7 @@ const ChangelogItem = React.memo(
                   value={sanitize(changelog.description)}
                   stylesheet={{
                     p: { color: theme },
-                    a: { color: 'hsl(208, 100%, 50%)' },
+                    a: { color: 'hsl(208, 100%, 50%)' }
                   }}
                   textComponentProps={{ style: { color: theme } }}
                 />
@@ -147,14 +147,14 @@ const ChangelogItem = React.memo(
                                 <HTMLView
                                   value={sanitize(change)}
                                   style={{
-                                    marginTop: 2,
+                                    marginTop: 2
                                   }}
                                   stylesheet={{
                                     p: { color: theme },
-                                    a: { color: 'hsl(208, 100%, 50%)' },
+                                    a: { color: 'hsl(208, 100%, 50%)' }
                                   }}
                                   textComponentProps={{
-                                    style: { color: theme },
+                                    style: { color: theme }
                                   }}
                                 />
                               </View>
@@ -169,14 +169,14 @@ const ChangelogItem = React.memo(
                                 <HTMLView
                                   value={sanitize(change)}
                                   style={{
-                                    marginTop: 2,
+                                    marginTop: 2
                                   }}
                                   stylesheet={{
                                     p: { color: theme },
-                                    a: { color: 'hsl(208, 100%, 50%)' },
+                                    a: { color: 'hsl(208, 100%, 50%)' }
                                   }}
                                   textComponentProps={{
-                                    style: { color: theme },
+                                    style: { color: theme }
                                   }}
                                 />
                               </View>
@@ -192,14 +192,14 @@ const ChangelogItem = React.memo(
                                   <HTMLView
                                     value={sanitize(change)}
                                     style={{
-                                      marginTop: 2,
+                                      marginTop: 2
                                     }}
                                     stylesheet={{
                                       p: { color: theme },
-                                      a: { color: 'hsl(208, 100%, 50%)' },
+                                      a: { color: 'hsl(208, 100%, 50%)' }
                                     }}
                                     textComponentProps={{
-                                      style: { color: theme },
+                                      style: { color: theme }
                                     }}
                                   />
                                 </View>

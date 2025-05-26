@@ -27,7 +27,7 @@ const gallerySchema = z.object({
     .trim()
     .min(1, 'Name is required')
     .max(32, 'Name is too long'),
-  longText: z.string().trim().max(2048, 'Description is too long').optional(),
+  longText: z.string().trim().max(2048, 'Description is too long').optional()
 })
 
 export default function GalleryAdd() {
@@ -53,7 +53,7 @@ export default function GalleryAdd() {
         mediaTypes: ['images', 'videos', 'livePhotos'],
         allowsEditing: true,
         quality: 0.9,
-        videoQuality: 1,
+        videoQuality: 1
       })
 
       if (result?.assets?.length === 0 || !result?.assets[0].uri) {
@@ -114,7 +114,7 @@ export default function GalleryAdd() {
         name: image.fileName || name,
         type: image.mimeType,
         size: image.fileSize,
-        uri: image.uri,
+        uri: image.uri
       }
 
       const storageData = await storage.createFile(
@@ -138,7 +138,7 @@ export default function GalleryAdd() {
           userId: current.$id,
           mimeType: fileData.type,
           galleryId: storageData.$id,
-          blurHash: blurhash,
+          blurHash: blurhash
         }
       )
 

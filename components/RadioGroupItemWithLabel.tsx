@@ -8,7 +8,7 @@ export function RadioGroupItemWithLabel({
   value,
   label,
   description,
-  onLabelPress,
+  onLabelPress
 }: {
   value: string
   label?: string

@@ -14,7 +14,7 @@ import { Input } from '~/components/ui/input'
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
 import {
   getAvatarImageUrlPreview,
-  getCommunityAvatarUrlPreview,
+  getCommunityAvatarUrlPreview
 } from '~/components/api/getStorageItem'
 import { z } from 'zod'
 import { Button } from '~/components/ui/button'
@@ -25,7 +25,7 @@ import {
   useInfiniteQuery,
   useMutation,
   useQuery,
-  useQueryClient,
+  useQueryClient
 } from '@tanstack/react-query'
 
 const schema = z.object({
@@ -34,7 +34,7 @@ const schema = z.object({
     .trim()
     .max(2048, 'Message: Max length is 2048')
     .min(1, 'Message: Min length is 1'),
-  attachments: z.array(z.instanceof(File)).optional(),
+  attachments: z.array(z.instanceof(File)).optional()
 })
 
 const MESSAGES_PER_PAGE = 1000
@@ -66,7 +66,7 @@ export default function ChatView() {
         )
         return data as Messaging.MessageConversationsDocumentsType
       },
-      enabled: !!local?.conversationId,
+      enabled: !!local?.conversationId
     }
   )
 
@@ -74,7 +74,7 @@ export default function ChatView() {
     data: messagesData,
     fetchNextPage,
     hasNextPage,
-    isFetchingNextPage,
+    isFetchingNextPage
   } = useInfiniteQuery({
     queryKey: ['messages', local?.conversationId],
     queryFn: async ({ pageParam = 0 }) => {
@@ -82,7 +82,7 @@ export default function ChatView() {
         Query.equal('conversationId', `${local?.conversationId}`),
         Query.orderAsc('$createdAt'),
         Query.limit(MESSAGES_PER_PAGE),
-        Query.offset(pageParam * MESSAGES_PER_PAGE),
+        Query.offset(pageParam * MESSAGES_PER_PAGE)
       ])
       return result.documents as Messaging.MessagesDocumentsType[]
     },
@@ -92,7 +92,7 @@ export default function ChatView() {
         : undefined
     },
     initialPageParam: 0,
-    enabled: !!local?.conversationId,
+    enabled: !!local?.conversationId
   })
 
   const { data: communityData } = useQuery({
@@ -106,13 +106,13 @@ export default function ChatView() {
       )
       return data as Community.CommunityDocumentsType
     },
-    enabled: !!conversationData?.communityId,
+    enabled: !!conversationData?.communityId
   })
 
   const { data: otherUserData } = useQuery({
     queryKey: [
       'user',
-      conversationData?.participants?.find((id) => id !== current.$id),
+      conversationData?.participants?.find((id) => id !== current.$id)
     ],
     queryFn: async () => {
       const otherUserId = conversationData?.participants?.find(
@@ -122,7 +122,7 @@ export default function ChatView() {
       const data = await databases.getDocument('hp_db', 'userdata', otherUserId)
       return data as UserData.UserDataDocumentsType
     },
-    enabled: !!conversationData?.participants?.find((id) => id !== current.$id),
+    enabled: !!conversationData?.participants?.find((id) => id !== current.$id)
   })
 
   const sendMessageMutation = useMutation({
@@ -159,23 +159,23 @@ export default function ChatView() {
         setMessageText('')
         setAttachments([])
         queryClient.invalidateQueries({
-          queryKey: ['messages', local?.conversationId],
+          queryKey: ['messages', local?.conversationId]
         })
       }
     },
     onError: (error) => {
       captureException(error)
       showAlert('FAILED', 'An error occurred while sending the message')
-    },
+    }
   })
 
   useFocusEffect(
     useCallback(() => {
       queryClient.invalidateQueries({
-        queryKey: ['conversation', local?.conversationId],
+        queryKey: ['conversation', local?.conversationId]
       })
       queryClient.invalidateQueries({
-        queryKey: ['messages', local?.conversationId],
+        queryKey: ['messages', local?.conversationId]
       })
     }, [local?.conversationId, queryClient])
   )
@@ -232,14 +232,14 @@ export default function ChatView() {
         $databaseId: 'hp_db',
         $permissions: [],
         $createdAt: new Date().toISOString(),
-        $updatedAt: new Date().toISOString(),
+        $updatedAt: new Date().toISOString()
       }
       setMessages((prev) => [...prev, pendingMessage])
 
       await sendMessageMutation.mutateAsync({
         message: messageText,
         attachments: [],
-        messageType: 'text',
+        messageType: 'text'
       })
 
       // Remove the pending message
@@ -272,7 +272,7 @@ export default function ChatView() {
               <Avatar alt={'Avatar'}>
                 <AvatarImage
                   source={{
-                    uri: getConversationAvatar(),
+                    uri: getConversationAvatar()
                   }}
                   style={{ width: 32, height: 32, borderRadius: 50 }}
                 />
@@ -284,7 +284,7 @@ export default function ChatView() {
                 {getConversationName()}
               </Text>
             </View>
-          ),
+          )
         }}
       />
       <KeyboardAvoidingView

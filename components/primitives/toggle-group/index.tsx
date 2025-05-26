@@ -5,7 +5,7 @@ import type {
   PressableRef,
   SlottablePressableProps,
   SlottableViewProps,
-  ViewRef,
+  ViewRef
 } from '~/components/primitives/types'
 import { ToggleGroupUtils } from '~/components/primitives/utils'
 import type { ToggleGroupItemProps, ToggleGroupRootProps } from './types'
@@ -41,7 +41,7 @@ const Root = React.forwardRef<
             type,
             value,
             disabled,
-            onValueChange,
+            onValueChange
           } as ToggleGroupRootProps
         }
       >
@@ -117,7 +117,7 @@ const Item = React.forwardRef<
           accessibilityState={{
             disabled: (disabled || disabledProp) ?? false,
             checked: isChecked,
-            selected: isSelected,
+            selected: isSelected
           }}
           {...props}
         />

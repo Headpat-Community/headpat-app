@@ -19,7 +19,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTrigger,
+  AlertDialogTrigger
 } from '~/components/ui/alert-dialog'
 import { useUser } from '~/components/contexts/UserContext'
 import { z } from 'zod'

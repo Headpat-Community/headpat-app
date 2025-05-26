@@ -4,7 +4,7 @@ import {
   Databases,
   Functions,
   Storage,
-  Locale,
+  Locale
 } from 'react-native-appwrite'
 
 export const client = new Client()

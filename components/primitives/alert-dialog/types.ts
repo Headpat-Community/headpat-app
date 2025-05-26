@@ -45,5 +45,5 @@ export type {
   AlertDialogPortalProps,
   AlertDialogOverlayProps,
   AlertDialogContentProps,
-  RootContext,
+  RootContext
 }

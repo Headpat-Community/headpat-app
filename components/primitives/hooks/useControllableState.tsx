@@ -15,11 +15,11 @@ type SetStateFn<T> = (prevState?: T) => T
 function useControllableState<T>({
   prop,
   defaultProp,
-  onChange = () => {},
+  onChange = () => {}
 }: UseControllableStateParams<T>) {
   const [uncontrolledProp, setUncontrolledProp] = useUncontrolledState({
     defaultProp,
-    onChange,
+    onChange
   })
   const isControlled = prop !== undefined
   const value = isControlled ? prop : uncontrolledProp
@@ -45,7 +45,7 @@ function useControllableState<T>({
 
 function useUncontrolledState<T>({
   defaultProp,
-  onChange,
+  onChange
 }: Omit<UseControllableStateParams<T>, 'prop'>) {
   const uncontrolledState = React.useState<T | undefined>(defaultProp)
   const [value] = uncontrolledState

@@ -84,5 +84,5 @@ export type {
   SelectPortalProps,
   SelectRootProps,
   SelectSeparatorProps,
-  SelectValueProps,
+  SelectValueProps
 }

@@ -16,7 +16,7 @@ import { FlashList } from '@shopify/flash-list'
 import {
   useInfiniteQuery,
   useQueryClient,
-  InfiniteData,
+  InfiniteData
 } from '@tanstack/react-query'
 
 const PAGE_SIZE = 50
@@ -46,7 +46,7 @@ export default function AnnouncementsPage() {
             Query.orderAsc('validUntil'),
             Query.greaterThanEqual('validUntil', currentDate.toISOString()),
             Query.limit(PAGE_SIZE),
-            Query.offset(pageParam),
+            Query.offset(pageParam)
           ]
 
           const data =
@@ -62,7 +62,7 @@ export default function AnnouncementsPage() {
 
           return {
             total: data.total,
-            documents: data.documents,
+            documents: data.documents
           }
         } catch (error) {
           console.error('Error fetching announcements:', error)
@@ -73,7 +73,7 @@ export default function AnnouncementsPage() {
           Sentry.captureException(error)
           return {
             total: 0,
-            documents: [],
+            documents: []
           }
         }
       },
@@ -83,7 +83,7 @@ export default function AnnouncementsPage() {
           : undefined
       },
       initialPageParam: 0,
-      staleTime: 1000 * 60 * 5, // 5 minutes
+      staleTime: 1000 * 60 * 5 // 5 minutes
     })
 
   const onRefresh = useCallback(() => {

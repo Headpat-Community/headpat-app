@@ -11,7 +11,7 @@ import { Text } from '~/components/ui/text'
 // eslint-disable-next-line react/display-name
 const NotificationItem = React.memo(
   ({
-    notification,
+    notification
   }: {
     notification: Notifications.NotificationsDocumentsType
   }) => {
@@ -24,7 +24,7 @@ const NotificationItem = React.memo(
       <Link
         href={{
           pathname: '/user/(stacks)/[userId]',
-          params: { userId: notification.userData.$id },
+          params: { userId: notification.userData.$id }
         }}
         asChild
       >

@@ -6,7 +6,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialogTitle
 } from '~/components/ui/alert-dialog'
 import { Text } from '~/components/ui/text'
 import React, { useState } from 'react'
@@ -22,7 +22,7 @@ import { RadioGroupItemWithLabel } from '~/components/RadioGroupItemWithLabel'
 export default function ReportGalleryModal({
   open,
   setOpen,
-  image,
+  image
 }: {
   open: boolean
   setOpen: (open: boolean) => void
@@ -37,7 +37,7 @@ export default function ReportGalleryModal({
     try {
       const data = await reportGalleryImage({
         reportedGalleryId: image.$id,
-        reason: reportReason === 'Other' ? otherReason : reportReason,
+        reason: reportReason === 'Other' ? otherReason : reportReason
       })
       setOpen(false)
       hideAlert()

@@ -44,5 +44,5 @@ export type {
   HoverCardRootProps,
   HoverCardOverlayProps,
   HoverCardPortalProps,
-  RootContext,
+  RootContext
 }

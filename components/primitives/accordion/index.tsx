@@ -5,13 +5,13 @@ import type {
   PressableRef,
   SlottablePressableProps,
   SlottableViewProps,
-  ViewRef,
+  ViewRef
 } from '~/components/primitives/types'
 import type {
   AccordionContentProps,
   AccordionItemProps,
   AccordionRootProps,
-  RootContext,
+  RootContext
 } from './types'
 import { useControllableState } from '~/components/primitives/hooks'
 
@@ -37,7 +37,7 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & AccordionRootProps>(
         defaultProp: defaultValue,
         onChange: onValueChangeProps as (
           state: string | string[] | undefined
-        ) => void,
+        ) => void
       })
 
     const Component = asChild ? Slot.View : View
@@ -48,7 +48,7 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & AccordionRootProps>(
           disabled,
           collapsible,
           value,
-          onValueChange,
+          onValueChange
         }}
       >
         <Component ref={ref} {...viewProps} />
@@ -89,7 +89,7 @@ const Item = React.forwardRef<ViewRef, SlottableViewProps & AccordionItemProps>(
           value,
           disabled,
           nativeID,
-          isExpanded: isItemExpanded(rootValue, value),
+          isExpanded: isItemExpanded(rootValue, value)
         }}
       >
         <Component ref={ref} {...viewProps} />
@@ -140,13 +140,13 @@ const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
       type,
       onValueChange,
       value: rootValue,
-      collapsible,
+      collapsible
     } = useRootContext()
     const {
       nativeID,
       disabled: itemDisabled,
       value,
-      isExpanded,
+      isExpanded
     } = useItemContext()
 
     function onPress(ev: GestureResponderEvent) {
@@ -184,7 +184,7 @@ const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
         onPress={onPress}
         accessibilityState={{
           expanded: isExpanded,
-          disabled: isDisabled,
+          disabled: isDisabled
         }}
         disabled={isDisabled}
         {...props}

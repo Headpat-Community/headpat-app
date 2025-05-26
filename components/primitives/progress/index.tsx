@@ -37,7 +37,7 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & ProgressRootProps>(
           min: 0,
           max,
           now: value,
-          text: getValueLabel(value, max),
+          text: getValueLabel(value, max)
         }}
         {...props}
       />

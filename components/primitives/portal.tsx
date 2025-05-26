@@ -10,7 +10,7 @@ const usePortal = create<{ map: PortalHostMap }>(() => ({
   map: new Map<string, PortalMap>().set(
     DEFAULT_PORTAL_HOST,
     new Map<string, React.ReactNode>()
-  ),
+  )
 }))
 
 const updatePortal = (
@@ -47,7 +47,7 @@ export function PortalHost({ name = DEFAULT_PORTAL_HOST }: { name?: string }) {
 export function Portal({
   name,
   hostName = DEFAULT_PORTAL_HOST,
-  children,
+  children
 }: {
   name: string
   hostName?: string

@@ -7,7 +7,7 @@ import type {
   SlottableTextProps,
   SlottableViewProps,
   TextRef,
-  ViewRef,
+  ViewRef
 } from '~/components/primitives/types'
 import * as React from 'react'
 import {
@@ -15,14 +15,14 @@ import {
   GestureResponderEvent,
   Pressable,
   Text,
-  View,
+  View
 } from 'react-native'
 import type {
   DialogContentProps,
   DialogOverlayProps,
   DialogPortalProps,
   DialogRootProps,
-  RootContext,
+  RootContext
 } from './types'
 
 const DialogContext = React.createContext<
@@ -44,7 +44,7 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & DialogRootProps>(
     const [open = false, onOpenChange] = useControllableState({
       prop: openProp,
       defaultProp: defaultOpen,
-      onChange: onOpenChangeProp,
+      onChange: onOpenChangeProp
     })
 
     const Component = asChild ? Slot.View : View
@@ -53,7 +53,7 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & DialogRootProps>(
         value={{
           open,
           onOpenChange,
-          nativeID,
+          nativeID
         }}
       >
         <Component ref={ref} {...viewProps} />
@@ -253,7 +253,7 @@ export {
   Root,
   Title,
   Trigger,
-  useRootContext,
+  useRootContext
 }
 
 function onStartShouldSetResponder() {

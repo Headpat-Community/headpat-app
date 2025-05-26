@@ -16,7 +16,7 @@ export default function TabsLayout() {
             tabBarIcon({ color, size }) {
               return <MapIcon color={color} size={size} />
             },
-            headerShown: false,
+            headerShown: false
           }}
         />
         <Tabs.Screen
@@ -27,14 +27,14 @@ export default function TabsLayout() {
               return <PersonStandingIcon color={color} size={size} />
             },
             href: current?.$id ? `/locations/share/` : null,
-            headerShown: false,
+            headerShown: false
           }}
         />
         <Tabs.Screen
           name="addSharing"
           options={{
             href: null,
-            headerShown: false,
+            headerShown: false
           }}
         />
       </Tabs>

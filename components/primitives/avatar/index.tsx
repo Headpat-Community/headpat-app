@@ -4,13 +4,13 @@ import {
   ImageLoadEventData,
   NativeSyntheticEvent,
   Image as RNImage,
-  View,
+  View
 } from 'react-native'
 import * as Slot from '~/components/primitives/slot'
 import {
   ComponentPropsWithAsChild,
   SlottableViewProps,
-  ViewRef,
+  ViewRef
 } from '~/components/primitives/types'
 import { AvatarImageProps, AvatarRootProps } from './types'
 

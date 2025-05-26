@@ -7,11 +7,11 @@ import {
   type AccessibilityActionEvent,
   type GestureResponderEvent,
   type LayoutChangeEvent,
-  type LayoutRectangle,
+  type LayoutRectangle
 } from 'react-native'
 import {
   useRelativePosition,
-  type LayoutPosition,
+  type LayoutPosition
 } from '~/components/primitives/hooks'
 import { Portal as RNPPortal } from '~/components/primitives/portal'
 import * as Slot from '~/components/primitives/slot'
@@ -23,7 +23,7 @@ import type {
   SlottableTextProps,
   SlottableViewProps,
   TextRef,
-  ViewRef,
+  ViewRef
 } from '~/components/primitives/types'
 import type {
   ContextMenuCheckboxItemProps,
@@ -35,7 +35,7 @@ import type {
   ContextMenuRootProps,
   ContextMenuSeparatorProps,
   ContextMenuSubProps,
-  ContextMenuSubTriggerProps,
+  ContextMenuSubTriggerProps
 } from './types'
 
 interface IRootContext extends ContextMenuRootProps {
@@ -73,7 +73,7 @@ const Root = React.forwardRef<
           nativeID,
           pressPosition,
           setContentLayout,
-          setPressPosition,
+          setPressPosition
         }}
       >
         <Component ref={ref} {...viewProps} />
@@ -130,7 +130,7 @@ const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
           width: 0,
           pageX: ev.nativeEvent.pageX,
           pageY: ev.nativeEvent.pageY,
-          height: 0,
+          height: 0
         })
       }
       if (relativeTo === 'trigger') {
@@ -149,7 +149,7 @@ const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
           width: 0,
           pageX: 0,
           pageY: 0,
-          height: 0,
+          height: 0
         })
         const newValue = !open
         onOpenChange(newValue)
@@ -266,7 +266,7 @@ const Content = React.forwardRef<
       nativeID,
       pressPosition,
       setContentLayout,
-      setPressPosition,
+      setPressPosition
     } = useRootContext()
 
     React.useEffect(() => {
@@ -296,7 +296,7 @@ const Content = React.forwardRef<
       insets,
       sideOffset,
       side,
-      disablePositioningStyle,
+      disablePositioningStyle
     })
 
     function onLayout(event: LayoutChangeEvent) {
@@ -524,7 +524,7 @@ const RadioItem = React.forwardRef<
           disabled={disabled ?? false}
           accessibilityState={{
             disabled: disabled ?? false,
-            checked: value === itemValue,
+            checked: value === itemValue
           }}
           aria-valuetext={textValue}
           {...props}
@@ -593,7 +593,7 @@ const Sub = React.forwardRef<ViewRef, SlottableViewProps & ContextMenuSubProps>(
         value={{
           nativeID,
           open,
-          onOpenChange,
+          onOpenChange
         }}
       >
         <Component ref={ref} {...props} />
@@ -689,7 +689,7 @@ export {
   SubTrigger,
   Trigger,
   useRootContext,
-  useSubContext,
+  useSubContext
 }
 
 function onStartShouldSetResponder() {

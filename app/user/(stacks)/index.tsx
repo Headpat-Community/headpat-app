@@ -22,7 +22,7 @@ export default function UserListPage() {
     hasNextPage,
     isFetchingNextPage,
     isRefetching,
-    refetch,
+    refetch
   } = useInfiniteQuery({
     queryKey: ['users'],
     queryFn: async ({ pageParam = 0 }) => {
@@ -33,7 +33,7 @@ export default function UserListPage() {
           [
             Query.orderDesc('$createdAt'),
             Query.limit(PAGE_SIZE),
-            Query.offset(pageParam * PAGE_SIZE),
+            Query.offset(pageParam * PAGE_SIZE)
           ]
         )
 
@@ -48,7 +48,7 @@ export default function UserListPage() {
       return lastPage.length === PAGE_SIZE ? allPages.length : undefined
     },
     initialPageParam: 0,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5 // 5 minutes
   })
 
   const users = data?.pages.flat() ?? []

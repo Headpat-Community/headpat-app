@@ -33,7 +33,7 @@ export default function EventPage() {
   const {
     data: event,
     isLoading,
-    isRefetching,
+    isRefetching
   } = useQuery({
     queryKey: ['event', local?.eventId],
     queryFn: async () => {
@@ -52,7 +52,7 @@ export default function EventPage() {
         return {
           ...document,
           attendees: eventData?.attendees,
-          isAttending: eventData?.isAttending,
+          isAttending: eventData?.isAttending
         }
       } catch (error) {
         showAlert('FAILED', i18n.t('events.failedtofetch'))
@@ -60,7 +60,7 @@ export default function EventPage() {
       }
     },
     enabled: !!local?.eventId,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5 // 5 minutes
   })
 
   const attendMutation = useMutation({
@@ -81,7 +81,7 @@ export default function EventPage() {
           attendees: Array.isArray(old.attendees)
             ? old.attendees
             : old.attendees + 1,
-          isAttending: true,
+          isAttending: true
         }))
       } else if (data.type === 'event_ended') {
         showAlert('FAILED', i18n.t('time.eventHasEnded'))
@@ -91,7 +91,7 @@ export default function EventPage() {
     },
     onError: () => {
       showAlert('FAILED', i18n.t('events.failedToFetch'))
-    },
+    }
   })
 
   const unattendMutation = useMutation({
@@ -112,7 +112,7 @@ export default function EventPage() {
           attendees: Array.isArray(old.attendees)
             ? old.attendees
             : old.attendees - 1,
-          isAttending: false,
+          isAttending: false
         }))
       } else if (data.type === 'event_ended') {
         showAlert('FAILED', i18n.t('time.eventHasEnded'))
@@ -122,7 +122,7 @@ export default function EventPage() {
     },
     onError: () => {
       showAlert('FAILED', i18n.t('events.failedToFetch'))
-    },
+    }
   })
 
   useFocusEffect(
@@ -141,7 +141,7 @@ export default function EventPage() {
             refreshing={isRefetching}
             onRefresh={() =>
               queryClient.invalidateQueries({
-                queryKey: ['event', local?.eventId],
+                queryKey: ['event', local?.eventId]
               })
             }
           />
@@ -150,7 +150,7 @@ export default function EventPage() {
       >
         <Stack.Screen
           options={{
-            headerTitle: i18n.t('events.whatIsThisEvent'),
+            headerTitle: i18n.t('events.whatIsThisEvent')
           }}
         />
         <View className={'p-4 native:pb-24 max-w-md gap-6'}>
@@ -175,7 +175,7 @@ export default function EventPage() {
             refreshing={isRefetching}
             onRefresh={() =>
               queryClient.invalidateQueries({
-                queryKey: ['event', local?.eventId],
+                queryKey: ['event', local?.eventId]
               })
             }
           />
@@ -203,7 +203,7 @@ export default function EventPage() {
     <>
       <Stack.Screen
         options={{
-          headerTitle: event?.title || i18n.t('events.event'),
+          headerTitle: event?.title || i18n.t('events.event')
         }}
       />
       <ScrollView
@@ -212,7 +212,7 @@ export default function EventPage() {
             refreshing={isRefetching}
             onRefresh={() =>
               queryClient.invalidateQueries({
-                queryKey: ['event', local?.eventId],
+                queryKey: ['event', local?.eventId]
               })
             }
           />
@@ -261,16 +261,16 @@ export default function EventPage() {
                   value={sanitizedDescription}
                   stylesheet={{
                     p: {
-                      color: theme,
+                      color: theme
                     },
                     a: {
-                      color: 'hsl(208, 100%, 50%)',
-                    },
+                      color: 'hsl(208, 100%, 50%)'
+                    }
                   }}
                   textComponentProps={{
                     style: {
-                      color: theme,
-                    },
+                      color: theme
+                    }
                   }}
                 />
               </CardContent>

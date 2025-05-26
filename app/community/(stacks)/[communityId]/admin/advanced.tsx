@@ -4,7 +4,7 @@ import {
   Platform,
   ScrollView,
   TouchableWithoutFeedback,
-  View,
+  View
 } from 'react-native'
 import { Text } from '~/components/ui/text'
 import { H4, Muted } from '~/components/ui/typography'
@@ -28,14 +28,14 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTrigger,
+  AlertDialogTrigger
 } from '~/components/ui/alert-dialog'
 import SlowInternet from '~/components/views/SlowInternet'
 
 const schema = z.object({
   isFindable: z.boolean(),
   hasPublicPage: z.boolean(),
-  nsfw: z.boolean(),
+  nsfw: z.boolean()
 })
 
 export default function Page() {
@@ -69,7 +69,7 @@ export default function Page() {
         schema.parse({
           isFindable: communitySettings.isFindable,
           hasPublicPage: communitySettings.hasPublicPage,
-          nsfw: communitySettings.nsfw,
+          nsfw: communitySettings.nsfw
         })
       } catch (error) {
         showAlert('FAILED', error.errors[0].message)
@@ -182,7 +182,7 @@ export default function Page() {
                       onCheckedChange={() =>
                         setCommunitySettings((prev) => ({
                           ...prev,
-                          isFindable: !prev.isFindable,
+                          isFindable: !prev.isFindable
                         }))
                       }
                     />
@@ -209,7 +209,7 @@ export default function Page() {
                       onCheckedChange={() =>
                         setCommunitySettings((prev) => ({
                           ...prev,
-                          hasPublicPage: !prev.hasPublicPage,
+                          hasPublicPage: !prev.hasPublicPage
                         }))
                       }
                     />
@@ -236,7 +236,7 @@ export default function Page() {
                       onCheckedChange={() =>
                         setCommunitySettings((prev) => ({
                           ...prev,
-                          nsfw: !prev.nsfw,
+                          nsfw: !prev.nsfw
                         }))
                       }
                     />

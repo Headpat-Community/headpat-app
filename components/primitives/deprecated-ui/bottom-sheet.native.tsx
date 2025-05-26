@@ -1,6 +1,6 @@
 import type {
   BottomSheetBackdropProps,
-  BottomSheetFooterProps as GBottomSheetFooterProps,
+  BottomSheetFooterProps as GBottomSheetFooterProps
 } from '@gorhom/bottom-sheet'
 import {
   BottomSheetBackdrop,
@@ -9,7 +9,7 @@ import {
   BottomSheetFooter as GBottomSheetFooter,
   BottomSheetTextInput as GBottomSheetTextInput,
   BottomSheetView as GBottomSheetView,
-  useBottomSheetModal,
+  useBottomSheetModal
 } from '@gorhom/bottom-sheet'
 import type { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types'
 import { useTheme } from '@react-navigation/native'
@@ -19,7 +19,7 @@ import {
   Keyboard,
   Pressable,
   View,
-  ViewStyle,
+  ViewStyle
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { X } from '~/components/Icons'
@@ -122,7 +122,7 @@ const BottomSheetContent = React.forwardRef<
           ...rest
         } = {
           ...props,
-          ...backdropProps,
+          ...backdropProps
         }
         return (
           <BottomSheetBackdrop
@@ -153,7 +153,7 @@ const BottomSheetContent = React.forwardRef<
         enableDynamicSizing={enableDynamicSizing}
         backgroundStyle={[{ backgroundColor: colors.card }, backgroundStyle]}
         handleIndicatorStyle={{
-          backgroundColor: colors.text,
+          backgroundColor: colors.text
         }}
         topInset={insets.top}
         android_keyboardInputMode={android_keyboardInputMode}
@@ -222,9 +222,9 @@ function BottomSheetView({
       style={[
         {
           paddingBottom:
-            insets.bottom + (hadHeader ? BOTTOM_SHEET_HEADER_HEIGHT : 0),
+            insets.bottom + (hadHeader ? BOTTOM_SHEET_HEADER_HEIGHT : 0)
         },
-        style,
+        style
       ]}
       className={cn(`px-4`, className)}
       {...props}
@@ -365,5 +365,5 @@ export {
   BottomSheetOpenTrigger,
   BottomSheetTextInput,
   BottomSheetView,
-  useBottomSheet,
+  useBottomSheet
 }

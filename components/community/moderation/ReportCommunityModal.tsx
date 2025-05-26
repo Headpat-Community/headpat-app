@@ -6,7 +6,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialogTitle
 } from '~/components/ui/alert-dialog'
 import { Text } from '~/components/ui/text'
 import React, { useState } from 'react'
@@ -22,7 +22,7 @@ import { RadioGroupItemWithLabel } from '~/components/RadioGroupItemWithLabel'
 export default function ReportCommunityModal({
   open,
   setOpen,
-  community,
+  community
 }: {
   open: boolean
   setOpen: (open: boolean) => void
@@ -37,7 +37,7 @@ export default function ReportCommunityModal({
     try {
       const data = await reportCommunity({
         reportedCommunityId: community.$id,
-        reason: reportReason === 'Other' ? otherReason : reportReason,
+        reason: reportReason === 'Other' ? otherReason : reportReason
       })
       setOpen(false)
       hideAlert()

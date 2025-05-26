@@ -6,13 +6,13 @@ import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persi
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      gcTime: 1000 * 60 * 60 * 24, // 24 hours
-    },
-  },
+      gcTime: 1000 * 60 * 60 * 24 // 24 hours
+    }
+  }
 })
 
 const asyncStoragePersister = createAsyncStoragePersister({
-  storage: AsyncStorage,
+  storage: AsyncStorage
 })
 
 const CacheProvider = ({ children }: { children: React.ReactNode }) => (

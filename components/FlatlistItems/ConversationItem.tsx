@@ -5,7 +5,7 @@ import { UsersIcon } from 'lucide-react-native'
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
 import {
   getAvatarImageUrlPreview,
-  getCommunityAvatarUrlPreview,
+  getCommunityAvatarUrlPreview
 } from '~/components/api/getStorageItem'
 import { Muted } from '../ui/typography'
 import { Text } from '~/components/ui/text'
@@ -18,7 +18,7 @@ import {
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
-  AlertDialogTitle,
+  AlertDialogTitle
 } from '~/components/ui/alert-dialog'
 import { Button } from '~/components/ui/button'
 import { functions } from '~/lib/appwrite-client'
@@ -30,7 +30,7 @@ const ConversationItem = React.memo(
   ({
     item,
     displayData,
-    isLoading,
+    isLoading
   }: {
     item: Messaging.MessageConversationsDocumentsType
     displayData:
@@ -83,7 +83,7 @@ const ConversationItem = React.memo(
             <View>
               <TouchableOpacity
                 style={{
-                  gap: 12,
+                  gap: 12
                 }}
               >
                 <Button variant={'destructive'} onPress={deleteConversation}>
@@ -101,7 +101,7 @@ const ConversationItem = React.memo(
         <Link
           href={{
             pathname: '/chat/[conversationId]',
-            params: { conversationId: item?.$id },
+            params: { conversationId: item?.$id }
           }}
           asChild
         >
@@ -162,7 +162,7 @@ const ConversationItem = React.memo(
                     </View>
                     <View
                       style={{
-                        marginRight: 48,
+                        marginRight: 48
                       }}
                     >
                       <Text className="font-semibold">{timeSince}</Text>

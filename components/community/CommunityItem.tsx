@@ -24,7 +24,7 @@ const CommunityItem = React.memo(
           onPress={() =>
             router.push({
               pathname: '/community/[communityId]',
-              params: { communityId: community?.$id },
+              params: { communityId: community?.$id }
             })
           }
         >
@@ -37,7 +37,7 @@ const CommunityItem = React.memo(
               style={{
                 width: 80,
                 height: 80,
-                borderRadius: 20,
+                borderRadius: 20
               }}
               contentFit={'cover'}
             />

@@ -8,7 +8,7 @@ import {
   MapPinnedIcon,
   MegaphoneIcon,
   UserIcon,
-  BellIcon,
+  BellIcon
 } from 'lucide-react-native'
 import { useColorScheme } from '~/lib/useColorScheme'
 import { useUser } from '~/components/contexts/UserContext'
@@ -60,7 +60,7 @@ export default function HomeView() {
       }
     },
     enabled: true,
-    staleTime: 1000 * 60 * 5, // 2 minutes
+    staleTime: 1000 * 60 * 5 // 2 minutes
   })
 
   const { data: userData } = useQuery({
@@ -79,7 +79,7 @@ export default function HomeView() {
       }
     },
     enabled: !!current?.$id,
-    staleTime: 1000 * 60 * 2, // 2 minutes
+    staleTime: 1000 * 60 * 2 // 2 minutes
   })
 
   const onRefresh = React.useCallback(async () => {
@@ -88,7 +88,7 @@ export default function HomeView() {
       // Invalidate and refetch both queries
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['nextEvent'] }),
-        queryClient.invalidateQueries({ queryKey: ['userData', current?.$id] }),
+        queryClient.invalidateQueries({ queryKey: ['userData', current?.$id] })
       ])
     } finally {
       setRefreshing(false)
@@ -124,7 +124,7 @@ export default function HomeView() {
                 width: 100,
                 height: 100,
                 borderRadius: 25,
-                marginTop: 20,
+                marginTop: 20
               }}
             />
             {userData?.displayName ? (

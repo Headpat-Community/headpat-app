@@ -47,7 +47,7 @@ const EventsList: React.FC<EventsListProps> = ({ endpoint }) => {
         return lastPage.length === 20 ? allPages.length * 20 : undefined
       },
       initialPageParam: 0,
-      staleTime: 1000 * 60 * 5, // 5 minutes
+      staleTime: 1000 * 60 * 5 // 5 minutes
     })
 
   const onRefresh = useCallback(() => {

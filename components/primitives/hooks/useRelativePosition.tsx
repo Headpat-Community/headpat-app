@@ -3,18 +3,18 @@ import {
   useWindowDimensions,
   type LayoutRectangle,
   type ScaledSize,
-  type ViewStyle,
+  type ViewStyle
 } from 'react-native'
 import { Insets } from '~/components/primitives/types'
 
 const POSITION_ABSOLUTE: ViewStyle = {
-  position: 'absolute',
+  position: 'absolute'
 }
 
 const HIDDEN_CONTENT: ViewStyle = {
   position: 'absolute',
   opacity: 0,
-  zIndex: -9999999,
+  zIndex: -9999999
 }
 
 type UseRelativePositionArgs = Omit<
@@ -35,7 +35,7 @@ export function useRelativePosition({
   insets,
   sideOffset,
   side,
-  disablePositioningStyle,
+  disablePositioningStyle
 }: UseRelativePositionArgs) {
   const dimensions = useWindowDimensions()
   return React.useMemo(() => {
@@ -54,7 +54,7 @@ export function useRelativePosition({
       alignOffset,
       insets,
       sideOffset,
-      dimensions,
+      dimensions
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [triggerPosition, contentLayout, dimensions.width, dimensions.height])
@@ -87,7 +87,7 @@ function getSidePosition({
   sideOffset,
   insets,
   avoidCollisions,
-  dimensions,
+  dimensions
 }: GetSidePositionArgs) {
   const insetTop = insets?.top ?? 0
   const insetBottom = insets?.bottom ?? 0
@@ -97,13 +97,13 @@ function getSidePosition({
 
   if (!avoidCollisions) {
     return {
-      top: side === 'top' ? positionTop : positionBottom,
+      top: side === 'top' ? positionTop : positionBottom
     }
   }
 
   if (side === 'top') {
     return {
-      top: Math.max(insetTop, positionTop),
+      top: Math.max(insetTop, positionTop)
     }
   }
 
@@ -111,7 +111,7 @@ function getSidePosition({
     top: Math.min(
       dimensions.height - insetBottom - contentLayout.height,
       positionBottom
-    ),
+    )
   }
 }
 
@@ -127,7 +127,7 @@ function getAlignPosition({
   triggerPosition,
   alignOffset,
   insets,
-  dimensions,
+  dimensions
 }: GetAlignPositionArgs) {
   const insetLeft = insets?.left ?? 0
   const insetRight = insets?.right ?? 0
@@ -209,7 +209,7 @@ function getContentStyle({
   alignOffset,
   insets,
   sideOffset,
-  dimensions,
+  dimensions
 }: GetContentStyleArgs) {
   return Object.assign(
     POSITION_ABSOLUTE,
@@ -220,7 +220,7 @@ function getContentStyle({
       sideOffset,
       insets,
       avoidCollisions,
-      dimensions,
+      dimensions
     }),
     getAlignPosition({
       align,
@@ -229,7 +229,7 @@ function getContentStyle({
       contentLayout,
       alignOffset,
       insets,
-      dimensions,
+      dimensions
     })
   )
 }

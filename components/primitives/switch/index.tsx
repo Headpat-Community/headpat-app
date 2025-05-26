@@ -5,7 +5,7 @@ import type {
   PressableRef,
   SlottablePressableProps,
   SlottableViewProps,
-  ViewRef,
+  ViewRef
 } from '~/components/primitives/types'
 import type { SwitchRootProps } from './types'
 
@@ -42,7 +42,7 @@ const Root = React.forwardRef<
         onPress={onPress}
         accessibilityState={{
           checked,
-          disabled,
+          disabled
         }}
         disabled={disabled}
         {...props}

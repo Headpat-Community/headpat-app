@@ -7,7 +7,7 @@ import type {
   SlottableTextProps,
   SlottableViewProps,
   TextRef,
-  ViewRef,
+  ViewRef
 } from '~/components/primitives/types'
 import * as React from 'react'
 import {
@@ -15,14 +15,14 @@ import {
   Pressable,
   Text,
   View,
-  type GestureResponderEvent,
+  type GestureResponderEvent
 } from 'react-native'
 import type {
   AlertDialogContentProps,
   AlertDialogOverlayProps,
   AlertDialogPortalProps,
   AlertDialogRootProps,
-  RootContext,
+  RootContext
 } from './types'
 
 const AlertDialogContext = React.createContext<
@@ -47,7 +47,7 @@ const Root = React.forwardRef<
     const [open = false, onOpenChange] = useControllableState({
       prop: openProp,
       defaultProp: defaultOpen,
-      onChange: onOpenChangeProp,
+      onChange: onOpenChangeProp
     })
     const Component = asChild ? Slot.View : View
     return (
@@ -55,7 +55,7 @@ const Root = React.forwardRef<
         value={{
           open,
           onOpenChange,
-          nativeID,
+          nativeID
         }}
       >
         <Component ref={ref} {...viewProps} />
@@ -272,5 +272,5 @@ export {
   Root,
   Title,
   Trigger,
-  useRootContext,
+  useRootContext
 }

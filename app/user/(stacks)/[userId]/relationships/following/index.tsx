@@ -25,7 +25,7 @@ export default function FollowingPage() {
     isFetchingNextPage,
     isRefetching,
     refetch,
-    isLoading,
+    isLoading
   } = useInfiniteQuery({
     queryKey: ['following', local?.userId],
     queryFn: async ({ pageParam = 0 }) => {
@@ -58,7 +58,7 @@ export default function FollowingPage() {
       return lastPage.length === PAGE_SIZE ? allPages.length : undefined
     },
     initialPageParam: 0,
-    enabled: !!local?.userId,
+    enabled: !!local?.userId
   })
 
   const users = data?.pages.flat() ?? []
@@ -98,7 +98,7 @@ export default function FollowingPage() {
             style={{
               flexDirection: 'row',
               justifyContent: 'space-between',
-              margin: 10,
+              margin: 10
             }}
           >
             {[...Array(3)].map((_, i) => (
@@ -106,7 +106,7 @@ export default function FollowingPage() {
                 key={i}
                 style={{
                   width: 100,
-                  height: 100,
+                  height: 100
                 }}
               >
                 <Skeleton className={'w-full h-full rounded-3xl'} />

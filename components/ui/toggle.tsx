@@ -12,18 +12,18 @@ const toggleVariants = cva(
       variant: {
         default: 'bg-transparent',
         outline:
-          'border border-input bg-transparent web:hover:bg-accent active:bg-accent active:bg-accent',
+          'border border-input bg-transparent web:hover:bg-accent active:bg-accent active:bg-accent'
       },
       size: {
         default: 'h-10 px-3 native:h-12 native:px-[12]',
         sm: 'h-9 px-2.5 native:h-10 native:px-[9]',
-        lg: 'h-11 px-5 native:h-14 native:px-6',
-      },
+        lg: 'h-11 px-5 native:h-14 native:px-6'
+      }
     },
     defaultVariants: {
       variant: 'default',
-      size: 'default',
-    },
+      size: 'default'
+    }
   }
 )
 
@@ -34,18 +34,18 @@ const toggleTextVariants = cva(
       variant: {
         default: '',
         outline:
-          'web:group-hover:text-accent-foreground web:group-active:text-accent-foreground',
+          'web:group-hover:text-accent-foreground web:group-active:text-accent-foreground'
       },
       size: {
         default: '',
         sm: '',
-        lg: '',
-      },
+        lg: ''
+      }
     },
     defaultVariants: {
       variant: 'default',
-      size: 'default',
-    },
+      size: 'default'
+    }
   }
 )
 

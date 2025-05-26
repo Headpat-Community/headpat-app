@@ -20,7 +20,7 @@ export function HeaderSidebarBackButton() {
         onPress={() => router.back()}
         style={{
           paddingVertical: 10,
-          paddingRight: 10,
+          paddingRight: 10
         }}
       >
         <ArrowLeftIcon aria-label={'Go back'} size={20} color={theme} />
@@ -28,7 +28,7 @@ export function HeaderSidebarBackButton() {
       <TouchableOpacity
         onPress={() => router.dismissAll()}
         style={{
-          padding: 10,
+          padding: 10
         }}
       >
         <HomeIcon aria-label={'Home'} size={20} color={theme} />
@@ -69,135 +69,135 @@ export const DrawerScreensData: DrawerProps[] = [
   {
     location: 'index',
     title: i18n.t('screens.home'),
-    swipeEnabled: false,
+    swipeEnabled: false
   },
   {
     location: 'languages/index',
     title: i18n.t('screens.languages'),
-    headerLeft: <HeaderSidebarBackButton />,
+    headerLeft: <HeaderSidebarBackButton />
   },
   {
     location: 'chat/list',
     title: i18n.t('screens.conversations'),
     headerLeft: <HeaderSidebarBackButton />,
-    headerShown: false,
+    headerShown: false
   },
   {
     location: 'chat/[conversationId]/index',
     title: i18n.t('screens.chat'),
-    headerLeft: <HeaderSidebarBackButton />,
+    headerLeft: <HeaderSidebarBackButton />
   },
   {
     location: 'announcements/index',
     title: i18n.t('screens.announcements'),
     headerLargeTitle: true,
-    headerLeft: <HeaderSidebarBackButton />,
+    headerLeft: <HeaderSidebarBackButton />
   },
   {
     location: 'announcements/[announcementId]/index',
     title: '',
-    headerLeft: <HeaderSidebarBackButton />,
+    headerLeft: <HeaderSidebarBackButton />
   },
   {
     location: 'gallery/(stacks)/(list)',
     title: i18n.t('screens.gallery'),
     headerLeft: <HeaderSidebarBackButton />,
-    headerRight: <GalleryAddButton />,
+    headerRight: <GalleryAddButton />
   },
   {
     location: 'gallery/(stacks)/add/index',
     title: i18n.t('screens.gallery'),
     headerLeft: <HeaderSidebarBackButton />,
-    headerRight: <GalleryAddButton />,
+    headerRight: <GalleryAddButton />
   },
   {
     location: 'gallery/(stacks)/[galleryId]/index',
     title: i18n.t('screens.gallery'),
     headerLeft: <HeaderSidebarBackButton />,
-    headerRight: <GalleryAddButton />,
+    headerRight: <GalleryAddButton />
   },
   {
     location: 'gallery/(stacks)/[galleryId]/edit',
     title: i18n.t('screens.gallery'),
     headerLeft: <HeaderSidebarBackButton />,
-    headerRight: <ProfileThemeToggle />,
+    headerRight: <ProfileThemeToggle />
   },
   {
     location: 'locations',
     title: i18n.t('screens.locations'),
-    headerLeft: <HeaderSidebarBackButton />,
+    headerLeft: <HeaderSidebarBackButton />
   },
   {
     location: 'community',
     title: i18n.t('screens.communities'),
-    headerShown: false,
+    headerShown: false
   },
   {
     location: 'events/(tabs)',
     title: i18n.t('screens.events'),
-    headerLeft: <HeaderSidebarBackButton />,
+    headerLeft: <HeaderSidebarBackButton />
   },
   {
     location: 'user/(stacks)/index',
     title: i18n.t('screens.users'),
     headerLeft: <HeaderSidebarBackButton />,
-    headerRight: <ProfileThemeToggle />,
+    headerRight: <ProfileThemeToggle />
   },
   {
     location: 'user/(stacks)/[userId]/index',
     title: '',
     headerLeft: <HeaderSidebarBackButton />,
-    headerRight: <ProfileThemeToggle />,
+    headerRight: <ProfileThemeToggle />
   },
   {
     location: 'user/(stacks)/[userId]/relationships/followers/index',
     title: i18n.t('screens.followers'),
     headerLeft: <HeaderSidebarBackButton />,
-    headerRight: <ProfileThemeToggle />,
+    headerRight: <ProfileThemeToggle />
   },
   {
     location: 'user/(stacks)/[userId]/relationships/following/index',
     title: i18n.t('screens.following'),
     headerLeft: <HeaderSidebarBackButton />,
-    headerRight: <ProfileThemeToggle />,
+    headerRight: <ProfileThemeToggle />
   },
   {
     location: 'notifications/index',
     title: i18n.t('screens.notifications'),
     headerLeft: <HeaderSidebarBackButton />,
-    headerRight: <ProfileThemeToggle />,
+    headerRight: <ProfileThemeToggle />
   },
   {
     location: 'login/index',
     title: i18n.t('screens.login'),
     headerLeft: <HeaderSidebarBackButton />,
-    headerRight: <ProfileThemeToggle />,
+    headerRight: <ProfileThemeToggle />
   },
   {
     location: 'register/index',
     title: i18n.t('screens.register'),
     headerLeft: <HeaderSidebarBackButton />,
-    headerRight: <ProfileThemeToggle />,
+    headerRight: <ProfileThemeToggle />
   },
   {
     location: 'account/(stacks)',
     title: i18n.t('screens.account'),
-    headerLeft: <HeaderSidebarBackButton />,
+    headerLeft: <HeaderSidebarBackButton />
   },
   {
     location: 'relationships',
     title: i18n.t('screens.connections'),
-    headerLeft: <HeaderSidebarBackButton />,
+    headerLeft: <HeaderSidebarBackButton />
   },
   {
     location: 'changelog/index',
     title: i18n.t('screens.changelog'),
-    headerLeft: <HeaderSidebarBackButton />,
+    headerLeft: <HeaderSidebarBackButton />
   },
   {
     location: '+not-found',
     title: 'Oops!',
     headerLeft: <HeaderSidebarBackButton />,
-    headerRight: <ProfileThemeToggle />,
-  },
+    headerRight: <ProfileThemeToggle />
+  }
 ]

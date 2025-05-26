@@ -7,13 +7,13 @@ import { Community, UserData } from '~/lib/types/collections'
 import { UsersIcon, X } from 'lucide-react-native'
 import {
   getAvatarImageUrlPreview,
-  getCommunityAvatarUrlPreview,
+  getCommunityAvatarUrlPreview
 } from '~/components/api/getStorageItem'
 
 const ConfirmSharingItem = React.memo(
   ({
     item,
-    onRemove,
+    onRemove
   }: {
     item: UserData.UserDataDocumentsType | Community.CommunityDocumentsType
     onRemove: () => void

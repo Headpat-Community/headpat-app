@@ -26,7 +26,7 @@ import { z } from 'zod'
 
 const loginSchema = z.object({
   email: z.string().min(1, 'E-Mail is required').email('Invalid email format'),
-  password: z.string().min(8, 'Password should be at least 8 characters'),
+  password: z.string().min(8, 'Password should be at least 8 characters')
 })
 
 export default function LoginScreen() {
@@ -48,7 +48,7 @@ export default function LoginScreen() {
     try {
       const validatedData = loginSchema.parse({
         email,
-        password,
+        password
       })
       await login(validatedData.email, validatedData.password)
     } catch (error) {
@@ -134,50 +134,50 @@ export default function LoginScreen() {
                 provider: OAuthProvider.Discord,
                 color: '#5865F2',
                 Icon: DiscordIcon,
-                title: 'Discord',
+                title: 'Discord'
               },
               {
                 provider: OAuthProvider.Oidc,
                 color: '#005953',
                 Image: require('~/assets/logos/eurofurence.webp'),
-                title: 'Eurofurence',
+                title: 'Eurofurence'
               },
               {
                 provider: OAuthProvider.Github,
                 color: '#24292F',
                 Icon: GithubIcon,
-                title: 'GitHub',
+                title: 'GitHub'
               },
               {
                 provider: OAuthProvider.Apple,
                 color: '#000000',
                 Icon: AppleIcon,
-                title: 'Apple',
+                title: 'Apple'
               },
               {
                 provider: OAuthProvider.Google,
                 color: '#131314',
                 Icon: GoogleIcon,
-                title: 'Google',
+                title: 'Google'
               },
               {
                 provider: OAuthProvider.Spotify,
                 color: '#1DB954',
                 Icon: SpotifyIcon,
-                title: 'Spotify',
+                title: 'Spotify'
               },
               {
                 provider: OAuthProvider.Microsoft,
                 color: '#01A6F0',
                 Icon: MicrosoftIcon,
-                title: 'Microsoft',
+                title: 'Microsoft'
               },
               {
                 provider: OAuthProvider.Twitch,
                 color: '#6441A5',
                 Icon: TwitchIcon,
-                title: 'Twitch',
-              },
+                title: 'Twitch'
+              }
             ]}
           />
         </View>

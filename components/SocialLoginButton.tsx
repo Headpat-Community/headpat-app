@@ -17,13 +17,13 @@ const SocialLoginButton: React.FC<SocialLoginButtonProps> = ({
   onPress,
   Icon,
   Image,
-  title,
+  title
 }) => {
   return (
     <Button
       className={`w-full border dark:border-white`}
       style={{
-        backgroundColor: color,
+        backgroundColor: color
       }}
       onPress={onPress}
     >
@@ -31,7 +31,7 @@ const SocialLoginButton: React.FC<SocialLoginButtonProps> = ({
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          gap: 4,
+          gap: 4
         }}
       >
         {Icon && <Icon size={16} color={'white'} />}

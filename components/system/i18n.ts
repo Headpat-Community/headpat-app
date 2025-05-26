@@ -7,10 +7,10 @@ export const i18n = new I18n(
   {
     en: en,
     de: de,
-    nl: nl,
+    nl: nl
   },
   {
     enableFallback: true,
-    defaultLocale: 'en',
+    defaultLocale: 'en'
   }
 )

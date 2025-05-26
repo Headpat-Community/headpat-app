@@ -65,7 +65,7 @@ DialogOverlayNative.displayName = 'DialogOverlayNative'
 
 const DialogOverlay = Platform.select({
   web: DialogOverlayWeb,
-  default: DialogOverlayNative,
+  default: DialogOverlayNative
 })
 
 const DialogContent = React.forwardRef<
@@ -170,5 +170,5 @@ export {
   DialogOverlay,
   DialogPortal,
   DialogTitle,
-  DialogTrigger,
+  DialogTrigger
 }

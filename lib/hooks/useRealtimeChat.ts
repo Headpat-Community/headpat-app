@@ -15,7 +15,7 @@ export function useRealtimeChat() {
     const unsubscribe = client.subscribe(
       [
         'databases.hp_db.collections.messages-conversations.documents',
-        'databases.hp_db.collections.messages.documents',
+        'databases.hp_db.collections.messages.documents'
       ],
       (response: RealtimeResponseEvent<any>) => {
         const { events, payload } = response
@@ -103,7 +103,7 @@ export function useRealtimeChat() {
           return {
             ...conversation,
             lastMessage: payload.body,
-            $updatedAt: payload.$updatedAt, // Ensure $updatedAt is updated
+            $updatedAt: payload.$updatedAt // Ensure $updatedAt is updated
           }
         }
         return conversation
@@ -121,7 +121,7 @@ export function useRealtimeChat() {
     const initialConversations: Messaging.MessageConversationsType =
       await databases.listDocuments('hp_db', 'messages-conversations', [
         Query.orderDesc('$updatedAt'),
-        Query.limit(500),
+        Query.limit(500)
       ])
     setConversations(initialConversations.documents)
   }
@@ -131,6 +131,6 @@ export function useRealtimeChat() {
     messages,
     setConversations,
     setMessages,
-    fetchInitialData,
+    fetchInitialData
   }
 }

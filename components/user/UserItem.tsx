@@ -19,7 +19,7 @@ const UserItem = React.memo(
         onPress={() => {
           router.push({
             pathname: '/user/(stacks)/[userId]',
-            params: { userId: user.$id },
+            params: { userId: user.$id }
           })
         }}
         style={{ flex: 1 }}
@@ -33,7 +33,7 @@ const UserItem = React.memo(
             style={{
               width: 100,
               height: 100,
-              borderRadius: 25,
+              borderRadius: 25
             }}
             contentFit={'cover'}
           />

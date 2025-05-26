@@ -4,7 +4,7 @@ import firebase from '@react-native-firebase/app'
 const firebaseConfig = {
   projectId: 'headpat-app',
   messagingSenderId: '968293497666',
-  appId: '1:968293497666:android:41484aba6708df83d7a6db',
+  appId: '1:968293497666:android:41484aba6708df83d7a6db'
 }
 
 if (firebase.apps.length === 0) {

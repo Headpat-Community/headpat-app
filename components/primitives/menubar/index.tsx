@@ -6,11 +6,11 @@ import {
   View,
   type GestureResponderEvent,
   type LayoutChangeEvent,
-  type LayoutRectangle,
+  type LayoutRectangle
 } from 'react-native'
 import {
   useRelativePosition,
-  type LayoutPosition,
+  type LayoutPosition
 } from '~/components/primitives/hooks'
 import { Portal as RNPPortal } from '~/components/primitives/portal'
 import * as Slot from '~/components/primitives/slot'
@@ -22,7 +22,7 @@ import type {
   SlottableTextProps,
   SlottableViewProps,
   TextRef,
-  ViewRef,
+  ViewRef
 } from '~/components/primitives/types'
 import type {
   MenubarCheckboxItemProps,
@@ -35,7 +35,7 @@ import type {
   MenubarRootProps,
   MenubarSeparatorProps,
   MenubarSubProps,
-  MenubarSubTriggerProps,
+  MenubarSubTriggerProps
 } from './types'
 
 interface IMenuContext extends MenubarRootProps {
@@ -66,7 +66,7 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & MenubarRootProps>(
           contentLayout,
           setContentLayout,
           setTriggerPosition,
-          triggerPosition,
+          triggerPosition
         }}
       >
         <Component ref={ref} {...viewProps} />
@@ -95,7 +95,7 @@ const Menu = React.forwardRef<ViewRef, SlottableViewProps & MenubarMenuProps>(
     return (
       <MenuContext.Provider
         value={{
-          value,
+          value
         }}
       >
         <Component ref={ref} role="menubar" {...viewProps} />
@@ -265,7 +265,7 @@ const Content = React.forwardRef<
       contentLayout,
       setContentLayout,
       nativeID,
-      setTriggerPosition,
+      setTriggerPosition
     } = useRootContext()
     const { value: menuValue } = useMenuContext()
 
@@ -296,7 +296,7 @@ const Content = React.forwardRef<
       insets,
       sideOffset,
       side,
-      disablePositioningStyle,
+      disablePositioningStyle
     })
 
     function onLayout(event: LayoutChangeEvent) {
@@ -502,7 +502,7 @@ const RadioItem = React.forwardRef<
     const {
       onValueChange: onRootValueChange,
       setTriggerPosition,
-      setContentLayout,
+      setContentLayout
     } = useRootContext()
 
     const { value, onValueChange } = useFormItemContext() as BothFormItemContext
@@ -527,7 +527,7 @@ const RadioItem = React.forwardRef<
           disabled={disabled ?? false}
           accessibilityState={{
             disabled: disabled ?? false,
-            checked: value === itemValue,
+            checked: value === itemValue
           }}
           aria-valuetext={textValue}
           {...props}
@@ -596,7 +596,7 @@ const Sub = React.forwardRef<ViewRef, SlottableViewProps & MenubarSubProps>(
         value={{
           nativeID,
           open,
-          onOpenChange,
+          onOpenChange
         }}
       >
         <Component ref={ref} {...props} />
@@ -692,7 +692,7 @@ export {
   Trigger,
   useMenuContext,
   useRootContext,
-  useSubContext,
+  useSubContext
 }
 
 function onStartShouldSetResponder() {

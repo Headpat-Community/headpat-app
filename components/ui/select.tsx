@@ -190,5 +190,5 @@ export {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-  type Option,
+  type Option
 }

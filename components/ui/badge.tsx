@@ -16,12 +16,12 @@ const badgeVariants = cva(
           'border-transparent bg-secondary web:hover:opacity-80 active:opacity-80',
         destructive:
           'border-transparent bg-destructive web:hover:opacity-80 active:opacity-80',
-        outline: 'text-foreground',
-      },
+        outline: 'text-foreground'
+      }
     },
     defaultVariants: {
-      variant: 'default',
-    },
+      variant: 'default'
+    }
   }
 )
 
@@ -31,12 +31,12 @@ const badgeTextVariants = cva('text-xs font-semibold ', {
       default: 'text-primary-foreground',
       secondary: 'text-secondary-foreground',
       destructive: 'text-destructive-foreground',
-      outline: 'text-foreground',
-    },
+      outline: 'text-foreground'
+    }
   },
   defaultVariants: {
-    variant: 'default',
-  },
+    variant: 'default'
+  }
 })
 
 type BadgeProps = SlottableViewProps & VariantProps<typeof badgeVariants>

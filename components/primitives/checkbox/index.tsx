@@ -4,7 +4,7 @@ import * as Slot from '~/components/primitives/slot'
 import type {
   ComponentPropsWithAsChild,
   PressableRef,
-  SlottablePressableProps,
+  SlottablePressableProps
 } from '~/components/primitives/types'
 import type { CheckboxIndicator, CheckboxRootProps } from './types'
 
@@ -28,7 +28,7 @@ const Root = React.forwardRef<
           disabled,
           checked,
           onCheckedChange,
-          nativeID,
+          nativeID
         }}
       >
         <Trigger ref={ref} {...props} />
@@ -72,7 +72,7 @@ const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
         onPress={onPress}
         accessibilityState={{
           checked,
-          disabled,
+          disabled
         }}
         disabled={disabled}
         {...props}

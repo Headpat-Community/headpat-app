@@ -30,7 +30,7 @@ export default function SocialInput({
   value,
   userId,
   queryClient,
-  showAtPrefix = true,
+  showAtPrefix = true
 }: SocialInputProps) {
   return (
     <>
@@ -56,7 +56,7 @@ export default function SocialInput({
                   ['user', userId],
                   (old: UserData.UserDataDocumentsType) => ({
                     ...old,
-                    [fieldName]: text,
+                    [fieldName]: text
                   })
                 )
               }

@@ -16,7 +16,7 @@ sentryInit({
   integrations: [
     reactNativeTracingIntegration({
       traceFetch: true,
-      traceXHR: true,
-    }),
-  ],
+      traceXHR: true
+    })
+  ]
 })

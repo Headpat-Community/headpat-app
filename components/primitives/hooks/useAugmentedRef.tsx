@@ -9,7 +9,7 @@ interface AugmentRefProps<T> {
 export function useAugmentedRef<T>({
   ref,
   methods,
-  deps = [],
+  deps = []
 }: AugmentRefProps<T>) {
   const augmentedRef = React.useRef<T>(null)
   React.useImperativeHandle(
@@ -20,7 +20,7 @@ export function useAugmentedRef<T>({
       }
       return {
         ...augmentedRef.current,
-        ...methods,
+        ...methods
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -7,7 +7,7 @@ import { Community, UserData } from '~/lib/types/collections'
 import { CheckIcon, UsersIcon } from 'lucide-react-native'
 import {
   getAvatarImageUrlPreview,
-  getCommunityAvatarUrlPreview,
+  getCommunityAvatarUrlPreview
 } from '~/components/api/getStorageItem'
 import { useColorScheme } from '~/lib/useColorScheme'
 
@@ -15,7 +15,7 @@ const LocationSearchItem = React.memo(
   ({
     item,
     isSelected,
-    onSelectItem,
+    onSelectItem
   }: {
     item: UserData.UserDataDocumentsType | Community.CommunityDocumentsType
     isSelected: boolean

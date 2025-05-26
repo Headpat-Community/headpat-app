@@ -5,7 +5,7 @@ import type {
   PressableRef,
   SlottablePressableProps,
   SlottableViewProps,
-  ViewRef,
+  ViewRef
 } from '~/components/primitives/types'
 
 const Root = React.forwardRef<ViewRef, SlottableViewProps>(

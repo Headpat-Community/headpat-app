@@ -21,7 +21,7 @@ export default function AvatarAdd() {
     try {
       let result = await ImagePicker.openPicker({
         mediaType: 'photo',
-        writeTempFile: true,
+        writeTempFile: true
       })
 
       if (!result || !result?.path) {
@@ -64,7 +64,7 @@ export default function AvatarAdd() {
       mediaType: 'photo',
       width: 512,
       height: 512,
-      compressImageQuality: 0.7,
+      compressImageQuality: 0.7
     })
   }
 
@@ -82,7 +82,7 @@ export default function AvatarAdd() {
         name: image.filename || 'upload' + Math.random().toString(16) + '.jpg',
         type: compressedImage.mime,
         size: compressedImage.size,
-        uri: compressedImage.path,
+        uri: compressedImage.path
       }
 
       showAlert('LOADING', 'Uploading image...')
@@ -127,7 +127,7 @@ export default function AvatarAdd() {
             'community',
             `${local?.communityId}`,
             {
-              avatarId: response.$id,
+              avatarId: response.$id
             }
           )
 

@@ -7,7 +7,7 @@ import {
   CardContent,
   CardDescription,
   CardFooter,
-  CardTitle,
+  CardTitle
 } from '~/components/ui/card'
 import { Muted } from '~/components/ui/typography'
 import { formatDate } from '~/components/calculateTimeLeft'
@@ -17,7 +17,7 @@ import { useColorScheme } from '~/lib/useColorScheme'
 // eslint-disable-next-line react/display-name
 const AnnouncementItem = React.memo(
   ({
-    announcement,
+    announcement
   }: {
     announcement: Announcements.AnnouncementDocumentsType
   }) => {
@@ -28,7 +28,7 @@ const AnnouncementItem = React.memo(
       <Link
         href={{
           pathname: '/announcements/[announcementId]',
-          params: { announcementId: announcement.$id },
+          params: { announcementId: announcement.$id }
         }}
         asChild
       >

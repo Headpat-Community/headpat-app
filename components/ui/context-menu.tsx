@@ -6,7 +6,7 @@ import {
   StyleSheet,
   Text,
   View,
-  ViewStyle,
+  ViewStyle
 } from 'react-native'
 import * as ContextMenuPrimitive from '~/components/primitives/context-menu'
 import { cn } from '~/lib/utils'
@@ -95,7 +95,7 @@ const ContextMenuContent = React.forwardRef<
           overlayStyle
             ? StyleSheet.flatten([
                 Platform.OS !== 'web' ? StyleSheet.absoluteFill : undefined,
-                overlayStyle,
+                overlayStyle
               ])
             : Platform.OS !== 'web'
               ? StyleSheet.absoluteFill
@@ -252,5 +252,5 @@ export {
   ContextMenuSub,
   ContextMenuSubContent,
   ContextMenuSubTrigger,
-  ContextMenuTrigger,
+  ContextMenuTrigger
 }

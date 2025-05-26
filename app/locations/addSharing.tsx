@@ -64,18 +64,18 @@ export default function AddSharing() {
           Query.contains('profileUrl', debouncedSearchTerm),
           Query.notEqual('$id', current.$id),
           ...alreadySharedUserIds.map((id) => Query.notEqual('$id', id)),
-          Query.limit(10),
+          Query.limit(10)
         ]
 
         const communityQueries = [
           Query.contains('name', debouncedSearchTerm),
           ...alreadySharedCommunityIds.map((id) => Query.notEqual('$id', id)),
-          Query.limit(10),
+          Query.limit(10)
         ]
 
         const [resultsUsers, resultsCommunity] = await Promise.all([
           databases.listDocuments('hp_db', 'userdata', userQueries),
-          databases.listDocuments('hp_db', 'community', communityQueries),
+          databases.listDocuments('hp_db', 'community', communityQueries)
         ])
 
         const [userDataResults, communityDataResults] = await Promise.all([
@@ -91,7 +91,7 @@ export default function AddSharing() {
                   )
                   return data as UserData.UserDataDocumentsType
                 },
-                staleTime: 1000 * 60 * 5, // 5 minutes
+                staleTime: 1000 * 60 * 5 // 5 minutes
               })
             })
           ),
@@ -107,10 +107,10 @@ export default function AddSharing() {
                   )
                   return data as Community.CommunityDocumentsType
                 },
-                staleTime: 1000 * 60 * 5, // 5 minutes
+                staleTime: 1000 * 60 * 5 // 5 minutes
               })
             })
-          ),
+          )
         ])
 
         return [...userDataResults, ...communityDataResults]
@@ -121,7 +121,7 @@ export default function AddSharing() {
         throw error
       }
     },
-    enabled: !!debouncedSearchTerm,
+    enabled: !!debouncedSearchTerm
   })
 
   // Memoize the handleSelectItem function
@@ -211,7 +211,7 @@ export default function AddSharing() {
             sharerUserId: current.$id,
             isCommunity: selectedItem.isCommunity,
             requesterId: selectedItem.id,
-            timeUntil: calculateEndTime(selectedDuration).toISOString(),
+            timeUntil: calculateEndTime(selectedDuration).toISOString()
           }
           return databases.createDocument(
             'hp_db',
@@ -381,7 +381,7 @@ export default function AddSharing() {
                       at{' '}
                       {selectedTime?.toLocaleTimeString([], {
                         hour: '2-digit',
-                        minute: '2-digit',
+                        minute: '2-digit'
                       }) || i18n.t('location.add.noTimeSelected')}
                     </Text>
                   </View>
@@ -459,7 +459,7 @@ export default function AddSharing() {
                       ' at ' +
                       selectedTime?.toLocaleTimeString([], {
                         hour: '2-digit',
-                        minute: '2-digit',
+                        minute: '2-digit'
                       })
                     : selectedDuration === 'unlimited'
                       ? 'January 1, 2100'

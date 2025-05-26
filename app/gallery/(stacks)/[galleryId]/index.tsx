@@ -4,7 +4,7 @@ import {
   RefreshControl,
   StyleSheet,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native'
 import { databases, functions } from '~/lib/appwrite-client'
 import Gallery from 'react-native-awesome-gallery'
@@ -30,7 +30,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
+  AlertDialogTrigger
 } from '~/components/ui/alert-dialog'
 import { ShieldAlertIcon } from 'lucide-react-native'
 import { ExecutionMethod } from 'react-native-appwrite'
@@ -69,7 +69,7 @@ export default function HomeView() {
           false,
           `/gallery/prefs?galleryId=${local?.galleryId}`,
           ExecutionMethod.GET
-        ),
+        )
       ])
 
       setImage(imageData)
@@ -104,7 +104,7 @@ export default function HomeView() {
   const handleModalImage = (galleryId: string) => {
     if (!galleryId) return
     return [
-      `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/gallery/files/${galleryId}/view?project=hp-main`,
+      `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/gallery/files/${galleryId}/view?project=hp-main`
     ]
   }
 
@@ -143,7 +143,7 @@ export default function HomeView() {
         'gallery-endpoints',
         JSON.stringify({
           galleryId: image.$id,
-          isHidden: !imagePrefs?.isHidden,
+          isHidden: !imagePrefs?.isHidden
         }),
         false,
         `/gallery/prefs`,
@@ -261,7 +261,7 @@ export default function HomeView() {
             <Link
               href={{
                 pathname: '/gallery/(stacks)/[galleryId]/edit',
-                params: { galleryId: image?.$id },
+                params: { galleryId: image?.$id }
               }}
               asChild
             >
@@ -330,7 +330,7 @@ export default function HomeView() {
             <Link
               href={{
                 pathname: '/user/(stacks)/[userId]',
-                params: { userId: image?.userId },
+                params: { userId: image?.userId }
               }}
               asChild
             >
@@ -344,7 +344,7 @@ export default function HomeView() {
                     style={{
                       width: 40,
                       height: 40,
-                      borderRadius: 10,
+                      borderRadius: 10
                     }}
                   />
                   <Text>{userData?.displayName}</Text>
@@ -386,12 +386,12 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 50,
+    paddingHorizontal: 50
   },
   video: {
-    height: 300,
+    height: 300
   },
   controlsContainer: {
-    padding: 10,
-  },
+    padding: 10
+  }
 })

@@ -4,14 +4,14 @@ import type {
   PressableRef,
   SlottablePressableProps,
   SlottableViewProps,
-  ViewRef,
+  ViewRef
 } from '~/components/primitives/types'
 import * as React from 'react'
 import { Pressable, View, type GestureResponderEvent } from 'react-native'
 import type {
   CollapsibleContentProps,
   CollapsibleRootProps,
-  RootContext,
+  RootContext
 } from './types'
 
 const CollapsibleContext = React.createContext<
@@ -37,7 +37,7 @@ const Root = React.forwardRef<
     const [open = false, onOpenChange] = useControllableState({
       prop: openProp,
       defaultProp: defaultOpen,
-      onChange: onOpenChangeProp,
+      onChange: onOpenChangeProp
     })
 
     const Component = asChild ? Slot.View : View
@@ -47,7 +47,7 @@ const Root = React.forwardRef<
           disabled,
           open,
           onOpenChange,
-          nativeID,
+          nativeID
         }}
       >
         <Component ref={ref} {...viewProps} />
@@ -92,7 +92,7 @@ const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
         onPress={onPress}
         accessibilityState={{
           expanded: open,
-          disabled: (disabled || disabledProp) ?? undefined,
+          disabled: (disabled || disabledProp) ?? undefined
         }}
         disabled={disabled || disabledProp}
         {...props}

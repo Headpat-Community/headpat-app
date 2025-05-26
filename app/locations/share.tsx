@@ -9,7 +9,7 @@ import {
   ArrowDownIcon,
   NavigationIcon,
   NavigationOffIcon,
-  PlusIcon,
+  PlusIcon
 } from 'lucide-react-native'
 import { useColorScheme } from '~/lib/useColorScheme'
 import { databases } from '~/lib/appwrite-client'
@@ -33,7 +33,7 @@ export default function ShareLocationView() {
     isRegistered,
     checkStatus,
     registerBackgroundFetch,
-    unregisterBackgroundFetch,
+    unregisterBackgroundFetch
   } = useLocation()
 
   const { data: sharedItems, isLoading } = useQuery({
@@ -44,7 +44,7 @@ export default function ShareLocationView() {
         'locations-permissions',
         [
           Query.limit(1000),
-          Query.select(['$id', 'isCommunity', 'requesterId', 'timeUntil']),
+          Query.select(['$id', 'isCommunity', 'requesterId', 'timeUntil'])
         ]
       )
 
@@ -61,14 +61,14 @@ export default function ShareLocationView() {
                 )
                 return response as Community.CommunityDocumentsType
               },
-              staleTime: 1000 * 60 * 5, // 5 minutes
+              staleTime: 1000 * 60 * 5 // 5 minutes
             })
 
             return {
               ...communityData,
               documentId: item.$id,
               timeUntil: item.timeUntil,
-              isCommunity: true,
+              isCommunity: true
             }
           } else {
             const userData = await queryClient.fetchQuery({
@@ -81,14 +81,14 @@ export default function ShareLocationView() {
                 )
                 return response
               },
-              staleTime: 1000 * 60 * 5, // 5 minutes
+              staleTime: 1000 * 60 * 5 // 5 minutes
             })
 
             return {
               ...userData,
               documentId: item.$id,
               timeUntil: item.timeUntil,
-              isCommunity: false,
+              isCommunity: false
             }
           }
         })
@@ -99,7 +99,7 @@ export default function ShareLocationView() {
         (a, b) =>
           new Date(a.timeUntil).getTime() - new Date(b.timeUntil).getTime()
       )
-    },
+    }
   })
 
   useFocusEffect(
@@ -235,7 +235,7 @@ export default function ShareLocationView() {
           }
           onPress={() =>
             router.push({
-              pathname: '/locations/addSharing',
+              pathname: '/locations/addSharing'
             })
           }
         >

@@ -46,12 +46,12 @@ export default function ConversationsView() {
               )
               return response as Community.CommunityDocumentsType
             },
-            staleTime: 1000 * 60 * 5, // 5 minutes
+            staleTime: 1000 * 60 * 5 // 5 minutes
           })
           if (communityData) {
             newDisplayUsers[conversation.$id] = {
               isCommunity: true,
-              ...communityData,
+              ...communityData
             }
           }
         } else if (conversation.participants) {
@@ -69,7 +69,7 @@ export default function ConversationsView() {
                 )
                 return response as UserData.UserDataDocumentsType
               },
-              staleTime: 1000 * 60 * 5, // 5 minutes
+              staleTime: 1000 * 60 * 5 // 5 minutes
             })
             if (userData) {
               newDisplayUsers[conversation.$id] = userData
@@ -82,7 +82,7 @@ export default function ConversationsView() {
       return newDisplayUsers
     },
     enabled: conversations.length > 0,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5 // 5 minutes
   })
 
   const { data: searchResults, isLoading: isSearching } = useQuery({
@@ -91,7 +91,7 @@ export default function ConversationsView() {
       if (!debouncedSearchTerm) return []
       try {
         const results = await databases.listDocuments('hp_db', 'userdata', [
-          Query.contains('profileUrl', debouncedSearchTerm),
+          Query.contains('profileUrl', debouncedSearchTerm)
         ])
         const userDataResults = await Promise.all(
           results.documents.map(async (user) => {
@@ -105,7 +105,7 @@ export default function ConversationsView() {
         throw error
       }
     },
-    enabled: !!debouncedSearchTerm,
+    enabled: !!debouncedSearchTerm
   })
 
   const refreshData = useCallback(async () => {
@@ -113,7 +113,7 @@ export default function ConversationsView() {
       setRefreshing(true)
       await fetchInitialData()
       await queryClient.invalidateQueries({
-        queryKey: ['conversation-display-data'],
+        queryKey: ['conversation-display-data']
       })
     } finally {
       setRefreshing(false)

@@ -1,7 +1,7 @@
 import { useColorScheme as useNativewindColorScheme } from 'nativewind'
 import { useCallback, useEffect, useState } from 'react'
 import { setAndroidNavigationBar } from './android-navigation-bar'
-import kv from 'expo-sqlite/kv-store'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 type Theme = 'light' | 'dark' | 'system'
 
@@ -9,14 +9,14 @@ export function useColorScheme() {
   const {
     colorScheme,
     setColorScheme: setNativewindColorScheme,
-    toggleColorScheme,
+    toggleColorScheme
   } = useNativewindColorScheme()
   const [isLoading, setIsLoading] = useState(false)
 
   // Initialize theme from storage
   useEffect(() => {
     const initializeTheme = async () => {
-      const storedTheme = (await kv.getItem('theme')) as Theme
+      const storedTheme = (await AsyncStorage.getItem('theme')) as Theme
       if (storedTheme && storedTheme !== colorScheme) {
         setNativewindColorScheme(storedTheme)
         await setAndroidNavigationBar(storedTheme as 'light' | 'dark')
@@ -35,7 +35,7 @@ export function useColorScheme() {
         await Promise.all([
           setNativewindColorScheme(newTheme),
           setAndroidNavigationBar(newTheme),
-          kv.setItem('theme', newTheme),
+          AsyncStorage.setItem('theme', newTheme)
         ])
       } finally {
         setIsLoading(false)
@@ -49,6 +49,6 @@ export function useColorScheme() {
     isDarkColorScheme: colorScheme === 'dark',
     setColorScheme,
     toggleColorScheme,
-    isLoading,
+    isLoading
   }
 }

@@ -1,12 +1,11 @@
-import kv from 'expo-sqlite/kv-store'
-import { Theme, ThemeProvider } from '@react-navigation/native'
+import { ThemeProvider } from '@react-navigation/native'
 import { PortalHost } from '~/components/primitives/portal'
 import {
   router,
   SplashScreen,
   Stack,
   useRouter,
-  useSegments,
+  useSegments
 } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import * as React from 'react'
@@ -19,7 +18,7 @@ import { NAV_THEME } from '~/lib/constants'
 import { useColorScheme } from '~/lib/useColorScheme'
 import {
   updatePushTargetWithAppwrite,
-  UserProvider,
+  UserProvider
 } from '~/components/contexts/UserContext'
 import { DrawerScreensData } from '~/components/data/DrawerScreensData'
 import { databases } from '~/lib/appwrite-client'
@@ -29,7 +28,7 @@ import {
   getMessaging,
   onMessage,
   onNotificationOpenedApp,
-  onTokenRefresh,
+  onTokenRefresh
 } from '@react-native-firebase/messaging'
 import { requestUserPermission } from '~/components/system/pushNotifications'
 import { AlertModalProvider } from '~/components/contexts/AlertModalProvider'
@@ -44,11 +43,12 @@ import { NotifierWrapper } from 'react-native-notifier'
 import '../components/system/backgroundTasks'
 import '../globals.css'
 import '../components/init/sentryInit'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export { ErrorBoundary } from 'expo-router'
 
 export const unstable_settings = {
-  initialRouteName: 'index',
+  initialRouteName: 'index'
 }
 
 SplashScreen.preventAutoHideAsync()
@@ -67,30 +67,30 @@ export default function RootLayout() {
       fonts: {
         regular: {
           fontFamily: 'Inter_400Regular',
-          fontWeight: '400',
+          fontWeight: '400'
         },
         medium: {
           fontFamily: 'Inter_500Medium',
-          fontWeight: '500',
+          fontWeight: '500'
         },
         bold: {
           fontFamily: 'Inter_700Bold',
-          fontWeight: '700',
+          fontWeight: '700'
         },
         heavy: {
           fontFamily: 'Inter_800Heavy',
-          fontWeight: '800',
-        },
+          fontWeight: '800'
+        }
       },
       dark: isDarkColorScheme,
-      colors: isDarkColorScheme ? NAV_THEME.dark : NAV_THEME.light,
+      colors: isDarkColorScheme ? NAV_THEME.dark : NAV_THEME.light
     }),
     [isDarkColorScheme]
   )
 
   useEffect(() => {
     const initialize = async () => {
-      const theme = await kv.getItem('theme')
+      const theme = await AsyncStorage.getItem('theme')
       const colorTheme = theme === 'dark' ? 'dark' : 'light'
       await setAndroidNavigationBar(colorTheme)
       if (colorTheme !== colorScheme) {
@@ -143,7 +143,7 @@ export default function RootLayout() {
       requestUserPermission().then()
       onTokenRefresh(messaging, async (newFcmToken) => {
         if (!newFcmToken) return
-        await kv.setItem('fcmToken', newFcmToken)
+        await AsyncStorage.setItem('fcmToken', newFcmToken)
         await updatePushTargetWithAppwrite(newFcmToken)
       })
     }
@@ -154,11 +154,8 @@ export default function RootLayout() {
     const getEulaVersion = async () => {
       try {
         const data = await databases.getDocument('config', 'legal', 'eula')
-        const eula = await kv.getItem('eula')
+        const eula = await AsyncStorage.getItem('eula')
         if (eula !== data.version) {
-          const allKeys = await kv.getAllKeys()
-          const eulaKeys = allKeys.filter((key) => key.startsWith('eula'))
-          await kv.multiRemove(eulaKeys)
           setVersionData(data)
           setOpenEulaModal(true)
         }
@@ -207,7 +204,7 @@ export default function RootLayout() {
                                 screen.headerLeft || <HeaderMenuSidebar />,
                               headerRight: () =>
                                 screen.headerRight || <ProfileThemeToggle />,
-                              gestureEnabled: screen.swipeEnabled,
+                              gestureEnabled: screen.swipeEnabled
                             }}
                           />
                         ))}

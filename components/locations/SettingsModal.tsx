@@ -6,7 +6,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialogTitle
 } from '~/components/ui/alert-dialog'
 import { View } from 'react-native'
 import { Label } from '~/components/ui/label'
@@ -22,7 +22,7 @@ export default function SettingsModal({
   setOpenModal,
   userStatus,
   setUserStatus,
-  current,
+  current
 }) {
   const [currentStatus, setCurrentStatus] = React.useState(userStatus)
   const prevOpenModal = React.useRef(openModal)
@@ -38,7 +38,7 @@ export default function SettingsModal({
     try {
       await databases.updateDocument('hp_db', 'locations', current.$id, {
         status: currentStatus.status,
-        statusColor: currentStatus.statusColor,
+        statusColor: currentStatus.statusColor
       })
       setUserStatus(currentStatus)
     } catch (e) {
@@ -66,7 +66,7 @@ export default function SettingsModal({
               onChange={(e) =>
                 setCurrentStatus({
                   ...currentStatus,
-                  status: e.nativeEvent.text,
+                  status: e.nativeEvent.text
                 })
               }
               maxLength={40}
@@ -80,7 +80,7 @@ export default function SettingsModal({
               onCheckedChange={() =>
                 setCurrentStatus((prev) => ({
                   ...prev,
-                  statusColor: prev.statusColor === 'red' ? 'green' : 'red',
+                  statusColor: prev.statusColor === 'red' ? 'green' : 'red'
                 }))
               }
             />
@@ -89,7 +89,7 @@ export default function SettingsModal({
               onPress={() => {
                 setCurrentStatus((prev) => ({
                   ...prev,
-                  statusColor: prev.statusColor === 'red' ? 'green' : 'red',
+                  statusColor: prev.statusColor === 'red' ? 'green' : 'red'
                 }))
               }}
             >

@@ -46,5 +46,5 @@ export type {
   RootContext,
   TooltipOverlayProps,
   TooltipPortalProps,
-  TooltipRootProps,
+  TooltipRootProps
 }

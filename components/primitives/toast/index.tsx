@@ -7,7 +7,7 @@ import type {
   SlottableTextProps,
   SlottableViewProps,
   TextRef,
-  ViewRef,
+  ViewRef
 } from '~/components/primitives/types'
 import type { ToastRootProps } from './types'
 
@@ -31,7 +31,7 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & ToastRootProps>(
           open,
           onOpenChange,
           type,
-          nativeID,
+          nativeID
         }}
       >
         <Component

@@ -5,7 +5,7 @@ import {
   RefreshControl,
   ScrollView,
   TouchableWithoutFeedback,
-  View,
+  View
 } from 'react-native'
 import { Text } from '~/components/ui/text'
 import { Button } from '~/components/ui/button'
@@ -27,7 +27,7 @@ const schema = z.object({
   furaffinityname: z.string().max(32, 'Max length is 32'),
   X_name: z.string().max(32, 'Max length is 32'),
   twitchname: z.string().max(32, 'Max length is 32'),
-  blueskyname: z.string().max(128, 'Max length is 128'),
+  blueskyname: z.string().max(128, 'Max length is 128')
 })
 
 export default function UserprofilePage() {
@@ -38,7 +38,7 @@ export default function UserprofilePage() {
   const {
     data: userData,
     isLoading,
-    refetch,
+    refetch
   } = useQuery({
     queryKey: ['user', current?.$id],
     queryFn: async () => {
@@ -46,7 +46,7 @@ export default function UserprofilePage() {
       const data = await databases.getDocument('hp_db', 'userdata', current.$id)
       return data as UserData.UserDataDocumentsType
     },
-    enabled: !!current?.$id,
+    enabled: !!current?.$id
   })
 
   const updateMutation = useMutation({
@@ -61,7 +61,7 @@ export default function UserprofilePage() {
         furaffinityname: data.furaffinityname,
         X_name: data.X_name,
         twitchname: data.twitchname,
-        blueskyname: data.blueskyname,
+        blueskyname: data.blueskyname
       })
       return data
     },
@@ -76,7 +76,7 @@ export default function UserprofilePage() {
         showAlert('FAILED', 'Failed to save social data')
         captureException(error)
       }
-    },
+    }
   })
 
   const handleUpdate = useCallback(() => {

@@ -6,7 +6,7 @@ import {
   StyleSheet,
   Text,
   View,
-  ViewStyle,
+  ViewStyle
 } from 'react-native'
 import { TextClassContext } from '~/components/ui/text'
 import * as DropdownMenuPrimitive from '~/components/primitives/dropdown-menu'
@@ -97,7 +97,7 @@ const DropdownMenuContent = React.forwardRef<
           overlayStyle
             ? StyleSheet.flatten([
                 Platform.OS !== 'web' ? StyleSheet.absoluteFill : undefined,
-                overlayStyle,
+                overlayStyle
               ])
             : Platform.OS !== 'web'
               ? StyleSheet.absoluteFill
@@ -254,5 +254,5 @@ export {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 }

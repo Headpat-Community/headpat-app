@@ -7,7 +7,7 @@ import {
   getBackgroundPermissionsAsync,
   startLocationUpdatesAsync,
   stopLocationUpdatesAsync,
-  Accuracy,
+  Accuracy
 } from 'expo-location'
 import { BackgroundFetchStatus, getStatusAsync } from 'expo-background-fetch'
 import { isTaskRegisteredAsync } from 'expo-task-manager'
@@ -41,7 +41,7 @@ interface LocationProviderProps {
 }
 
 export const LocationProvider: React.FC<LocationProviderProps> = ({
-  children,
+  children
 }) => {
   const [status, setStatus] = useState<BackgroundFetchStatus | null>(null)
   const [isRegistered, setIsRegistered] = useState<boolean | null>(null)
@@ -91,7 +91,7 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
   const registerBackgroundFetch = async () => {
     addBreadcrumb({
       message: 'registerBackgroundFetch',
-      level: 'info',
+      level: 'info'
     })
     if (isRegistered) {
       await checkStatus()
@@ -104,7 +104,7 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
 
     addBreadcrumb({
       message: 'requestPermissions',
-      level: 'info',
+      level: 'info'
     })
     await requestPermissions()
 
@@ -119,20 +119,20 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
     } catch {
       await databases.createDocument('hp_db', 'locations', current.$id, {
         long: null,
-        lat: null,
+        lat: null
       })
     }
 
     addBreadcrumb({
       message: 'startLocationUpdatesAsync',
-      level: 'info',
+      level: 'info'
     })
     await startLocationUpdatesAsync('background-location-task', {
       accuracy: Accuracy.Balanced,
       showsBackgroundLocationIndicator: false,
       pausesUpdatesAutomatically: true,
       distanceInterval: 10,
-      timeInterval: 10000,
+      timeInterval: 10000
     }).catch((e) => {
       captureException(e)
       Alert.alert('Error', 'Failed to start location updates')
@@ -146,7 +146,7 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
   const unregisterBackgroundFetch = async () => {
     addBreadcrumb({
       message: 'unregisterBackgroundFetch',
-      level: 'info',
+      level: 'info'
     })
     if (!isRegistered) {
       await checkStatus()
@@ -174,7 +174,7 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
         checkStatus,
         requestPermissions,
         registerBackgroundFetch,
-        unregisterBackgroundFetch,
+        unregisterBackgroundFetch
       }}
     >
       {children}

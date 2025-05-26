@@ -35,7 +35,7 @@ const createConversation = async (recipientId: string) => {
     } else {
       router.push({
         pathname: '/chat/[conversationId]',
-        params: { conversationId: response.$id },
+        params: { conversationId: response.$id }
       })
     }
   } catch (error) {

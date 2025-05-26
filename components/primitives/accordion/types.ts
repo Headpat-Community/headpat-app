@@ -48,5 +48,5 @@ export type {
   AccordionContentProps,
   AccordionItemProps,
   AccordionRootProps,
-  RootContext,
+  RootContext
 }

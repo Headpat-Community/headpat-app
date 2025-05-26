@@ -20,7 +20,7 @@ export default function LanguagesView() {
   const languages = [
     { label: 'en', title: 'English', country: 'us' },
     { label: 'de', title: 'Deutsch', country: 'de' },
-    { label: 'nl', title: 'Nederlands', country: 'nl' },
+    { label: 'nl', title: 'Nederlands', country: 'nl' }
   ]
 
   return (
@@ -35,7 +35,7 @@ export default function LanguagesView() {
                   <CardTitle
                     style={{
                       flexDirection: 'row',
-                      alignItems: 'center',
+                      alignItems: 'center'
                     }}
                   >
                     <CountryFlag

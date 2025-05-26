@@ -1,7 +1,7 @@
 import {
   useControllableState,
   useRelativePosition,
-  type LayoutPosition,
+  type LayoutPosition
 } from '~/components/primitives/hooks'
 import { Portal as RNPPortal } from '~/components/primitives/portal'
 import * as Slot from '~/components/primitives/slot'
@@ -10,7 +10,7 @@ import type {
   PressableRef,
   SlottablePressableProps,
   SlottableViewProps,
-  ViewRef,
+  ViewRef
 } from '~/components/primitives/types'
 import * as React from 'react'
 import {
@@ -19,13 +19,13 @@ import {
   View,
   type GestureResponderEvent,
   type LayoutChangeEvent,
-  type LayoutRectangle,
+  type LayoutRectangle
 } from 'react-native'
 import type {
   PopoverOverlayProps,
   PopoverPortalProps,
   PopoverRootProps,
-  RootContext,
+  RootContext
 } from './types'
 
 interface IRootContext extends RootContext {
@@ -53,7 +53,7 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & PopoverRootProps>(
     const [open = false, onOpenChange] = useControllableState({
       prop: openProp,
       defaultProp: defaultOpen,
-      onChange: onOpenChangeProp,
+      onChange: onOpenChangeProp
     })
     const nativeID = React.useId()
     const [triggerPosition, setTriggerPosition] =
@@ -71,7 +71,7 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & PopoverRootProps>(
           nativeID,
           setContentLayout,
           setTriggerPosition,
-          triggerPosition,
+          triggerPosition
         }}
       >
         <Component ref={ref} {...viewProps} />
@@ -228,7 +228,7 @@ const Content = React.forwardRef<
       nativeID,
       setContentLayout,
       setTriggerPosition,
-      triggerPosition,
+      triggerPosition
     } = usePopoverContext()
 
     React.useEffect(() => {
@@ -258,7 +258,7 @@ const Content = React.forwardRef<
       insets,
       sideOffset,
       side,
-      disablePositioningStyle,
+      disablePositioningStyle
     })
 
     function onLayout(event: LayoutChangeEvent) {

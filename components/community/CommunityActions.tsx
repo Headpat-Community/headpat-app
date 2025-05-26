@@ -8,13 +8,13 @@ import {
   AlertDialogTitle,
   AlertDialogDescription,
   AlertDialogFooter,
-  AlertDialogAction,
+  AlertDialogAction
 } from '~/components/ui/alert-dialog'
 import {
   ShieldAlertIcon,
   UserPlusIcon,
   UserMinusIcon,
-  CogIcon,
+  CogIcon
 } from 'lucide-react-native'
 import { View } from 'react-native'
 import { Text } from '~/components/ui/text'
@@ -75,7 +75,7 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
             ['community', data.$id],
             (old: Community.CommunityDocumentsType) => ({
               ...old,
-              isFollowing: true,
+              isFollowing: true
             })
           )
         }
@@ -85,7 +85,7 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
       },
       onSettled: () => {
         hideAlert()
-      },
+      }
     })
 
     const unfollowMutation = useMutation({
@@ -125,7 +125,7 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
             ['community', data.$id],
             (old: Community.CommunityDocumentsType) => ({
               ...old,
-              isFollowing: false,
+              isFollowing: false
             })
           )
         }
@@ -138,13 +138,13 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
       },
       onSettled: () => {
         hideAlert()
-      },
+      }
     })
 
     const handleManage = () => {
       router.navigate({
         pathname: `/community/[communityId]/admin`,
-        params: { communityId: data.$id },
+        params: { communityId: data.$id }
       })
     }
 

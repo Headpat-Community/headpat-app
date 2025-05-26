@@ -33,7 +33,7 @@ const ToggleGroupUtils = {
       return originalValue.filter((v) => v !== itemValue)
     }
     return [...originalValue, itemValue]
-  },
+  }
 }
 
 const EmptyGestureResponderEvent: GestureResponderEvent = {
@@ -46,7 +46,7 @@ const EmptyGestureResponderEvent: GestureResponderEvent = {
     pageY: 0,
     target: '0',
     timestamp: 0,
-    touches: [],
+    touches: []
   },
   bubbles: false,
   cancelable: false,
@@ -61,7 +61,7 @@ const EmptyGestureResponderEvent: GestureResponderEvent = {
   stopPropagation: () => {},
   target: {} as any,
   timeStamp: 0,
-  type: '',
+  type: ''
 }
 
 export { ToggleGroupUtils, EmptyGestureResponderEvent }

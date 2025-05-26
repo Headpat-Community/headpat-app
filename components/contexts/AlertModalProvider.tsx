@@ -5,7 +5,7 @@ import {
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
-  View,
+  View
 } from 'react-native'
 import LottieView from 'lottie-react-native'
 
@@ -57,9 +57,9 @@ export const AlertModalProvider = ({ children }) => {
       hideOnPress: type !== 'LOADING',
       componentProps: {
         type,
-        color: getColor(type),
+        color: getColor(type)
       },
-      queueMode: 'reset',
+      queueMode: 'reset'
     })
   }
 
@@ -72,7 +72,7 @@ export const AlertModalProvider = ({ children }) => {
     <AlertModalContext.Provider
       value={{
         showAlert,
-        hideAlert,
+        hideAlert
       }}
     >
       <View style={{ flex: 1 }}>
@@ -116,7 +116,7 @@ const CustomComponent = ({ type, title, description, color }) => {
       style={{
         backgroundColor: color,
         flex: 1,
-        alignItems: 'center',
+        alignItems: 'center'
       }}
     >
       <View style={styles.container}>
@@ -141,17 +141,17 @@ const styles = StyleSheet.create({
   container: {
     padding: 10,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   lottie: {
     width: 50,
-    height: 50,
+    height: 50
   },
   title: { color: 'white', fontWeight: 'bold' },
   description: { color: 'white' },
   overlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    zIndex: 1,
-  },
+    zIndex: 1
+  }
 })

@@ -50,7 +50,7 @@ export default function NotificationsPage() {
       },
       initialPageParam: 0,
       staleTime: 1000 * 60 * 5, // 5 minutes
-      enabled: !!current?.$id,
+      enabled: !!current?.$id
     })
 
   const onRefresh = useCallback(() => {

@@ -5,12 +5,12 @@ import {
   View,
   type GestureResponderEvent,
   type LayoutChangeEvent,
-  type LayoutRectangle,
+  type LayoutRectangle
 } from 'react-native'
 import {
   useControllableState,
   useRelativePosition,
-  type LayoutPosition,
+  type LayoutPosition
 } from '~/components/primitives/hooks'
 import { Portal as RNPPortal } from '~/components/primitives/portal'
 import * as Slot from '~/components/primitives/slot'
@@ -19,13 +19,13 @@ import type {
   PressableRef,
   SlottablePressableProps,
   SlottableViewProps,
-  ViewRef,
+  ViewRef
 } from '~/components/primitives/types'
 import type {
   RootContext,
   TooltipOverlayProps,
   TooltipPortalProps,
-  TooltipRootProps,
+  TooltipRootProps
 } from './types'
 
 interface IRootContext extends RootContext {
@@ -62,7 +62,7 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & TooltipRootProps>(
     const [open = false, onOpenChange] = useControllableState({
       prop: openProp,
       defaultProp: defaultOpen,
-      onChange: onOpenChangeProp,
+      onChange: onOpenChangeProp
     })
 
     const Component = asChild ? Slot.View : View
@@ -75,7 +75,7 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & TooltipRootProps>(
           nativeID,
           setContentLayout,
           setTriggerPosition,
-          triggerPosition,
+          triggerPosition
         }}
       >
         <Component ref={ref} {...viewProps} />
@@ -232,7 +232,7 @@ const Content = React.forwardRef<
       contentLayout,
       setContentLayout,
       setTriggerPosition,
-      triggerPosition,
+      triggerPosition
     } = useTooltipContext()
 
     React.useEffect(() => {
@@ -262,7 +262,7 @@ const Content = React.forwardRef<
       insets,
       sideOffset,
       side,
-      disablePositioningStyle,
+      disablePositioningStyle
     })
 
     function onLayout(event: LayoutChangeEvent) {

@@ -5,7 +5,7 @@ import Animated, {
   interpolate,
   useAnimatedStyle,
   useDerivedValue,
-  withSpring,
+  withSpring
 } from 'react-native-reanimated'
 import * as ProgressPrimitive from '~/components/primitives/progress'
 import { cn } from '~/lib/utils'
@@ -35,7 +35,7 @@ export { Progress }
 
 function Indicator({
   value,
-  className,
+  className
 }: {
   value: number | undefined | null
   className?: string
@@ -47,7 +47,7 @@ function Indicator({
       width: withSpring(
         `${interpolate(progress.value, [0, 100], [1, 100], Extrapolation.CLAMP)}%`,
         { overshootClamping: true }
-      ),
+      )
     }
   })
 

@@ -2,7 +2,7 @@ import { ID } from 'react-native-appwrite'
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { account } from '~/lib/appwrite-client'
 import { Account } from '~/lib/types/collections'
-import kv from 'expo-sqlite/kv-store'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { captureException } from '@sentry/react-native'
 
 interface UserContextValue {
@@ -63,7 +63,7 @@ export function UserProvider(props: any) {
       setIsLoadingUser(true)
       const loggedIn = await account.get()
       setUser(loggedIn)
-      await kv.setItem('userId', loggedIn.$id)
+      await AsyncStorage.setItem('userId', loggedIn.$id)
       setIsLoadingUser(false)
       await loggedInPushNotifications()
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -86,7 +86,7 @@ export function UserProvider(props: any) {
         login,
         loginOAuth,
         logout,
-        register,
+        register
       }}
     >
       {props.children}
@@ -95,7 +95,7 @@ export function UserProvider(props: any) {
 }
 
 const loggedInPushNotifications = async () => {
-  const fcmToken = await kv.getItem('fcmToken')
+  const fcmToken = await AsyncStorage.getItem('fcmToken')
   if (!fcmToken) return
   await updatePushTargetWithAppwrite(fcmToken)
 }
@@ -103,7 +103,7 @@ const loggedInPushNotifications = async () => {
 export const updatePushTargetWithAppwrite = async (fcmToken: string) => {
   // If is simulator, don't update push target
   if (!fcmToken) return
-  const targetId = await kv.getItem('targetId')
+  const targetId = await AsyncStorage.getItem('targetId')
   let session: Account.AccountPrefs
   try {
     session = await account.get()
@@ -123,7 +123,7 @@ export const updatePushTargetWithAppwrite = async (fcmToken: string) => {
       fcmToken,
       '66bcfc3b0028d9fb7a68' // FCM Appwrite Provider ID
     )
-    await kv.setItem('targetId', target.$id)
+    await AsyncStorage.setItem('targetId', target.$id)
   } catch (error) {
     console.error('Failed to create push target in Appwrite:', error)
     captureException(error)

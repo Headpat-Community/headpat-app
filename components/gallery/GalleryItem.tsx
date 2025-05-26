@@ -37,7 +37,7 @@ const GalleryItem = React.memo(
         onPress={() => {
           router.push({
             pathname: '/gallery/(stacks)/[galleryId]',
-            params: { galleryId: image.$id },
+            params: { galleryId: image.$id }
           })
         }}
       >
@@ -46,7 +46,7 @@ const GalleryItem = React.memo(
             position: 'relative',
             width: widthColumns,
             height: 200,
-            marginBottom: 10,
+            marginBottom: 10
           }}
         >
           {isHidden ? (
@@ -64,7 +64,7 @@ const GalleryItem = React.memo(
                   image.mimeType.includes('video')
                     ? { uri: thumbnail }
                     : {
-                        uri: getGalleryUrl(image.$id, imageFormat),
+                        uri: getGalleryUrl(image.$id, imageFormat)
                       }
                 }
                 alt={image.name}

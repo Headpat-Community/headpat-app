@@ -11,7 +11,7 @@ import {
   type PressableProps as RNPressableprops,
   type TextProps as RNTextProps,
   type ViewProps as RNViewProps,
-  type StyleProp,
+  type StyleProp
 } from 'react-native'
 
 const Pressable = React.forwardRef<
@@ -32,7 +32,7 @@ const Pressable = React.forwardRef<
     ...mergeProps(pressableslotProps, children.props),
     ref: forwardedRef
       ? composeRefs(forwardedRef, (children as any).ref)
-      : (children as any).ref,
+      : (children as any).ref
   })
 })
 
@@ -54,7 +54,7 @@ const View = React.forwardRef<React.ElementRef<typeof RNView>, RNViewProps>(
       ...mergeProps(viewSlotProps, children.props),
       ref: forwardedRef
         ? composeRefs(forwardedRef, (children as any).ref)
-        : (children as any).ref,
+        : (children as any).ref
     })
   }
 )
@@ -77,7 +77,7 @@ const Text = React.forwardRef<React.ElementRef<typeof RNText>, RNTextProps>(
       ...mergeProps(textSlotProps, children.props),
       ref: forwardedRef
         ? composeRefs(forwardedRef, (children as any).ref)
-        : (children as any).ref,
+        : (children as any).ref
     })
   }
 )
@@ -106,7 +106,7 @@ const Image = React.forwardRef<
     ...mergeProps(imageSlotProps, children.props),
     ref: forwardedRef
       ? composeRefs(forwardedRef, (children as any).ref)
-      : (children as any).ref,
+      : (children as any).ref
   })
 })
 

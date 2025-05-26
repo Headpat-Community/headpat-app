@@ -1,7 +1,7 @@
 import {
   useControllableState,
   useRelativePosition,
-  type LayoutPosition,
+  type LayoutPosition
 } from '~/components/primitives/hooks'
 import { Portal as RNPPortal } from '~/components/primitives/portal'
 import * as Slot from '~/components/primitives/slot'
@@ -13,7 +13,7 @@ import type {
   SlottableTextProps,
   SlottableViewProps,
   TextRef,
-  ViewRef,
+  ViewRef
 } from '~/components/primitives/types'
 import * as React from 'react'
 import {
@@ -23,7 +23,7 @@ import {
   View,
   type GestureResponderEvent,
   type LayoutChangeEvent,
-  type LayoutRectangle,
+  type LayoutRectangle
 } from 'react-native'
 import type {
   RootContext,
@@ -33,7 +33,7 @@ import type {
   SelectPortalProps,
   SelectRootProps,
   SelectSeparatorProps,
-  SelectValueProps,
+  SelectValueProps
 } from './types'
 
 interface IRootContext extends RootContext {
@@ -66,12 +66,12 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & SelectRootProps>(
     const [open = false, onOpenChange] = useControllableState({
       prop: openProp,
       defaultProp: defaultOpen,
-      onChange: onOpenChangeProp,
+      onChange: onOpenChangeProp
     })
     const [value, onValueChange] = useControllableState({
       prop: valueProp,
       defaultProp: defaultValue,
-      onChange: onValueChangeProp,
+      onChange: onValueChangeProp
     })
     const [triggerPosition, setTriggerPosition] =
       React.useState<LayoutPosition | null>(null)
@@ -91,7 +91,7 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & SelectRootProps>(
           nativeID,
           setContentLayout,
           setTriggerPosition,
-          triggerPosition,
+          triggerPosition
         }}
       >
         <Component ref={ref} {...viewProps} />
@@ -119,7 +119,7 @@ const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
       open,
       onOpenChange,
       disabled: disabledRoot,
-      setTriggerPosition,
+      setTriggerPosition
     } = useRootContext()
 
     React.useImperativeHandle(
@@ -268,7 +268,7 @@ const Content = React.forwardRef<
       nativeID,
       triggerPosition,
       setContentLayout,
-      setTriggerPosition,
+      setTriggerPosition
     } = useRootContext()
 
     React.useEffect(() => {
@@ -298,7 +298,7 @@ const Content = React.forwardRef<
       insets,
       sideOffset,
       side,
-      disablePositioningStyle,
+      disablePositioningStyle
     })
 
     function onLayout(event: LayoutChangeEvent) {
@@ -356,7 +356,7 @@ const Item = React.forwardRef<
       value,
       onValueChange,
       setTriggerPosition,
-      setContentLayout,
+      setContentLayout
     } = useRootContext()
     function onPress(ev: GestureResponderEvent) {
       if (closeOnPress) {
@@ -382,7 +382,7 @@ const Item = React.forwardRef<
           aria-disabled={!!disabled}
           accessibilityState={{
             disabled: !!disabled,
-            checked: value?.value === itemValue,
+            checked: value?.value === itemValue
           }}
           {...props}
         />
@@ -472,7 +472,7 @@ const Separator = React.forwardRef<
 Separator.displayName = 'SeparatorNativeSelect'
 
 const ScrollUpButton = ({
-  children,
+  children
 }: {
   children?: React.ReactNode
   className?: string
@@ -481,7 +481,7 @@ const ScrollUpButton = ({
 }
 
 const ScrollDownButton = ({
-  children,
+  children
 }: {
   children?: React.ReactNode
   className?: string
@@ -490,7 +490,7 @@ const ScrollDownButton = ({
 }
 
 const Viewport = ({
-  children,
+  children
 }: {
   children?: React.ReactNode
   className?: string
@@ -515,7 +515,7 @@ export {
   Value,
   Viewport,
   useItemContext,
-  useRootContext,
+  useRootContext
 }
 
 export type { Option } from './types'

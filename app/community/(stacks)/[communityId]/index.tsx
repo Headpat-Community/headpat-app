@@ -29,7 +29,7 @@ export default function UserPage() {
     data: communityData,
     isLoading,
     isRefetching,
-    refetch,
+    refetch
   } = useQuery({
     queryKey: ['community', local.communityId],
     queryFn: async () => {
@@ -49,7 +49,7 @@ export default function UserPage() {
       }
     },
     //staleTime: 1000 * 60 * 5, // 5 minutes
-    refetchOnMount: true,
+    refetchOnMount: true
   })
 
   const { data: permissions } = useQuery({
@@ -61,7 +61,7 @@ export default function UserPage() {
       const hasAccess = await hasAdminPanelAccess(communityData.roles)
       return hasAccess
     },
-    enabled: !!communityData?.roles,
+    enabled: !!communityData?.roles
   })
 
   const getAvatar = useCallback((avatarId: string) => {
@@ -214,7 +214,7 @@ export default function UserPage() {
           value={sanitizedBio}
           stylesheet={{
             p: { color: theme },
-            a: { color: 'hsl(208, 100%, 50%)' },
+            a: { color: 'hsl(208, 100%, 50%)' }
           }}
           textComponentProps={{ style: { color: theme } }}
         />

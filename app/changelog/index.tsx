@@ -17,14 +17,14 @@ export default function ListComponent() {
   const {
     data: changelogData,
     isLoading,
-    isRefetching,
+    isRefetching
   } = useQuery({
     queryKey: ['changelog'],
     queryFn: async () => {
       try {
         const changelogData: Changelog.ChangelogType =
           await databases.listDocuments('hp_db', 'changelog', [
-            Query.orderDesc('version'),
+            Query.orderDesc('version')
           ])
         return changelogData.documents
       } catch (error) {
@@ -32,7 +32,7 @@ export default function ListComponent() {
         throw error
       }
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5 // 5 minutes
   })
 
   const toggleVersion = (version: string) => {

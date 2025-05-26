@@ -1,8 +1,8 @@
 import React, { createContext, useContext, ReactNode } from 'react'
-import kv from 'expo-sqlite/kv-store'
 import { i18n } from '~/components/system/i18n'
 import { getLocales } from 'expo-localization'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 interface LanguageContextProps {
   language: string
@@ -20,7 +20,7 @@ interface LanguageProviderProps {
 const LANGUAGE_QUERY_KEY = 'app-language'
 
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({
-  children,
+  children
 }) => {
   const queryClient = useQueryClient()
 
@@ -28,25 +28,25 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({
     queryKey: [LANGUAGE_QUERY_KEY],
     queryFn: async () => {
       const locale =
-        (await kv.getItem('locale')) || getLocales()[0].languageCode
-      await kv.setItem('locale', locale)
+        (await AsyncStorage.getItem('locale')) || getLocales()[0].languageCode
+      await AsyncStorage.setItem('locale', locale)
       i18n.enableFallback = true
       i18n.defaultLocale = 'en'
       i18n.locale = locale
       return locale
     },
-    staleTime: Infinity, // Language rarely changes
+    staleTime: Infinity // Language rarely changes
   })
 
   const changeLanguageMutation = useMutation({
     mutationFn: async (newLanguage: string) => {
-      await kv.setItem('locale', newLanguage)
+      await AsyncStorage.setItem('locale', newLanguage)
       i18n.locale = newLanguage
       return newLanguage
     },
     onSuccess: (newLanguage) => {
       queryClient.setQueryData([LANGUAGE_QUERY_KEY], newLanguage)
-    },
+    }
   })
 
   const setLanguage = async (newLanguage: string) => {

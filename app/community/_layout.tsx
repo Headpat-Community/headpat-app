@@ -44,7 +44,7 @@ function _layout() {
           headerLargeTitle: true,
           headerTitle: 'Communities',
           headerLeft: () => <HeaderSidebarBackButton />,
-          headerRight: () => <CommunityAddButton />,
+          headerRight: () => <CommunityAddButton />
         }}
       />
       <Stack.Screen
@@ -54,7 +54,7 @@ function _layout() {
           headerTitle: 'Community',
           headerTitleStyle: { fontSize: 0 },
           headerLeft: () => <HeaderSidebarBackButton />,
-          headerRight: () => <ProfileThemeToggle />,
+          headerRight: () => <ProfileThemeToggle />
         }}
       />
       <Stack.Screen name="add/index" />

@@ -1,7 +1,6 @@
 import * as TaskManager from 'expo-task-manager'
 import * as Sentry from '@sentry/react-native'
 import * as Location from 'expo-location'
-import kv from 'expo-sqlite/kv-store'
 import { databases, account } from '~/lib/appwrite-client'
 
 const LOCATION_TASK_NAME = 'background-location-task'
@@ -34,7 +33,7 @@ TaskManager.defineTask(
       // Make API calls to update location document
       await databases.updateDocument('hp_db', 'locations', userId, {
         long: locations[0].coords.longitude,
-        lat: locations[0].coords.latitude,
+        lat: locations[0].coords.latitude
       })
     } catch (error) {
       console.error('Error in background location task:', error)

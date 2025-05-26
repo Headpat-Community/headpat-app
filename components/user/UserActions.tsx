@@ -8,13 +8,13 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
+  AlertDialogTrigger
 } from '~/components/ui/alert-dialog'
 import {
   MailIcon,
   ShieldAlertIcon,
   UserMinusIcon,
-  UserPlusIcon,
+  UserPlusIcon
 } from 'lucide-react-native'
 import { blockUser } from '~/components/user/api/blockUser'
 import { View } from 'react-native'
@@ -50,7 +50,7 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
           ['user', userData.$id],
           (old: UserData.UserProfileDocumentsType) => ({
             ...old,
-            isFollowing: true,
+            isFollowing: true
           })
         )
         showAlert('SUCCESS', `You are now following ${userData.displayName}.`)
@@ -58,7 +58,7 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
       onError: () => {
         hideAlert()
         showAlert('FAILED', 'Failed to follow user. Please try again later.')
-      },
+      }
     })
 
     const unfollowMutation = useMutation({
@@ -72,7 +72,7 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
           ['user', userData.$id],
           (old: UserData.UserProfileDocumentsType) => ({
             ...old,
-            isFollowing: false,
+            isFollowing: false
           })
         )
         showAlert('SUCCESS', `You have unfollowed ${userData.displayName}.`)
@@ -80,7 +80,7 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
       onError: () => {
         hideAlert()
         showAlert('FAILED', 'Failed to unfollow user. Please try again later.')
-      },
+      }
     })
 
     const blockMutation = useMutation({
@@ -88,7 +88,7 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
         showAlert('LOADING', 'Processing...')
         const response = await blockUser({
           userId: userData.$id,
-          isBlocked: !userData.prefs?.isBlocked,
+          isBlocked: !userData.prefs?.isBlocked
         })
         return response
       },
@@ -98,7 +98,7 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
           ['user', userData.$id],
           (old: UserData.UserProfileDocumentsType) => ({
             ...old,
-            prefs: response,
+            prefs: response
           })
         )
         showAlert(
@@ -114,7 +114,7 @@ const UserActions: React.FC<UserActionsProps> = React.memo(
           'FAILED',
           'Failed to update block status. Please try again later.'
         )
-      },
+      }
     })
 
     const handleFollow = useCallback(() => {

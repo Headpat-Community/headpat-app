@@ -3,7 +3,7 @@ import { Pressable, type GestureResponderEvent } from 'react-native'
 import * as Slot from '~/components/primitives/slot'
 import type {
   PressableRef,
-  SlottablePressableProps,
+  SlottablePressableProps
 } from '~/components/primitives/types'
 import type { ToggleRootProps } from './types'
 
@@ -39,7 +39,7 @@ const Root = React.forwardRef<
         onPress={onPress}
         accessibilityState={{
           selected: pressed,
-          disabled,
+          disabled
         }}
         disabled={disabled}
         {...props}

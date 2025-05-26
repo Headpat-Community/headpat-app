@@ -46,5 +46,5 @@ export type {
   NavigationMenuItemProps,
   NavigationMenuPortalProps,
   NavigationMenuRootProps,
-  NavigationMenuLinkProps,
+  NavigationMenuLinkProps
 }

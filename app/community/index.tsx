@@ -24,7 +24,7 @@ export default function CommunitiesPage() {
     hasNextPage,
     isFetchingNextPage,
     isRefetching,
-    isLoading,
+    isLoading
   } = useInfiniteQuery({
     queryKey: ['communities'],
     queryFn: async ({ pageParam = 0 }) => {
@@ -54,7 +54,7 @@ export default function CommunitiesPage() {
         : undefined
     },
     initialPageParam: 0,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5 // 5 minutes
   })
 
   const communities = data?.pages.flat() ?? []
@@ -103,7 +103,7 @@ export default function CommunitiesPage() {
         renderItem={renderItem}
         onRefresh={() => {
           queryClient.invalidateQueries({
-            queryKey: ['communities'],
+            queryKey: ['communities']
           })
         }}
         refreshing={isRefetching}

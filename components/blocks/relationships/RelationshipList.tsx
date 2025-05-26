@@ -27,7 +27,7 @@ interface RelationshipListProps {
 export default function RelationshipList({
   type,
   title,
-  emptyMessage,
+  emptyMessage
 }: RelationshipListProps) {
   const { showAlert } = useAlertModal()
   const { current } = useUser()
@@ -40,7 +40,7 @@ export default function RelationshipList({
     isFetchingNextPage,
     isRefetching,
     isLoading,
-    refetch,
+    refetch
   } = useInfiniteQuery({
     queryKey: [type, current?.$id],
     queryFn: async ({ pageParam = 0 }) => {
@@ -77,7 +77,7 @@ export default function RelationshipList({
     },
     initialPageParam: 0,
     enabled: !!current?.$id,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5 // 5 minutes
   })
 
   const users = data?.pages.flat() ?? []
@@ -105,7 +105,7 @@ export default function RelationshipList({
             style={{
               flexDirection: 'row',
               justifyContent: 'space-between',
-              margin: 10,
+              margin: 10
             }}
           >
             {[...Array(3)].map((_, i) => (
@@ -113,7 +113,7 @@ export default function RelationshipList({
                 key={i}
                 style={{
                   width: 100,
-                  height: 100,
+                  height: 100
                 }}
               >
                 <Skeleton className={'w-full h-full rounded-3xl'} />
@@ -133,7 +133,7 @@ export default function RelationshipList({
             refreshing={isRefetching}
             onRefresh={() => {
               queryClient.invalidateQueries({
-                queryKey: [type, current?.$id],
+                queryKey: [type, current?.$id]
               })
             }}
           />
@@ -159,7 +159,7 @@ export default function RelationshipList({
           refreshing={isRefetching}
           onRefresh={() => {
             queryClient.invalidateQueries({
-              queryKey: [type, current?.$id],
+              queryKey: [type, current?.$id]
             })
           }}
         />

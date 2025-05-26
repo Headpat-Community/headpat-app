@@ -3,7 +3,7 @@ import MapView, {
   Marker,
   Polygon,
   PROVIDER_DEFAULT,
-  PROVIDER_GOOGLE,
+  PROVIDER_GOOGLE
 } from 'react-native-maps'
 import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native'
 import { FilterIcon, LocateIcon, SettingsIcon } from 'lucide-react-native'
@@ -11,7 +11,7 @@ import * as Location from 'expo-location'
 import {
   Events,
   Location as LocationType,
-  UserData,
+  UserData
 } from '~/lib/types/collections'
 import { databases } from '~/lib/appwrite-client'
 import { Query } from 'react-native-appwrite'
@@ -22,7 +22,7 @@ import {
   DialogContent,
   DialogFooter,
   DialogTitle,
-  DialogTrigger,
+  DialogTrigger
 } from '~/components/ui/dialog'
 import * as Sentry from '@sentry/react-native'
 import { formatDateLocale } from '~/components/calculateTimeLeft'
@@ -70,8 +70,8 @@ export default function MutualLocationsPage() {
           Query.greaterThanEqual('dateUntil', currentDate.toISOString()),
           Query.or([
             Query.equal('locationZoneMethod', 'circle'),
-            Query.equal('locationZoneMethod', 'polygon'),
-          ]),
+            Query.equal('locationZoneMethod', 'polygon')
+          ])
         ]
       )
       setEvents(data)
@@ -126,7 +126,7 @@ export default function MutualLocationsPage() {
           {
             accuracy: Location.Accuracy.Balanced,
             timeInterval: 10000,
-            distanceInterval: 10,
+            distanceInterval: 10
           },
           (location) => {
             setUserLocation(location.coords)
@@ -148,7 +148,7 @@ export default function MutualLocationsPage() {
         latitude: userLocation.latitude,
         longitude: userLocation.longitude,
         latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
+        longitudeDelta: 0.0421
       })
     }
   }, [userLocation])
@@ -165,7 +165,7 @@ export default function MutualLocationsPage() {
           latitude: userLocation.latitude,
           longitude: userLocation.longitude,
           latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
+          longitudeDelta: 0.0421
         })
       }
       return () => {
@@ -206,7 +206,7 @@ export default function MutualLocationsPage() {
             value={sanitizedDescription}
             stylesheet={{
               p: { color: theme },
-              a: { color: 'hsl(208, 100%, 50%)' },
+              a: { color: 'hsl(208, 100%, 50%)' }
             }}
             textComponentProps={{ style: { color: theme } }}
           />
@@ -248,12 +248,12 @@ export default function MutualLocationsPage() {
                         className={'rounded-xl'}
                         style={{
                           borderWidth: 2,
-                          borderColor: user?.statusColor,
+                          borderColor: user?.statusColor
                         }}
                       >
                         <AvatarImage
                           source={{
-                            uri: getUserAvatar(user?.userData?.avatarId),
+                            uri: getUserAvatar(user?.userData?.avatarId)
                           }}
                         />
                         <AvatarFallback className={'rounded-xl'}>
@@ -363,27 +363,27 @@ const styles = StyleSheet.create({
     bottom: 20,
     right: 10,
     borderRadius: 50,
-    overflow: 'hidden',
+    overflow: 'hidden'
   },
   filterButton: {
     position: 'absolute',
     top: 60,
     right: 10,
     borderRadius: 50,
-    overflow: 'hidden',
+    overflow: 'hidden'
   },
   settingsButton: {
     position: 'absolute',
     top: 120,
     right: 10,
     borderRadius: 50,
-    overflow: 'hidden',
+    overflow: 'hidden'
   },
   centeredView: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 22,
+    marginTop: 22
   },
   modalView: {
     margin: 20,
@@ -395,10 +395,10 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 5,
+    elevation: 5
   },
   button: { borderRadius: 20, padding: 10, elevation: 2 },
   buttonClose: { backgroundColor: '#2196F3' },
   textStyle: { color: 'white', fontWeight: 'bold', textAlign: 'center' },
-  modalText: { marginBottom: 15, textAlign: 'center' },
+  modalText: { marginBottom: 15, textAlign: 'center' }
 })

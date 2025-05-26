@@ -4,7 +4,7 @@ import Animated, {
   useSharedValue,
   withRepeat,
   withSequence,
-  withTiming,
+  withTiming
 } from 'react-native-reanimated'
 import { cn } from '~/lib/utils'
 
@@ -24,7 +24,7 @@ function Skeleton({
   }, [sv])
 
   const style = useAnimatedStyle(() => ({
-    opacity: sv.value,
+    opacity: sv.value
   }))
 
   return (

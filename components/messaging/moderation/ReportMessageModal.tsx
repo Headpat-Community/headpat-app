@@ -6,7 +6,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialogTitle
 } from '~/components/ui/alert-dialog'
 import { Text } from '~/components/ui/text'
 import React, { useState } from 'react'
@@ -23,7 +23,7 @@ import { functions } from '~/lib/appwrite-client'
 export default function ReportMessageModal({
   open,
   setOpen,
-  message,
+  message
 }: {
   open: boolean
   setOpen: (open: boolean) => void
@@ -40,7 +40,7 @@ export default function ReportMessageModal({
         reportedMessageId: message.$id,
         conversationId: message.conversationId,
         message: message.body,
-        reason: reportReason === 'Other' ? otherReason : reportReason,
+        reason: reportReason === 'Other' ? otherReason : reportReason
       }
       const data = await functions.createExecution(
         'moderation-endpoints',

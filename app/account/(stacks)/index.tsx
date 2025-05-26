@@ -7,7 +7,7 @@ import {
   CookieIcon,
   LogOutIcon,
   MegaphoneIcon,
-  ShieldAlertIcon,
+  ShieldAlertIcon
 } from 'lucide-react-native'
 import { useColorScheme } from '~/lib/useColorScheme'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'

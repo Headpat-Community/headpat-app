@@ -3,7 +3,7 @@ import type {
   PressableRef,
   SlottablePressableProps,
   SlottableTextProps,
-  TextRef,
+  TextRef
 } from '~/components/primitives/types'
 import * as React from 'react'
 import { Pressable, Text as RNText } from 'react-native'

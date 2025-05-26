@@ -11,7 +11,7 @@ interface SuccessModalProps {
 
 export default function LoadingModal({
   isVisible,
-  onClose,
+  onClose
 }: SuccessModalProps) {
   const { isDarkColorScheme } = useColorScheme()
   const themeInverted = isDarkColorScheme ? 'black' : 'white'
@@ -25,7 +25,7 @@ export default function LoadingModal({
         if (gestureState.dy > 100) {
           onClose()
         }
-      },
+      }
     })
   ).current
 
@@ -35,7 +35,7 @@ export default function LoadingModal({
         <View
           style={[
             styles.container,
-            { backgroundColor: isDarkColorScheme ? '#CCCCCC' : '#333333' },
+            { backgroundColor: isDarkColorScheme ? '#CCCCCC' : '#333333' }
           ]}
         >
           <LottieView
@@ -58,23 +58,23 @@ const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-end'
   },
   container: {
     alignItems: 'center',
     padding: 20,
     margin: 20,
-    borderRadius: 30,
+    borderRadius: 30
   },
   lottie: {
     width: 100,
-    height: 100,
+    height: 100
   },
   text: {
     textAlign: 'center',
     marginTop: 10,
     marginBottom: 20,
     fontSize: 18,
-    fontWeight: 'bold',
-  },
+    fontWeight: 'bold'
+  }
 })

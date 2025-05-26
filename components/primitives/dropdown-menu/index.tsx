@@ -6,11 +6,11 @@ import {
   View,
   type GestureResponderEvent,
   type LayoutChangeEvent,
-  type LayoutRectangle,
+  type LayoutRectangle
 } from 'react-native'
 import {
   useRelativePosition,
-  type LayoutPosition,
+  type LayoutPosition
 } from '~/components/primitives/hooks'
 import { Portal as RNPPortal } from '~/components/primitives/portal'
 import * as Slot from '~/components/primitives/slot'
@@ -22,7 +22,7 @@ import type {
   SlottableTextProps,
   SlottableViewProps,
   TextRef,
-  ViewRef,
+  ViewRef
 } from '~/components/primitives/types'
 import type {
   DropdownMenuCheckboxItemProps,
@@ -34,7 +34,7 @@ import type {
   DropdownMenuRootProps,
   DropdownMenuSeparatorProps,
   DropdownMenuSubProps,
-  DropdownMenuSubTriggerProps,
+  DropdownMenuSubTriggerProps
 } from './types'
 
 interface IRootContext extends DropdownMenuRootProps {
@@ -67,7 +67,7 @@ const Root = React.forwardRef<
         setContentLayout,
         nativeID,
         setTriggerPosition,
-        triggerPosition,
+        triggerPosition
       }}
     >
       <Component ref={ref} {...viewProps} />
@@ -224,7 +224,7 @@ const Content = React.forwardRef<
       triggerPosition,
       setTriggerPosition,
       contentLayout,
-      setContentLayout,
+      setContentLayout
     } = useRootContext()
 
     React.useEffect(() => {
@@ -254,7 +254,7 @@ const Content = React.forwardRef<
       insets,
       sideOffset,
       side,
-      disablePositioningStyle,
+      disablePositioningStyle
     })
 
     function onLayout(event: LayoutChangeEvent) {
@@ -481,7 +481,7 @@ const RadioItem = React.forwardRef<
           disabled={disabled ?? false}
           accessibilityState={{
             disabled: disabled ?? false,
-            checked: value === itemValue,
+            checked: value === itemValue
           }}
           aria-valuetext={textValue}
           {...props}
@@ -552,7 +552,7 @@ const Sub = React.forwardRef<
       value={{
         nativeID,
         open,
-        onOpenChange,
+        onOpenChange
       }}
     >
       <Component ref={ref} {...props} />
@@ -646,5 +646,5 @@ export {
   SubTrigger,
   Trigger,
   useRootContext,
-  useSubContext,
+  useSubContext
 }

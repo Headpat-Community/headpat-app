@@ -4,7 +4,7 @@ import Animated, {
   interpolateColor,
   useAnimatedStyle,
   useDerivedValue,
-  withTiming,
+  withTiming
 } from 'react-native-reanimated'
 import * as SwitchPrimitives from '~/components/primitives/switch'
 import { useColorScheme } from '~/lib/useColorScheme'
@@ -39,12 +39,12 @@ SwitchWeb.displayName = 'SwitchWeb'
 const RGB_COLORS = {
   light: {
     primary: 'rgb(24, 24, 27)',
-    input: 'rgb(228, 228, 231)',
+    input: 'rgb(228, 228, 231)'
   },
   dark: {
     primary: 'rgb(250, 250, 250)',
-    input: 'rgb(39, 39, 42)',
-  },
+    input: 'rgb(39, 39, 42)'
+  }
 }
 
 const SwitchNative = React.forwardRef<
@@ -59,13 +59,11 @@ const SwitchNative = React.forwardRef<
         translateX.value,
         [0, 18],
         [RGB_COLORS[colorScheme].input, RGB_COLORS[colorScheme].primary]
-      ),
+      )
     }
   })
   const animatedThumbStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: withTiming(translateX.value, { duration: 200 }) },
-    ],
+    transform: [{ translateX: withTiming(translateX.value, { duration: 200 }) }]
   }))
   return (
     <Animated.View
@@ -98,7 +96,7 @@ SwitchNative.displayName = 'SwitchNative'
 
 const Switch = Platform.select({
   web: SwitchWeb,
-  default: SwitchNative,
+  default: SwitchNative
 })
 
 export { Switch }

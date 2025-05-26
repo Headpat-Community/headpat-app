@@ -6,7 +6,7 @@ import type {
   PressableRef,
   SlottablePressableProps,
   SlottableViewProps,
-  ViewRef,
+  ViewRef
 } from '~/components/primitives/types'
 import type { RadioGroupItemProps, RadioGroupRootProps } from './types'
 
@@ -22,7 +22,7 @@ const Root = React.forwardRef<
       value={{
         value,
         disabled,
-        onValueChange,
+        onValueChange
       }}
     >
       <Component ref={ref} role="radiogroup" {...viewProps} />
@@ -75,7 +75,7 @@ const Item = React.forwardRef<
     return (
       <RadioItemContext.Provider
         value={{
-          itemValue: itemValue,
+          itemValue: itemValue
         }}
       >
         <Component
@@ -86,7 +86,7 @@ const Item = React.forwardRef<
           disabled={(disabled || disabledProp) ?? false}
           accessibilityState={{
             disabled: (disabled || disabledProp) ?? false,
-            checked: value === itemValue,
+            checked: value === itemValue
           }}
           {...props}
         />

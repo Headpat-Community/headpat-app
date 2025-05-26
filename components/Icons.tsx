@@ -52,7 +52,7 @@ import {
   Underline,
   UserPlus,
   Users,
-  X,
+  X
 } from 'lucide-react-native'
 import { SiGithub, IconType } from '@icons-pack/react-simple-icons'
 
@@ -63,9 +63,9 @@ function interopIcon(icon: LucideIcon | IconType) {
       target: 'style',
       nativeStyleToProp: {
         color: true,
-        opacity: true,
-      },
-    },
+        opacity: true
+      }
+    }
   })
 }
 
@@ -178,5 +178,5 @@ export {
   Underline,
   UserPlus,
   Users,
-  X,
+  X
 }

@@ -22,7 +22,7 @@ const FeatureAccess = ({ featureName, children }: FeatureAccessProps) => {
     if (featureStatus) {
       setCachedFeatureStatuses((prevStatuses) => ({
         ...prevStatuses,
-        [featureName]: featureStatus,
+        [featureName]: featureStatus
       }))
       setIsLoading(false)
     }

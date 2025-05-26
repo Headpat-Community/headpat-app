@@ -11,7 +11,7 @@ export default function TabsLayout() {
           tabBarIcon({ color, size }) {
             return <MapIcon color={color} size={size} />
           },
-          headerShown: false,
+          headerShown: false
         }}
       />
       <Tabs.Screen
@@ -21,7 +21,7 @@ export default function TabsLayout() {
           tabBarIcon({ color, size }) {
             return <RadioIcon color={color} size={size} />
           },
-          headerShown: false,
+          headerShown: false
         }}
       />
       <Tabs.Screen
@@ -29,7 +29,7 @@ export default function TabsLayout() {
         options={{
           title: 'Avatar Add',
           headerShown: false,
-          href: null,
+          href: null
         }}
       />
       <Tabs.Screen
@@ -37,7 +37,7 @@ export default function TabsLayout() {
         options={{
           title: 'Banner Add',
           headerShown: false,
-          href: null,
+          href: null
         }}
       />
     </Tabs>
