@@ -67,19 +67,19 @@ export default function RootLayout() {
       fonts: {
         regular: {
           fontFamily: 'Inter_400Regular',
-          fontWeight: '400'
+          fontWeight: '400' as const
         },
         medium: {
           fontFamily: 'Inter_500Medium',
-          fontWeight: '500'
+          fontWeight: '500' as const
         },
         bold: {
           fontFamily: 'Inter_700Bold',
-          fontWeight: '700'
+          fontWeight: '700' as const
         },
         heavy: {
           fontFamily: 'Inter_800Heavy',
-          fontWeight: '800'
+          fontWeight: '800' as const
         }
       },
       dark: isDarkColorScheme,
