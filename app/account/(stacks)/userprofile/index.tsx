@@ -25,6 +25,7 @@ import { router } from 'expo-router'
 import DatePicker from 'react-native-date-picker'
 import { Textarea } from '~/components/ui/textarea'
 import SlowInternet from '~/components/views/SlowInternet'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 const schema = z.object({
   profileUrl: z
@@ -44,75 +45,72 @@ const schema = z.object({
 
 export default function UserprofilePage() {
   const [isDisabled, setIsDisabled] = useState(false)
-  const [refreshing, setRefreshing] = useState(false)
-  const { setUser, current } = useUser()
-
   const [showDatePicker, setShowDatePicker] = useState(false)
-  const [userData, setUserData] =
-    useState<UserData.UserDataDocumentsType | null>(null)
-  const [nsfw, setNsfw] = useState<boolean>(false)
-  const [indexable, setIndexable] = useState<boolean>(false)
+  const { setUser, current } = useUser()
   const { showAlert } = useAlertModal()
+  const queryClient = useQueryClient()
+  const [formData, setFormData] =
+    useState<UserData.UserDataDocumentsType | null>(null)
 
-  const fetchUserData = async () => {
-    try {
-      const data: UserData.UserDataDocumentsType = await databases.getDocument(
-        'hp_db',
-        'userdata',
-        current.$id
-      )
-      setUserData(data)
-      setNsfw(current.prefs.nsfw)
-      setIndexable(current.prefs.indexingEnabled)
-    } catch (error) {
-      showAlert('FAILED', 'Failed to fetch user data. Please try again later.')
-      captureException(error)
-    } finally {
-      setRefreshing(false)
+  const {
+    data: userData,
+    isLoading,
+    refetch
+  } = useQuery({
+    queryKey: ['user', current?.$id],
+    queryFn: async () => {
+      if (!current?.$id) throw new Error('No user ID')
+      const data = await databases.getDocument('hp_db', 'userdata', current.$id)
+      return data as UserData.UserDataDocumentsType
+    },
+    enabled: !!current?.$id
+  })
+
+  // Update form data when userData changes
+  React.useEffect(() => {
+    if (userData) {
+      setFormData(userData)
     }
-  }
+  }, [userData])
 
-  const memoizedCallback = useCallback(() => {
-    setRefreshing(true)
-    if (current) fetchUserData().then()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [current])
-
-  useFocusEffect(memoizedCallback)
-
-  const handleUpdate = async () => {
-    try {
-      setIsDisabled(true)
-
-      try {
-        schema.parse(userData)
-      } catch (error) {
+  const updateMutation = useMutation({
+    mutationFn: async (data: UserData.UserDataDocumentsType) => {
+      if (!current?.$id) throw new Error('No user ID')
+      // Validate the data
+      schema.parse(data)
+      // Update the document
+      await databases.updateDocument('hp_db', 'userdata', current.$id, {
+        profileUrl: data.profileUrl,
+        displayName: data.displayName,
+        status: data.status,
+        pronouns: data.pronouns,
+        birthday: data.birthday,
+        location: data.location,
+        bio: data.bio
+      })
+      return data
+    },
+    onSuccess: () => {
+      showAlert('SUCCESS', 'User data updated successfully.')
+      queryClient.invalidateQueries({ queryKey: ['user', current?.$id] })
+    },
+    onError: (error) => {
+      if (error instanceof z.ZodError) {
         showAlert('FAILED', error.errors[0].message)
-        setIsDisabled(false)
-        return
-      }
-
-      try {
-        await databases.updateDocument('hp_db', 'userdata', current.$id, {
-          profileUrl: userData.profileUrl,
-          displayName: userData.displayName,
-          status: userData.status,
-          pronouns: userData.pronouns,
-          birthday: userData.birthday,
-          location: userData.location,
-          bio: userData.bio
-        })
-        showAlert('SUCCESS', 'User data updated successfully.')
-      } catch (error) {
+      } else {
         showAlert('FAILED', 'Failed to save user data')
         captureException(error)
       }
+    }
+  })
+
+  const handleUpdate = async () => {
+    if (!formData) return
+    setIsDisabled(true)
+    try {
+      await updateMutation.mutateAsync(formData)
+    } finally {
       setIsDisabled(false)
-    } catch (error) {
-      setIsDisabled(false)
-      console.error(error)
-      captureException(error)
-      showAlert('FAILED', 'An error occurred. Please try again later.')
     }
   }
 
@@ -137,23 +135,13 @@ export default function UserprofilePage() {
     }
   }
 
-  const onRefresh = useCallback(() => {
-    setRefreshing(true)
-    fetchUserData().then()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  useFocusEffect(
+    useCallback(() => {
+      refetch()
+    }, [refetch])
+  )
 
-  const changeNsfw = async (e: boolean) => {
-    setNsfw(e)
-    handlePrefs(e, indexable).then()
-  }
-
-  const changeIndexable = async (e: boolean) => {
-    setIndexable(e)
-    handlePrefs(nsfw, e).then()
-  }
-
-  if (!userData) return <SlowInternet />
+  if (isLoading || !userData || !current?.$id) return <SlowInternet />
 
   return (
     <KeyboardAvoidingView
@@ -163,7 +151,7 @@ export default function UserprofilePage() {
     >
       <ScrollView
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl refreshing={isLoading} onRefresh={refetch} />
         }
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -225,8 +213,10 @@ export default function UserprofilePage() {
                 <View>
                   <Checkbox
                     nativeID={'nsfw'}
-                    checked={nsfw}
-                    onCheckedChange={(e) => changeNsfw(e)}
+                    checked={current.prefs.nsfw}
+                    onCheckedChange={(e) =>
+                      handlePrefs(e, current.prefs.indexingEnabled)
+                    }
                     className={'p-4'}
                   />
                 </View>
@@ -246,8 +236,8 @@ export default function UserprofilePage() {
                 <View>
                   <Checkbox
                     nativeID={'index'}
-                    checked={indexable}
-                    onCheckedChange={(e) => changeIndexable(e)}
+                    checked={current.prefs.indexingEnabled}
+                    onCheckedChange={(e) => handlePrefs(current.prefs.nsfw, e)}
                     className={'p-4'}
                   />
                 </View>
@@ -286,9 +276,11 @@ export default function UserprofilePage() {
                       className={'border-0 bg-transparent'}
                       textContentType={'name'}
                       onChangeText={(text) =>
-                        setUserData({ ...userData, profileUrl: text })
+                        setFormData((prev) =>
+                          prev ? { ...prev, profileUrl: text } : null
+                        )
                       }
-                      value={userData.profileUrl}
+                      value={formData?.profileUrl}
                     />
                   </View>
                 </View>
@@ -306,13 +298,14 @@ export default function UserprofilePage() {
                   <Input
                     nativeID={'displayName'}
                     onChange={(e) =>
-                      setUserData({
-                        ...userData,
-                        displayName: e.nativeEvent.text
-                      })
+                      setFormData((prev) =>
+                        prev
+                          ? { ...prev, displayName: e.nativeEvent.text }
+                          : null
+                      )
                     }
                     textContentType={'name'}
-                    value={userData.displayName}
+                    value={formData?.displayName}
                   />
                 </View>
               </View>
@@ -329,9 +322,11 @@ export default function UserprofilePage() {
                   <Input
                     nativeID={'status'}
                     onChange={(e) =>
-                      setUserData({ ...userData, status: e.nativeEvent.text })
+                      setFormData((prev) =>
+                        prev ? { ...prev, status: e.nativeEvent.text } : null
+                      )
                     }
-                    value={userData.status}
+                    value={formData?.status}
                   />
                 </View>
               </View>
@@ -348,9 +343,11 @@ export default function UserprofilePage() {
                   <Input
                     nativeID={'pronouns'}
                     onChange={(e) =>
-                      setUserData({ ...userData, pronouns: e.nativeEvent.text })
+                      setFormData((prev) =>
+                        prev ? { ...prev, pronouns: e.nativeEvent.text } : null
+                      )
                     }
-                    value={userData.pronouns}
+                    value={formData?.pronouns}
                     maxLength={16}
                   />
                 </View>
@@ -371,12 +368,13 @@ export default function UserprofilePage() {
                   {showDatePicker && (
                     <>
                       <DatePicker
-                        date={new Date(userData.birthday)}
+                        date={new Date(formData?.birthday || '')}
                         onDateChange={(date) => {
-                          setUserData({
-                            ...userData,
-                            birthday: date.toISOString()
-                          })
+                          setFormData((prev) =>
+                            prev
+                              ? { ...prev, birthday: date.toISOString() }
+                              : null
+                          )
                         }}
                         mode="date"
                       />
@@ -397,13 +395,12 @@ export default function UserprofilePage() {
                   <Input
                     nativeID={'location'}
                     onChange={(e) =>
-                      setUserData({
-                        ...userData,
-                        location: e.nativeEvent.text
-                      })
+                      setFormData((prev) =>
+                        prev ? { ...prev, location: e.nativeEvent.text } : null
+                      )
                     }
                     textContentType={'location'}
-                    value={userData.location}
+                    value={formData?.location}
                     maxLength={48}
                   />
                 </View>
@@ -421,12 +418,11 @@ export default function UserprofilePage() {
                   <Textarea
                     nativeID={'bio'}
                     onChange={(e) =>
-                      setUserData({
-                        ...userData,
-                        bio: e.nativeEvent.text
-                      })
+                      setFormData((prev) =>
+                        prev ? { ...prev, bio: e.nativeEvent.text } : null
+                      )
                     }
-                    value={userData.bio}
+                    value={formData?.bio}
                     numberOfLines={4}
                     multiline={true}
                     maxLength={2048}

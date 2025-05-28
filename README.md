@@ -55,3 +55,9 @@ const fetchEvents = async () => {
   }
 }
 ```
+
+### Using environment variables
+
+Please copy .env.example to .env and fill in your data.
+
+Making a production build requires environment variables set in https://expo.dev

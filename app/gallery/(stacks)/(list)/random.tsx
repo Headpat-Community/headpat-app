@@ -12,11 +12,9 @@ import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { Skeleton } from '~/components/ui/skeleton'
 import FeatureAccess from '~/components/FeatureAccess'
 import { i18n } from '~/components/system/i18n'
-import { useRouter } from 'expo-router'
 
 export default function GalleryPage() {
   const { current } = useUser()
-  const router = useRouter()
 
   const [images, setImages] = React.useState<Gallery.GalleryDocumentsType[]>([])
   const [imagePrefs, setImagePrefs] = React.useState<{
