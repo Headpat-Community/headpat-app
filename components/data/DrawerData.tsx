@@ -116,7 +116,7 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
           icon={LayoutPanelLeftIcon}
           text={i18n.t('screens.gallery')}
           theme={theme}
-          route={'/gallery/(stacks)'}
+          route={'/gallery/(stacks)/(list)/newest'}
           bottomSheetModalRef={bottomSheetModalRef}
         />
         <DrawerLabel
