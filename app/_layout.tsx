@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { ThemeProvider } from '@react-navigation/native'
 import { PortalHost } from '~/components/primitives/portal'
 import {
@@ -8,7 +9,7 @@ import {
   useSegments
 } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
-import * as React from 'react'
+import React from 'react'
 import { useEffect, useState, useMemo } from 'react'
 import { BackHandler } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
@@ -32,7 +33,7 @@ import {
 } from '@react-native-firebase/messaging'
 import { requestUserPermission } from '~/components/system/pushNotifications'
 import { AlertModalProvider } from '~/components/contexts/AlertModalProvider'
-import * as Sentry from '@sentry/react-native'
+import { captureException } from '@sentry/react-native'
 import EulaModal from '~/components/system/EulaModal'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { HeaderMenuSidebar } from '~/components/data/DrawerData'
@@ -43,7 +44,6 @@ import { NotifierWrapper } from 'react-native-notifier'
 import '../components/system/backgroundTasks'
 import '../globals.css'
 import '../components/init/sentryInit'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export { ErrorBoundary } from 'expo-router'
 
@@ -156,11 +156,14 @@ export default function RootLayout() {
         const data = await databases.getDocument('config', 'legal', 'eula')
         const eula = await AsyncStorage.getItem('eula')
         if (eula !== data.version) {
+          const allKeys = await AsyncStorage.getAllKeys()
+          const eulaKeys = allKeys.filter((key) => key.startsWith('eula'))
+          await AsyncStorage.multiRemove(eulaKeys)
           setVersionData(data)
           setOpenEulaModal(true)
         }
       } catch (error) {
-        Sentry.captureException(error)
+        captureException(error)
       }
     }
     if (isMounted) {

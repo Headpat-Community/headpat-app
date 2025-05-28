@@ -61,14 +61,14 @@ export default function AddSharing() {
           .map((item) => item.requesterId)
 
         const userQueries = [
-          Query.contains('profileUrl', debouncedSearchTerm),
+          Query.search('displayName', debouncedSearchTerm),
           Query.notEqual('$id', current.$id),
           ...alreadySharedUserIds.map((id) => Query.notEqual('$id', id)),
           Query.limit(10)
         ]
 
         const communityQueries = [
-          Query.contains('name', debouncedSearchTerm),
+          Query.search('name', debouncedSearchTerm),
           ...alreadySharedCommunityIds.map((id) => Query.notEqual('$id', id)),
           Query.limit(10)
         ]

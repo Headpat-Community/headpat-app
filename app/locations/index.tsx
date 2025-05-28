@@ -37,77 +37,89 @@ import sanitizeHtml from 'sanitize-html'
 import { generatePolygonCoords } from '~/components/locations/generatePolygonCoords'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { i18n } from '~/components/system/i18n'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useFilters } from '~/lib/hooks/useFilters'
 
 export default function MutualLocationsPage() {
   const { current } = useUser()
   const { showAlert } = useAlertModal()
   const { isDarkColorScheme } = useColorScheme()
   const theme = isDarkColorScheme ? 'white' : 'black'
+  const queryClient = useQueryClient()
+  const { filters } = useFilters()
 
   const mapRef = useRef(null)
   const [userLocation, setUserLocation] = useState(null)
-  const [userStatus, setUserStatus] =
-    useState<LocationType.LocationDocumentsType>(null)
   const [modalOpen, setModalOpen] = useState<boolean>(false)
   const [filtersOpen, setFiltersOpen] = useState<boolean>(false)
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false)
-  const [events, setEvents] = useState<Events.EventsType>(null)
-  const [friendsLocations, setFriendsLocations] = useState<
-    LocationType.LocationDocumentsType[]
-  >([])
   const [currentEvent, setCurrentEvent] = useState(null)
-  const [filters, setFilters] = useState({ showEvents: true, showUsers: true })
 
-  const fetchEvents = useCallback(async () => {
-    try {
-      const currentDate = new Date()
-      const data: Events.EventsType = await databases.listDocuments(
-        'hp_db',
-        'events',
-        [
-          Query.limit(1000),
-          Query.orderAsc('date'),
-          Query.greaterThanEqual('dateUntil', currentDate.toISOString()),
-          Query.or([
-            Query.equal('locationZoneMethod', 'circle'),
-            Query.equal('locationZoneMethod', 'polygon')
-          ])
-        ]
-      )
-      setEvents(data)
-    } catch (error) {
-      showAlert('FAILED', i18n.t('location.map.failedToFetchEvents'))
-      Sentry.captureException(error)
+  const { data: events } = useQuery<Events.EventsType>({
+    queryKey: ['events'],
+    queryFn: async () => {
+      try {
+        const currentDate = new Date()
+        const data: Events.EventsType = await databases.listDocuments(
+          'hp_db',
+          'events',
+          [
+            Query.limit(1000),
+            Query.orderAsc('date'),
+            Query.greaterThanEqual('dateUntil', currentDate.toISOString()),
+            Query.or([
+              Query.equal('locationZoneMethod', 'circle'),
+              Query.equal('locationZoneMethod', 'polygon')
+            ])
+          ]
+        )
+        return data
+      } catch (error) {
+        showAlert('FAILED', i18n.t('location.map.failedToFetchEvents'))
+        Sentry.captureException(error)
+        throw error
+      }
     }
-  }, [])
+  })
 
-  const fetchUserLocations = useCallback(async () => {
-    try {
-      const data: LocationType.LocationType = await databases.listDocuments(
-        'hp_db',
-        'locations',
-        [Query.limit(1000)]
-      )
-      const promises = data.documents.map(async (doc) => {
-        if (current?.$id === doc.$id) {
-          setUserStatus(doc)
-        }
-        const userData: UserData.UserDataDocumentsType =
-          await databases.getDocument('hp_db', 'userdata', doc.$id)
-        return { ...doc, userData }
-      })
-      const results = await Promise.all(promises)
-      setFriendsLocations(results)
-    } catch (error) {
-      showAlert('FAILED', i18n.t('location.map.failedToFetchLocations'))
-      Sentry.captureException(error)
+  const { data: friendsLocations, refetch: refetchLocations } = useQuery<
+    Array<
+      LocationType.LocationDocumentsType & {
+        userData: UserData.UserDataDocumentsType
+      }
+    >
+  >({
+    queryKey: ['locations'],
+    queryFn: async () => {
+      try {
+        const data: LocationType.LocationType = await databases.listDocuments(
+          'hp_db',
+          'locations',
+          [Query.limit(1000)]
+        )
+        const promises = data.documents.map(async (doc) => {
+          const userData: UserData.UserDataDocumentsType =
+            await databases.getDocument('hp_db', 'userdata', doc.$id)
+          return { ...doc, userData }
+        })
+        return Promise.all(promises)
+      } catch (error) {
+        showAlert('FAILED', i18n.t('location.map.failedToFetchLocations'))
+        Sentry.captureException(error)
+        throw error
+      }
     }
-  }, [current])
+  })
+
+  const userStatus = useMemo(
+    () => friendsLocations?.find((loc) => loc.$id === current?.$id) || null,
+    [friendsLocations, current?.$id]
+  )
 
   const onRefresh = useCallback(() => {
-    fetchUserLocations().then(() => fetchEvents().then())
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    queryClient.invalidateQueries({ queryKey: ['events'] })
+    queryClient.invalidateQueries({ queryKey: ['locations'] })
+  }, [queryClient])
 
   useEffect(() => {
     const intervalId = setInterval(onRefresh, 10000)
@@ -119,7 +131,6 @@ export default function MutualLocationsPage() {
     const startWatching = async () => {
       let { status } = await Location.getForegroundPermissionsAsync()
       if (status !== 'granted') {
-        //setModalOpen(true)
         return
       } else {
         watcher = await Location.watchPositionAsync(
@@ -168,9 +179,6 @@ export default function MutualLocationsPage() {
           longitudeDelta: 0.0421
         })
       }
-      return () => {
-        setUserStatus(null)
-      }
     }, [current, onRefresh, userLocation])
   )
 
@@ -185,17 +193,11 @@ export default function MutualLocationsPage() {
         openModal={modalOpen}
         setOpenModal={setModalOpen}
       />
-      <FiltersModal
-        openModal={filtersOpen}
-        setOpenModal={setFiltersOpen}
-        filters={filters}
-        setFilters={setFilters}
-      />
+      <FiltersModal openModal={filtersOpen} setOpenModal={setFiltersOpen} />
       <SettingsModal
         openModal={settingsOpen}
         setOpenModal={setSettingsOpen}
         userStatus={userStatus}
-        setUserStatus={setUserStatus}
         current={current}
       />
 

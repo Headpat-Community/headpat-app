@@ -22,12 +22,12 @@ import SocialInput from '~/components/user/SocialInput'
 import React, { useCallback } from 'react'
 
 const schema = z.object({
-  telegramname: z.string().max(32, 'Max length is 32'),
-  discordname: z.string().max(32, 'Max length is 32'),
-  furaffinityname: z.string().max(32, 'Max length is 32'),
-  X_name: z.string().max(32, 'Max length is 32'),
-  twitchname: z.string().max(32, 'Max length is 32'),
-  blueskyname: z.string().max(128, 'Max length is 128')
+  telegramname: z.string().max(32, 'Max length is 32').optional().nullable(),
+  discordname: z.string().max(32, 'Max length is 32').optional().nullable(),
+  furaffinityname: z.string().max(32, 'Max length is 32').optional().nullable(),
+  X_name: z.string().max(32, 'Max length is 32').optional().nullable(),
+  twitchname: z.string().max(32, 'Max length is 32').optional().nullable(),
+  blueskyname: z.string().max(128, 'Max length is 128').optional().nullable()
 })
 
 export default function UserprofilePage() {

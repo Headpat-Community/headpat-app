@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React from 'react'
 import { useState } from 'react'
 import { Keyboard, TouchableWithoutFeedback, View } from 'react-native'
 import { Text } from '~/components/ui/text'
@@ -7,18 +7,22 @@ import { H2, Muted } from '~/components/ui/typography'
 import { router } from 'expo-router'
 import { functions, storage } from '~/lib/appwrite-client'
 import { ExecutionMethod, ID } from 'react-native-appwrite'
-import * as Sentry from '@sentry/react-native'
-import * as ImagePicker from 'react-native-image-crop-picker'
+import { captureException } from '@sentry/react-native'
+import {
+  openPicker,
+  openCropper,
+  ImageOrVideo
+} from 'react-native-image-crop-picker'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 
 export default function AvatarAdd() {
-  const [image, setImage] = useState<ImagePicker.ImageOrVideo>(null)
+  const [image, setImage] = useState<ImageOrVideo>(null)
   const { showAlert, hideAlert } = useAlertModal()
   const maxFileSize = 1.5 * 1024 * 1024 // 1.5 MB in bytes
 
   const pickImage = async () => {
     try {
-      let result = await ImagePicker.openPicker({
+      let result = await openPicker({
         mediaType: 'photo',
         writeTempFile: true
       })
@@ -58,7 +62,7 @@ export default function AvatarAdd() {
   }
 
   async function compressImage(uri: string) {
-    return await ImagePicker.openCropper({
+    return await openCropper({
       path: uri,
       mediaType: 'photo',
       width: 512,
@@ -102,7 +106,7 @@ export default function AvatarAdd() {
       handleFinish()
     } catch (error) {
       showAlert('FAILED', 'Error uploading image.')
-      Sentry.captureMessage(error, 'log')
+      captureException(error)
     }
   }
 

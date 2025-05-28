@@ -1,6 +1,6 @@
 import React from 'react'
 import { TouchableOpacity, View } from 'react-native'
-import { Link } from 'expo-router'
+import { router } from 'expo-router'
 import { Notifications } from '~/lib/types/collections'
 import { Card, CardContent } from '~/components/ui/card'
 import { Muted } from '~/components/ui/typography'
@@ -21,12 +21,13 @@ const NotificationItem = React.memo(
     }
 
     return notification.userData ? (
-      <Link
-        href={{
-          pathname: '/user/(stacks)/[userId]',
-          params: { userId: notification.userData.$id }
+      <TouchableOpacity
+        onPress={() => {
+          router.push({
+            pathname: '/user/(stacks)/[userId]',
+            params: { userId: notification.userData.$id }
+          })
         }}
-        asChild
       >
         <Card className={'my-2'}>
           <CardContent className={'pb-0'}>
@@ -37,9 +38,11 @@ const NotificationItem = React.memo(
                     src={getUserAvatar(notification.userData.avatarId) || null}
                   />
                   <AvatarFallback>
-                    {notification.userData.displayName
-                      .charAt(0)
-                      .toUpperCase() || 'U'}
+                    <Text>
+                      {notification.userData.displayName
+                        .charAt(0)
+                        .toUpperCase() || 'U'}
+                    </Text>
                   </AvatarFallback>
                 </Avatar>
               </View>
@@ -53,14 +56,16 @@ const NotificationItem = React.memo(
             </View>
           </CardContent>
         </Card>
-      </Link>
+      </TouchableOpacity>
     ) : (
       <Card className={'my-2'}>
         <CardContent className={'pb-0'}>
           <View className={'flex flex-row items-center my-4'}>
             <View className={''}>
               <Avatar alt={'User Avatar'}>
-                <AvatarFallback>{'U'}</AvatarFallback>
+                <AvatarFallback>
+                  <Text>{'U'}</Text>
+                </AvatarFallback>
               </Avatar>
             </View>
             <View className={'ml-4'}>

@@ -5,7 +5,7 @@ import { Announcements } from '~/lib/types/collections'
 import { databases } from '~/lib/appwrite-client'
 import { Query } from 'react-native-appwrite'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
-import * as Sentry from '@sentry/react-native'
+import { captureException } from '@sentry/react-native'
 import SlowInternet from '~/components/views/SlowInternet'
 import { ScrollView } from 'react-native-gesture-handler'
 import { Text } from '~/components/ui/text'
@@ -70,7 +70,7 @@ export default function AnnouncementsPage() {
             'FAILED',
             'Failed to fetch announcements. Please try again later.'
           )
-          Sentry.captureException(error)
+          captureException(error)
           return {
             total: 0,
             documents: []

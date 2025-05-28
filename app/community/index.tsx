@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react'
 import { ScrollView, View } from 'react-native'
 import { functions } from '~/lib/appwrite-client'
-import * as Sentry from '@sentry/react-native'
+import { captureException } from '@sentry/react-native'
 import { Community } from '~/lib/types/collections'
 import { ExecutionMethod } from 'react-native-appwrite'
 import CommunityItem from '~/components/community/CommunityItem'
@@ -44,7 +44,7 @@ export default function CommunitiesPage() {
           'FAILED',
           'Failed to fetch communities. Please try again later.'
         )
-        Sentry.captureException(error)
+        captureException(error)
         return []
       }
     },

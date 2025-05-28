@@ -8,7 +8,7 @@ import { Image } from 'expo-image'
 import { Text } from '~/components/ui/text'
 import { EyeIcon } from 'lucide-react-native'
 import { useColorScheme } from '~/lib/useColorScheme'
-import * as Sentry from '@sentry/react-native'
+import { captureException } from '@sentry/react-native'
 import { useUser } from '~/components/contexts/UserContext'
 import { ExecutionMethod } from 'react-native-appwrite'
 import sanitizeHtml from 'sanitize-html'
@@ -44,7 +44,7 @@ export default function UserPage() {
         const dataCommunityJson = JSON.parse(data.responseBody)
         return dataCommunityJson as Community.CommunityDocumentsType
       } catch (error) {
-        Sentry.captureException(error)
+        captureException(error)
         throw error
       }
     },

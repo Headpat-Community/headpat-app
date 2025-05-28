@@ -9,7 +9,7 @@ import { H4, Muted } from '~/components/ui/typography'
 import { useState } from 'react'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { ExecutionMethod } from 'react-native-appwrite'
-import * as Sentry from '@sentry/react-native'
+import { captureException } from '@sentry/react-native'
 import { router } from 'expo-router'
 import {
   AlertDialog,
@@ -97,7 +97,7 @@ export default function SecurityPage() {
       setUser(null)
     } catch (error) {
       showAlert('FAILED', 'Failed to delete account')
-      Sentry.captureException(error)
+      captureException(error)
     } finally {
       hideAlert()
     }

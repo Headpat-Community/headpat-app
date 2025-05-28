@@ -16,14 +16,18 @@ import { databases } from '~/lib/appwrite-client'
 import { Switch } from '~/components/ui/switch'
 import { Separator } from '~/components/ui/separator'
 import { i18n } from '~/components/system/i18n'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useAlertModal } from '~/components/contexts/AlertModalProvider'
+import * as Sentry from '@sentry/react-native'
 
 export default function SettingsModal({
   openModal,
   setOpenModal,
   userStatus,
-  setUserStatus,
   current
 }) {
+  const queryClient = useQueryClient()
+  const { showAlert } = useAlertModal()
   const [currentStatus, setCurrentStatus] = React.useState(userStatus)
   const prevOpenModal = React.useRef(openModal)
 
@@ -34,13 +38,29 @@ export default function SettingsModal({
     prevOpenModal.current = openModal
   }, [openModal, userStatus])
 
+  const updateMutation = useMutation({
+    mutationFn: async (data: { status: string; statusColor: string }) => {
+      if (!current?.$id) throw new Error('No user ID')
+      await databases.updateDocument('hp_db', 'locations', current.$id, data)
+      return data
+    },
+    onSuccess: () => {
+      showAlert('SUCCESS', 'Status updated successfully')
+      queryClient.invalidateQueries({ queryKey: ['locations'] })
+    },
+    onError: (error) => {
+      showAlert('FAILED', 'Failed to update status')
+      Sentry.captureException(error)
+    }
+  })
+
   const saveStatus = async () => {
     try {
-      await databases.updateDocument('hp_db', 'locations', current.$id, {
+      await updateMutation.mutateAsync({
         status: currentStatus.status,
         statusColor: currentStatus.statusColor
       })
-      setUserStatus(currentStatus)
+      setOpenModal(false)
     } catch (e) {
       console.error(e)
     }
@@ -98,7 +118,10 @@ export default function SettingsModal({
           </View>
         </View>
         <AlertDialogFooter>
-          <AlertDialogAction onPress={() => saveStatus()}>
+          <AlertDialogAction
+            onPress={saveStatus}
+            disabled={updateMutation.isPending}
+          >
             <Text>{i18n.t('location.map.status.apply')}</Text>
           </AlertDialogAction>
         </AlertDialogFooter>

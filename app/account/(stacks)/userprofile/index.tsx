@@ -15,7 +15,7 @@ import { Separator } from '~/components/ui/separator'
 import { H1, H4, Muted } from '~/components/ui/typography'
 import React, { useCallback, useState } from 'react'
 import { useUser } from '~/components/contexts/UserContext'
-import * as Sentry from '@sentry/react-native'
+import { captureException } from '@sentry/react-native'
 import { UserData } from '~/lib/types/collections'
 import { useFocusEffect } from '@react-navigation/core'
 import { Checkbox } from '~/components/ui/checkbox'
@@ -66,7 +66,7 @@ export default function UserprofilePage() {
       setIndexable(current.prefs.indexingEnabled)
     } catch (error) {
       showAlert('FAILED', 'Failed to fetch user data. Please try again later.')
-      Sentry.captureException(error)
+      captureException(error)
     } finally {
       setRefreshing(false)
     }
@@ -105,13 +105,13 @@ export default function UserprofilePage() {
         showAlert('SUCCESS', 'User data updated successfully.')
       } catch (error) {
         showAlert('FAILED', 'Failed to save user data')
-        Sentry.captureException(error)
+        captureException(error)
       }
       setIsDisabled(false)
     } catch (error) {
       setIsDisabled(false)
       console.error(error)
-      Sentry.captureException(error)
+      captureException(error)
       showAlert('FAILED', 'An error occurred. Please try again later.')
     }
   }
@@ -133,7 +133,7 @@ export default function UserprofilePage() {
     } catch (error) {
       showAlert('FAILED', 'Failed to update preference.')
       console.error(error)
-      Sentry.captureException(error)
+      captureException(error)
     }
   }
 

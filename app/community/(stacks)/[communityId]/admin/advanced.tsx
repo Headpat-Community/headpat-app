@@ -17,7 +17,7 @@ import { databases, functions } from '~/lib/appwrite-client'
 import { Community } from '~/lib/types/collections'
 import { useFocusEffect } from '@react-navigation/core'
 import { z } from 'zod'
-import * as Sentry from '@sentry/react-native'
+import { captureException } from '@sentry/react-native'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { ExecutionMethod } from 'react-native-appwrite'
 import {
@@ -103,10 +103,10 @@ export default function Page() {
         }
       } catch (error) {
         showAlert('FAILED', 'Failed to save community settings')
-        Sentry.captureException(error)
+        captureException(error)
       }
     } catch (error) {
-      Sentry.captureException(error)
+      captureException(error)
       showAlert('FAILED', 'An error occurred. Please try again later.')
     } finally {
     }
@@ -149,7 +149,7 @@ export default function Page() {
     } catch (error) {
       hideAlert()
       showAlert('FAILED', 'Failed to delete community')
-      Sentry.captureException(error)
+      captureException(error)
     }
   }
 

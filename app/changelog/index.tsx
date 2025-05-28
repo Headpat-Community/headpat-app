@@ -4,7 +4,7 @@ import { FlatList, View } from 'react-native'
 import { Text } from '~/components/ui/text'
 import { H1 } from '~/components/ui/typography'
 import { databases } from '~/lib/appwrite-client'
-import * as Sentry from '@sentry/react-native'
+import { captureException } from '@sentry/react-native'
 import { Query } from 'react-native-appwrite'
 import ChangelogItem from '~/components/FlatlistItems/ChangelogItem'
 import { i18n } from '~/components/system/i18n'
@@ -28,7 +28,7 @@ export default function ListComponent() {
           ])
         return changelogData.documents
       } catch (error) {
-        Sentry.captureException(error)
+        captureException(error)
         throw error
       }
     },

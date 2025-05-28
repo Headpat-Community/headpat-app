@@ -9,14 +9,14 @@ import {
   stopLocationUpdatesAsync,
   Accuracy
 } from 'expo-location'
-import { BackgroundFetchStatus, getStatusAsync } from 'expo-background-fetch'
+import { BackgroundTaskStatus, getStatusAsync } from 'expo-background-task'
 import { isTaskRegisteredAsync } from 'expo-task-manager'
 import { databases } from '~/lib/appwrite-client'
 import { useUser } from '~/components/contexts/UserContext'
 import { addBreadcrumb, captureException } from '@sentry/react-native'
 
 interface LocationContextValue {
-  status: BackgroundFetchStatus | null
+  status: BackgroundTaskStatus | null
   isRegistered: boolean
   checkStatus: () => Promise<void>
   requestPermissions: () => Promise<void>
@@ -43,7 +43,7 @@ interface LocationProviderProps {
 export const LocationProvider: React.FC<LocationProviderProps> = ({
   children
 }) => {
-  const [status, setStatus] = useState<BackgroundFetchStatus | null>(null)
+  const [status, setStatus] = useState<BackgroundTaskStatus | null>(null)
   const [isRegistered, setIsRegistered] = useState<boolean | null>(null)
   const { current } = useUser()
 

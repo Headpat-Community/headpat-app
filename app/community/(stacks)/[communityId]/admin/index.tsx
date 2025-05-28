@@ -16,7 +16,7 @@ import { databases } from '~/lib/appwrite-client'
 import { Community } from '~/lib/types/collections'
 import { useFocusEffect } from '@react-navigation/core'
 import { z } from 'zod'
-import * as Sentry from '@sentry/react-native'
+import { captureException } from '@sentry/react-native'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { Input } from '~/components/ui/input'
 import { Textarea } from '~/components/ui/textarea'
@@ -85,13 +85,13 @@ export default function Page() {
         showAlert('SUCCESS', 'Community data updated successfully.')
       } catch (error) {
         showAlert('FAILED', 'Failed to save community data')
-        Sentry.captureException(error)
+        captureException(error)
       }
       setIsDisabled(false)
     } catch (error) {
       setIsDisabled(false)
       console.error(error)
-      Sentry.captureException(error)
+      captureException(error)
       showAlert('FAILED', 'An error occurred. Please try again later.')
     }
   }

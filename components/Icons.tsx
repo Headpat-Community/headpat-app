@@ -54,10 +54,9 @@ import {
   Users,
   X
 } from 'lucide-react-native'
-import { SiGithub, IconType } from '@icons-pack/react-simple-icons'
 
 import { cssInterop } from 'nativewind'
-function interopIcon(icon: LucideIcon | IconType) {
+function interopIcon(icon: LucideIcon) {
   cssInterop(icon, {
     className: {
       target: 'style',
@@ -109,7 +108,6 @@ interopIcon(ChevronRight)
 interopIcon(ChevronLeft)
 interopIcon(ChevronUp)
 interopIcon(Cloud)
-interopIcon(SiGithub)
 interopIcon(LifeBuoy)
 interopIcon(LogOut)
 interopIcon(Mail)
@@ -157,7 +155,6 @@ export {
   Ear,
   Fan,
   GalleryHorizontal,
-  SiGithub,
   Info,
   Italic,
   Lamp,

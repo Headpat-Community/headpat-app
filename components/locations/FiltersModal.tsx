@@ -13,13 +13,11 @@ import { Label } from '~/components/ui/label'
 import { Text } from '~/components/ui/text'
 import React from 'react'
 import { i18n } from '~/components/system/i18n'
+import { useFilters } from '../../lib/hooks/useFilters'
 
-export default function FiltersModal({
-  openModal,
-  setOpenModal,
-  filters,
-  setFilters
-}) {
+export default function FiltersModal({ openModal, setOpenModal }) {
+  const { filters, setFilters } = useFilters()
+
   return (
     <AlertDialog onOpenChange={setOpenModal} open={openModal}>
       <AlertDialogContent>

@@ -19,7 +19,7 @@ import { ExecutionMethod } from 'react-native-appwrite'
 import { calculateTimeLeftEvent } from '~/components/calculateTimeLeft'
 import { Image } from 'expo-image'
 import { useFocusEffect } from '@react-navigation/core'
-import * as Sentry from '@sentry/react-native'
+import { captureException } from '@sentry/react-native'
 import { Skeleton } from '~/components/ui/skeleton'
 import { i18n } from '~/components/system/i18n'
 import React from 'react'
@@ -55,7 +55,7 @@ export default function HomeView() {
         return response?.title ? response : null
       } catch (error) {
         console.error(error)
-        Sentry.captureException(error)
+        captureException(error)
         return null
       }
     },
@@ -74,7 +74,7 @@ export default function HomeView() {
           `${current.$id}`
         )
       } catch (error) {
-        Sentry.captureException(error)
+        captureException(error)
         return null
       }
     },

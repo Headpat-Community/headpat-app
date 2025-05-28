@@ -128,7 +128,7 @@ export default function ShareLocationView() {
   )
 
   const sharingButtonHandle = () => {
-    if (status === 3) {
+    if (status === 2) {
       if (isRegistered) {
         unregisterBackgroundFetch().then()
       } else {
@@ -214,13 +214,13 @@ export default function ShareLocationView() {
         }
         onPress={sharingButtonHandle}
       >
-        {status === 3 ? (
+        {status === 2 ? (
           <NavigationIcon className={'h-4 w-4'} color={theme} size={16} />
         ) : (
           <NavigationOffIcon className={'h-4 w-4'} color={theme} size={16} />
         )}
         <Text className={'text-center font-bold items-center text-foreground'}>
-          {status === 3
+          {status === 2
             ? isRegistered
               ? i18n.t('location.share.button.stop')
               : i18n.t('location.share.button.start')

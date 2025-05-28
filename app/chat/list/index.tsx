@@ -12,7 +12,7 @@ import { Text } from '~/components/ui/text'
 import ConversationSearchItem from '~/components/FlatlistItems/ConversationSearchItem'
 import { useFocusEffect } from '@react-navigation/core'
 import FeatureAccess from '~/components/FeatureAccess'
-import * as Sentry from '@sentry/react-native'
+import { captureException } from '@sentry/react-native'
 import { i18n } from '~/components/system/i18n'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
@@ -100,7 +100,7 @@ export default function ConversationsView() {
         )
         return userDataResults as UserData.UserDataDocumentsType[]
       } catch (error) {
-        Sentry.captureException(error)
+        captureException(error)
         console.error('Error searching users', error)
         throw error
       }

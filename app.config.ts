@@ -92,18 +92,10 @@ export default ({ config }) => ({
     '@react-native-firebase/messaging',
     'expo-localization',
     'expo-apple-authentication',
-    'expo-background-fetch',
+    'expo-background-task',
     'expo-web-browser',
     [
       'expo-task-manager',
-      {
-        ios: {
-          minimumOSVersion: '15'
-        }
-      }
-    ],
-    [
-      'expo-background-fetch',
       {
         ios: {
           minimumOSVersion: '15'
