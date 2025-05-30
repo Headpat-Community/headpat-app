@@ -31,16 +31,18 @@ const schema = z.object({
   profileUrl: z
     .string()
     .min(1, 'Profile URL cannot be blank')
-    .max(48, 'Max length is 48'),
+    .max(48, 'Max length is 48')
+    .nullable(),
   displayName: z
     .string()
     .min(3, 'Display Name should be at least 3 characters')
-    .max(48, 'Max length is 48'),
-  status: z.string().max(24, 'Max length is 24'),
-  pronouns: z.string().max(16, 'Max length is 16'),
-  birthday: z.string().max(32, 'Max length is 32'),
-  location: z.string().max(48, 'Max length is 48'),
-  bio: z.string().max(2048, 'Max length is 2048')
+    .max(48, 'Max length is 48')
+    .nullable(),
+  status: z.string().max(24, 'Max length is 24').optional().nullable(),
+  pronouns: z.string().max(16, 'Max length is 16').optional().nullable(),
+  birthday: z.string().max(32, 'Max length is 32').optional().nullable(),
+  location: z.string().max(48, 'Max length is 48').optional().nullable(),
+  bio: z.string().max(2048, 'Max length is 2048').optional().nullable()
 })
 
 export default function UserprofilePage() {
