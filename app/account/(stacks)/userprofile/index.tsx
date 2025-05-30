@@ -297,11 +297,9 @@ export default function UserprofilePage() {
                 <View>
                   <Input
                     nativeID={'displayName'}
-                    onChange={(e) =>
+                    onChangeText={(text) =>
                       setFormData((prev) =>
-                        prev
-                          ? { ...prev, displayName: e.nativeEvent.text }
-                          : null
+                        prev ? { ...prev, displayName: text } : null
                       )
                     }
                     textContentType={'name'}
@@ -321,9 +319,9 @@ export default function UserprofilePage() {
                 <View>
                   <Input
                     nativeID={'status'}
-                    onChange={(e) =>
+                    onChangeText={(text) =>
                       setFormData((prev) =>
-                        prev ? { ...prev, status: e.nativeEvent.text } : null
+                        prev ? { ...prev, status: text } : null
                       )
                     }
                     value={formData?.status}
@@ -342,9 +340,9 @@ export default function UserprofilePage() {
                 <View>
                   <Input
                     nativeID={'pronouns'}
-                    onChange={(e) =>
+                    onChangeText={(text) =>
                       setFormData((prev) =>
-                        prev ? { ...prev, pronouns: e.nativeEvent.text } : null
+                        prev ? { ...prev, pronouns: text } : null
                       )
                     }
                     value={formData?.pronouns}
@@ -365,6 +363,12 @@ export default function UserprofilePage() {
                   <Button onPress={() => setShowDatePicker(!showDatePicker)}>
                     <Text>{showDatePicker ? 'Cancel' : 'Select date'}</Text>
                   </Button>
+                  {formData?.birthday && (
+                    <Text className="mt-2">
+                      Current birthday:{' '}
+                      {new Date(formData.birthday).toLocaleDateString()}
+                    </Text>
+                  )}
                   {showDatePicker && (
                     <>
                       <DatePicker
@@ -394,9 +398,9 @@ export default function UserprofilePage() {
                 <View>
                   <Input
                     nativeID={'location'}
-                    onChange={(e) =>
+                    onChangeText={(text) =>
                       setFormData((prev) =>
-                        prev ? { ...prev, location: e.nativeEvent.text } : null
+                        prev ? { ...prev, location: text } : null
                       )
                     }
                     textContentType={'location'}
@@ -417,11 +421,11 @@ export default function UserprofilePage() {
                 <View>
                   <Textarea
                     nativeID={'bio'}
-                    onChange={(e) =>
+                    onChangeText={(text) => {
                       setFormData((prev) =>
-                        prev ? { ...prev, bio: e.nativeEvent.text } : null
+                        prev ? { ...prev, bio: text } : null
                       )
-                    }
+                    }}
                     value={formData?.bio}
                     numberOfLines={4}
                     multiline={true}

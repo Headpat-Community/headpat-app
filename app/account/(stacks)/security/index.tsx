@@ -122,7 +122,7 @@ export default function SecurityPage() {
                 <Label nativeID={'email'}>New E-Mail</Label>
                 <Input
                   nativeID={'email'}
-                  onChange={(e) => setEmail(e.nativeEvent.text.trim())}
+                  onChangeText={(text) => setEmail(text.trim())}
                   textContentType={'emailAddress'}
                   value={email}
                 />
@@ -134,7 +134,7 @@ export default function SecurityPage() {
                   textContentType={'password'}
                   passwordRules={'minlength: 8'}
                   secureTextEntry
-                  onChange={(e) => setEmailPassword(e.nativeEvent.text.trim())}
+                  onChangeText={(text) => setEmailPassword(text.trim())}
                   value={emailPassword}
                 />
               </View>
@@ -160,7 +160,7 @@ export default function SecurityPage() {
                   textContentType={'password'}
                   secureTextEntry
                   passwordRules={'minlength: 8'}
-                  onChange={(e) => setOldPassword(e.nativeEvent.text.trim())}
+                  onChangeText={(text) => setOldPassword(text.trim())}
                   value={oldPassword}
                 />
               </View>
@@ -171,7 +171,7 @@ export default function SecurityPage() {
                   textContentType={'newPassword'}
                   secureTextEntry
                   passwordRules={'minlength: 8'}
-                  onChange={(e) => setNewPassword(e.nativeEvent.text.trim())}
+                  onChangeText={(text) => setNewPassword(text.trim())}
                   value={newPassword}
                 />
               </View>

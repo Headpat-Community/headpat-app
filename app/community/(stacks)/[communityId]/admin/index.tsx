@@ -229,10 +229,10 @@ export default function Page() {
                 <View>
                   <Textarea
                     nativeID={'description'}
-                    onChange={(e) =>
+                    onChangeText={(text) =>
                       setCommunity({
                         ...community,
-                        description: e.nativeEvent.text
+                        description: text
                       })
                     }
                     value={community.description}

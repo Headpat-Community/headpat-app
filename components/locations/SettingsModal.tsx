@@ -83,10 +83,10 @@ export default function SettingsModal({
             <Input
               nativeID={'status'}
               value={currentStatus?.status}
-              onChange={(e) =>
+              onChangeText={(text) =>
                 setCurrentStatus({
                   ...currentStatus,
-                  status: e.nativeEvent.text
+                  status: text
                 })
               }
               maxLength={40}
