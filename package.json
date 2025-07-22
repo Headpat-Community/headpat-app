@@ -1,36 +1,4 @@
 {
-  "name": "headpat-app",
-  "main": "expo-router/entry",
-  "version": "1.0.0",
-  "scripts": {
-    "prebuild": "expo prebuild",
-    "start": "expo start -c",
-    "dev": "expo start",
-    "dev:ios": "expo start -c --ios",
-    "dev:android": "expo start -c --android",
-    "dev:web": "expo start -c --web",
-    "web": "expo start -c --web",
-    "format": "prettier --write .",
-    "doctor": "npx expo-doctor@latest",
-    "build:ios": "eas build --platform ios",
-    "build:ios:local": "eas build --platform ios --local",
-    "build:ios:submit": "eas build --platform ios --auto-submit",
-    "build:android": "eas build --platform android",
-    "build:android:local": "eas build --platform android --local",
-    "build:all": "eas build --platform all",
-    "submit:ios": "eas submit -p ios",
-    "submit:android": "eas submit -p android",
-    "android": "expo run:android",
-    "ios": "expo run:ios",
-    "ios:clean": "expo prebuild --clean && expo run:ios",
-    "lint": "eslint ."
-  },
-  "prettier": {
-    "trailingComma": "none",
-    "tabWidth": 2,
-    "semi": false,
-    "singleQuote": true
-  },
   "dependencies": {
     "@gorhom/bottom-sheet": "^5.1.5",
     "@hookform/resolvers": "^5.0.1",
@@ -123,5 +91,37 @@
     "tailwindcss": "^3.4.15",
     "typescript": "^5.6.3"
   },
-  "private": true
+  "main": "expo-router/entry",
+  "name": "headpat-app",
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "none"
+  },
+  "private": true,
+  "scripts": {
+    "android": "expo run:android",
+    "build:all": "eas build --platform all",
+    "build:android": "eas build --platform android",
+    "build:android:local": "eas build --platform android --local",
+    "build:ios": "eas build --platform ios",
+    "build:ios:local": "eas build --platform ios --local",
+    "build:ios:submit": "eas build --platform ios --auto-submit",
+    "dev": "expo start",
+    "dev:android": "expo start -c --android",
+    "dev:ios": "expo start -c --ios",
+    "dev:web": "expo start -c --web",
+    "doctor": "npx expo-doctor@latest",
+    "format": "prettier --write .",
+    "ios": "expo run:ios",
+    "ios:clean": "expo prebuild --clean && expo run:ios",
+    "lint": "eslint .",
+    "prebuild": "expo prebuild",
+    "start": "expo start -c",
+    "submit:android": "eas submit -p android",
+    "submit:ios": "eas submit -p ios",
+    "web": "expo start -c --web"
+  },
+  "version": "1.0.0"
 }
