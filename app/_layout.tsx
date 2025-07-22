@@ -13,6 +13,7 @@ import React from 'react'
 import { useEffect, useState, useMemo } from 'react'
 import { BackHandler } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { ProfileThemeToggle } from '~/components/ThemeToggle'
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar'
 import { NAV_THEME } from '~/lib/constants'
@@ -177,51 +178,53 @@ export default function RootLayout() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <ThemeProvider value={theme}>
-        <NotifierWrapper>
-          <UserProvider>
-            <CacheProvider>
-              <LanguageProvider>
-                <AlertModalProvider>
-                  <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
-                  <EulaModal
-                    isOpen={openEulaModal}
-                    setOpen={setOpenEulaModal}
-                    versionData={versionData}
-                  />
-                  <LocationProvider>
-                    <BottomSheetModalProvider>
-                      <Stack>
-                        {DrawerScreensData.map((screen: DrawerProps) => (
-                          <Stack.Screen
-                            key={screen.location}
-                            name={screen.location}
-                            options={{
-                              keyboardHandlingEnabled: true,
-                              headerTitleAlign: 'left',
-                              headerShown: screen.headerShown,
-                              headerTitle: screen.title,
-                              headerLargeTitle: screen.headerLargeTitle,
-                              headerLeft: () =>
-                                screen.headerLeft || <HeaderMenuSidebar />,
-                              headerRight: () =>
-                                screen.headerRight || <ProfileThemeToggle />,
-                              gestureEnabled: screen.swipeEnabled
-                            }}
-                          />
-                        ))}
-                      </Stack>
-                    </BottomSheetModalProvider>
-                  </LocationProvider>
-                  <PortalHost />
-                </AlertModalProvider>
-              </LanguageProvider>
-            </CacheProvider>
-          </UserProvider>
-        </NotifierWrapper>
-      </ThemeProvider>
-    </GestureHandlerRootView>
+    <SafeAreaProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <ThemeProvider value={theme}>
+          <NotifierWrapper>
+            <UserProvider>
+              <CacheProvider>
+                <LanguageProvider>
+                  <AlertModalProvider>
+                    <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
+                    <EulaModal
+                      isOpen={openEulaModal}
+                      setOpen={setOpenEulaModal}
+                      versionData={versionData}
+                    />
+                    <LocationProvider>
+                      <BottomSheetModalProvider>
+                        <Stack>
+                          {DrawerScreensData.map((screen: DrawerProps) => (
+                            <Stack.Screen
+                              key={screen.location}
+                              name={screen.location}
+                              options={{
+                                keyboardHandlingEnabled: true,
+                                headerTitleAlign: 'left',
+                                headerShown: screen.headerShown,
+                                headerTitle: screen.title,
+                                headerLargeTitle: screen.headerLargeTitle,
+                                headerLeft: () =>
+                                  screen.headerLeft || <HeaderMenuSidebar />,
+                                headerRight: () =>
+                                  screen.headerRight || <ProfileThemeToggle />,
+                                gestureEnabled: screen.swipeEnabled
+                              }}
+                            />
+                          ))}
+                        </Stack>
+                      </BottomSheetModalProvider>
+                    </LocationProvider>
+                    <PortalHost />
+                  </AlertModalProvider>
+                </LanguageProvider>
+              </CacheProvider>
+            </UserProvider>
+          </NotifierWrapper>
+        </ThemeProvider>
+      </GestureHandlerRootView>
+    </SafeAreaProvider>
   )
 }
 

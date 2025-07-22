@@ -1,28 +1,28 @@
-import { View } from 'react-native'
-import { Button } from '~/components/ui/button'
-import { Input } from '~/components/ui/input'
-import { Text } from '~/components/ui/text'
-import { H1, Muted } from '~/components/ui/typography'
-import React from 'react'
-import { account } from '~/lib/appwrite-client'
-import { useUser } from '~/components/contexts/UserContext'
+import { useFocusEffect } from '@react-navigation/core'
+import * as Sentry from '@sentry/react-native'
+import { makeRedirectUri } from 'expo-auth-session'
 import { router } from 'expo-router'
+import * as WebBrowser from 'expo-web-browser'
+import React from 'react'
+import { View } from 'react-native'
 import { OAuthProvider } from 'react-native-appwrite'
+import { ScrollView } from 'react-native-gesture-handler'
+import { z } from 'zod'
+import { useAlertModal } from '~/components/contexts/AlertModalProvider'
+import { useUser } from '~/components/contexts/UserContext'
 import AppleIcon from '~/components/icons/AppleIcon'
 import DiscordIcon from '~/components/icons/DiscordIcon'
 import GithubIcon from '~/components/icons/GithubIcon'
 import GoogleIcon from '~/components/icons/GoogleIcon'
+import MicrosoftIcon from '~/components/icons/MicrosoftIcon'
 import SpotifyIcon from '~/components/icons/SpotifyIcon'
 import TwitchIcon from '~/components/icons/TwitchIcon'
-import MicrosoftIcon from '~/components/icons/MicrosoftIcon'
-import { makeRedirectUri } from 'expo-auth-session'
-import * as WebBrowser from 'expo-web-browser'
-import * as Sentry from '@sentry/react-native'
-import { useFocusEffect } from '@react-navigation/core'
-import { useAlertModal } from '~/components/contexts/AlertModalProvider'
-import { ScrollView } from 'react-native-gesture-handler'
 import { SocialLoginGrid } from '~/components/SocialLoginGrid'
-import { z } from 'zod'
+import { Button } from '~/components/ui/button'
+import { Input } from '~/components/ui/input'
+import { Text } from '~/components/ui/text'
+import { H1, Muted } from '~/components/ui/typography'
+import { account } from '~/lib/appwrite-client'
 
 const loginSchema = z.object({
   email: z.string().min(1, 'E-Mail is required').email('Invalid email format'),
@@ -64,29 +64,32 @@ export default function LoginScreen() {
     }
   }
 
-  WebBrowser.maybeCompleteAuthSession()
-  const redirectTo = makeRedirectUri()
-  const redirect = redirectTo.includes('exp://')
-    ? redirectTo
-    : `${redirectTo}headpat.app`
+  // Create deep link that works across Expo environments
+  // Ensure localhost is used for the hostname to validation error for success/failure URLs
+  const deeplink = new URL(makeRedirectUri({ preferLocalhost: true }))
+  const scheme = `${deeplink.protocol}//`
 
+  WebBrowser.maybeCompleteAuthSession()
   const handleOAuth2Login = async (provider: OAuthProvider) => {
     try {
-      const data = account.createOAuth2Token(provider, `${redirect}`)
-      const res = await WebBrowser.openAuthSessionAsync(
-        `${data}`,
-        `${redirectTo}`
+      const data = account.createOAuth2Token(
+        provider,
+        `${deeplink}`,
+        `${deeplink}`
       )
+      const res = await WebBrowser.openAuthSessionAsync(`${data}`, `${scheme}`)
 
       if (res.type === 'success') {
-        const { url } = res
-        const urlWithoutFragment = url.split('#')[0]
+        const url = new URL(res.url)
+        const secret = url.searchParams.get('secret')
+        const userId = url.searchParams.get('userId')
 
-        const params = new URLSearchParams(urlWithoutFragment.split('?')[1])
-        const secret = params.get('secret')
-        const userId = params.get('userId')
+        if (secret && userId) {
+          await loginOAuth(userId, secret)
+        } else {
+          showAlert('FAILED', 'An error occurred.')
+        }
 
-        await loginOAuth(userId, secret)
         router.replace('/')
       }
     } catch (error) {

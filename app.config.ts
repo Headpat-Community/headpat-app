@@ -2,10 +2,10 @@ export default ({ config }) => ({
   ...config,
   name: 'Headpat',
   slug: 'headpat-app',
-  version: '0.8.10',
+  version: '0.8.11',
   orientation: 'portrait',
   icon: './assets/images/icon.png',
-  scheme: 'headpatapp',
+  scheme: 'appwrite-callback-hp-main',
   userInterfaceStyle: 'automatic',
   runtimeVersion: {
     policy: 'appVersion'
