@@ -190,9 +190,8 @@ export const DrawerScreensData: DrawerProps[] = [
     headerLeft: <HeaderSidebarBackButton />
   },
   {
-    location: 'changelog/index',
-    title: i18n.t('screens.changelog'),
-    headerLeft: <HeaderSidebarBackButton />
+    location: 'changelog',
+    title: i18n.t('screens.changelog')
   },
   {
     location: '+not-found',

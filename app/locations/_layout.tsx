@@ -1,5 +1,9 @@
 import { Tabs } from 'expo-router'
-import { MapIcon, PersonStandingIcon } from 'lucide-react-native'
+import {
+  CalendarRangeIcon,
+  MapIcon,
+  PersonStandingIcon
+} from 'lucide-react-native'
 import { useUser } from '~/components/contexts/UserContext'
 import FeatureAccess from '~/components/FeatureAccess'
 import { i18n } from '~/components/system/i18n'
@@ -27,6 +31,17 @@ export default function TabsLayout() {
               return <PersonStandingIcon color={color} size={size} />
             },
             href: current?.$id ? `/locations/share/` : null,
+            headerShown: false
+          }}
+        />
+        <Tabs.Screen
+          name="nearbyEvents"
+          options={{
+            title: i18n.t('location.nearbyEvents.title'),
+            tabBarIcon({ color, size }) {
+              return <CalendarRangeIcon color={color} size={size} />
+            },
+            href: '/locations/nearbyEvents',
             headerShown: false
           }}
         />

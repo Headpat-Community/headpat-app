@@ -1,161 +1,180 @@
 {
-  "language": "Nederlands",
   "drawer": {
     "switchTheme": "Thema wisselen"
   },
-  "screens": {
-    "home": "Startpagina",
-    "profile": "Profiel",
-    "chat": "Chat",
-    "conversations": "Conversaties",
-    "gallery": "Galerij",
-    "locations": "Locaties",
-    "map": "Kaart",
-    "shareMyLocation": "Deel mijn locatie",
-    "announcements": "Aankondigingen",
-    "events": "Evenementen",
-    "users": "Gebruikers",
-    "notifications": "Meldingen",
-    "myProfile": "Mijn Profiel",
-    "followers": "Volgers",
-    "following": "Volgend",
-    "connections": "Connecties",
-    "mutuals": "Mutuals",
-    "communities": "Communities",
-    "account": "Account",
-    "login": "Inloggen",
-    "register": "Registreren",
-    "changeLanguage": "Taal wijzigen",
-    "languages": "Talen",
-    "legal": "Juridisch",
-    "support": "Ondersteuning",
-    "changelog": "Wijzigingen"
-  },
-  "main": {
-    "refreshing": "Vernieuwen...",
-    "loading": "Laden...",
-    "next": "Volgende",
-    "back": "Terug",
-    "confirm": "Bevestigen",
-    "cancel": "Annuleren"
-  },
-  "time": {
-    "ended": "Beëindigd",
-    "infinite": "Onbeperkt",
-    "eventHasEnded": "Evenement is afgelopen",
-    "secondsLeft": "seconden over",
-    "minutesLeft": "minuten over",
-    "hoursLeft": "uren over",
-    "daysLeft": "dagen over",
-    "weeksLeft": "weken over",
-    "secondsUntilEnd": "seconden tot einde",
-    "minutesUntilEnd": "minuten tot einde",
-    "hoursUntilEnd": "uren tot einde",
-    "daysUntilEnd": "dagen tot einde",
-    "weeksUntilEnd": "weken tot einde",
-    "secondsAgo": "seconden geleden",
-    "minutesAgo": "minuten geleden",
-    "hoursAgo": "uren geleden",
-    "daysAgo": "dagen geleden",
-    "weeksAgo": "weken geleden"
+  "events": {
+    "attendEvent": "Bezoek dit evenement",
+    "beFirstAttend": "Wees de eerste die aanwezig is!",
+    "cancelAttendance": "Annuleer deelname",
+    "end": "Eindtijd",
+    "event": "Evenement",
+    "eventHasEnded": "Dit evenement is beëindigd",
+    "eventUnavailable": "Evenement niet beschikbaar. Bestaat het eigenlijk?",
+    "failedCancelAttendance": "Mislukt om aanwezigheid te annuleren.",
+    "failedToAttend": "Deelname evenement mislukt.",
+    "failedToFetch": "Event gegevens ophalen is mislukt.",
+    "idNotFound": "Event ID niet gevonden.",
+    "location": "Locatie",
+    "noLocationGiven": "Geen locatie opgegeven",
+    "start": "Start",
+    "tabs": {
+      "active": "Actief",
+      "archived": "Gearchiveerd",
+      "upcoming": "Binnenkort"
+    },
+    "whatIsThisEvent": "Wat is dit evenement?",
+    "attendees": {
+      "friendsAttending": "vrienden die aanwezig zijn",
+      "friendAttending": "vriend die aanwezig is",
+      "attendeesCount": "aanwezigen",
+      "attendeeCount": "aanwezige",
+      "noFriendsAttending": "geen vrienden die aanwezig zijn",
+      "noAttendeesYet": "geen aanwezigen"
+    }
   },
   "home": {
-    "welcomenew": "Welkom bij Headpat!",
-    "welcomeback": "Welkom terug",
-    "profiledescription": "Bekijk je profiel",
     "announcementsdescription": "Blijf op de hoogte met ons nieuws!",
     "chatdescription": "Stuur je vrienden een bericht",
-    "notificationsdescription": "Blijf op de hoogte met je meldingen",
+    "eventsDescription": "Op zoek naar plezier?",
     "gallerydescription": "De plek voor alle foto's",
     "locationsdescription": "Deel je locatie met vrienden",
-    "eventsDescription": "Op zoek naar plezier?"
+    "notificationsdescription": "Blijf op de hoogte met je meldingen",
+    "profiledescription": "Bekijk je profiel",
+    "welcomeback": "Welkom terug",
+    "welcomenew": "Welkom bij Headpat!"
   },
+  "language": "Nederlands",
   "location": {
-    "share": {
-      "title": "Locatie delen",
-      "sharing": {
-        "enabled": "Je deelt momenteel je locatie met andere gebruikers.",
-        "disabled": "Je deelt je locatie niet met andere gebruikers."
-      },
-      "description": "Na het inschakelen van locatiedeling kunt u gebruikers of communities selecteren om uw locatie mee te delen met behulp van de knop in de rechterbenedenhoek.",
-      "nobody": {
-        "title": "Niemand om mee te delen...",
-        "description": "Selecteer gebruikers of communities om uw locatie mee te delen. U kunt dit doen door op de + in de rechterbenedenhoek te klikken."
-      },
-      "button": {
-        "start": "Begin met delen",
-        "stop": "Stop met delen",
-        "unavailable": "Niet beschikbaar"
-      }
-    },
     "add": {
-      "search": "Zoeken...",
-      "failedToSearch": "Zoeken naar gebruikers of communities is mislukt.",
-      "failedToSelect": "Gebruiker of community selecteren is mislukt.",
-      "failedToShare": "Locatie delen is mislukt.",
-      "selectDuration": "Duratie selecteren",
-      "selectDurationDescription": "Selecteer hoe lang je je locatie wilt delen met hen.",
       "1hour": "1 uur",
       "1hourDescription": "Deel voor 1 uur",
       "24hours": "24 uur",
       "24hoursDescription": "Deel voor 1 dag",
-      "7days": "7 dagen",
-      "7daysDescription": "Deel voor 1 week",
       "30days": "30 dagen",
       "30daysDescription": "Deel voor 1 maand",
-      "unlimited": "Onbeperkt",
-      "unlimitedDescription": "Deel tot je het handmatig intrekt",
-      "custom": "Aangepast",
-      "customDescription": "Kies een specifiek datum en tijd",
-      "customDateTime": "Aangepast datum & tijd",
-      "selectedTime": "Geselecteerde tijd",
-      "selectTime": "Tijd selecteren",
-      "selectDate": "Datum selecteren",
-      "noDateSelected": "Geen datum geselecteerd",
-      "noTimeSelected": "Geen tijd geselecteerd",
-      "selectDateAndTime": "Datum & tijd selecteren",
+      "7days": "7 dagen",
+      "7daysDescription": "Deel voor 1 week",
       "confirmSharing": "Delen bevestigen",
       "confirmSharingDescription": "Je gaat je locatie delen met de volgende gebruikers:",
+      "custom": "Aangepast",
+      "customDateTime": "Aangepast datum & tijd",
+      "customDescription": "Kies een specifiek datum en tijd",
+      "failedToSearch": "Zoeken naar gebruikers of communities is mislukt.",
+      "failedToSelect": "Gebruiker of community selecteren is mislukt.",
+      "failedToShare": "Locatie delen is mislukt.",
       "locationWillBeSharedUntil": "Je locatie wordt gedeeld tot",
-      "theSelectedDurationExpires": "De geselecteerde duur verloopt"
+      "noDateSelected": "Geen datum geselecteerd",
+      "noTimeSelected": "Geen tijd geselecteerd",
+      "search": "Zoeken...",
+      "selectDate": "Datum selecteren",
+      "selectDateAndTime": "Datum & tijd selecteren",
+      "selectDuration": "Duratie selecteren",
+      "selectDurationDescription": "Selecteer hoe lang je je locatie wilt delen met hen.",
+      "selectedTime": "Geselecteerde tijd",
+      "selectTime": "Tijd selecteren",
+      "theSelectedDurationExpires": "De geselecteerde duur verloopt",
+      "unlimited": "Onbeperkt",
+      "unlimitedDescription": "Deel tot je het handmatig intrekt"
     },
     "map": {
       "failedToFetchEvents": "Evenementen ophalen is mislukt.",
       "failedToFetchLocations": "Locaties ophalen is mislukt.",
-      "status": {
-        "title": "Wat ben je aan het doen?",
-        "description": "Laat anderen weten wat je aan het doen bent. Je kunt dit later altijd wijzigen.",
-        "doNotDisturb": "Niet storen",
-        "apply": "Toepassen"
-      },
       "filters": {
-        "title": "Filters wijzigen?",
         "description": "Selecteer de filters die u wilt toepassen.",
         "showEvents": "Evenementen tonen",
-        "showUsers": "Gebruikers tonen"
+        "showUsers": "Gebruikers tonen",
+        "title": "Filters wijzigen?"
+      },
+      "status": {
+        "apply": "Toepassen",
+        "description": "Laat anderen weten wat je aan het doen bent. Je kunt dit later altijd wijzigen.",
+        "doNotDisturb": "Niet storen",
+        "title": "Wat ben je aan het doen?"
       }
+    },
+    "share": {
+      "button": {
+        "start": "Begin met delen",
+        "stop": "Stop met delen",
+        "unavailable": "Niet beschikbaar"
+      },
+      "description": "Na het inschakelen van locatiedeling kunt u gebruikers of communities selecteren om uw locatie mee te delen met behulp van de knop in de rechterbenedenhoek.",
+      "nobody": {
+        "description": "Selecteer gebruikers of communities om uw locatie mee te delen. U kunt dit doen door op de + in de rechterbenedenhoek te klikken.",
+        "title": "Niemand om mee te delen..."
+      },
+      "sharing": {
+        "disabled": "Je deelt je locatie niet met andere gebruikers.",
+        "enabled": "Je deelt momenteel je locatie met andere gebruikers."
+      },
+      "title": "Locatie delen"
     }
   },
-  "events": {
-    "tabs": {
-      "active": "Actief",
-      "upcoming": "Binnenkort",
-      "archived": "Gearchiveerd"
-    },
-    "start": "Start",
-    "end": "Eindtijd",
-    "location": "Locatie",
-    "eventHasEnded": "Dit evenement is beëindigd",
-    "attendEvent": "Bezoek dit evenement",
-    "beFirstAttend": "Wees de eerste die aanwezig is!",
-    "cancelAttendance": "Annuleer deelname",
-    "failedToFetch": "Event gegevens ophalen is mislukt.",
-    "failedToAttend": "Deelname evenement mislukt.",
-    "failedCancelAttendance": "Mislukt om aanwezigheid te annuleren.",
-    "idNotFound": "Event ID niet gevonden.",
-    "whatIsThisEvent": "Wat is dit evenement?",
-    "eventUnavailable": "Evenement niet beschikbaar. Bestaat het eigenlijk?",
-    "event": "Evenement",
-    "noLocationGiven": "Geen locatie opgegeven"
+  "main": {
+    "back": "Terug",
+    "cancel": "Annuleren",
+    "confirm": "Bevestigen",
+    "loading": "Laden...",
+    "next": "Volgende",
+    "refreshing": "Vernieuwen..."
+  },
+  "nearbyEvents": {
+    "enableLocation": "Locatie delen",
+    "locationAccess": "Locatie delen",
+    "locationDenied": "Locatie niet gedeeld",
+    "locationFailed": "Locatie niet gedeeld",
+    "locationGranted": "Locatie gedeeld",
+    "noEvents": "Geen evenementen in de buurt",
+    "noLocation": "Locatie niet beschikbaar",
+    "requesting": "Locatie wordt opgehaald...",
+    "title": "Binnenkort"
+  },
+  "screens": {
+    "account": "Account",
+    "announcements": "Aankondigingen",
+    "changeLanguage": "Taal wijzigen",
+    "changelog": "Wijzigingen",
+    "chat": "Chat",
+    "communities": "Communities",
+    "connections": "Connecties",
+    "conversations": "Conversaties",
+    "events": "Evenementen",
+    "followers": "Volgers",
+    "following": "Volgend",
+    "gallery": "Galerij",
+    "home": "Startpagina",
+    "languages": "Talen",
+    "legal": "Juridisch",
+    "locations": "Locaties",
+    "login": "Inloggen",
+    "map": "Kaart",
+    "mutuals": "Mutuals",
+    "myProfile": "Mijn Profiel",
+    "notifications": "Meldingen",
+    "profile": "Profiel",
+    "register": "Registreren",
+    "shareMyLocation": "Deel mijn locatie",
+    "support": "Ondersteuning",
+    "users": "Gebruikers"
+  },
+  "time": {
+    "daysAgo": "dagen geleden",
+    "daysLeft": "dagen over",
+    "daysUntilEnd": "dagen tot einde",
+    "ended": "Beëindigd",
+    "eventHasEnded": "Evenement is afgelopen",
+    "hoursAgo": "uren geleden",
+    "hoursLeft": "uren over",
+    "hoursUntilEnd": "uren tot einde",
+    "infinite": "Onbeperkt",
+    "minutesAgo": "minuten geleden",
+    "minutesLeft": "minuten over",
+    "minutesUntilEnd": "minuten tot einde",
+    "secondsAgo": "seconden geleden",
+    "secondsLeft": "seconden over",
+    "secondsUntilEnd": "seconden tot einde",
+    "weeksAgo": "weken geleden",
+    "weeksLeft": "weken over",
+    "weeksUntilEnd": "weken tot einde"
   }
 }

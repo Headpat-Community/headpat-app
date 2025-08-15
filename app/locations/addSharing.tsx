@@ -15,7 +15,7 @@ import { useUser } from '~/components/contexts/UserContext'
 import { ArrowLeftIcon } from 'lucide-react-native'
 import { useColorScheme } from '~/lib/useColorScheme'
 import { H1, Muted } from '~/components/ui/typography'
-import DatePicker from 'react-native-date-picker'
+import DateTimePicker from '@react-native-community/datetimepicker'
 import * as Sentry from '@sentry/react-native'
 import { FlashList } from '@shopify/flash-list'
 import { RadioGroup } from '~/components/ui/radio-group'
@@ -89,7 +89,7 @@ export default function AddSharing() {
                     'userdata',
                     item.$id
                   )
-                  return data as UserData.UserDataDocumentsType
+                  return data as unknown as UserData.UserDataDocumentsType
                 },
                 staleTime: 1000 * 60 * 5 // 5 minutes
               })
@@ -105,7 +105,7 @@ export default function AddSharing() {
                     'community',
                     item.$id
                   )
-                  return data as Community.CommunityDocumentsType
+                  return data as unknown as Community.CommunityDocumentsType
                 },
                 staleTime: 1000 * 60 * 5 // 5 minutes
               })
@@ -388,37 +388,35 @@ export default function AddSharing() {
                 </View>
               )}
 
-              <DatePicker
-                modal
-                open={dateOpen}
-                date={selectedTime || new Date()}
-                mode="date"
-                minimumDate={new Date()}
-                onConfirm={(date) => {
-                  setDateOpen(false)
-                  setSelectedTime(date)
-                  setTimeOpen(true)
-                }}
-                onCancel={() => {
-                  setDateOpen(false)
-                }}
-              />
-              <DatePicker
-                modal
-                open={timeOpen}
-                date={selectedTime || new Date()}
-                mode="time"
-                onConfirm={(time) => {
-                  setTimeOpen(false)
-                  const newTime = new Date(selectedTime || new Date())
-                  newTime.setHours(time.getHours())
-                  newTime.setMinutes(time.getMinutes())
-                  setSelectedTime(newTime)
-                }}
-                onCancel={() => {
-                  setTimeOpen(false)
-                }}
-              />
+              {dateOpen && (
+                <DateTimePicker
+                  value={selectedTime || new Date()}
+                  mode="date"
+                  minimumDate={new Date()}
+                  onChange={(event, date) => {
+                    setDateOpen(false)
+                    if (date) {
+                      setSelectedTime(date)
+                      setTimeOpen(true)
+                    }
+                  }}
+                />
+              )}
+              {timeOpen && (
+                <DateTimePicker
+                  value={selectedTime || new Date()}
+                  mode="time"
+                  onChange={(event, time) => {
+                    setTimeOpen(false)
+                    if (time) {
+                      const newTime = new Date(selectedTime || new Date())
+                      newTime.setHours(time.getHours())
+                      newTime.setMinutes(time.getMinutes())
+                      setSelectedTime(newTime)
+                    }
+                  }}
+                />
+              )}
             </View>
           </View>
         </ScrollView>

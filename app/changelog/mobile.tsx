@@ -10,7 +10,7 @@ import ChangelogItem from '~/components/FlatlistItems/ChangelogItem'
 import { i18n } from '~/components/system/i18n'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
-export default function ListComponent() {
+export default function MobileChangelog() {
   const [openVersions, setOpenVersions] = useState<string[]>([])
   const queryClient = useQueryClient()
 
@@ -19,12 +19,13 @@ export default function ListComponent() {
     isLoading,
     isRefetching
   } = useQuery({
-    queryKey: ['changelog'],
+    queryKey: ['changelog', 'mobile'],
     queryFn: async () => {
       try {
         const changelogData: Changelog.ChangelogType =
           await databases.listDocuments('hp_db', 'changelog', [
-            Query.orderDesc('version')
+            Query.orderDesc('version'),
+            Query.equal('type', 'app')
           ])
         return changelogData.documents
       } catch (error) {
@@ -62,7 +63,7 @@ export default function ListComponent() {
         <View className={'p-4 gap-6 text-center'}>
           <H1 className={'text-2xl font-semibold'}>Oh no!</H1>
           <Text className={'text-muted-foreground'}>
-            Sorry, there are no updates available at the moment.
+            Sorry, there are no mobile updates available at the moment.
           </Text>
         </View>
       </View>
@@ -70,24 +71,22 @@ export default function ListComponent() {
   }
 
   return (
-    <View className="h-full">
-      <FlatList
-        data={changelogData}
-        keyExtractor={(item) => item.$id}
-        onRefresh={() => {
-          queryClient.invalidateQueries({ queryKey: ['changelog'] })
-        }}
-        refreshing={isRefetching}
-        contentContainerStyle={{ padding: 8 }}
-        contentInsetAdjustmentBehavior={'automatic'}
-        renderItem={({ item }) => (
-          <ChangelogItem
-            changelog={item}
-            openVersions={openVersions}
-            toggleVersion={toggleVersion}
-          />
-        )}
-      />
-    </View>
+    <FlatList
+      data={changelogData}
+      keyExtractor={(item) => item.$id}
+      onRefresh={() => {
+        queryClient.invalidateQueries({ queryKey: ['changelog', 'mobile'] })
+      }}
+      refreshing={isRefetching}
+      contentContainerStyle={{ padding: 8 }}
+      contentInsetAdjustmentBehavior={'automatic'}
+      renderItem={({ item }) => (
+        <ChangelogItem
+          changelog={item}
+          openVersions={openVersions}
+          toggleVersion={toggleVersion}
+        />
+      )}
+    />
   )
 }

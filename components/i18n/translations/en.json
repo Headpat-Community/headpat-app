@@ -1,161 +1,181 @@
 {
-  "language": "English",
   "drawer": {
     "switchTheme": "Switch Theme"
   },
-  "screens": {
-    "home": "Home",
-    "profile": "Profile",
-    "chat": "Chat",
-    "conversations": "Conversations",
-    "gallery": "Gallery",
-    "locations": "Locations",
-    "map": "Map",
-    "shareMyLocation": "Share my location",
-    "announcements": "Announcements",
-    "events": "Events",
-    "users": "Users",
-    "notifications": "Notifications",
-    "myProfile": "My Profile",
-    "followers": "Followers",
-    "following": "Following",
-    "connections": "Connections",
-    "mutuals": "Mutuals",
-    "communities": "Communities",
-    "account": "Account",
-    "login": "Login",
-    "register": "Register",
-    "changeLanguage": "Change Language",
-    "languages": "Languages",
-    "legal": "Legal",
-    "support": "Support",
-    "changelog": "Changelog"
-  },
-  "main": {
-    "refreshing": "Refreshing...",
-    "loading": "Loading...",
-    "next": "Next",
-    "back": "Back",
-    "confirm": "Confirm",
-    "cancel": "Cancel"
-  },
-  "time": {
-    "ended": "Ended",
-    "infinite": "Infinite",
-    "eventHasEnded": "Event has ended",
-    "secondsLeft": "seconds left",
-    "minutesLeft": "minutes left",
-    "hoursLeft": "hours left",
-    "daysLeft": "days left",
-    "weeksLeft": "weeks left",
-    "secondsUntilEnd": "seconds until end",
-    "minutesUntilEnd": "minutes until end",
-    "hoursUntilEnd": "hours until end",
-    "daysUntilEnd": "days until end",
-    "weeksUntilEnd": "weeks until end",
-    "secondsAgo": "seconds ago",
-    "minutesAgo": "minutes ago",
-    "hoursAgo": "hours ago",
-    "daysAgo": "days ago",
-    "weeksAgo": "weeks ago"
+  "events": {
+    "attendEvent": "Attend this event",
+    "beFirstAttend": "Be the first to attend!",
+    "cancelAttendance": "Cancel attendance",
+    "end": "End",
+    "event": "Event",
+    "eventHasEnded": "The event has ended",
+    "eventUnavailable": "Event unavailable. Does it even exist?",
+    "failedCancelAttendance": "Failed to cancel attendance.",
+    "failedToAttend": "Failed to attend event.",
+    "failedToFetch": "Failed to fetch event data.",
+    "idNotFound": "Event ID not found.",
+    "location": "Location",
+    "noLocationGiven": "No location given",
+    "start": "Start",
+    "tabs": {
+      "active": "Active",
+      "archived": "Archived",
+      "upcoming": "Upcoming"
+    },
+    "viewOnMap": "View on Map",
+    "whatIsThisEvent": "What is this event?",
+    "attendees": {
+      "friendsAttending": "friends attending",
+      "friendAttending": "friend attending",
+      "attendeesCount": "attendees",
+      "attendeeCount": "attendee",
+      "noFriendsAttending": "No friends attending yet",
+      "noAttendeesYet": "No attendees yet"
+    }
   },
   "home": {
-    "welcomenew": "Welcome to Headpat!",
-    "welcomeback": "Welcome back",
-    "profiledescription": "Take a look at your profile",
     "announcementsdescription": "Stay updated with our news!",
     "chatdescription": "Message your friends",
-    "notificationsdescription": "Stay updated with your notifications",
+    "eventsDescription": "Looking for fun?",
     "gallerydescription": "The place for all the pictures",
     "locationsdescription": "Share your location with friends",
-    "eventsDescription": "Looking for fun?"
+    "notificationsdescription": "Stay updated with your notifications",
+    "profiledescription": "Take a look at your profile",
+    "welcomeback": "Welcome back",
+    "welcomenew": "Welcome to Headpat!"
   },
+  "language": "English",
   "location": {
-    "share": {
-      "title": "Share your location with friends",
-      "sharing": {
-        "enabled": "You are currently sharing your location with other users.",
-        "disabled": "You are not sharing your location with other users."
-      },
-      "description": "After enabling location sharing, you can select users or communities to share your location with using the button in the bottom right corner.",
-      "nobody": {
-        "title": "Nobody to share with...",
-        "description": "Please select users or communities to share your location with. You can do this by clicking the + in the bottom right corner."
-      },
-      "button": {
-        "start": "Start sharing",
-        "stop": "Stop sharing",
-        "unavailable": "Unavailable"
-      }
-    },
     "add": {
-      "search": "Search...",
-      "failedToSearch": "Failed to search users or communities.",
-      "failedToSelect": "Failed to select user or community.",
-      "failedToShare": "Failed to share location.",
-      "selectDuration": "Select duration",
-      "selectDurationDescription": "Please select how long you want to share your location with them.",
       "1hour": "1 hour",
       "1hourDescription": "Share for one hour",
       "24hours": "24 hours",
       "24hoursDescription": "Share for one day",
-      "7days": "7 days",
-      "7daysDescription": "Share for one week",
       "30days": "30 days",
       "30daysDescription": "Share for one month",
-      "unlimited": "Unlimited",
-      "unlimitedDescription": "Share until manually revoked",
-      "custom": "Custom",
-      "customDescription": "Choose a specific date and time",
-      "customDateTime": "Custom Date & Time",
-      "selectedTime": "Selected Time",
-      "selectTime": "Select Time",
-      "selectDate": "Select Date",
-      "noDateSelected": "No date selected",
-      "noTimeSelected": "No time selected",
-      "selectDateAndTime": "Select Date & Time",
+      "7days": "7 days",
+      "7daysDescription": "Share for one week",
       "confirmSharing": "Confirm Sharing",
       "confirmSharingDescription": "You're about to share your location with the following users:",
+      "custom": "Custom",
+      "customDateTime": "Custom Date & Time",
+      "customDescription": "Choose a specific date and time",
+      "failedToSearch": "Failed to search users or communities.",
+      "failedToSelect": "Failed to select user or community.",
+      "failedToShare": "Failed to share location.",
       "locationWillBeSharedUntil": "Your location will be shared until",
-      "theSelectedDurationExpires": "The selected duration expires"
+      "noDateSelected": "No date selected",
+      "noTimeSelected": "No time selected",
+      "search": "Search...",
+      "selectDate": "Select Date",
+      "selectDateAndTime": "Select Date & Time",
+      "selectDuration": "Select duration",
+      "selectDurationDescription": "Please select how long you want to share your location with them.",
+      "selectedTime": "Selected Time",
+      "selectTime": "Select Time",
+      "theSelectedDurationExpires": "The selected duration expires",
+      "unlimited": "Unlimited",
+      "unlimitedDescription": "Share until manually revoked"
     },
     "map": {
       "failedToFetchEvents": "Failed to fetch events.",
       "failedToFetchLocations": "Failed to fetch locations.",
-      "status": {
-        "title": "What are you up to?",
-        "description": "Let others know what you are up to. You can always change this later.",
-        "doNotDisturb": "Do not disturb",
-        "apply": "Apply"
-      },
       "filters": {
-        "title": "Need to change filters?",
         "description": "Please select the filters you want to apply.",
         "showEvents": "Show events",
-        "showUsers": "Show Users"
+        "showUsers": "Show Users",
+        "title": "Need to change filters?"
+      },
+      "status": {
+        "apply": "Apply",
+        "description": "Let others know what you are up to. You can always change this later.",
+        "doNotDisturb": "Do not disturb",
+        "title": "What are you up to?"
       }
+    },
+    "nearbyEvents": {
+      "description": "Events sorted by distance from your location",
+      "enableLocation": "Enable Location Access",
+      "locationDenied": "Location permission denied. Please enable location access in your device settings.",
+      "locationFailed": "Failed to request location permission.",
+      "locationGranted": "Location access granted!",
+      "noEvents": "No events found in your area",
+      "noLocation": "Location not available",
+      "requesting": "Requesting...",
+      "title": "Nearby Events"
+    },
+    "share": {
+      "button": {
+        "start": "Start sharing",
+        "stop": "Stop sharing",
+        "unavailable": "Unavailable"
+      },
+      "description": "After enabling location sharing, you can select users or communities to share your location with using the button in the bottom right corner.",
+      "nobody": {
+        "description": "Please select users or communities to share your location with. You can do this by clicking the + in the bottom right corner.",
+        "title": "Nobody to share with..."
+      },
+      "sharing": {
+        "disabled": "You are not sharing your location with other users.",
+        "enabled": "You are currently sharing your location with other users."
+      },
+      "title": "Share your location with friends"
     }
   },
-  "events": {
-    "tabs": {
-      "active": "Active",
-      "upcoming": "Upcoming",
-      "archived": "Archived"
-    },
-    "start": "Start",
-    "end": "End",
-    "location": "Location",
-    "eventHasEnded": "The event has ended",
-    "attendEvent": "Attend this event",
-    "beFirstAttend": "Be the first to attend!",
-    "cancelAttendance": "Cancel attendance",
-    "failedToFetch": "Failed to fetch event data.",
-    "failedToAttend": "Failed to attend event.",
-    "failedCancelAttendance": "Failed to cancel attendance.",
-    "idNotFound": "Event ID not found.",
-    "whatIsThisEvent": "What is this event?",
-    "eventUnavailable": "Event unavailable. Does it even exist?",
-    "event": "Event",
-    "noLocationGiven": "No location given"
+  "main": {
+    "back": "Back",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "loading": "Loading...",
+    "next": "Next",
+    "refreshing": "Refreshing..."
+  },
+  "screens": {
+    "account": "Account",
+    "announcements": "Announcements",
+    "changeLanguage": "Change Language",
+    "changelog": "Changelog",
+    "chat": "Chat",
+    "communities": "Communities",
+    "connections": "Connections",
+    "conversations": "Conversations",
+    "events": "Events",
+    "followers": "Followers",
+    "following": "Following",
+    "gallery": "Gallery",
+    "home": "Home",
+    "languages": "Languages",
+    "legal": "Legal",
+    "locations": "Locations",
+    "login": "Login",
+    "map": "Map",
+    "mutuals": "Mutuals",
+    "myProfile": "My Profile",
+    "notifications": "Notifications",
+    "profile": "Profile",
+    "register": "Register",
+    "shareMyLocation": "Share my location",
+    "support": "Support",
+    "users": "Users"
+  },
+  "time": {
+    "daysAgo": "days ago",
+    "daysLeft": "days left",
+    "daysUntilEnd": "days until end",
+    "ended": "Ended",
+    "eventHasEnded": "Event has ended",
+    "hoursAgo": "hours ago",
+    "hoursLeft": "hours left",
+    "hoursUntilEnd": "hours until end",
+    "infinite": "Infinite",
+    "minutesAgo": "minutes ago",
+    "minutesLeft": "minutes left",
+    "minutesUntilEnd": "minutes until end",
+    "secondsAgo": "seconds ago",
+    "secondsLeft": "seconds left",
+    "secondsUntilEnd": "seconds until end",
+    "weeksAgo": "weeks ago",
+    "weeksLeft": "weeks left",
+    "weeksUntilEnd": "weeks until end"
   }
 }

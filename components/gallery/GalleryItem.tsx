@@ -32,6 +32,10 @@ const GalleryItem = React.memo(
     const widthColumns = width > 600 ? '50%' : '100%'
     const isHidden: boolean = imagePrefs[image.$id]?.isHidden
 
+    const imageUrl = image.mimeType.includes('video')
+      ? thumbnail
+      : getGalleryUrl(image.galleryId, imageFormat)
+
     return (
       <TouchableWithoutFeedback
         onPress={() => {
@@ -63,13 +67,20 @@ const GalleryItem = React.memo(
                 source={
                   image.mimeType.includes('video')
                     ? { uri: thumbnail }
-                    : {
-                        uri: getGalleryUrl(image.$id, imageFormat)
-                      }
+                    : { uri: imageUrl }
                 }
                 alt={image.name}
                 style={{ width: '100%', height: '100%' }}
-                contentFit={'contain'}
+                contentFit={'cover'}
+                placeholder={require('~/assets/pfp-placeholder.png')}
+                onError={(error) => {
+                  console.error(
+                    'Image loading error for',
+                    image.$id,
+                    ':',
+                    error
+                  )
+                }}
               />
               {image.mimeType.includes('gif') && (
                 <Badge

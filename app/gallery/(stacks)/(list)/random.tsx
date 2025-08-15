@@ -28,6 +28,8 @@ export default function GalleryPage() {
   const [totalPages, setTotalPages] = React.useState<number>(1)
   const [loadingMore, setLoadingMore] = React.useState<boolean>(false)
   const [seenItems, setSeenItems] = React.useState<Set<string>>(new Set())
+  const [isLoading, setIsLoading] = React.useState<boolean>(true)
+  const [error, setError] = React.useState<string | null>(null)
   const { showAlert } = useAlertModal()
   const { width } = Dimensions.get('window')
   const maxColumns = width > 600 ? 4 : 2
@@ -37,6 +39,8 @@ export default function GalleryPage() {
   const fetchGallery = React.useCallback(
     async (page: number = 1, append: boolean = false) => {
       try {
+        setIsLoading(true)
+        setError(null)
         const offset = (page - 1) * pageSize
         const nsfwPreference = current?.prefs?.nsfw ?? false
         let query = nsfwPreference
@@ -81,9 +85,9 @@ export default function GalleryPage() {
           const parsedImagePrefs = imagePrefsData.documents.reduce(
             (
               acc: { [key: string]: Gallery.GalleryPrefsDocumentsType },
-              pref: Gallery.GalleryPrefsDocumentsType
+              pref: any
             ) => {
-              acc[pref.galleryId] = pref
+              acc[pref.galleryId] = pref as Gallery.GalleryPrefsDocumentsType
               return acc
             },
             {}
@@ -145,9 +149,9 @@ export default function GalleryPage() {
           const parsedImagePrefs = imagePrefsData.documents.reduce(
             (
               acc: { [key: string]: Gallery.GalleryPrefsDocumentsType },
-              pref: Gallery.GalleryPrefsDocumentsType
+              pref: any
             ) => {
-              acc[pref.galleryId] = pref
+              acc[pref.galleryId] = pref as Gallery.GalleryPrefsDocumentsType
               return acc
             },
             {}
@@ -187,9 +191,9 @@ export default function GalleryPage() {
         const parsedImagePrefs = imagePrefsData.documents.reduce(
           (
             acc: { [key: string]: Gallery.GalleryPrefsDocumentsType },
-            pref: Gallery.GalleryPrefsDocumentsType
+            pref: any
           ) => {
-            acc[pref.galleryId] = pref
+            acc[pref.galleryId] = pref as Gallery.GalleryPrefsDocumentsType
             return acc
           },
           {}
@@ -203,9 +207,12 @@ export default function GalleryPage() {
           }
         })
       } catch (error) {
-        console.log(error)
+        console.error('Error fetching gallery:', error)
+        setError('Failed to load gallery')
         showAlert('FAILED', 'Failed to fetch gallery. Please try again later.')
         Sentry.captureException(error)
+      } finally {
+        setIsLoading(false)
       }
     },
     [current, pageSize]
@@ -214,22 +221,14 @@ export default function GalleryPage() {
   const getGalleryUrl = React.useCallback(
     (galleryId: string, output: ImageFormat = ImageFormat.Jpeg) => {
       if (!galleryId) return
-      const data = storage.getFilePreview(
-        'gallery',
-        `${galleryId}`,
-        400,
-        400,
-        undefined,
-        50,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        output
-      )
-      return data.href
+      try {
+        // Use the same pattern as getAvatarImageUrlView
+        const url = `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/gallery/files/${galleryId}/view?project=hp-main`
+        return url
+      } catch (error) {
+        console.error('Error generating URL for', galleryId, ':', error)
+        return null
+      }
     },
     []
   )
@@ -265,11 +264,27 @@ export default function GalleryPage() {
         [galleryId]: uri
       }))
     } catch (e) {
-      console.warn(e)
+      console.warn('Failed to generate thumbnail for', galleryId, ':', e)
     }
   }, [])
 
-  if (!images || images.length === 0) {
+  // Show error state
+  if (error && !isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ fontSize: 16, marginBottom: 10 }}>{error}</Text>
+        <Text
+          style={{ color: '#007AFF', fontSize: 16 }}
+          onPress={() => fetchGallery(1, false)}
+        >
+          Tap to retry
+        </Text>
+      </View>
+    )
+  }
+
+  // Show loading state
+  if (isLoading && (!images || images.length === 0)) {
     return (
       <View style={{ flex: 1 }}>
         {Array.from({ length: 16 }).map((_, index) => (
@@ -296,6 +311,26 @@ export default function GalleryPage() {
             ))}
           </View>
         ))}
+      </View>
+    )
+  }
+
+  // Show empty state
+  if (!isLoading && (!images || images.length === 0)) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ fontSize: 16, textAlign: 'center', marginBottom: 10 }}>
+          No gallery images found
+        </Text>
+        <Text style={{ fontSize: 14, textAlign: 'center', color: '#666' }}>
+          Try refreshing or check your connection
+        </Text>
+        <Text
+          style={{ color: '#007AFF', fontSize: 16, marginTop: 10 }}
+          onPress={() => fetchGallery(1, false)}
+        >
+          Refresh
+        </Text>
       </View>
     )
   }

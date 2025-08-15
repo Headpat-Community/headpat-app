@@ -59,7 +59,7 @@ export default function ShareLocationView() {
                   'community',
                   item.requesterId
                 )
-                return response as Community.CommunityDocumentsType
+                return response as unknown as Community.CommunityDocumentsType
               },
               staleTime: 1000 * 60 * 5 // 5 minutes
             })
@@ -172,7 +172,7 @@ export default function ShareLocationView() {
       {!isRegistered ? (
         <>
           <View className={'flex-1 justify-center items-center'}>
-            <H1>{i18n.t('location.share.title')}</H1>
+            <H1 className={'text-center'}>{i18n.t('location.share.title')}</H1>
             <Muted>BETA</Muted>
             <View className={'m-3 gap-4 flex items-center'}>
               <Muted>

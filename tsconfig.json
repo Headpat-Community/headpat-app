@@ -4,6 +4,7 @@
     "strict": false,
     "baseUrl": ".",
     "module": "esnext",
+    "jsx": "react-jsx",
     "paths": {
       "~/*": ["*"]
     }

@@ -6,7 +6,12 @@ import MapView, {
   PROVIDER_GOOGLE
 } from 'react-native-maps'
 import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native'
-import { FilterIcon, LocateIcon, SettingsIcon } from 'lucide-react-native'
+import {
+  FilterIcon,
+  LocateIcon,
+  SettingsIcon,
+  CalendarIcon
+} from 'lucide-react-native'
 import * as Location from 'expo-location'
 import {
   Events,
@@ -33,11 +38,13 @@ import { useColorScheme } from '~/lib/useColorScheme'
 import FiltersModal from '~/components/locations/FiltersModal'
 import SettingsModal from '~/components/locations/SettingsModal'
 import { LocationFrontPermissionModal } from '~/components/locations/LocationPermissionModal'
+
 import sanitizeHtml from 'sanitize-html'
 import { generatePolygonCoords } from '~/components/locations/generatePolygonCoords'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { i18n } from '~/components/system/i18n'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { router, useLocalSearchParams } from 'expo-router'
 import { useFilters } from '~/lib/hooks/useFilters'
 
 export default function MutualLocationsPage() {
@@ -47,6 +54,7 @@ export default function MutualLocationsPage() {
   const theme = isDarkColorScheme ? 'white' : 'black'
   const queryClient = useQueryClient()
   const { filters } = useFilters()
+  const params = useLocalSearchParams()
 
   const mapRef = useRef(null)
   const [userLocation, setUserLocation] = useState(null)
@@ -171,7 +179,24 @@ export default function MutualLocationsPage() {
   useFocusEffect(
     useCallback(() => {
       onRefresh()
-      if (userLocation && mapRef.current) {
+
+      // Check if we're returning from nearby events with focus coordinates
+      if (params.focusLatitude && params.focusLongitude && mapRef.current) {
+        const focusLat = parseFloat(params.focusLatitude as string)
+        const focusLng = parseFloat(params.focusLongitude as string)
+
+        mapRef.current.animateToRegion({
+          latitude: focusLat,
+          longitude: focusLng,
+          latitudeDelta: 0.01, // Zoom in closer for event focus
+          longitudeDelta: 0.01
+        })
+
+        // Clear the focus params to prevent repeated focusing
+        if (params.focusEventId) {
+          // Optional: could highlight the specific event here
+        }
+      } else if (userLocation && mapRef.current) {
         mapRef.current.animateToRegion({
           latitude: userLocation.latitude,
           longitude: userLocation.longitude,
@@ -179,7 +204,13 @@ export default function MutualLocationsPage() {
           longitudeDelta: 0.0421
         })
       }
-    }, [current, onRefresh, userLocation])
+    }, [
+      current,
+      onRefresh,
+      userLocation,
+      params.focusLatitude,
+      params.focusLongitude
+    ])
   )
 
   const sanitizedDescription = useMemo(
@@ -340,6 +371,26 @@ export default function MutualLocationsPage() {
             </TouchableOpacity>
           </View>
         )}
+        {userLocation && (
+          <View style={styles.eventsButton}>
+            <TouchableOpacity
+              className={
+                'justify-center items-center bg-white h-14 w-14 rounded-full shadow'
+              }
+              onPress={() =>
+                router.push({
+                  pathname: '/locations/nearbyEvents',
+                  params: {
+                    latitude: userLocation.latitude.toString(),
+                    longitude: userLocation.longitude.toString()
+                  }
+                })
+              }
+            >
+              <CalendarIcon size={24} color={'black'} />
+            </TouchableOpacity>
+          </View>
+        )}
         {userLocation && Platform.OS === 'ios' && (
           <View style={styles.locationButton}>
             <TouchableOpacity
@@ -374,9 +425,16 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     overflow: 'hidden'
   },
-  settingsButton: {
+  eventsButton: {
     position: 'absolute',
     top: 120,
+    right: 10,
+    borderRadius: 50,
+    overflow: 'hidden'
+  },
+  settingsButton: {
+    position: 'absolute',
+    top: 180,
     right: 10,
     borderRadius: 50,
     overflow: 'hidden'

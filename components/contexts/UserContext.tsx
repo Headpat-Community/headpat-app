@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { captureException } from '@sentry/react-native'
 
 interface UserContextValue {
-  current: Account.AccountType | null
+  current: Account.AccountPrefs | null
   setUser: React.Dispatch<React.SetStateAction<Account.AccountType | null>>
   isLoadingUser: boolean
   login: (email: string, password: string) => Promise<void>

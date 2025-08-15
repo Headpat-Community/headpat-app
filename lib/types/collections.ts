@@ -20,6 +20,7 @@ export namespace Account {
     prefs: {
       // The user's nsfw preference.
       nsfw: boolean
+      indexingEnabled: boolean
     }
   }
 }
@@ -273,8 +274,22 @@ export namespace Location {
    * @see UserDataDocumentsType
    */
   export interface LocationDocumentsType extends Models.Document {
+    /**
+     * The user's latitude
+     */
     lat: number
+    /**
+     * The user's longitude
+     */
     long: number
+    /**
+     * The user's status message when sharing location
+     */
+    status: string | null
+    /**
+     * The color for the user's status indicator
+     */
+    statusColor: string | null
     userData: UserData.UserDataDocumentsType
   }
 }
@@ -687,5 +702,9 @@ export namespace Changelog {
      * If the change is a draft
      */
     draft: boolean
+    /**
+     * The type of the change
+     */
+    type: 'web' | 'app'
   }
 }

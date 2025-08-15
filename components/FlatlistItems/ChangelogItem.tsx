@@ -124,7 +124,8 @@ const ChangelogItem = React.memo(
                   textComponentProps={{ style: { color: theme } }}
                 />
                 <View className="space-y-4">
-                  {['Web', 'App'].map((platform) => {
+                  {(() => {
+                    const platform = changelog.type === 'web' ? 'Web' : 'App'
                     const bugfixes = changelog[`bugfixes${platform}`]
                     const features = changelog[`features${platform}`]
                     const improvements = changelog[`improvements${platform}`]
@@ -133,9 +134,8 @@ const ChangelogItem = React.memo(
                       (bugfixes.length > 0 ||
                         features.length > 0 ||
                         improvements.length > 0) && (
-                        <View key={platform} className={'mt-6'}>
-                          <H2>{platform}</H2>
-                          <Separator className={'my-2'} />
+                        <View key={platform} className="mt-1">
+                          <Separator className={'my-4'} />
                           <View className="gap-2">
                             {bugfixes.length > 0 && <H4>Bugfixes</H4>}
                             {bugfixes.map((change: string, index: number) => (
@@ -209,7 +209,7 @@ const ChangelogItem = React.memo(
                         </View>
                       )
                     )
-                  })}
+                  })()}
                 </View>
               </CardContent>
             </CollapsibleContent>

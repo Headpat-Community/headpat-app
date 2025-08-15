@@ -52,7 +52,6 @@ function _layout() {
         options={{
           headerLargeTitle: false,
           headerTitle: 'Community',
-          headerTitleStyle: { fontSize: 0 },
           headerLeft: () => <HeaderSidebarBackButton />,
           headerRight: () => <ProfileThemeToggle />
         }}

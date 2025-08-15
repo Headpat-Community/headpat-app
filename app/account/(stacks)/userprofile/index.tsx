@@ -22,7 +22,7 @@ import { Checkbox } from '~/components/ui/checkbox'
 import { z } from 'zod'
 import { useAlertModal } from '~/components/contexts/AlertModalProvider'
 import { router } from 'expo-router'
-import DatePicker from 'react-native-date-picker'
+import DateTimePicker from '@react-native-community/datetimepicker'
 import { Textarea } from '~/components/ui/textarea'
 import SlowInternet from '~/components/views/SlowInternet'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -63,7 +63,7 @@ export default function UserprofilePage() {
     queryFn: async () => {
       if (!current?.$id) throw new Error('No user ID')
       const data = await databases.getDocument('hp_db', 'userdata', current.$id)
-      return data as UserData.UserDataDocumentsType
+      return data as unknown as UserData.UserDataDocumentsType
     },
     enabled: !!current?.$id
   })
@@ -373,16 +373,18 @@ export default function UserprofilePage() {
                   )}
                   {showDatePicker && (
                     <>
-                      <DatePicker
-                        date={new Date(formData?.birthday || '')}
-                        onDateChange={(date) => {
-                          setFormData((prev) =>
-                            prev
-                              ? { ...prev, birthday: date.toISOString() }
-                              : null
-                          )
-                        }}
+                      <DateTimePicker
+                        value={new Date(formData?.birthday || '')}
                         mode="date"
+                        onChange={(event, date) => {
+                          if (date) {
+                            setFormData((prev) =>
+                              prev
+                                ? { ...prev, birthday: date.toISOString() }
+                                : null
+                            )
+                          }
+                        }}
                       />
                     </>
                   )}
