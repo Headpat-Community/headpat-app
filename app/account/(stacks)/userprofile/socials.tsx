@@ -43,8 +43,9 @@ export default function UserprofilePage() {
     queryKey: ['user', current?.$id],
     queryFn: async () => {
       if (!current?.$id) throw new Error('No user ID')
-      const data = await databases.getDocument('hp_db', 'userdata', current.$id)
-      return data as UserData.UserDataDocumentsType
+      const data: UserData.UserProfileDocumentsType =
+        await databases.getDocument('hp_db', 'userdata', current.$id)
+      return data
     },
     enabled: !!current?.$id
   })

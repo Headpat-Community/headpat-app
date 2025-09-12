@@ -27,7 +27,7 @@ import ReportUserModal from '~/components/user/moderation/ReportUserModal'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 interface UserActionsProps {
-  userData: UserData.UserDataDocumentsType
+  userData: UserData.UserProfileDocumentsType
   current: Account.AccountType | null
 }
 

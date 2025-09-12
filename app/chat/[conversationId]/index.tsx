@@ -59,12 +59,13 @@ export default function ChatView() {
     {
       queryKey: ['conversation', local?.conversationId],
       queryFn: async () => {
-        const data = await databases.getDocument(
-          'hp_db',
-          'messages-conversations',
-          `${local?.conversationId}`
-        )
-        return data as Messaging.MessageConversationsDocumentsType
+        const data: Messaging.MessageConversationsDocumentsType =
+          await databases.getDocument(
+            'hp_db',
+            'messages-conversations',
+            `${local?.conversationId}`
+          )
+        return data
       },
       enabled: !!local?.conversationId
     }
@@ -84,7 +85,7 @@ export default function ChatView() {
         Query.limit(MESSAGES_PER_PAGE),
         Query.offset(pageParam * MESSAGES_PER_PAGE)
       ])
-      return result.documents as Messaging.MessagesDocumentsType[]
+      return result.documents as unknown as Messaging.MessagesDocumentsType[]
     },
     getNextPageParam: (lastPage, allPages) => {
       return lastPage.length === MESSAGES_PER_PAGE
@@ -104,7 +105,7 @@ export default function ChatView() {
         'community',
         conversationData.communityId
       )
-      return data as Community.CommunityDocumentsType
+      return data as unknown as Community.CommunityDocumentsType
     },
     enabled: !!conversationData?.communityId
   })
@@ -119,8 +120,12 @@ export default function ChatView() {
         (id) => id !== current.$id
       )
       if (!otherUserId) return null
-      const data = await databases.getDocument('hp_db', 'userdata', otherUserId)
-      return data as UserData.UserDataDocumentsType
+      const data: UserData.UserDataDocumentsType = await databases.getDocument(
+        'hp_db',
+        'userdata',
+        otherUserId
+      )
+      return data
     },
     enabled: !!conversationData?.participants?.find((id) => id !== current.$id)
   })
@@ -232,7 +237,8 @@ export default function ChatView() {
         $databaseId: 'hp_db',
         $permissions: [],
         $createdAt: new Date().toISOString(),
-        $updatedAt: new Date().toISOString()
+        $updatedAt: new Date().toISOString(),
+        $sequence: 0
       }
       setMessages((prev) => [...prev, pendingMessage])
 

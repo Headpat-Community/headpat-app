@@ -172,6 +172,10 @@ export namespace UserData {
      */
     twitchname: string | null
     /**
+     * The user's bluesky name.
+     */
+    blueskyname: string | null
+    /**
      * The user's location.
      */
     location: string | null
@@ -382,6 +386,10 @@ export namespace Gallery {
      * The file extension/mimetype of the gallery item.
      */
     mimeType: string
+    /**
+     * The blurhash of the gallery item.
+     */
+    blurHash: string
   }
 
   /**
@@ -576,11 +584,35 @@ export namespace Community {
      * The amount of followers the community has.
      */
     followersCount: number
+    /**
+     * The community preferences.
+     */
+    prefs: CommunityPrefsDocumentsType
   }
 
   export interface CommunitySettingsType {
     total: number
     documents: CommunitySettingsDocumentsType[]
+  }
+
+  export interface CommunityPrefsType {
+    total: number
+    documents: CommunityPrefsDocumentsType[]
+  }
+
+  export interface CommunityPrefsDocumentsType extends Models.Document {
+    /**
+     * The community ID.
+     */
+    communityId: string
+    /**
+     * If the community is blocked.
+     */
+    isBlocked?: boolean
+    /**
+     * If the community is muted.
+     */
+    isMuted?: boolean
   }
 
   export interface CommunitySettingsDocumentsType extends Models.Document {

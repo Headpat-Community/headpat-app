@@ -34,13 +34,13 @@ export default function UserPage() {
     queryKey: ['community', local.communityId],
     queryFn: async () => {
       try {
-        const data = await functions.createExecution(
-          'community-endpoints',
-          '',
-          false,
-          `/community?communityId=${local?.communityId}`,
-          ExecutionMethod.GET
-        )
+        const data = await functions.createExecution({
+          functionId: 'community-endpoints',
+          body: '',
+          async: false,
+          xpath: `/community?communityId=${local?.communityId}`,
+          method: ExecutionMethod.GET
+        })
         const dataCommunityJson = JSON.parse(data.responseBody)
         return dataCommunityJson as Community.CommunityDocumentsType
       } catch (error) {
@@ -145,7 +145,7 @@ export default function UserPage() {
     >
       {communityData?.prefs?.isBlocked && (
         <Badge variant={'destructive'}>
-          <Text>User is blocked</Text>
+          <Text>Community is blocked</Text>
         </Badge>
       )}
       {communityData?.bannerId && (
