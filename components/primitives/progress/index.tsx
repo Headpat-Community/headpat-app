@@ -1,8 +1,8 @@
-import * as React from 'react'
-import { View } from 'react-native'
-import * as Slot from '~/components/primitives/slot'
-import type { SlottableViewProps, ViewRef } from '~/components/primitives/types'
-import type { ProgressRootProps } from './types'
+import * as React from "react"
+import { View } from "react-native"
+import * as Slot from "~/components/primitives/slot"
+import type { SlottableViewProps, ViewRef } from "~/components/primitives/types"
+import type { ProgressRootProps } from "./types"
 
 // This project uses code from WorkOS/Radix Primitives.
 // The code is licensed under the MIT License.
@@ -16,6 +16,7 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & ProgressRootProps>(
       asChild,
       value: valueProp,
       max: maxProp,
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       getValueLabel = defaultGetValueLabel,
       ...props
     },
@@ -37,7 +38,7 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & ProgressRootProps>(
           min: 0,
           max,
           now: value,
-          text: getValueLabel(value, max)
+          text: getValueLabel(value, max),
         }}
         {...props}
       />
@@ -45,7 +46,7 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & ProgressRootProps>(
   }
 )
 
-Root.displayName = 'RootProgress'
+Root.displayName = "RootProgress"
 
 const Indicator = React.forwardRef<ViewRef, SlottableViewProps>(
   ({ asChild, ...props }, ref) => {
@@ -54,7 +55,7 @@ const Indicator = React.forwardRef<ViewRef, SlottableViewProps>(
   }
 )
 
-Indicator.displayName = 'IndicatorProgress'
+Indicator.displayName = "IndicatorProgress"
 
 export { Indicator, Root }
 
@@ -64,6 +65,6 @@ function defaultGetValueLabel(value: number, max: number) {
 
 function isValidValueNumber(value: any, max: number): value is number {
   return (
-    typeof value === 'number' && !isNaN(value) && value <= max && value >= 0
+    typeof value === "number" && !isNaN(value) && value <= max && value >= 0
   )
 }

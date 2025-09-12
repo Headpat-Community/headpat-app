@@ -1,29 +1,30 @@
-import React from 'react'
-import { Dimensions, Text, View } from 'react-native'
-import { FlashList } from '@shopify/flash-list'
-import { databases, storage } from '~/lib/appwrite-client'
-import * as Sentry from '@sentry/react-native'
-import { Gallery } from '~/lib/types/collections'
-import { ImageFormat, Query } from 'react-native-appwrite'
-import * as VideoThumbnails from 'expo-video-thumbnails'
-import { useUser } from '~/components/contexts/UserContext'
-import GalleryItem from '~/components/gallery/GalleryItem'
-import { useAlertModal } from '~/components/contexts/AlertModalProvider'
-import { Skeleton } from '~/components/ui/skeleton'
-import FeatureAccess from '~/components/FeatureAccess'
-import { i18n } from '~/components/system/i18n'
+import React from "react"
+import { Dimensions, Text, View } from "react-native"
+import { FlashList } from "@shopify/flash-list"
+import { databases } from "~/lib/appwrite-client"
+import * as Sentry from "@sentry/react-native"
+import {
+  GalleryDocumentsType,
+  GalleryPrefsDocumentsType,
+} from "~/lib/types/collections"
+import { ImageFormat, Query } from "react-native-appwrite"
+import * as VideoThumbnails from "expo-video-thumbnails"
+import { useUser } from "~/components/contexts/UserContext"
+import GalleryItem from "~/components/gallery/GalleryItem"
+import { useAlertModal } from "~/components/contexts/AlertModalProvider"
+import { Skeleton } from "~/components/ui/skeleton"
+import FeatureAccess from "~/components/FeatureAccess"
+import { i18n } from "~/components/system/i18n"
 
 export default function GalleryPage() {
   const { current } = useUser()
 
-  const [images, setImages] = React.useState<Gallery.GalleryDocumentsType[]>([])
-  const [imagePrefs, setImagePrefs] = React.useState<{
-    [key: string]: Gallery.GalleryPrefsDocumentsType
-  }>({})
+  const [images, setImages] = React.useState<GalleryDocumentsType[]>([])
+  const [imagePrefs, setImagePrefs] = React.useState<
+    Record<string, GalleryPrefsDocumentsType>
+  >({})
   const [refreshing, setRefreshing] = React.useState<boolean>(false)
-  const [thumbnails, setThumbnails] = React.useState<{ [key: string]: string }>(
-    {}
-  )
+  const [thumbnails, setThumbnails] = React.useState<Record<string, string>>({})
   const [currentPage, setCurrentPage] = React.useState<number>(1)
   const [totalPages, setTotalPages] = React.useState<number>(1)
   const [loadingMore, setLoadingMore] = React.useState<boolean>(false)
@@ -31,44 +32,44 @@ export default function GalleryPage() {
   const [isLoading, setIsLoading] = React.useState<boolean>(true)
   const [error, setError] = React.useState<string | null>(null)
   const { showAlert } = useAlertModal()
-  const { width } = Dimensions.get('window')
+  const { width } = Dimensions.get("window")
   const maxColumns = width > 600 ? 4 : 2
   const pageSize = 48 // Number of items per page
-  const widthColumns = width > 600 ? '24%' : '48%'
+  const widthColumns = width > 600 ? "24%" : "48%"
 
   const fetchGallery = React.useCallback(
-    async (page: number = 1, append: boolean = false) => {
+    async (page = 1, append = false) => {
       try {
         setIsLoading(true)
         setError(null)
         const offset = (page - 1) * pageSize
-        const nsfwPreference = current?.prefs?.nsfw ?? false
-        let query = nsfwPreference
+        const nsfwPreference = current?.prefs.nsfw ?? false
+        const query = nsfwPreference
           ? [Query.limit(pageSize), Query.offset(offset)]
           : [
               Query.limit(pageSize),
               Query.offset(offset),
-              Query.equal('nsfw', false)
+              Query.equal("nsfw", false),
             ]
 
         // Get total count first
-        const totalCount = await databases.listDocuments(
-          'hp_db',
-          'gallery-images',
-          [Query.limit(1)]
-        )
+        const totalCount = await databases.listRows({
+          databaseId: "hp_db",
+          tableId: "gallery-images",
+          queries: [Query.limit(1)],
+        })
         setTotalPages(Math.ceil(totalCount.total / pageSize))
 
         // If we're on page 1, fetch and shuffle all items
         if (page === 1) {
           setSeenItems(new Set()) // Reset seen items when going back to page 1
-          const allGallery = await databases.listDocuments(
-            'hp_db',
-            'gallery-images',
-            [Query.limit(1000)]
-          )
+          const allGallery = await databases.listRows({
+            databaseId: "hp_db",
+            tableId: "gallery-images",
+            queries: [Query.limit(1000)],
+          })
           const allDocuments =
-            allGallery.documents as unknown as Gallery.GalleryDocumentsType[]
+            allGallery.rows as unknown as GalleryDocumentsType[]
           const shuffled = [...allDocuments].sort(() => Math.random() - 0.5)
 
           // Store the first page and seen items
@@ -77,17 +78,14 @@ export default function GalleryPage() {
           setSeenItems(new Set(firstPage.map((item) => item.$id)))
 
           // Fetch image prefs
-          const imagePrefsData = await databases.listDocuments(
-            'hp_db',
-            'gallery-prefs',
-            [Query.limit(5000)]
-          )
-          const parsedImagePrefs = imagePrefsData.documents.reduce(
-            (
-              acc: { [key: string]: Gallery.GalleryPrefsDocumentsType },
-              pref: any
-            ) => {
-              acc[pref.galleryId] = pref as Gallery.GalleryPrefsDocumentsType
+          const imagePrefsData = await databases.listRows({
+            databaseId: "hp_db",
+            tableId: "gallery-prefs",
+            queries: [Query.limit(5000)],
+          })
+          const parsedImagePrefs = imagePrefsData.rows.reduce(
+            (acc: Record<string, GalleryPrefsDocumentsType>, pref: any) => {
+              acc[pref.galleryId] = pref as GalleryPrefsDocumentsType
               return acc
             },
             {}
@@ -96,8 +94,8 @@ export default function GalleryPage() {
 
           // Generate thumbnails for videos
           firstPage.forEach((image) => {
-            if (image.mimeType.includes('video')) {
-              generateThumbnail(image.$id)
+            if (image.mimeType.includes("video")) {
+              void generateThumbnail(image.$id)
             }
           })
           return
@@ -108,28 +106,28 @@ export default function GalleryPage() {
         if (seenItems.size > 0) {
           // Create an array of notEqual queries for each seen item
           const notEqualQueries = Array.from(seenItems).map((id) =>
-            Query.notEqual('$id', id)
+            Query.notEqual("$id", id)
           )
           // Add all notEqual queries using Query.and
           unseenFilters.push(Query.and(notEqualQueries))
         }
 
-        const newGallery = await databases.listDocuments(
-          'hp_db',
-          'gallery-images',
-          unseenFilters
-        )
+        const newGallery = await databases.listRows({
+          databaseId: "hp_db",
+          tableId: "gallery-images",
+          queries: unseenFilters,
+        })
 
         // If we've seen all items, reset seen items and fetch from the beginning
-        if (newGallery.documents.length === 0) {
+        if (newGallery.rows.length === 0) {
           setSeenItems(new Set())
-          const allGallery = await databases.listDocuments(
-            'hp_db',
-            'gallery-images',
-            [Query.limit(1000)]
-          )
+          const allGallery = await databases.listRows({
+            databaseId: "hp_db",
+            tableId: "gallery-images",
+            queries: [Query.limit(1000)],
+          })
           const allDocuments =
-            allGallery.documents as unknown as Gallery.GalleryDocumentsType[]
+            allGallery.rows as unknown as GalleryDocumentsType[]
           const shuffled = [...allDocuments].sort(() => Math.random() - 0.5)
           const pageItems = shuffled.slice(0, pageSize)
 
@@ -141,17 +139,14 @@ export default function GalleryPage() {
           setSeenItems(new Set(pageItems.map((item) => item.$id)))
 
           // Fetch image prefs
-          const imagePrefsData = await databases.listDocuments(
-            'hp_db',
-            'gallery-prefs',
-            [Query.limit(5000)]
-          )
-          const parsedImagePrefs = imagePrefsData.documents.reduce(
-            (
-              acc: { [key: string]: Gallery.GalleryPrefsDocumentsType },
-              pref: any
-            ) => {
-              acc[pref.galleryId] = pref as Gallery.GalleryPrefsDocumentsType
+          const imagePrefsData = await databases.listRows({
+            databaseId: "hp_db",
+            tableId: "gallery-prefs",
+            queries: [Query.limit(5000)],
+          })
+          const parsedImagePrefs = imagePrefsData.rows.reduce(
+            (acc: Record<string, GalleryPrefsDocumentsType>, pref: any) => {
+              acc[pref.galleryId] = pref as GalleryPrefsDocumentsType
               return acc
             },
             {}
@@ -160,15 +155,15 @@ export default function GalleryPage() {
 
           // Generate thumbnails for videos
           pageItems.forEach((image) => {
-            if (image.mimeType.includes('video')) {
-              generateThumbnail(image.$id)
+            if (image.mimeType.includes("video")) {
+              void generateThumbnail(image.$id)
             }
           })
           return
         }
 
         const newDocuments =
-          newGallery.documents as unknown as Gallery.GalleryDocumentsType[]
+          newGallery.rows as unknown as GalleryDocumentsType[]
         const shuffled = [...newDocuments].sort(() => Math.random() - 0.5)
         const pageItems = shuffled.slice(0, pageSize)
 
@@ -183,17 +178,14 @@ export default function GalleryPage() {
         )
 
         // Fetch image prefs
-        const imagePrefsData = await databases.listDocuments(
-          'hp_db',
-          'gallery-prefs',
-          [Query.limit(5000)]
-        )
-        const parsedImagePrefs = imagePrefsData.documents.reduce(
-          (
-            acc: { [key: string]: Gallery.GalleryPrefsDocumentsType },
-            pref: any
-          ) => {
-            acc[pref.galleryId] = pref as Gallery.GalleryPrefsDocumentsType
+        const imagePrefsData = await databases.listRows({
+          databaseId: "hp_db",
+          tableId: "gallery-prefs",
+          queries: [Query.limit(5000)],
+        })
+        const parsedImagePrefs = imagePrefsData.rows.reduce(
+          (acc: Record<string, GalleryPrefsDocumentsType>, pref: any) => {
+            acc[pref.galleryId] = pref as GalleryPrefsDocumentsType
             return acc
           },
           {}
@@ -202,14 +194,14 @@ export default function GalleryPage() {
 
         // Generate thumbnails for videos
         pageItems.forEach((image) => {
-          if (image.mimeType.includes('video')) {
-            generateThumbnail(image.$id)
+          if (image.mimeType.includes("video")) {
+            void generateThumbnail(image.$id)
           }
         })
       } catch (error) {
-        console.error('Error fetching gallery:', error)
-        setError('Failed to load gallery')
-        showAlert('FAILED', 'Failed to fetch gallery. Please try again later.')
+        console.error("Error fetching gallery:", error)
+        setError("Failed to load gallery")
+        showAlert("FAILED", "Failed to fetch gallery. Please try again later.")
         Sentry.captureException(error)
       } finally {
         setIsLoading(false)
@@ -219,39 +211,39 @@ export default function GalleryPage() {
   )
 
   const getGalleryUrl = React.useCallback(
-    (galleryId: string, output: ImageFormat = ImageFormat.Jpeg) => {
-      if (!galleryId) return
+    (galleryId: string, _output: ImageFormat = ImageFormat.Jpeg): string => {
+      if (!galleryId) return ""
       try {
         // Use the same pattern as getAvatarImageUrlView
         const url = `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/gallery/files/${galleryId}/view?project=hp-main`
         return url
       } catch (error) {
-        console.error('Error generating URL for', galleryId, ':', error)
-        return null
+        console.error("Error generating URL for", galleryId, ":", error)
+        return ""
       }
     },
     []
   )
 
-  const onRefresh = async () => {
+  const onRefresh = () => {
     setRefreshing(true)
     setCurrentPage(1)
-    await fetchGallery(1, false)
+    void fetchGallery(1, false)
     setRefreshing(false)
   }
 
-  const loadMore = async () => {
+  const loadMore = () => {
     if (!loadingMore && currentPage < totalPages) {
       setLoadingMore(true)
       const nextPage = currentPage + 1
       setCurrentPage(nextPage)
-      await fetchGallery(nextPage, true)
+      void fetchGallery(nextPage, true)
       setLoadingMore(false)
     }
   }
 
   React.useEffect(() => {
-    fetchGallery(1, false)
+    void fetchGallery(1, false)
   }, [current])
 
   const generateThumbnail = React.useCallback(async (galleryId: string) => {
@@ -261,21 +253,21 @@ export default function GalleryPage() {
       )
       setThumbnails((prevThumbnails) => ({
         ...prevThumbnails,
-        [galleryId]: uri
+        [galleryId]: uri,
       }))
     } catch (e) {
-      console.warn('Failed to generate thumbnail for', galleryId, ':', e)
+      console.warn("Failed to generate thumbnail for", galleryId, ":", e)
     }
   }, [])
 
   // Show error state
   if (error && !isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Text style={{ fontSize: 16, marginBottom: 10 }}>{error}</Text>
         <Text
-          style={{ color: '#007AFF', fontSize: 16 }}
-          onPress={() => fetchGallery(1, false)}
+          style={{ color: "#007AFF", fontSize: 16 }}
+          onPress={() => void fetchGallery(1, false)}
         >
           Tap to retry
         </Text>
@@ -284,29 +276,29 @@ export default function GalleryPage() {
   }
 
   // Show loading state
-  if (isLoading && (!images || images.length === 0)) {
+  if (isLoading && images.length === 0) {
     return (
       <View style={{ flex: 1 }}>
         {Array.from({ length: 16 }).map((_, index) => (
           <View
             key={index}
             style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              marginBottom: 10
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginBottom: 10,
             }}
           >
             {[...Array(2)].map((_, i) => (
               <View
                 key={i}
                 style={{
-                  position: 'relative',
+                  position: "relative",
                   width: widthColumns,
                   height: 200,
-                  margin: 5
+                  margin: 5,
                 }}
               >
-                <Skeleton className={'w-full h-full'} />
+                <Skeleton className={"h-full w-full"} />
               </View>
             ))}
           </View>
@@ -316,18 +308,18 @@ export default function GalleryPage() {
   }
 
   // Show empty state
-  if (!isLoading && (!images || images.length === 0)) {
+  if (!isLoading && images.length === 0) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ fontSize: 16, textAlign: 'center', marginBottom: 10 }}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text style={{ fontSize: 16, textAlign: "center", marginBottom: 10 }}>
           No gallery images found
         </Text>
-        <Text style={{ fontSize: 14, textAlign: 'center', color: '#666' }}>
+        <Text style={{ fontSize: 14, textAlign: "center", color: "#666" }}>
           Try refreshing or check your connection
         </Text>
         <Text
-          style={{ color: '#007AFF', fontSize: 16, marginTop: 10 }}
-          onPress={() => fetchGallery(1, false)}
+          style={{ color: "#007AFF", fontSize: 16, marginTop: 10 }}
+          onPress={() => void fetchGallery(1, false)}
         >
           Refresh
         </Text>
@@ -336,7 +328,7 @@ export default function GalleryPage() {
   }
 
   return (
-    <FeatureAccess featureName={'gallery'}>
+    <FeatureAccess featureName={"gallery"}>
       <View style={{ flex: 1 }}>
         <FlashList
           data={images}
@@ -349,24 +341,24 @@ export default function GalleryPage() {
               imagePrefs={imagePrefs}
             />
           )}
-          onRefresh={onRefresh}
+          onRefresh={() => onRefresh()}
           refreshing={refreshing}
           estimatedItemSize={200}
           numColumns={maxColumns}
-          onEndReached={loadMore}
+          onEndReached={() => loadMore()}
           onEndReachedThreshold={0.5}
           ListFooterComponent={
-            loadingMore && (
+            loadingMore ? (
               <View
                 style={{
                   padding: 10,
-                  justifyContent: 'center',
-                  alignItems: 'center'
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
               >
-                <Text>{i18n.t('main.loading')}</Text>
+                <Text>{i18n.t("main.loading")}</Text>
               </View>
-            )
+            ) : null
           }
         />
       </View>

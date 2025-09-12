@@ -1,14 +1,14 @@
-import * as React from 'react'
-import { Pressable, View, type GestureResponderEvent } from 'react-native'
-import * as Slot from '~/components/primitives/slot'
+import * as React from "react"
+import { Pressable, View, type GestureResponderEvent } from "react-native"
+import * as Slot from "~/components/primitives/slot"
 import type {
   ForceMountable,
   PressableRef,
   SlottablePressableProps,
   SlottableViewProps,
-  ViewRef
-} from '~/components/primitives/types'
-import type { RadioGroupItemProps, RadioGroupRootProps } from './types'
+  ViewRef,
+} from "~/components/primitives/types"
+import type { RadioGroupItemProps, RadioGroupRootProps } from "./types"
 
 const RadioGroupContext = React.createContext<RadioGroupRootProps | null>(null)
 
@@ -22,7 +22,7 @@ const Root = React.forwardRef<
       value={{
         value,
         disabled,
-        onValueChange
+        onValueChange,
       }}
     >
       <Component ref={ref} role="radiogroup" {...viewProps} />
@@ -30,13 +30,13 @@ const Root = React.forwardRef<
   )
 })
 
-Root.displayName = 'RootRadioGroup'
+Root.displayName = "RootRadioGroup"
 
 function useRadioGroupContext() {
   const context = React.useContext(RadioGroupContext)
   if (!context) {
     throw new Error(
-      'RadioGroup compound components cannot be rendered outside the RadioGroup component'
+      "RadioGroup compound components cannot be rendered outside the RadioGroup component"
     )
   }
   return context
@@ -46,7 +46,6 @@ interface RadioItemContext {
   itemValue: string | undefined
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
 const RadioItemContext = React.createContext<RadioItemContext | null>(null)
 
 const Item = React.forwardRef<
@@ -75,7 +74,7 @@ const Item = React.forwardRef<
     return (
       <RadioItemContext.Provider
         value={{
-          itemValue: itemValue
+          itemValue: itemValue,
         }}
       >
         <Component
@@ -83,10 +82,10 @@ const Item = React.forwardRef<
           role="radio"
           onPress={onPress}
           aria-checked={value === itemValue}
-          disabled={(disabled || disabledProp) ?? false}
+          disabled={disabled ?? disabledProp ?? false}
           accessibilityState={{
-            disabled: (disabled || disabledProp) ?? false,
-            checked: value === itemValue
+            disabled: disabled ?? disabledProp ?? false,
+            checked: value === itemValue,
           }}
           {...props}
         />
@@ -95,13 +94,13 @@ const Item = React.forwardRef<
   }
 )
 
-Item.displayName = 'ItemRadioGroup'
+Item.displayName = "ItemRadioGroup"
 
 function useRadioItemContext() {
   const context = React.useContext(RadioItemContext)
   if (!context) {
     throw new Error(
-      'RadioItem compound components cannot be rendered outside the RadioItem component'
+      "RadioItem compound components cannot be rendered outside the RadioItem component"
     )
   }
   return context
@@ -123,6 +122,6 @@ const Indicator = React.forwardRef<
   return <Component ref={ref} role="presentation" {...props} />
 })
 
-Indicator.displayName = 'IndicatorRadioGroup'
+Indicator.displayName = "IndicatorRadioGroup"
 
 export { Indicator, Item, Root }

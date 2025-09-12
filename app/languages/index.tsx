@@ -1,41 +1,44 @@
-import React from 'react'
-import { ScrollView, TouchableOpacity, View } from 'react-native'
-import { Stack } from 'expo-router'
-import { Card, CardContent, CardFooter, CardTitle } from '~/components/ui/card'
-import { CheckIcon } from 'lucide-react-native'
-import { useColorScheme } from '~/lib/useColorScheme'
-import { useLanguage } from '~/components/contexts/LanguageProvider'
-import { i18n } from '~/components/system/i18n'
-import CountryFlag from 'react-native-country-flag'
+import { Stack } from "expo-router"
+import { CheckIcon } from "lucide-react-native"
+import React from "react"
+import { ScrollView, TouchableOpacity, View } from "react-native"
+import CountryFlag from "react-native-country-flag"
+import { useLanguage } from "~/components/contexts/LanguageProvider"
+import { i18n } from "~/components/system/i18n"
+import { Card, CardContent, CardFooter, CardTitle } from "~/components/ui/card"
+import { useColorScheme } from "~/lib/useColorScheme"
 
 export default function LanguagesView() {
   const { isDarkColorScheme } = useColorScheme()
-  const theme = isDarkColorScheme ? 'white' : 'black'
+  const theme = isDarkColorScheme ? "white" : "black"
   const { language, setLanguage } = useLanguage()
 
   const onLabelPress = (label: string) => async () => {
-    setLanguage(label)
+    await setLanguage(label)
   }
 
   const languages = [
-    { label: 'en', title: 'English', country: 'us' },
-    { label: 'de', title: 'Deutsch', country: 'de' },
-    { label: 'nl', title: 'Nederlands', country: 'nl' }
+    { label: "en", title: "English", country: "us" },
+    { label: "de", title: "Deutsch", country: "de" },
+    { label: "nl", title: "Nederlands", country: "nl" },
   ]
 
   return (
     <ScrollView>
-      <Stack.Screen options={{ headerTitle: i18n.t('language') }} />
+      <Stack.Screen options={{ headerTitle: i18n.t("language") }} />
       <View style={{ margin: 16, gap: 12 }}>
         {languages.map(({ label, title, country }) => (
-          <TouchableOpacity key={label} onPress={onLabelPress(label)}>
+          <TouchableOpacity
+            key={label}
+            onPress={() => void onLabelPress(label)}
+          >
             <Card>
-              <CardContent className={'py-4'}>
-                <CardFooter className={'p-0 justify-between flex flex-wrap'}>
+              <CardContent className={"py-4"}>
+                <CardFooter className={"flex flex-wrap justify-between p-0"}>
                   <CardTitle
                     style={{
-                      flexDirection: 'row',
-                      alignItems: 'center'
+                      flexDirection: "row",
+                      alignItems: "center",
                     }}
                   >
                     <CountryFlag

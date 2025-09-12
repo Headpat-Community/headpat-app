@@ -1,16 +1,16 @@
-import React, { useCallback, useMemo } from 'react'
-import { ScrollView, View } from 'react-native'
-import { functions } from '~/lib/appwrite-client'
-import { captureException } from '@sentry/react-native'
-import { Community } from '~/lib/types/collections'
-import { ExecutionMethod } from 'react-native-appwrite'
-import CommunityItem from '~/components/community/CommunityItem'
-import { Skeleton } from '~/components/ui/skeleton'
-import { useAlertModal } from '~/components/contexts/AlertModalProvider'
-import { i18n } from '~/components/system/i18n'
-import { FlashList } from '@shopify/flash-list'
-import { Text } from '~/components/ui/text'
-import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
+import React, { useCallback, useMemo } from "react"
+import { ScrollView, View } from "react-native"
+import { functions } from "~/lib/appwrite-client"
+import { captureException } from "@sentry/react-native"
+import { CommunityDocumentsType } from "~/lib/types/collections"
+import { ExecutionMethod } from "react-native-appwrite"
+import CommunityItem from "~/components/community/CommunityItem"
+import { Skeleton } from "~/components/ui/skeleton"
+import { useAlertModal } from "~/components/contexts/AlertModalProvider"
+import { i18n } from "~/components/system/i18n"
+import { FlashList } from "@shopify/flash-list"
+import { Text } from "~/components/ui/text"
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query"
 
 const PAGE_SIZE = 20
 
@@ -24,25 +24,22 @@ export default function CommunitiesPage() {
     hasNextPage,
     isFetchingNextPage,
     isRefetching,
-    isLoading
+    isLoading,
   } = useInfiniteQuery({
-    queryKey: ['communities'],
+    queryKey: ["communities"],
     queryFn: async ({ pageParam = 0 }) => {
       try {
-        const data = await functions.createExecution(
-          'community-endpoints',
-          '',
-          false,
-          `/communities?limit=${PAGE_SIZE}&offset=${pageParam}`,
-          ExecutionMethod.GET
-        )
-        return JSON.parse(
-          data.responseBody
-        ) as Community.CommunityDocumentsType[]
+        const data = await functions.createExecution({
+          functionId: "community-endpoints",
+          async: false,
+          xpath: `/communities?limit=${PAGE_SIZE}&offset=${pageParam}`,
+          method: ExecutionMethod.GET,
+        })
+        return JSON.parse(data.responseBody) as CommunityDocumentsType[]
       } catch (error) {
         showAlert(
-          'FAILED',
-          'Failed to fetch communities. Please try again later.'
+          "FAILED",
+          "Failed to fetch communities. Please try again later."
         )
         captureException(error)
         return []
@@ -54,20 +51,20 @@ export default function CommunitiesPage() {
         : undefined
     },
     initialPageParam: 0,
-    staleTime: 1000 * 60 * 5 // 5 minutes
+    staleTime: 1000 * 60 * 5, // 5 minutes
   })
 
   const communities = data?.pages.flat() ?? []
 
   const renderItem = useCallback(
-    ({ item }: { item: Community.CommunityDocumentsType }) => (
+    ({ item }: { item: CommunityDocumentsType }) => (
       <CommunityItem community={item} />
     ),
     []
   )
 
   const keyExtractor = useCallback(
-    (item: Community.CommunityDocumentsType) => item.$id,
+    (item: CommunityDocumentsType) => item.$id,
     []
   )
 
@@ -75,17 +72,17 @@ export default function CommunitiesPage() {
 
   if (isLoading) {
     return (
-      <ScrollView contentInsetAdjustmentBehavior={'automatic'}>
+      <ScrollView contentInsetAdjustmentBehavior={"automatic"}>
         {Array.from({ length: 8 }).map((_, index) => (
           <View key={index} className="px-4 py-2">
             <View className="flex flex-row items-center">
-              <Skeleton className="w-20 h-20 rounded-2xl" />
+              <Skeleton className="h-20 w-20 rounded-2xl" />
               <View className="ml-4 flex-1">
-                <Skeleton className="w-32 h-5 rounded" />
-                <Skeleton className="w-24 h-4 mt-1 rounded" />
-                <View className="flex flex-row items-center mt-2">
-                  <Skeleton className="w-4 h-4 rounded" />
-                  <Skeleton className="w-8 h-4 ml-2 rounded" />
+                <Skeleton className="h-5 w-32 rounded" />
+                <Skeleton className="mt-1 h-4 w-24 rounded" />
+                <View className="mt-2 flex flex-row items-center">
+                  <Skeleton className="h-4 w-4 rounded" />
+                  <Skeleton className="ml-2 h-4 w-8 rounded" />
                 </View>
               </View>
             </View>
@@ -102,24 +99,24 @@ export default function CommunitiesPage() {
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         onRefresh={() => {
-          queryClient.invalidateQueries({
-            queryKey: ['communities']
+          void queryClient.invalidateQueries({
+            queryKey: ["communities"],
           })
         }}
         refreshing={isRefetching}
         estimatedItemSize={estimatedItemSize}
         onEndReached={() => {
           if (hasNextPage && !isFetchingNextPage) {
-            fetchNextPage()
+            void fetchNextPage()
           }
         }}
         onEndReachedThreshold={0.5}
         ListFooterComponent={
           isFetchingNextPage && hasNextPage ? (
-            <Text className="p-4 text-center">{i18n.t('main.loading')}</Text>
+            <Text className="p-4 text-center">{i18n.t("main.loading")}</Text>
           ) : null
         }
-        contentInsetAdjustmentBehavior={'automatic'}
+        contentInsetAdjustmentBehavior={"automatic"}
       />
     </View>
   )

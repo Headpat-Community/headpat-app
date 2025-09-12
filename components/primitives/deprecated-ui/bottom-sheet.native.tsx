@@ -1,7 +1,7 @@
 import type {
   BottomSheetBackdropProps,
-  BottomSheetFooterProps as GBottomSheetFooterProps
-} from '@gorhom/bottom-sheet'
+  BottomSheetFooterProps as GBottomSheetFooterProps,
+} from "@gorhom/bottom-sheet"
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
@@ -9,39 +9,37 @@ import {
   BottomSheetFooter as GBottomSheetFooter,
   BottomSheetTextInput as GBottomSheetTextInput,
   BottomSheetView as GBottomSheetView,
-  useBottomSheetModal
-} from '@gorhom/bottom-sheet'
-import type { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types'
-import { useTheme } from '@react-navigation/native'
-import * as React from 'react'
+  useBottomSheetModal,
+} from "@gorhom/bottom-sheet"
+import type { BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types"
+import { useTheme } from "@react-navigation/native"
+import * as React from "react"
 import {
   GestureResponderEvent,
   Keyboard,
   Pressable,
   View,
-  ViewStyle
-} from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { X } from '~/components/Icons'
-import { Button } from '~/components/ui/button'
-import * as Slot from '~/components/primitives/slot'
-import { useColorScheme } from '~/lib/useColorScheme'
-import { cn } from '~/lib/utils'
+  ViewStyle,
+} from "react-native"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { X } from "~/components/Icons"
+import * as Slot from "~/components/primitives/slot"
+import { Button } from "~/components/ui/button"
+import { useColorScheme } from "~/lib/useColorScheme"
+import { cn } from "~/lib/utils"
 
 // TODO: refactor and move to UI
 // TODO: create web component, use https://ui.shadcn.com/docs/components/drawer
 
-type BottomSheetRef = React.ElementRef<typeof View>
+type BottomSheetRef = React.ComponentRef<typeof View>
 type BottomSheetProps = React.ComponentPropsWithoutRef<typeof View>
 
 interface BottomSheetContext {
-  sheetRef: React.RefObject<BottomSheetModal>
+  sheetRef: React.RefObject<BottomSheetModal | null>
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
 const BottomSheetContext = React.createContext({} as BottomSheetContext)
 
-// eslint-disable-next-line react/display-name
 const BottomSheet = React.forwardRef<BottomSheetRef, BottomSheetProps>(
   ({ ...props }, ref) => {
     const sheetRef = React.useRef<BottomSheetModal>(null)
@@ -56,28 +54,22 @@ const BottomSheet = React.forwardRef<BottomSheetRef, BottomSheetProps>(
 
 function useBottomSheetContext() {
   const context = React.useContext(BottomSheetContext)
-  if (!context) {
-    throw new Error(
-      'BottomSheet compound components cannot be rendered outside the BottomSheet component'
-    )
-  }
   return context
 }
 
 const CLOSED_INDEX = -1
 
-type BottomSheetContentRef = React.ElementRef<typeof BottomSheetModal>
+type BottomSheetContentRef = React.ComponentRef<typeof BottomSheetModal>
 
 type BottomSheetContentProps = Omit<
   React.ComponentPropsWithoutRef<typeof BottomSheetModal>,
-  'backdropComponent'
+  "backdropComponent"
 > & {
   backdropProps?: Partial<
     React.ComponentPropsWithoutRef<typeof BottomSheetBackdrop>
   >
 }
 
-// eslint-disable-next-line react/display-name
 const BottomSheetContent = React.forwardRef<
   BottomSheetContentRef,
   BottomSheetContentProps
@@ -86,10 +78,10 @@ const BottomSheetContent = React.forwardRef<
     {
       enablePanDownToClose = true,
       enableDynamicSizing = true,
-      index = 0,
+      index = 0, // eslint-disable-line
       backdropProps,
       backgroundStyle,
-      android_keyboardInputMode = 'adjustResize',
+      android_keyboardInputMode = "adjustResize",
       ...props
     },
     ref
@@ -99,22 +91,17 @@ const BottomSheetContent = React.forwardRef<
     const { colors } = useTheme()
     const { sheetRef } = useBottomSheetContext()
 
-    React.useImperativeHandle(
-      ref,
-      () => {
-        if (!sheetRef.current) {
-          return {} as BottomSheetModalMethods
-        }
-        return sheetRef.current
-      },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [sheetRef.current]
-    )
+    React.useImperativeHandle(ref, () => {
+      if (!sheetRef.current) {
+        return {} as BottomSheetModalMethods
+      }
+      return sheetRef.current
+    }, [sheetRef.current])
 
     const renderBackdrop = React.useCallback(
       (props: BottomSheetBackdropProps) => {
         const {
-          pressBehavior = 'close',
+          pressBehavior = "close",
           opacity = isDarkColorScheme ? 0.3 : 0.7,
           disappearsOnIndex = CLOSED_INDEX,
           style,
@@ -122,14 +109,14 @@ const BottomSheetContent = React.forwardRef<
           ...rest
         } = {
           ...props,
-          ...backdropProps
+          ...backdropProps,
         }
         return (
           <BottomSheetBackdrop
             opacity={opacity}
             disappearsOnIndex={disappearsOnIndex}
             pressBehavior={pressBehavior}
-            style={[{ backgroundColor: 'rgba(0,0,0,0.8)' }, style]}
+            style={[{ backgroundColor: "rgba(0,0,0,0.8)" }, style]}
             onPress={() => {
               if (Keyboard.isVisible()) {
                 Keyboard.dismiss()
@@ -140,7 +127,6 @@ const BottomSheetContent = React.forwardRef<
           />
         )
       },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       [backdropProps, colors]
     )
 
@@ -153,7 +139,7 @@ const BottomSheetContent = React.forwardRef<
         enableDynamicSizing={enableDynamicSizing}
         backgroundStyle={[{ backgroundColor: colors.card }, backgroundStyle]}
         handleIndicatorStyle={{
-          backgroundColor: colors.text
+          backgroundColor: colors.text,
         }}
         topInset={insets.top}
         android_keyboardInputMode={android_keyboardInputMode}
@@ -164,9 +150,8 @@ const BottomSheetContent = React.forwardRef<
   }
 )
 
-// eslint-disable-next-line react/display-name
 const BottomSheetOpenTrigger = React.forwardRef<
-  React.ElementRef<typeof Pressable>,
+  React.ComponentRef<typeof Pressable>,
   React.ComponentPropsWithoutRef<typeof Pressable> & {
     asChild?: boolean
   }
@@ -180,9 +165,8 @@ const BottomSheetOpenTrigger = React.forwardRef<
   return <Trigger ref={ref} onPress={handleOnPress} {...props} />
 })
 
-// eslint-disable-next-line react/display-name
 const BottomSheetCloseTrigger = React.forwardRef<
-  React.ElementRef<typeof Pressable>,
+  React.ComponentRef<typeof Pressable>,
   React.ComponentPropsWithoutRef<typeof Pressable> & {
     asChild?: boolean
   }
@@ -203,7 +187,7 @@ const BOTTOM_SHEET_HEADER_HEIGHT = 60 // BottomSheetHeader height
 
 type BottomSheetViewProps = Omit<
   React.ComponentPropsWithoutRef<typeof GBottomSheetView>,
-  'style'
+  "style"
 > & {
   hadHeader?: boolean
   style?: ViewStyle
@@ -222,9 +206,9 @@ function BottomSheetView({
       style={[
         {
           paddingBottom:
-            insets.bottom + (hadHeader ? BOTTOM_SHEET_HEADER_HEIGHT : 0)
+            insets.bottom + (hadHeader ? BOTTOM_SHEET_HEADER_HEIGHT : 0),
         },
-        style
+        style,
       ]}
       className={cn(`px-4`, className)}
       {...props}
@@ -234,11 +218,10 @@ function BottomSheetView({
   )
 }
 
-type BottomSheetTextInputRef = React.ElementRef<typeof GBottomSheetTextInput>
+type BottomSheetTextInputRef = React.ComponentRef<typeof GBottomSheetTextInput>
 type BottomSheetTextInputProps = React.ComponentPropsWithoutRef<
   typeof GBottomSheetTextInput
 >
-// eslint-disable-next-line react/display-name
 const BottomSheetTextInput = React.forwardRef<
   BottomSheetTextInputRef,
   BottomSheetTextInputProps
@@ -247,20 +230,19 @@ const BottomSheetTextInput = React.forwardRef<
     <GBottomSheetTextInput
       ref={ref}
       className={cn(
-        'rounded-md border border-input bg-background px-3 text-xl h-14 leading-[1.25] text-foreground items-center  placeholder:text-muted-foreground disabled:opacity-50',
+        "h-14 items-center rounded-md border border-input bg-background px-3 text-xl leading-[1.25] text-foreground placeholder:text-muted-foreground disabled:opacity-50",
         className
       )}
-      placeholderClassName={cn('text-muted-foreground', placeholderClassName)}
+      placeholderClassName={cn("text-muted-foreground", placeholderClassName)}
       {...props}
     />
   )
 })
 
-type BottomSheetFlatListRef = React.ElementRef<typeof GBottomSheetFlatList>
+type BottomSheetFlatListRef = React.ComponentRef<typeof GBottomSheetFlatList>
 type BottomSheetFlatListProps = React.ComponentPropsWithoutRef<
   typeof GBottomSheetFlatList
 >
-// eslint-disable-next-line react/display-name
 const BottomSheetFlatList = React.forwardRef<
   BottomSheetFlatListRef,
   BottomSheetFlatListProps
@@ -270,16 +252,15 @@ const BottomSheetFlatList = React.forwardRef<
     <GBottomSheetFlatList
       ref={ref}
       contentContainerStyle={[{ paddingBottom: insets.bottom }]}
-      className={cn('py-4', className)}
+      className={cn("py-4", className)}
       keyboardShouldPersistTaps="handled"
       {...props}
     />
   )
 })
 
-type BottomSheetHeaderRef = React.ElementRef<typeof View>
+type BottomSheetHeaderRef = React.ComponentRef<typeof View>
 type BottomSheetHeaderProps = React.ComponentPropsWithoutRef<typeof View>
-// eslint-disable-next-line react/display-name
 const BottomSheetHeader = React.forwardRef<
   BottomSheetHeaderRef,
   BottomSheetHeaderProps
@@ -295,7 +276,7 @@ const BottomSheetHeader = React.forwardRef<
     <View
       ref={ref}
       className={cn(
-        'border-b border-border flex-row items-center justify-between pl-4',
+        "flex-row items-center justify-between border-b border-border pl-4",
         className
       )}
       {...props}
@@ -308,10 +289,10 @@ const BottomSheetHeader = React.forwardRef<
   )
 })
 
-type BottomSheetFooterRef = React.ElementRef<typeof View>
+type BottomSheetFooterRef = React.ComponentRef<typeof View>
 type BottomSheetFooterProps = Omit<
   React.ComponentPropsWithoutRef<typeof View>,
-  'style'
+  "style"
 > & {
   bottomSheetFooterProps: GBottomSheetFooterProps
   children?: React.ReactNode
@@ -321,7 +302,6 @@ type BottomSheetFooterProps = Omit<
 /**
  * To be used in a useCallback function as a props to BottomSheetContent
  */
-// eslint-disable-next-line react/display-name
 const BottomSheetFooter = React.forwardRef<
   BottomSheetFooterRef,
   BottomSheetFooterProps
@@ -332,7 +312,7 @@ const BottomSheetFooter = React.forwardRef<
       <View
         ref={ref}
         style={[{ paddingBottom: insets.bottom + 6 }, style]}
-        className={cn('px-4 pt-1.5', className)}
+        className={cn("px-4 pt-1.5", className)}
         {...props}
       >
         {children}
@@ -365,5 +345,5 @@ export {
   BottomSheetOpenTrigger,
   BottomSheetTextInput,
   BottomSheetView,
-  useBottomSheet
+  useBottomSheet,
 }

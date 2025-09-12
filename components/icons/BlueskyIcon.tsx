@@ -1,10 +1,9 @@
-import * as React from 'react'
+import * as React from "react"
 
-import { IconType } from '~/lib/types/IconTypes'
-import Svg, { Path } from 'react-native-svg'
-import { LegacyRef } from 'react'
+import Svg, { Path } from "react-native-svg"
+import { IconType } from "~/lib/types/IconTypes"
 
-type SiBlueskyProps = React.ComponentPropsWithoutRef<'svg'> & {
+type SiBlueskyProps = React.ComponentPropsWithoutRef<"svg"> & {
   /**
    * The title provides an accessible short text description to the SVG
    */
@@ -19,14 +18,14 @@ type SiBlueskyProps = React.ComponentPropsWithoutRef<'svg'> & {
   size?: string | number
 }
 
-const defaultColor = '#0285FF'
+const defaultColor = "#0285FF"
 
 const BlueskyIcon: IconType = React.forwardRef<SVGSVGElement, SiBlueskyProps>(
   function BlueskyIcon(
-    { color = 'currentColor', size = 24, title, ...others },
-    ref: LegacyRef<any>
+    { color = "currentColor", size = 24 },
+    ref: React.Ref<any>
   ) {
-    if (color === 'default') {
+    if (color === "default") {
       color = defaultColor
     }
 

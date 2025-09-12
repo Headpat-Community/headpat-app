@@ -1,15 +1,11 @@
-export async function hasAdminPanelAccess(roles: string[]): Promise<boolean> {
-  if (!roles) return false
+export function hasAdminPanelAccess(roles: string[]): boolean {
   return (
-    roles.includes('owner') ||
-    roles.includes('manage-general') ||
-    roles.includes('manage-settings')
+    roles.includes("owner") ||
+    roles.includes("manage-general") ||
+    roles.includes("manage-settings")
   )
 }
 
-export async function hasModeratorPanelAccess(
-  roles: string[]
-): Promise<boolean> {
-  if (!roles) return false
-  return roles.includes('moderation')
+export function hasModeratorPanelAccess(roles: string[]): boolean {
+  return roles.includes("moderation")
 }

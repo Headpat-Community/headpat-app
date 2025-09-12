@@ -1,24 +1,24 @@
-import { ForceMountable } from '~/components/primitives/types'
+import { ForceMountable } from "~/components/primitives/types"
 
-type RootContext = {
-  type: 'single' | 'multiple'
+interface RootContext {
+  type: "single" | "multiple"
   value: (string | undefined) | string[]
   onValueChange: (
     value: string | undefined
-  ) => void | ((value: string[]) => void)
+  ) => ((value: string[]) => void) | undefined
   collapsible: boolean
   disabled?: boolean
 }
 
-type SingleRootProps = {
-  type: 'single'
+interface SingleRootProps {
+  type: "single"
   defaultValue?: string | undefined
   value?: string | undefined
   onValueChange?: (value: string | undefined) => void
 }
 
-type MultipleRootProps = {
-  type: 'multiple'
+interface MultipleRootProps {
+  type: "multiple"
   defaultValue?: string[]
   value?: string[]
   onValueChange?: (value: string[]) => void
@@ -31,14 +31,14 @@ type AccordionRootProps = (SingleRootProps | MultipleRootProps) & {
   /**
    * Platform: WEB ONLY
    */
-  dir?: 'ltr' | 'rtl'
+  dir?: "ltr" | "rtl"
   /**
    * Platform: WEB ONLY
    */
-  orientation?: 'vertical' | 'horizontal'
+  orientation?: "vertical" | "horizontal"
 }
 
-type AccordionItemProps = {
+interface AccordionItemProps {
   value: string
   disabled?: boolean
 }
@@ -48,5 +48,5 @@ export type {
   AccordionContentProps,
   AccordionItemProps,
   AccordionRootProps,
-  RootContext
+  RootContext,
 }

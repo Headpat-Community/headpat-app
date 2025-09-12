@@ -1,41 +1,42 @@
-import { useState } from 'react'
-import * as ImagePicker from 'expo-image-picker'
-import { Keyboard, TouchableWithoutFeedback, View } from 'react-native'
-import { Text } from '~/components/ui/text'
-import { Button } from '~/components/ui/button'
-import { Label } from '~/components/ui/label'
-import { Input } from '~/components/ui/input'
-import { Checkbox } from '~/components/ui/checkbox'
-import { Textarea } from '~/components/ui/textarea'
-import * as React from 'react'
-import { H2, Muted } from '~/components/ui/typography'
-import { router } from 'expo-router'
-import { databases, storage } from '~/lib/appwrite-client'
-import { ID } from 'react-native-appwrite'
-import { useUser } from '~/components/contexts/UserContext'
-import * as Sentry from '@sentry/react-native'
-import * as WebBrowser from 'expo-web-browser'
-import { useAlertModal } from '~/components/contexts/AlertModalProvider'
-import FeatureAccess from '~/components/FeatureAccess'
-import { z } from 'zod'
-import { Progress } from '~/components/ui/progress'
-import { Blurhash } from 'react-native-blurhash'
+import * as Sentry from "@sentry/react-native"
+import * as ImagePicker from "expo-image-picker"
+import { router } from "expo-router"
+import * as WebBrowser from "expo-web-browser"
+import { useState } from "react"
+import { Keyboard, TouchableWithoutFeedback, View } from "react-native"
+import { ID } from "react-native-appwrite"
+import { Blurhash } from "react-native-blurhash"
+import { z } from "zod"
+import { useAlertModal } from "~/components/contexts/AlertModalProvider"
+import { useUser } from "~/components/contexts/UserContext"
+import FeatureAccess from "~/components/FeatureAccess"
+import { Button } from "~/components/ui/button"
+import { Checkbox } from "~/components/ui/checkbox"
+import { Input } from "~/components/ui/input"
+import { Label } from "~/components/ui/label"
+import { Progress } from "~/components/ui/progress"
+import { Text } from "~/components/ui/text"
+import { Textarea } from "~/components/ui/textarea"
+import { H2, Muted } from "~/components/ui/typography"
+import { databases, storage } from "~/lib/appwrite-client"
 
 const gallerySchema = z.object({
   name: z
     .string()
     .trim()
-    .min(1, 'Name is required')
-    .max(32, 'Name is too long'),
-  longText: z.string().trim().max(2048, 'Description is too long').optional()
+    .min(1, "Name is required")
+    .max(32, "Name is too long"),
+  longText: z.string().trim().max(2048, "Description is too long").optional(),
 })
 
 export default function GalleryAdd() {
-  const [image, setImage] = useState<ImagePicker.ImagePickerAsset>(null)
+  const [image, setImage] = useState<ImagePicker.ImagePickerAsset>(
+    null as unknown as ImagePicker.ImagePickerAsset
+  )
   const [page, setPage] = useState<number>(1)
-  const [title, setTitle] = useState<string>('')
+  const [title, setTitle] = useState<string>("")
   const [nsfw, setNsfw] = useState<boolean>(false)
-  const [description, setDescription] = useState<string>('')
+  const [description, setDescription] = useState<string>("")
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const [progress, setProgress] = useState<number>(0)
   const { showAlert } = useAlertModal()
@@ -49,20 +50,23 @@ export default function GalleryAdd() {
 
   const pickImage = async () => {
     try {
-      let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images', 'videos', 'livePhotos'],
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images", "videos", "livePhotos"],
         allowsEditing: true,
         quality: 0.9,
-        videoQuality: 1
+        videoQuality: 1,
       })
 
-      if (result?.assets?.length === 0 || !result?.assets[0].uri) {
-        showAlert('FAILED', 'No image selected!')
+      if (result.assets?.length === 0 || !result.assets?.[0]?.uri) {
+        showAlert("FAILED", "No image selected!")
         return
       }
 
-      if (result?.assets[0]?.fileSize > maxFileSize) {
-        showAlert('FAILED', 'Image size is too large. Has to be under 8 MB')
+      if (
+        result.assets[0]?.fileSize &&
+        result.assets[0].fileSize > maxFileSize
+      ) {
+        showAlert("FAILED", "Image size is too large. Has to be under 8 MB")
         return
       }
 
@@ -76,13 +80,13 @@ export default function GalleryAdd() {
   }
 
   const handleClose = () => {
-    setImage(null)
+    setImage(null as unknown as ImagePicker.ImagePickerAsset)
     setPage(1)
     router.back()
   }
 
   const handleFinish = (galleryId: string) => {
-    setImage(null)
+    setImage(null as unknown as ImagePicker.ImagePickerAsset)
     setPage(1)
     router.push(`/gallery/${galleryId}`)
   }
@@ -90,7 +94,7 @@ export default function GalleryAdd() {
   async function uploadImageAsync() {
     setIsUploading(true)
     if (!image.uri) {
-      showAlert('FAILED', 'Please select an image to upload!')
+      showAlert("FAILED", "Please select an image to upload!")
       setIsUploading(false)
       return
     }
@@ -98,7 +102,11 @@ export default function GalleryAdd() {
     try {
       gallerySchema.parse({ name: title, longText: description })
     } catch (error) {
-      showAlert('FAILED', error.errors[0].message)
+      if (error instanceof z.ZodError) {
+        showAlert("FAILED", error.errors[0].message)
+      } else {
+        showAlert("FAILED", "Validation error")
+      }
       setIsUploading(false)
       return
     }
@@ -109,47 +117,52 @@ export default function GalleryAdd() {
 
       // name is galleryFile + mimeType
       const name =
-        image.fileName || 'galleryFile.' + image.mimeType.split('/')[1]
+        image.fileName ??
+        "galleryFile." + (image.mimeType?.split("/")[1] ?? "jpg")
       const fileData = {
-        name: image.fileName || name,
-        type: image.mimeType,
-        size: image.fileSize,
-        uri: image.uri
+        name: image.fileName ?? name,
+        type: image.mimeType ?? "image/jpeg",
+        size: image.fileSize ?? 0,
+        uri: image.uri,
       }
 
-      const storageData = await storage.createFile(
-        'gallery',
-        ID.unique(),
-        fileData,
-        undefined,
-        (progress) => {
+      const storageData = await storage.createFile({
+        bucketId: "gallery",
+        fileId: ID.unique(),
+        file: fileData,
+        onProgress: (progress) => {
           setProgress(progress.progress)
-        }
-      )
+        },
+      })
 
-      await databases.createDocument(
-        'hp_db',
-        'gallery-images',
-        storageData.$id,
-        {
+      await databases.createRow({
+        databaseId: "hp_db",
+        tableId: "gallery-images",
+        rowId: storageData.$id,
+        data: {
           name: title,
           longText: description,
           nsfw: nsfw,
-          userId: current.$id,
+          userId: current?.$id,
           mimeType: fileData.type,
           galleryId: storageData.$id,
-          blurHash: blurhash
-        }
-      )
+          blurHash: blurhash,
+        },
+      })
 
       handleFinish(storageData.$id)
     } catch (error) {
-      if (error.type === 'storage_file_type_unsupported') {
-        showAlert('FAILED', 'Unsupported file type.')
+      if (
+        error &&
+        typeof error === "object" &&
+        "type" in error &&
+        error.type === "storage_file_type_unsupported"
+      ) {
+        showAlert("FAILED", "Unsupported file type.")
       } else {
-        console.log(error.type)
+        console.log((error as any)?.type)
         Sentry.captureException(error)
-        showAlert('FAILED', 'Error uploading image.')
+        showAlert("FAILED", "Error uploading image.")
       }
     } finally {
       setIsUploading(false)
@@ -157,11 +170,11 @@ export default function GalleryAdd() {
   }
 
   return (
-    <FeatureAccess featureName={'gallery'}>
+    <FeatureAccess featureName={"gallery"}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View className={'mx-8 flex-1'}>
-          <View className={'flex-1'}>
-            <View className={'mt-8'}>
+        <View className={"mx-8 flex-1"}>
+          <View className={"flex-1"}>
+            <View className={"mt-8"}>
               {page === 1 && <H2>Want to upload an image?</H2>}
               {page === 2 && <H2>Please provide more details</H2>}
               {page === 1 && (
@@ -176,16 +189,16 @@ export default function GalleryAdd() {
             </View>
             {page === 1 && (
               <>
-                <View className={'items-center justify-center py-8'}>
-                  <Button onPress={pickImage}>
+                <View className={"items-center justify-center py-8"}>
+                  <Button onPress={() => void pickImage()}>
                     <Text>Pick an image from camera roll</Text>
                   </Button>
                 </View>
 
-                <View className={'items-center'}>
+                <View className={"items-center"}>
                   <Muted
                     onPress={() =>
-                      openBrowser('https://headpat.place/legal/eula')
+                      void openBrowser("https://headpat.place/legal/eula")
                     }
                   >
                     Please make sure to follow the EULA.
@@ -195,31 +208,31 @@ export default function GalleryAdd() {
             )}
 
             {page === 2 && (
-              <View className={'gap-4 py-8'}>
+              <View className={"gap-4 py-8"}>
                 <>
                   <View>
-                    <Label nativeID={'title'}>Title:</Label>
+                    <Label nativeID={"title"}>Title:</Label>
                     <Input
-                      nativeID={'title'}
-                      inputMode={'text'}
+                      nativeID={"title"}
+                      inputMode={"text"}
                       value={title}
                       onChangeText={(text) => setTitle(text)}
                       placeholder="Title"
                     />
                   </View>
                   <View>
-                    <Label nativeID={'nsfwCheckbox'}>Is this NSFW?</Label>
+                    <Label nativeID={"nsfwCheckbox"}>Is this NSFW?</Label>
                     <Checkbox
-                      className={'p-4'}
+                      className={"p-4"}
                       checked={nsfw}
                       onCheckedChange={setNsfw}
                     />
                   </View>
                   <View>
-                    <Label nativeID={'description'}>Description:</Label>
+                    <Label nativeID={"description"}>Description:</Label>
                     <Textarea
                       placeholder="Write some stuff..."
-                      nativeID={'description'}
+                      nativeID={"description"}
                       value={description}
                       onChangeText={(text) => setDescription(text)}
                       numberOfLines={4}
@@ -231,15 +244,18 @@ export default function GalleryAdd() {
               </View>
             )}
           </View>
-          <View style={{ marginBottom: 40 }} className={'gap-4'}>
+          <View style={{ marginBottom: 40 }} className={"gap-4"}>
             <>
               {isUploading && <Progress value={progress} />}
-              <Button variant={'outline'} onPress={handleClose}>
+              <Button variant={"outline"} onPress={handleClose}>
                 <Text>Cancel</Text>
               </Button>
               {page === 2 && (
                 <>
-                  <Button disabled={isUploading} onPress={uploadImageAsync}>
+                  <Button
+                    disabled={isUploading}
+                    onPress={() => void uploadImageAsync()}
+                  >
                     <Text>Submit</Text>
                   </Button>
                   <Button onPress={() => setPage(1)}>

@@ -1,32 +1,32 @@
-import * as React from 'react'
+import * as React from "react"
 import {
   BackHandler,
   Pressable,
   View,
   type GestureResponderEvent,
   type LayoutChangeEvent,
-  type LayoutRectangle
-} from 'react-native'
+  type LayoutRectangle,
+} from "react-native"
 import {
   useRelativePosition,
   type LayoutPosition,
-  useControllableState
-} from '~/components/primitives/hooks'
-import { Portal as RNPPortal } from '~/components/primitives/portal'
-import * as Slot from '~/components/primitives/slot'
+  useControllableState,
+} from "~/components/primitives/hooks"
+import { Portal as RNPPortal } from "~/components/primitives/portal"
+import * as Slot from "~/components/primitives/slot"
 import type {
   PositionedContentProps,
   PressableRef,
   SlottablePressableProps,
   SlottableViewProps,
-  ViewRef
-} from '~/components/primitives/types'
+  ViewRef,
+} from "~/components/primitives/types"
 import type {
   HoverCardOverlayProps,
   HoverCardPortalProps,
   HoverCardRootProps,
-  RootContext
-} from './types'
+  RootContext,
+} from "./types"
 
 interface IRootContext extends RootContext {
   triggerPosition: LayoutPosition | null
@@ -36,7 +36,6 @@ interface IRootContext extends RootContext {
   nativeID: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
 const RootContext = React.createContext<IRootContext | null>(null)
 
 const Root = React.forwardRef<ViewRef, SlottableViewProps & HoverCardRootProps>(
@@ -56,7 +55,7 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & HoverCardRootProps>(
     const [open = false, onOpenChange] = useControllableState({
       prop: openProp,
       defaultProp: defaultOpen,
-      onChange: onOpenChangeProp
+      onChange: onOpenChangeProp,
     })
     const [triggerPosition, setTriggerPosition] =
       React.useState<LayoutPosition | null>(null)
@@ -73,7 +72,7 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & HoverCardRootProps>(
           nativeID,
           setContentLayout,
           setTriggerPosition,
-          triggerPosition
+          triggerPosition,
         }}
       >
         <Component ref={ref} {...viewProps} />
@@ -82,13 +81,13 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & HoverCardRootProps>(
   }
 )
 
-Root.displayName = 'RootNativeHoverCard'
+Root.displayName = "RootNativeHoverCard"
 
 function useRootContext() {
   const context = React.useContext(RootContext)
   if (!context) {
     throw new Error(
-      'HoverCard compound components cannot be rendered outside the HoverCard component'
+      "HoverCard compound components cannot be rendered outside the HoverCard component"
     )
   }
   return context
@@ -99,17 +98,12 @@ const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
     const triggerRef = React.useRef<View>(null)
     const { open, onOpenChange, setTriggerPosition } = useRootContext()
 
-    React.useImperativeHandle(
-      ref,
-      () => {
-        if (!triggerRef.current) {
-          return new View({})
-        }
-        return triggerRef.current
-      },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [triggerRef.current]
-    )
+    React.useImperativeHandle(ref, () => {
+      if (!triggerRef.current) {
+        return new View({})
+      }
+      return triggerRef.current
+    }, [triggerRef.current])
 
     function onPress(ev: GestureResponderEvent) {
       if (disabled) return
@@ -135,7 +129,7 @@ const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
   }
 )
 
-Trigger.displayName = 'TriggerNativeHoverCard'
+Trigger.displayName = "TriggerNativeHoverCard"
 
 /**
  * @warning when using a custom `<PortalHost />`, you might have to adjust the Content's sideOffset to account for nav elements like headers.
@@ -197,7 +191,7 @@ const Overlay = React.forwardRef<
   }
 )
 
-Overlay.displayName = 'OverlayNativeHoverCard'
+Overlay.displayName = "OverlayNativeHoverCard"
 
 /**
  * @info `position`, `top`, `left`, and `maxWidth` style properties are controlled internally. Opt out of this behavior by setting `disablePositioningStyle` to `true`.
@@ -210,8 +204,8 @@ const Content = React.forwardRef<
     {
       asChild = false,
       forceMount,
-      align = 'start',
-      side = 'bottom',
+      align = "start",
+      side = "bottom",
       sideOffset = 0,
       alignOffset = 0,
       avoidCollisions = true,
@@ -230,12 +224,12 @@ const Content = React.forwardRef<
       nativeID,
       setContentLayout,
       setTriggerPosition,
-      triggerPosition
+      triggerPosition,
     } = useRootContext()
 
     React.useEffect(() => {
       const backHandler = BackHandler.addEventListener(
-        'hardwareBackPress',
+        "hardwareBackPress",
         () => {
           setTriggerPosition(null)
           setContentLayout(null)
@@ -248,7 +242,6 @@ const Content = React.forwardRef<
         setContentLayout(null)
         backHandler.remove()
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const positionStyle = useRelativePosition({
@@ -260,7 +253,7 @@ const Content = React.forwardRef<
       insets,
       sideOffset,
       side,
-      disablePositioningStyle
+      disablePositioningStyle,
     })
 
     function onLayout(event: LayoutChangeEvent) {
@@ -290,7 +283,7 @@ const Content = React.forwardRef<
   }
 )
 
-Content.displayName = 'ContentNativeHoverCard'
+Content.displayName = "ContentNativeHoverCard"
 
 export { Content, Overlay, Portal, Root, Trigger, useRootContext }
 

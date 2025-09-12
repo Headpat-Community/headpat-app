@@ -1,32 +1,32 @@
 import {
   useControllableState,
   useRelativePosition,
-  type LayoutPosition
-} from '~/components/primitives/hooks'
-import { Portal as RNPPortal } from '~/components/primitives/portal'
-import * as Slot from '~/components/primitives/slot'
+  type LayoutPosition,
+} from "~/components/primitives/hooks"
+import { Portal as RNPPortal } from "~/components/primitives/portal"
+import * as Slot from "~/components/primitives/slot"
 import type {
   PositionedContentProps,
   PressableRef,
   SlottablePressableProps,
   SlottableViewProps,
-  ViewRef
-} from '~/components/primitives/types'
-import * as React from 'react'
+  ViewRef,
+} from "~/components/primitives/types"
+import * as React from "react"
 import {
   BackHandler,
   Pressable,
   View,
   type GestureResponderEvent,
   type LayoutChangeEvent,
-  type LayoutRectangle
-} from 'react-native'
+  type LayoutRectangle,
+} from "react-native"
 import type {
   PopoverOverlayProps,
   PopoverPortalProps,
   PopoverRootProps,
-  RootContext
-} from './types'
+  RootContext,
+} from "./types"
 
 interface IRootContext extends RootContext {
   triggerPosition: LayoutPosition | null
@@ -36,7 +36,6 @@ interface IRootContext extends RootContext {
   nativeID: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
 const RootContext = React.createContext<IRootContext | null>(null)
 
 const Root = React.forwardRef<ViewRef, SlottableViewProps & PopoverRootProps>(
@@ -53,7 +52,7 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & PopoverRootProps>(
     const [open = false, onOpenChange] = useControllableState({
       prop: openProp,
       defaultProp: defaultOpen,
-      onChange: onOpenChangeProp
+      onChange: onOpenChangeProp,
     })
     const nativeID = React.useId()
     const [triggerPosition, setTriggerPosition] =
@@ -71,7 +70,7 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & PopoverRootProps>(
           nativeID,
           setContentLayout,
           setTriggerPosition,
-          triggerPosition
+          triggerPosition,
         }}
       >
         <Component ref={ref} {...viewProps} />
@@ -80,13 +79,13 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & PopoverRootProps>(
   }
 )
 
-Root.displayName = 'RootNativePopover'
+Root.displayName = "RootNativePopover"
 
 function usePopoverContext() {
   const context = React.useContext(RootContext)
   if (!context) {
     throw new Error(
-      'Popover compound components cannot be rendered outside the Popover component'
+      "Popover compound components cannot be rendered outside the Popover component"
     )
   }
   return context
@@ -97,17 +96,12 @@ const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
     const triggerRef = React.useRef<View>(null)
     const { open, onOpenChange, setTriggerPosition } = usePopoverContext()
 
-    React.useImperativeHandle(
-      ref,
-      () => {
-        if (!triggerRef.current) {
-          return new View({})
-        }
-        return triggerRef.current
-      },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [triggerRef.current]
-    )
+    React.useImperativeHandle(ref, () => {
+      if (!triggerRef.current) {
+        return new View({})
+      }
+      return triggerRef.current
+    }, [triggerRef.current])
 
     function onPress(ev: GestureResponderEvent) {
       if (disabled) return
@@ -133,7 +127,7 @@ const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
   }
 )
 
-Trigger.displayName = 'TriggerNativePopover'
+Trigger.displayName = "TriggerNativePopover"
 
 /**
  * @warning when using a custom `<PortalHost />`, you might have to adjust the Content's sideOffset to account for nav elements like headers.
@@ -195,7 +189,7 @@ const Overlay = React.forwardRef<
   }
 )
 
-Overlay.displayName = 'OverlayNativePopover'
+Overlay.displayName = "OverlayNativePopover"
 
 /**
  * @info `position`, `top`, `left`, and `maxWidth` style properties are controlled internally. Opt out of this behavior by setting `disablePositioningStyle` to `true`.
@@ -208,8 +202,8 @@ const Content = React.forwardRef<
     {
       asChild = false,
       forceMount,
-      align = 'start',
-      side = 'bottom',
+      align = "start",
+      side = "bottom",
       sideOffset = 0,
       alignOffset = 0,
       avoidCollisions = true,
@@ -228,12 +222,12 @@ const Content = React.forwardRef<
       nativeID,
       setContentLayout,
       setTriggerPosition,
-      triggerPosition
+      triggerPosition,
     } = usePopoverContext()
 
     React.useEffect(() => {
       const backHandler = BackHandler.addEventListener(
-        'hardwareBackPress',
+        "hardwareBackPress",
         () => {
           setTriggerPosition(null)
           setContentLayout(null)
@@ -246,7 +240,6 @@ const Content = React.forwardRef<
         setContentLayout(null)
         backHandler.remove()
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const positionStyle = useRelativePosition({
@@ -258,7 +251,7 @@ const Content = React.forwardRef<
       insets,
       sideOffset,
       side,
-      disablePositioningStyle
+      disablePositioningStyle,
     })
 
     function onLayout(event: LayoutChangeEvent) {
@@ -288,7 +281,7 @@ const Content = React.forwardRef<
   }
 )
 
-Content.displayName = 'ContentNativePopover'
+Content.displayName = "ContentNativePopover"
 
 const Close = React.forwardRef<PressableRef, SlottablePressableProps>(
   ({ asChild, onPress: onPressProp, disabled = false, ...props }, ref) => {
@@ -317,7 +310,7 @@ const Close = React.forwardRef<PressableRef, SlottablePressableProps>(
   }
 )
 
-Close.displayName = 'CloseNativePopover'
+Close.displayName = "CloseNativePopover"
 
 export { Close, Content, Overlay, Portal, Root, Trigger, usePopoverContext }
 

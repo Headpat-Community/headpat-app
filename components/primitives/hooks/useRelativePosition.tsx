@@ -1,25 +1,25 @@
-import * as React from 'react'
+import * as React from "react"
 import {
   useWindowDimensions,
   type LayoutRectangle,
   type ScaledSize,
-  type ViewStyle
-} from 'react-native'
-import { Insets } from '~/components/primitives/types'
+  type ViewStyle,
+} from "react-native"
+import { Insets } from "~/components/primitives/types"
 
 const POSITION_ABSOLUTE: ViewStyle = {
-  position: 'absolute'
+  position: "absolute",
 }
 
 const HIDDEN_CONTENT: ViewStyle = {
-  position: 'absolute',
+  position: "absolute",
   opacity: 0,
-  zIndex: -9999999
+  zIndex: -9999999,
 }
 
 type UseRelativePositionArgs = Omit<
   GetContentStyleArgs,
-  'triggerPosition' | 'contentLayout' | 'dimensions'
+  "triggerPosition" | "contentLayout" | "dimensions"
 > & {
   triggerPosition: LayoutPosition | null
   contentLayout: LayoutRectangle | null
@@ -35,7 +35,7 @@ export function useRelativePosition({
   insets,
   sideOffset,
   side,
-  disablePositioningStyle
+  disablePositioningStyle,
 }: UseRelativePositionArgs) {
   const dimensions = useWindowDimensions()
   return React.useMemo(() => {
@@ -54,9 +54,8 @@ export function useRelativePosition({
       alignOffset,
       insets,
       sideOffset,
-      dimensions
+      dimensions,
     })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [triggerPosition, contentLayout, dimensions.width, dimensions.height])
 }
 
@@ -76,7 +75,7 @@ interface GetPositionArgs {
 }
 
 interface GetSidePositionArgs extends GetPositionArgs {
-  side: 'top' | 'bottom'
+  side: "top" | "bottom"
   sideOffset: number
 }
 
@@ -87,23 +86,23 @@ function getSidePosition({
   sideOffset,
   insets,
   avoidCollisions,
-  dimensions
+  dimensions,
 }: GetSidePositionArgs) {
   const insetTop = insets?.top ?? 0
   const insetBottom = insets?.bottom ?? 0
-  const positionTop = triggerPosition?.pageY - sideOffset - contentLayout.height
+  const positionTop = triggerPosition.pageY - sideOffset - contentLayout.height
   const positionBottom =
     triggerPosition.pageY + triggerPosition.height + sideOffset
 
   if (!avoidCollisions) {
     return {
-      top: side === 'top' ? positionTop : positionBottom
+      top: side === "top" ? positionTop : positionBottom,
     }
   }
 
-  if (side === 'top') {
+  if (side === "top") {
     return {
-      top: Math.max(insetTop, positionTop)
+      top: Math.max(insetTop, positionTop),
     }
   }
 
@@ -111,12 +110,12 @@ function getSidePosition({
     top: Math.min(
       dimensions.height - insetBottom - contentLayout.height,
       positionBottom
-    )
+    ),
   }
 }
 
 interface GetAlignPositionArgs extends GetPositionArgs {
-  align: 'start' | 'center' | 'end'
+  align: "start" | "center" | "end"
   alignOffset: number
 }
 
@@ -127,7 +126,7 @@ function getAlignPosition({
   triggerPosition,
   alignOffset,
   insets,
-  dimensions
+  dimensions,
 }: GetAlignPositionArgs) {
   const insetLeft = insets?.left ?? 0
   const insetRight = insets?.right ?? 0
@@ -171,7 +170,7 @@ function getAlignPosition({
 }
 
 function getLeftPosition(
-  align: 'start' | 'center' | 'end',
+  align: "start" | "center" | "end",
   triggerPageX: number,
   triggerWidth: number,
   contentWidth: number,
@@ -181,13 +180,13 @@ function getLeftPosition(
   dimensions: ScaledSize
 ) {
   let left = 0
-  if (align === 'start') {
+  if (align === "start") {
     left = triggerPageX
   }
-  if (align === 'center') {
+  if (align === "center") {
     left = triggerPageX + triggerWidth / 2 - contentWidth / 2
   }
-  if (align === 'end') {
+  if (align === "end") {
     left = triggerPageX + triggerWidth - contentWidth
   }
   return Math.max(
@@ -209,7 +208,7 @@ function getContentStyle({
   alignOffset,
   insets,
   sideOffset,
-  dimensions
+  dimensions,
 }: GetContentStyleArgs) {
   return Object.assign(
     POSITION_ABSOLUTE,
@@ -220,7 +219,7 @@ function getContentStyle({
       sideOffset,
       insets,
       avoidCollisions,
-      dimensions
+      dimensions,
     }),
     getAlignPosition({
       align,
@@ -229,7 +228,7 @@ function getContentStyle({
       contentLayout,
       alignOffset,
       insets,
-      dimensions
+      dimensions,
     })
   )
 }

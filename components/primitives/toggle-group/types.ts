@@ -1,10 +1,10 @@
-type SingleRootProps = {
+interface SingleRootProps {
   type: 'single'
   value: string | undefined
   onValueChange: (val: string | undefined) => void
 }
 
-type MultipleRootProps = {
+interface MultipleRootProps {
   type: 'multiple'
   value: string[]
   onValueChange: (val: string[]) => void

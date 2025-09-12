@@ -13,13 +13,13 @@ interface ToolbarRootProps {
   loop?: boolean
 }
 
-type SingleToggleGroupProps = {
+interface SingleToggleGroupProps {
   type: 'single'
   value: string | undefined
   onValueChange: (val: string | undefined) => void
 }
 
-type MultipleToggleGroupProps = {
+interface MultipleToggleGroupProps {
   type: 'multiple'
   value: string[]
   onValueChange: (val: string[]) => void

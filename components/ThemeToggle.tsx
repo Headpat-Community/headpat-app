@@ -1,21 +1,20 @@
-import { View } from 'react-native'
-import { CircleUserRound, MoonStar, Sun } from '~/components/Icons'
-import { useColorScheme } from '~/lib/useColorScheme'
-import { Link } from 'expo-router'
-import { useUser } from '~/components/contexts/UserContext'
-import { TouchableOpacity } from 'react-native-gesture-handler'
+import { Link } from "expo-router"
+import { TouchableOpacity, View } from "react-native"
+import { useUser } from "~/components/contexts/UserContext"
+import { CircleUserRound, MoonStar, Sun } from "~/components/Icons"
+import { useColorScheme } from "~/lib/useColorScheme"
 
 export function ProfileThemeToggle() {
   const { isDarkColorScheme, setColorScheme, isLoading } = useColorScheme()
   const { current } = useUser()
 
   return (
-    <View className={'flex-row items-center'}>
-      <Link href={current ? '/account' : '/login'} asChild>
+    <View className={"flex-row items-center"}>
+      <Link href={current ? "/account" : "/login"} asChild>
         <TouchableOpacity>
           <View
             className={
-              'flex aspect-square justify-center items-end pt-0.5 mr-4'
+              "mr-4 flex aspect-square items-end justify-center pt-0.5"
             }
           >
             <CircleUserRound
@@ -30,12 +29,12 @@ export function ProfileThemeToggle() {
       <TouchableOpacity
         onPress={() => {
           if (isLoading) return
-          const newTheme = isDarkColorScheme ? 'light' : 'dark'
-          setColorScheme(newTheme)
+          const newTheme = isDarkColorScheme ? "light" : "dark"
+          void setColorScheme(newTheme)
         }}
         className="pl-4"
       >
-        <View className={'flex aspect-square justify-center items-end pt-0.5'}>
+        <View className={"flex aspect-square items-end justify-center pt-0.5"}>
           {isDarkColorScheme ? (
             <MoonStar
               className="text-foreground"

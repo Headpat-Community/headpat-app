@@ -1,18 +1,18 @@
-import { useControllableState } from '~/components/primitives/hooks'
-import * as Slot from '~/components/primitives/slot'
+import * as React from "react"
+import { Pressable, View, type GestureResponderEvent } from "react-native"
+import { useControllableState } from "~/components/primitives/hooks"
+import * as Slot from "~/components/primitives/slot"
 import type {
   PressableRef,
   SlottablePressableProps,
   SlottableViewProps,
-  ViewRef
-} from '~/components/primitives/types'
-import * as React from 'react'
-import { Pressable, View, type GestureResponderEvent } from 'react-native'
+  ViewRef,
+} from "~/components/primitives/types"
 import type {
   CollapsibleContentProps,
   CollapsibleRootProps,
-  RootContext
-} from './types'
+  RootContext,
+} from "./types"
 
 const CollapsibleContext = React.createContext<
   (RootContext & { nativeID: string }) | null
@@ -37,7 +37,7 @@ const Root = React.forwardRef<
     const [open = false, onOpenChange] = useControllableState({
       prop: openProp,
       defaultProp: defaultOpen,
-      onChange: onOpenChangeProp
+      onChange: onOpenChangeProp,
     })
 
     const Component = asChild ? Slot.View : View
@@ -47,7 +47,7 @@ const Root = React.forwardRef<
           disabled,
           open,
           onOpenChange,
-          nativeID
+          nativeID,
         }}
       >
         <Component ref={ref} {...viewProps} />
@@ -56,13 +56,13 @@ const Root = React.forwardRef<
   }
 )
 
-Root.displayName = 'RootNativeCollapsible'
+Root.displayName = "RootNativeCollapsible"
 
 function useCollapsibleContext() {
   const context = React.useContext(CollapsibleContext)
   if (!context) {
     throw new Error(
-      'Collapsible compound components cannot be rendered outside the Collapsible component'
+      "Collapsible compound components cannot be rendered outside the Collapsible component"
     )
   }
   return context
@@ -92,7 +92,7 @@ const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
         onPress={onPress}
         accessibilityState={{
           expanded: open,
-          disabled: (disabled || disabledProp) ?? undefined
+          disabled: (disabled || disabledProp) ?? undefined,
         }}
         disabled={disabled || disabledProp}
         {...props}
@@ -101,7 +101,7 @@ const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
   }
 )
 
-Trigger.displayName = 'TriggerNativeCollapsible'
+Trigger.displayName = "TriggerNativeCollapsible"
 
 const Content = React.forwardRef<
   ViewRef,
@@ -119,14 +119,14 @@ const Content = React.forwardRef<
   return (
     <Component
       ref={ref}
-      aria-hidden={!(forceMount || open)}
+      aria-hidden={!(forceMount ?? open)}
       aria-labelledby={nativeID}
-      role={'region'}
+      role={"region"}
       {...props}
     />
   )
 })
 
-Content.displayName = 'ContentNativeCollapsible'
+Content.displayName = "ContentNativeCollapsible"
 
 export { Content, Root, Trigger }

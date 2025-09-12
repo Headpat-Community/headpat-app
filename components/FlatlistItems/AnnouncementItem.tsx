@@ -1,49 +1,44 @@
-import React from 'react'
-import { TouchableOpacity } from 'react-native'
-import { Link } from 'expo-router'
-import { Announcements } from '~/lib/types/collections'
+import React from "react"
+import { TouchableOpacity } from "react-native"
+import { Link } from "expo-router"
+import { AnnouncementDocumentsType } from "~/lib/types/collections"
 import {
   Card,
   CardContent,
   CardDescription,
   CardFooter,
-  CardTitle
-} from '~/components/ui/card'
-import { Muted } from '~/components/ui/typography'
-import { formatDate } from '~/components/calculateTimeLeft'
-import { ClockIcon } from 'lucide-react-native'
-import { useColorScheme } from '~/lib/useColorScheme'
+  CardTitle,
+} from "~/components/ui/card"
+import { Muted } from "~/components/ui/typography"
+import { formatDate } from "~/components/calculateTimeLeft"
+import { ClockIcon } from "lucide-react-native"
+import { useColorScheme } from "~/lib/useColorScheme"
 
-// eslint-disable-next-line react/display-name
 const AnnouncementItem = React.memo(
-  ({
-    announcement
-  }: {
-    announcement: Announcements.AnnouncementDocumentsType
-  }) => {
+  ({ announcement }: { announcement: AnnouncementDocumentsType }) => {
     const { isDarkColorScheme } = useColorScheme()
-    const theme = isDarkColorScheme ? 'white' : 'black'
+    const theme = isDarkColorScheme ? "white" : "black"
 
     return (
       <Link
         href={{
-          pathname: '/announcements/[announcementId]',
-          params: { announcementId: announcement.$id }
+          pathname: "/announcements/[announcementId]",
+          params: { announcementId: announcement.$id },
         }}
         asChild
       >
         <TouchableOpacity>
           <Card>
             <CardContent>
-              <CardTitle className={'justify-between mt-2 text-xl'}>
+              <CardTitle className={"mt-2 justify-between text-xl"}>
                 {announcement.title}
               </CardTitle>
               <CardDescription>
-                <Muted>{announcement?.sideText}</Muted>
+                <Muted>{announcement.sideText}</Muted>
               </CardDescription>
-              <CardFooter className={'p-0 mt-2 justify-between flex flex-wrap'}>
+              <CardFooter className={"mt-2 flex flex-wrap justify-between p-0"}>
                 <CardDescription>
-                  <ClockIcon size={12} color={theme} />{' '}
+                  <ClockIcon size={12} color={theme} />{" "}
                   {formatDate(new Date(announcement.validUntil))}
                 </CardDescription>
               </CardFooter>

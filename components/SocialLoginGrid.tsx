@@ -1,9 +1,9 @@
-import React from 'react'
+import { ImageSource } from 'expo-image'
 import { View } from 'react-native'
-import { Muted } from '~/components/ui/typography'
-import SocialLoginButton from './SocialLoginButton'
 import { OAuthProvider } from 'react-native-appwrite'
+import { Muted } from '~/components/ui/typography'
 import { IconType } from '~/lib/types/IconTypes'
+import SocialLoginButton from './SocialLoginButton'
 
 interface SocialLoginGridProps {
   onLogin: (provider: OAuthProvider) => void
@@ -11,7 +11,7 @@ interface SocialLoginGridProps {
     provider: OAuthProvider
     color: string
     Icon?: IconType
-    Image?: React.ReactNode
+    Image?: ImageSource
     title: string
   }[]
 }

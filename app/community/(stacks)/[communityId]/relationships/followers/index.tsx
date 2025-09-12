@@ -1,16 +1,16 @@
-import { functions } from '~/lib/appwrite-client'
-import { ExecutionMethod } from 'react-native-appwrite'
-import React from 'react'
-import { UserData } from '~/lib/types/collections'
-import { captureException } from '@sentry/react-native'
-import UserItem from '~/components/user/UserItem'
-import { FlatList, RefreshControl, ScrollView, Text, View } from 'react-native'
-import { H1, Muted } from '~/components/ui/typography'
-import { useLocalSearchParams } from 'expo-router'
-import { Skeleton } from '~/components/ui/skeleton'
-import { useAlertModal } from '~/components/contexts/AlertModalProvider'
-import { i18n } from '~/components/system/i18n'
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { functions } from "~/lib/appwrite-client"
+import { ExecutionMethod } from "react-native-appwrite"
+import React from "react"
+import { UserDataDocumentsType } from "~/lib/types/collections"
+import { captureException } from "@sentry/react-native"
+import UserItem from "~/components/user/UserItem"
+import { FlatList, RefreshControl, ScrollView, Text, View } from "react-native"
+import { H1, Muted } from "~/components/ui/typography"
+import { useLocalSearchParams } from "expo-router"
+import { Skeleton } from "~/components/ui/skeleton"
+import { useAlertModal } from "~/components/contexts/AlertModalProvider"
+import { i18n } from "~/components/system/i18n"
+import { useInfiniteQuery } from "@tanstack/react-query"
 
 const PAGE_SIZE = 20
 
@@ -25,21 +25,20 @@ export default function FollowingPage() {
     isFetchingNextPage,
     isRefetching,
     isLoading,
-    refetch
+    refetch,
   } = useInfiniteQuery({
-    queryKey: ['community-followers', local.communityId],
+    queryKey: ["community-followers", local.communityId],
     queryFn: async ({ pageParam = 0 }) => {
       try {
-        const data = await functions.createExecution(
-          'community-endpoints',
-          '',
-          false,
-          `/community/followers?communityId=${local?.communityId}&limit=${PAGE_SIZE}&offset=${pageParam}`,
-          ExecutionMethod.GET
-        )
-        return JSON.parse(data.responseBody) as UserData.UserDataDocumentsType[]
+        const data = await functions.createExecution({
+          functionId: "community-endpoints",
+          async: false,
+          xpath: `/community/followers?communityId=${local.communityId as string}&limit=${PAGE_SIZE}&offset=${pageParam}`,
+          method: ExecutionMethod.GET,
+        })
+        return JSON.parse(data.responseBody) as UserDataDocumentsType[]
       } catch (error) {
-        showAlert('FAILED', 'Failed to fetch users. Please try again later.')
+        showAlert("FAILED", "Failed to fetch users. Please try again later.")
         captureException(error)
         return []
       }
@@ -50,20 +49,20 @@ export default function FollowingPage() {
         : undefined
     },
     initialPageParam: 0,
-    enabled: !!local?.communityId
+    enabled: !!local.communityId,
   })
 
   const users = data?.pages.flat() ?? []
 
-  if (!local?.communityId)
+  if (!local.communityId)
     return (
       <ScrollView
-        contentContainerClassName={'flex-1 justify-center items-center h-full'}
+        contentContainerClassName={"flex-1 justify-center items-center h-full"}
       >
-        <View className={'p-4 native:pb-24 max-w-md gap-6'}>
-          <View className={'gap-1'}>
-            <H1 className={'text-foreground text-center'}>Followers</H1>
-            <Muted className={'text-base text-center'}>
+        <View className={"native:pb-24 max-w-md gap-6 p-4"}>
+          <View className={"gap-1"}>
+            <H1 className={"text-center text-foreground"}>Followers</H1>
+            <Muted className={"text-center text-base"}>
               This community does not exist.
             </Muted>
           </View>
@@ -78,9 +77,9 @@ export default function FollowingPage() {
           <View
             key={index}
             style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              margin: 10
+              flexDirection: "row",
+              justifyContent: "space-between",
+              margin: 10,
             }}
           >
             {[...Array(3)].map((_, i) => (
@@ -88,10 +87,10 @@ export default function FollowingPage() {
                 key={i}
                 style={{
                   width: 100,
-                  height: 100
+                  height: 100,
                 }}
               >
-                <Skeleton className={'w-full h-full rounded-3xl'} />
+                <Skeleton className={"h-full w-full rounded-3xl"} />
               </View>
             ))}
           </View>
@@ -104,14 +103,17 @@ export default function FollowingPage() {
     return (
       <ScrollView
         refreshControl={
-          <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={() => void refetch()}
+          />
         }
       >
-        <View className={'flex-1 justify-center items-center'}>
-          <View className={'p-4 native:pb-24 max-w-md gap-6'}>
-            <View className={'gap-1'}>
-              <H1 className={'text-foreground text-center'}>Followers</H1>
-              <Muted className={'text-base text-center'}>
+        <View className={"flex-1 items-center justify-center"}>
+          <View className={"native:pb-24 max-w-md gap-6 p-4"}>
+            <View className={"gap-1"}>
+              <H1 className={"text-center text-foreground"}>Followers</H1>
+              <Muted className={"text-center text-base"}>
                 This community does not have any followers.
               </Muted>
             </View>
@@ -120,7 +122,7 @@ export default function FollowingPage() {
       </ScrollView>
     )
 
-  const renderItem = ({ item }: { item: UserData.UserDataDocumentsType }) => (
+  const renderItem = ({ item }: { item: UserDataDocumentsType }) => (
     <UserItem user={item} />
   )
 
@@ -129,19 +131,19 @@ export default function FollowingPage() {
       data={users}
       keyExtractor={(item) => item.$id}
       renderItem={renderItem}
-      onRefresh={refetch}
+      onRefresh={() => void refetch()}
       refreshing={isRefetching}
       numColumns={3}
-      contentContainerStyle={{ justifyContent: 'space-between' }}
+      contentContainerStyle={{ justifyContent: "space-between" }}
       onEndReached={() => {
         if (hasNextPage && !isFetchingNextPage) {
-          fetchNextPage()
+          void fetchNextPage()
         }
       }}
       onEndReachedThreshold={0.5}
       ListFooterComponent={
         isFetchingNextPage && hasNextPage ? (
-          <Text>{i18n.t('main.loading')}</Text>
+          <Text>{i18n.t("main.loading")}</Text>
         ) : null
       }
     />

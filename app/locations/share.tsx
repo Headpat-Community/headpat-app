@@ -1,30 +1,31 @@
-import React from 'react'
-import { FlatList, View } from 'react-native'
-import { Text } from '~/components/ui/text'
-import { H1, H3, Muted } from '~/components/ui/typography'
-import { Button } from '~/components/ui/button'
-import { useLocation } from '~/components/contexts/SharingContext'
-import { useFocusEffect } from '@react-navigation/core'
+import { useFocusEffect } from "@react-navigation/core"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { BackgroundTaskStatus } from "expo-background-task"
+import { router } from "expo-router"
 import {
   ArrowDownIcon,
   NavigationIcon,
   NavigationOffIcon,
-  PlusIcon
-} from 'lucide-react-native'
-import { useColorScheme } from '~/lib/useColorScheme'
-import { databases } from '~/lib/appwrite-client'
-import { Query } from 'react-native-appwrite'
-import LocationSharedItem from '~/components/FlatlistItems/LocationSharedItem'
-import { useAlertModal } from '~/components/contexts/AlertModalProvider'
-import { router } from 'expo-router'
-import { i18n } from '~/components/system/i18n'
-import { Skeleton } from '~/components/ui/skeleton'
-import { Community } from '~/lib/types/collections'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+  PlusIcon,
+} from "lucide-react-native"
+import React from "react"
+import { FlatList, View } from "react-native"
+import { Query } from "react-native-appwrite"
+import LocationSharedItem from "~/components/FlatlistItems/LocationSharedItem"
+import { useAlertModal } from "~/components/contexts/AlertModalProvider"
+import { useLocation } from "~/components/contexts/SharingContext"
+import { i18n } from "~/components/system/i18n"
+import { Button } from "~/components/ui/button"
+import { Skeleton } from "~/components/ui/skeleton"
+import { Text } from "~/components/ui/text"
+import { H1, H3, Muted } from "~/components/ui/typography"
+import { databases } from "~/lib/appwrite-client"
+import { CommunityDocumentsType } from "~/lib/types/collections"
+import { useColorScheme } from "~/lib/useColorScheme"
 
 export default function ShareLocationView() {
   const { isDarkColorScheme } = useColorScheme()
-  const theme = isDarkColorScheme ? 'white' : 'black'
+  const theme = isDarkColorScheme ? "white" : "black"
   const [refreshing, setRefreshing] = React.useState(false)
   const { showAlert } = useAlertModal()
   const queryClient = useQueryClient()
@@ -33,62 +34,62 @@ export default function ShareLocationView() {
     isRegistered,
     checkStatus,
     registerBackgroundFetch,
-    unregisterBackgroundFetch
+    unregisterBackgroundFetch,
   } = useLocation()
 
   const { data: sharedItems, isLoading } = useQuery({
-    queryKey: ['location-permissions'],
+    queryKey: ["location-permissions"],
     queryFn: async () => {
-      const result = await databases.listDocuments(
-        'hp_db',
-        'locations-permissions',
-        [
+      const result = await databases.listRows({
+        databaseId: "hp_db",
+        tableId: "locations-permissions",
+        queries: [
           Query.limit(1000),
-          Query.select(['$id', 'isCommunity', 'requesterId', 'timeUntil'])
-        ]
-      )
+          Query.select(["$id", "isCommunity", "requesterId", "timeUntil"]),
+        ],
+      })
 
       const items = await Promise.all(
-        result.documents.map(async (item) => {
+        result.rows.map(async (item) => {
           if (item.isCommunity) {
             const communityData = await queryClient.fetchQuery({
-              queryKey: ['community', item.requesterId],
+              queryKey: ["community", item.requesterId],
               queryFn: async () => {
-                const response = await databases.getDocument(
-                  'hp_db',
-                  'community',
-                  item.requesterId
-                )
-                return response as unknown as Community.CommunityDocumentsType
+                const response = await databases.getRow({
+                  databaseId: "hp_db",
+                  tableId: "community",
+                  rowId: item.requesterId,
+                })
+                return response as unknown as CommunityDocumentsType
               },
-              staleTime: 1000 * 60 * 5 // 5 minutes
+              staleTime: 1000 * 60 * 5, // 5 minutes
             })
 
             return {
               ...communityData,
               documentId: item.$id,
               timeUntil: item.timeUntil,
-              isCommunity: true
+              isCommunity: true,
             }
           } else {
             const userData = await queryClient.fetchQuery({
-              queryKey: ['user', item.requesterId],
+              queryKey: ["user", item.requesterId],
               queryFn: async () => {
-                const response = await databases.getDocument(
-                  'hp_db',
-                  'userdata',
-                  item.requesterId
-                )
+                const response = await databases.getRow({
+                  databaseId: "hp_db",
+                  tableId: "userdata",
+                  rowId: item.requesterId,
+                })
                 return response
               },
-              staleTime: 1000 * 60 * 5 // 5 minutes
+              staleTime: 1000 * 60 * 5, // 5 minutes
             })
 
             return {
               ...userData,
               documentId: item.$id,
               timeUntil: item.timeUntil,
-              isCommunity: false
+              isCommunity: false,
             }
           }
         })
@@ -97,28 +98,31 @@ export default function ShareLocationView() {
       // Sort items by timeUntil
       return items.sort(
         (a, b) =>
-          new Date(a.timeUntil).getTime() - new Date(b.timeUntil).getTime()
+          new Date(a.timeUntil as string | number | Date).getTime() -
+          new Date(b.timeUntil as string | number | Date).getTime()
       )
-    }
+    },
   })
 
   useFocusEffect(
     React.useCallback(() => {
       const initializeStatus = async () => {
         await checkStatus()
-        queryClient.invalidateQueries({ queryKey: ['location-permissions'] })
+        void queryClient.invalidateQueries({
+          queryKey: ["location-permissions"],
+        })
       }
-      initializeStatus().then()
+      void initializeStatus().then()
     }, [checkStatus, queryClient])
   )
 
   const handleRemoveItem = (documentId: string) => {
-    queryClient.setQueryData(['location-permissions'], (old: any[]) =>
-      old?.filter((user) => user.documentId !== documentId)
+    queryClient.setQueryData(["location-permissions"], (old: any[]) =>
+      old.filter((user) => user.documentId !== documentId)
     )
   }
 
-  const renderConversationItem = ({ item }) => (
+  const renderConversationItem = ({ item }: { item: any }) => (
     <LocationSharedItem
       documentId={item.documentId}
       timeUntil={item.timeUntil}
@@ -128,40 +132,40 @@ export default function ShareLocationView() {
   )
 
   const sharingButtonHandle = () => {
-    if (status === 2) {
+    if (status === BackgroundTaskStatus.Available) {
       if (isRegistered) {
-        unregisterBackgroundFetch().then()
+        void unregisterBackgroundFetch().then()
       } else {
-        registerBackgroundFetch().then()
+        void registerBackgroundFetch().then()
       }
     } else {
-      showAlert('FAILED', 'Location sharing is not available')
+      showAlert("FAILED", "Location sharing is not available")
     }
   }
 
   const onRefresh = () => {
     setRefreshing(true)
-    queryClient.invalidateQueries({ queryKey: ['location-permissions'] })
+    void queryClient.invalidateQueries({ queryKey: ["location-permissions"] })
     setRefreshing(false)
   }
 
   return (
     <>
       {isLoading && (
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+        <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
           {Array.from({ length: 8 }).map((_, index) => (
             <View
-              className={'px-4 m-4 w-full flex flex-row items-center'}
+              className={"m-4 flex w-full flex-row items-center px-4"}
               key={index}
             >
-              <Skeleton className="w-[100px] h-[100px] rounded-3xl" />
-              <View className={'flex flex-col gap-3 ml-6'}>
-                <Skeleton className="w-[150px] h-[20px] rounded" />
-                <Skeleton className="w-[100px] h-[20px] rounded" />
-                <View className={'flex flex-row items-center gap-4'}>
-                  <View className={'flex flex-row items-center gap-2'}>
-                    <Skeleton className="w-[20px] h-[20px] rounded-full" />
-                    <Skeleton className="w-[50px] h-[20px] rounded" />
+              <Skeleton className="h-[100px] w-[100px] rounded-3xl" />
+              <View className={"ml-6 flex flex-col gap-3"}>
+                <Skeleton className="h-[20px] w-[150px] rounded" />
+                <Skeleton className="h-[20px] w-[100px] rounded" />
+                <View className={"flex flex-row items-center gap-4"}>
+                  <View className={"flex flex-row items-center gap-2"}>
+                    <Skeleton className="h-[20px] w-[20px] rounded-full" />
+                    <Skeleton className="h-[20px] w-[50px] rounded" />
                   </View>
                 </View>
               </View>
@@ -171,28 +175,28 @@ export default function ShareLocationView() {
       )}
       {!isRegistered ? (
         <>
-          <View className={'flex-1 justify-center items-center'}>
-            <H1 className={'text-center'}>{i18n.t('location.share.title')}</H1>
+          <View className={"flex-1 items-center justify-center"}>
+            <H1 className={"text-center"}>{i18n.t("location.share.title")}</H1>
             <Muted>BETA</Muted>
-            <View className={'m-3 gap-4 flex items-center'}>
+            <View className={"m-3 flex items-center gap-4"}>
               <Muted>
-                {isRegistered
-                  ? i18n.t('location.share.sharing.enabled')
-                  : i18n.t('location.share.sharing.disabled')}
+                {status === BackgroundTaskStatus.Available
+                  ? i18n.t("location.share.sharing.enabled")
+                  : i18n.t("location.share.sharing.disabled")}
               </Muted>
-              <Muted>{i18n.t('location.share.description')}</Muted>
+              <Muted>{i18n.t("location.share.description")}</Muted>
             </View>
           </View>
         </>
       ) : !isLoading && sharedItems?.length === 0 ? (
-        <View className={'flex-1 justify-center items-center'}>
-          <H3>{i18n.t('location.share.nobody.title')}</H3>
-          <View className={'m-3 gap-4 flex items-center'}>
-            <Muted>{i18n.t('location.share.nobody.description')}</Muted>
+        <View className={"flex-1 items-center justify-center"}>
+          <H3>{i18n.t("location.share.nobody.title")}</H3>
+          <View className={"m-3 flex items-center gap-4"}>
+            <Muted>{i18n.t("location.share.nobody.description")}</Muted>
           </View>
           <View
             className={
-              'absolute flex-row gap-2 bottom-16 mb-4 justify-center items-center h-12 w-12 right-6 self-end rounded'
+              "absolute bottom-16 right-6 mb-4 h-12 w-12 flex-row items-center justify-center gap-2 self-end rounded"
             }
           >
             <ArrowDownIcon color={theme} size={32} />
@@ -210,32 +214,32 @@ export default function ShareLocationView() {
       )}
       <Button
         className={
-          'absolute flex-row gap-2 bottom-4 mb-4 justify-center items-center h-12 w-64 bg-card self-center rounded border border-border'
+          "absolute bottom-4 mb-4 h-12 w-64 flex-row items-center justify-center gap-2 self-center rounded border border-border bg-card"
         }
         onPress={sharingButtonHandle}
       >
-        {status === 2 ? (
-          <NavigationIcon className={'h-4 w-4'} color={theme} size={16} />
+        {status === BackgroundTaskStatus.Available ? (
+          <NavigationIcon className={"h-4 w-4"} color={theme} size={16} />
         ) : (
-          <NavigationOffIcon className={'h-4 w-4'} color={theme} size={16} />
+          <NavigationOffIcon className={"h-4 w-4"} color={theme} size={16} />
         )}
-        <Text className={'text-center font-bold items-center text-foreground'}>
-          {status === 2
+        <Text className={"items-center text-center font-bold text-foreground"}>
+          {status === BackgroundTaskStatus.Available
             ? isRegistered
-              ? i18n.t('location.share.button.stop')
-              : i18n.t('location.share.button.start')
-            : i18n.t('location.share.button.unavailable')}
+              ? i18n.t("location.share.button.stop")
+              : i18n.t("location.share.button.start")
+            : i18n.t("location.share.button.unavailable")}
         </Text>
       </Button>
 
       {isRegistered && (
         <Button
           className={
-            'absolute flex-row gap-2 bottom-4 mb-4 justify-center items-center h-12 w-12 right-6 bg-card self-end rounded border border-border'
+            "absolute bottom-4 right-6 mb-4 h-12 w-12 flex-row items-center justify-center gap-2 self-end rounded border border-border bg-card"
           }
           onPress={() =>
             router.push({
-              pathname: '/locations/addSharing'
+              pathname: "/locations/addSharing",
             })
           }
         >

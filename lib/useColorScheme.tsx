@@ -1,42 +1,40 @@
-import { useColorScheme as useNativewindColorScheme } from 'nativewind'
-import { useCallback, useEffect, useState } from 'react'
-import { setAndroidNavigationBar } from './android-navigation-bar'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useColorScheme as useNativewindColorScheme } from "nativewind"
+import { useCallback, useEffect, useState } from "react"
+import { setAndroidNavigationBar } from "./android-navigation-bar"
+import AsyncStorage from "@react-native-async-storage/async-storage"
 
-type Theme = 'light' | 'dark' | 'system'
+type Theme = "light" | "dark" | "system"
 
 export function useColorScheme() {
-  const {
-    colorScheme,
-    setColorScheme: setNativewindColorScheme,
-    toggleColorScheme
-  } = useNativewindColorScheme()
+  const colorSchemeHook = useNativewindColorScheme()
+  const { colorScheme } = colorSchemeHook
+  const setNativewindColorScheme = (scheme: Theme) =>
+    colorSchemeHook.setColorScheme(scheme)
+  const toggleColorScheme = () => colorSchemeHook.toggleColorScheme()
   const [isLoading, setIsLoading] = useState(false)
 
   // Initialize theme from storage
   useEffect(() => {
     const initializeTheme = async () => {
-      const storedTheme = (await AsyncStorage.getItem('theme')) as Theme
-      if (storedTheme && storedTheme !== colorScheme) {
+      const storedTheme = (await AsyncStorage.getItem("theme")) as Theme
+      if (storedTheme !== colorScheme) {
         setNativewindColorScheme(storedTheme)
-        await setAndroidNavigationBar(storedTheme as 'light' | 'dark')
+        await setAndroidNavigationBar(storedTheme as "light" | "dark")
       }
     }
-    initializeTheme()
+    void initializeTheme()
   }, [])
 
   const setColorScheme = useCallback(
-    async (newTheme: 'light' | 'dark') => {
+    async (newTheme: "light" | "dark") => {
       if (isLoading) return
 
       setIsLoading(true)
       try {
         // Run all async operations in parallel
-        await Promise.all([
-          setNativewindColorScheme(newTheme),
-          setAndroidNavigationBar(newTheme),
-          AsyncStorage.setItem('theme', newTheme)
-        ])
+        setNativewindColorScheme(newTheme)
+        await setAndroidNavigationBar(newTheme)
+        await AsyncStorage.setItem("theme", newTheme)
       } finally {
         setIsLoading(false)
       }
@@ -45,10 +43,10 @@ export function useColorScheme() {
   )
 
   return {
-    colorScheme: colorScheme ?? 'dark',
-    isDarkColorScheme: colorScheme === 'dark',
+    colorScheme: colorScheme ?? "dark",
+    isDarkColorScheme: colorScheme === "dark",
     setColorScheme,
     toggleColorScheme,
-    isLoading
+    isLoading,
   }
 }

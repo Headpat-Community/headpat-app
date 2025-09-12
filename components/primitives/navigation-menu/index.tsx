@@ -1,31 +1,31 @@
-import * as React from 'react'
+import * as React from "react"
 import {
   BackHandler,
   Pressable,
   View,
   type GestureResponderEvent,
   type LayoutChangeEvent,
-  type LayoutRectangle
-} from 'react-native'
+  type LayoutRectangle,
+} from "react-native"
 import {
   useRelativePosition,
-  type LayoutPosition
-} from '~/components/primitives/hooks'
-import { Portal as RNPPortal } from '~/components/primitives/portal'
-import * as Slot from '~/components/primitives/slot'
+  type LayoutPosition,
+} from "~/components/primitives/hooks"
+import { Portal as RNPPortal } from "~/components/primitives/portal"
+import * as Slot from "~/components/primitives/slot"
 import type {
   PositionedContentProps,
   PressableRef,
   SlottablePressableProps,
   SlottableViewProps,
-  ViewRef
-} from '~/components/primitives/types'
+  ViewRef,
+} from "~/components/primitives/types"
 import type {
   NavigationMenuItemProps,
   NavigationMenuLinkProps,
   NavigationMenuPortalProps,
-  NavigationMenuRootProps
-} from './types'
+  NavigationMenuRootProps,
+} from "./types"
 
 interface INavigationMenuRootContext extends NavigationMenuRootProps {
   triggerPosition: LayoutPosition | null
@@ -57,7 +57,7 @@ const Root = React.forwardRef<
         contentLayout,
         setContentLayout,
         setTriggerPosition,
-        triggerPosition
+        triggerPosition,
       }}
     >
       <Component ref={ref} role="navigation" {...viewProps} />
@@ -65,13 +65,13 @@ const Root = React.forwardRef<
   )
 })
 
-Root.displayName = 'RootNativeNavigationMenu'
+Root.displayName = "RootNativeNavigationMenu"
 
 function useRootContext() {
   const context = React.useContext(RootContext)
   if (!context) {
     throw new Error(
-      'NavigationMenu compound components cannot be rendered outside the NavigationMenu component'
+      "NavigationMenu compound components cannot be rendered outside the NavigationMenu component"
     )
   }
   return context
@@ -84,7 +84,7 @@ const List = React.forwardRef<ViewRef, SlottableViewProps>(
   }
 )
 
-List.displayName = 'ListNativeNavigationMenu'
+List.displayName = "ListNativeNavigationMenu"
 
 const ItemContext = React.createContext<
   (NavigationMenuItemProps & { nativeID: string }) | null
@@ -101,7 +101,7 @@ const Item = React.forwardRef<
     <ItemContext.Provider
       value={{
         value,
-        nativeID
+        nativeID,
       }}
     >
       <Component ref={ref} role="menuitem" {...viewProps} />
@@ -109,13 +109,13 @@ const Item = React.forwardRef<
   )
 })
 
-Item.displayName = 'ItemNativeNavigationMenu'
+Item.displayName = "ItemNativeNavigationMenu"
 
 function useItemContext() {
   const context = React.useContext(ItemContext)
   if (!context) {
     throw new Error(
-      'NavigationMenu compound components cannot be rendered outside the NavigationMenu component'
+      "NavigationMenu compound components cannot be rendered outside the NavigationMenu component"
     )
   }
   return context
@@ -127,17 +127,12 @@ const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
     const { value, onValueChange, setTriggerPosition } = useRootContext()
     const { value: menuValue } = useItemContext()
 
-    React.useImperativeHandle(
-      ref,
-      () => {
-        if (!triggerRef.current) {
-          return new View({})
-        }
-        return triggerRef.current
-      },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [triggerRef.current]
-    )
+    React.useImperativeHandle(ref, () => {
+      if (!triggerRef.current) {
+        return new View({})
+      }
+      return triggerRef.current
+    }, [triggerRef.current])
 
     function onPress(ev: GestureResponderEvent) {
       if (disabled) return
@@ -145,7 +140,7 @@ const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
         setTriggerPosition({ width, pageX, pageY: pageY, height })
       })
 
-      onValueChange(menuValue === value ? '' : menuValue)
+      onValueChange(menuValue === value ? "" : menuValue)
       onPressProp?.(ev)
     }
 
@@ -164,7 +159,7 @@ const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
   }
 )
 
-Trigger.displayName = 'TriggerNativeNavigationMenu'
+Trigger.displayName = "TriggerNativeNavigationMenu"
 
 /**
  * @warning when using a custom `<PortalHost />`, you will have to adjust the Content's sideOffset to account for nav elements like headers.
@@ -209,8 +204,8 @@ const Content = React.forwardRef<
     {
       asChild = false,
       forceMount,
-      align = 'center',
-      side = 'bottom',
+      align = "center",
+      side = "bottom",
       sideOffset = 0,
       alignOffset = 0,
       avoidCollisions = true,
@@ -228,17 +223,17 @@ const Content = React.forwardRef<
       triggerPosition,
       setTriggerPosition,
       contentLayout,
-      setContentLayout
+      setContentLayout,
     } = useRootContext()
     const { value: menuValue, nativeID } = useItemContext()
 
     React.useEffect(() => {
       const backHandler = BackHandler.addEventListener(
-        'hardwareBackPress',
+        "hardwareBackPress",
         () => {
           setTriggerPosition(null)
           setContentLayout(null)
-          onValueChange('')
+          onValueChange("")
           return true
         }
       )
@@ -247,7 +242,6 @@ const Content = React.forwardRef<
         setContentLayout(null)
         backHandler.remove()
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const positionStyle = useRelativePosition({
@@ -259,7 +253,7 @@ const Content = React.forwardRef<
       insets,
       sideOffset,
       side,
-      disablePositioningStyle
+      disablePositioningStyle,
     })
 
     function onLayout(event: LayoutChangeEvent) {
@@ -289,7 +283,7 @@ const Content = React.forwardRef<
   }
 )
 
-Content.displayName = 'ContentNativeNavigationMenu'
+Content.displayName = "ContentNativeNavigationMenu"
 
 const Link = React.forwardRef<
   PressableRef,
@@ -299,16 +293,16 @@ const Link = React.forwardRef<
   return <Component ref={ref} role="link" {...props} />
 })
 
-Link.displayName = 'LinkNativeNavigationMenu'
+Link.displayName = "LinkNativeNavigationMenu"
 
 const Viewport = React.forwardRef<
   ViewRef,
-  Omit<React.ComponentPropsWithoutRef<typeof View>, 'children'>
+  Omit<React.ComponentPropsWithoutRef<typeof View>, "children">
 >((props, ref) => {
   return <View ref={ref} {...props} />
 })
 
-Viewport.displayName = 'ViewportNativeNavigationMenu'
+Viewport.displayName = "ViewportNativeNavigationMenu"
 
 const Indicator = React.forwardRef<ViewRef, SlottableViewProps>(
   ({ asChild, ...props }, ref) => {
@@ -317,7 +311,7 @@ const Indicator = React.forwardRef<ViewRef, SlottableViewProps>(
   }
 )
 
-Indicator.displayName = 'IndicatorNativeNavigationMenu'
+Indicator.displayName = "IndicatorNativeNavigationMenu"
 
 export {
   Content,
@@ -330,7 +324,7 @@ export {
   Trigger,
   Viewport,
   useItemContext,
-  useRootContext
+  useRootContext,
 }
 
 function onStartShouldSetResponder() {

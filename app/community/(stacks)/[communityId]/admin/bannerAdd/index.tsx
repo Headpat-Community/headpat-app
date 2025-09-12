@@ -1,34 +1,36 @@
-import React from 'react'
-import { useState } from 'react'
-import { Keyboard, TouchableWithoutFeedback, View } from 'react-native'
-import { Text } from '~/components/ui/text'
-import { Button } from '~/components/ui/button'
-import { H2, Muted } from '~/components/ui/typography'
-import { router, useGlobalSearchParams } from 'expo-router'
-import { databases, functions, storage } from '~/lib/appwrite-client'
-import { ExecutionMethod, ID } from 'react-native-appwrite'
-import { captureException } from '@sentry/react-native'
+import { captureException } from "@sentry/react-native"
+import { router, useGlobalSearchParams } from "expo-router"
+import React, { useState } from "react"
+import { Keyboard, TouchableWithoutFeedback, View } from "react-native"
+import { ExecutionMethod, ID } from "react-native-appwrite"
 import {
-  openPicker,
+  ImageOrVideo,
   openCropper,
-  ImageOrVideo
-} from 'react-native-image-crop-picker'
-import { useAlertModal } from '~/components/contexts/AlertModalProvider'
+  openPicker,
+} from "react-native-image-crop-picker"
+import { useAlertModal } from "~/components/contexts/AlertModalProvider"
+import { Button } from "~/components/ui/button"
+import { Text } from "~/components/ui/text"
+import { H2, Muted } from "~/components/ui/typography"
+import { databases, functions, storage } from "~/lib/appwrite-client"
+import { StorageError } from "~/lib/types/collections"
 
 export default function BannerAdd() {
-  const [image, setImage] = useState<ImageOrVideo>(null)
+  const [image, setImage] = useState<ImageOrVideo>(
+    null as unknown as ImageOrVideo
+  )
   const { showAlert, hideAlert } = useAlertModal()
   const maxFileSize = 5 * 1024 * 1024 // 1.5 MB in bytes
   const local = useGlobalSearchParams()
 
   const pickImage = async () => {
     try {
-      let result = await openPicker({
-        mediaType: 'photo'
+      const result = await openPicker({
+        mediaType: "photo",
       })
 
-      if (!result || !result?.path) {
-        showAlert('FAILED', 'No image selected!')
+      if (!result.path) {
+        showAlert("FAILED", "No image selected!")
         return
       }
 
@@ -45,35 +47,32 @@ export default function BannerAdd() {
   }
 
   React.useEffect(() => {
-    if (image) {
-      upload().then()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    void upload().then()
   }, [image])
 
   const handleClose = () => {
-    setImage(null)
+    setImage(null as unknown as ImageOrVideo)
     router.back()
   }
 
   const handleFinish = () => {
-    setImage(null)
+    setImage(null as unknown as ImageOrVideo)
     router.back()
   }
 
   async function compressImage(uri: string) {
     return await openCropper({
       path: uri,
-      mediaType: 'photo',
+      mediaType: "photo",
       width: 2400,
       height: 500,
-      compressImageQuality: 0.8
+      compressImageQuality: 0.8,
     })
   }
 
   async function uploadImageAsync() {
     if (!image.path) {
-      showAlert('FAILED', 'Please select an image to upload')
+      showAlert("FAILED", "Please select an image to upload")
       return
     }
 
@@ -81,106 +80,116 @@ export default function BannerAdd() {
       const compressedImage = await compressImage(image.path)
 
       if (compressedImage.size > maxFileSize) {
-        showAlert('FAILED', 'Image size is too large. Has to be under 1.5 MB')
+        showAlert("FAILED", "Image size is too large. Has to be under 1.5 MB")
         return
       }
 
       const file = {
-        name: image.filename || 'upload' + Math.random().toString(16) + '.jpg',
+        name: image.filename ?? "upload" + Math.random().toString(16) + ".jpg",
         type: compressedImage.mime,
         size: compressedImage.size,
-        uri: compressedImage.path
+        uri: compressedImage.path,
       }
 
-      showAlert('LOADING', 'Uploading image...')
+      showAlert("LOADING", "Uploading image...")
 
-      const data = await functions.createExecution(
-        'community-endpoints',
-        '',
-        false,
-        `/community/upload?communityId=${local?.communityId}&type=banner`,
-        ExecutionMethod.POST
-      )
+      const data = await functions.createExecution({
+        functionId: "community-endpoints",
+        async: false,
+        xpath: `/community/upload?communityId=${local.communityId as string}&type=banner`,
+        method: ExecutionMethod.POST,
+      })
       const response = JSON.parse(data.responseBody)
 
-      if (response.type === 'community_upload_missing_id') {
+      if (response.type === "community_upload_missing_id") {
         hideAlert()
-        return showAlert(
-          'FAILED',
-          'Community ID is missing. Please try again later.'
-        )
-      } else if (response.type === 'unauthorized') {
+        showAlert("FAILED", "Community ID is missing. Please try again later.")
+        return
+      } else if (response.type === "unauthorized") {
         hideAlert()
-        return showAlert('FAILED', 'You are not authorized to upload.')
-      } else if (response.type === 'community_upload_missing_type') {
+        showAlert("FAILED", "You are not authorized to upload.")
+        return
+      } else if (response.type === "community_upload_missing_type") {
         hideAlert()
-        return showAlert(
-          'FAILED',
-          'Missing upload type. Please try again later.'
-        )
+        showAlert("FAILED", "Missing upload type. Please try again later.")
+        return
       }
 
-      const fileData = storage.createFile(
-        'community-banners',
-        ID.unique(),
-        file
-      )
+      const fileData = storage.createFile({
+        bucketId: "community-banners",
+        fileId: ID.unique(),
+        file: file,
+      })
 
       fileData.then(
         async function (response) {
           // Update the community's bannerId
-          await databases.updateDocument(
-            'hp_db',
-            'community',
-            `${local?.communityId}`,
-            {
-              bannerId: response.$id
-            }
-          )
+          await databases.updateRow({
+            databaseId: "hp_db",
+            tableId: "community",
+            rowId: local.communityId as string,
+            data: {
+              bannerId: response.$id,
+            },
+          })
 
           hideAlert()
 
-          showAlert('SUCCESS', 'Your banner has been uploaded successfully.')
+          showAlert("SUCCESS", "Your banner has been uploaded successfully.")
 
-          await functions.createExecution(
-            'community-endpoints',
-            '',
-            true,
-            `/community/upload/finish?communityId=${local?.communityId}`,
-            ExecutionMethod.POST
-          )
+          await functions.createExecution({
+            functionId: "community-endpoints",
+            async: true,
+            xpath: `/community/upload/finish?communityId=${local.communityId as string}`,
+            method: ExecutionMethod.POST,
+          })
           handleFinish()
         },
-        function (error) {
+        function (error: unknown) {
           hideAlert()
-          if (error.type === 'storage_file_empty') {
-            showAlert('FAILED', 'Missing file.')
-          } else if (error.type === 'storage_invalid_file_size') {
-            showAlert(
-              'FAILED',
-              'The file size is either not valid or exceeds the maximum allowed size.'
-            )
-          } else if (error.type === 'storage_file_type_unsupported') {
-            showAlert('FAILED', 'The given file extension is not supported.')
-          } else if (error.type === 'storage_invalid_file') {
-            showAlert(
-              'FAILED',
-              'The uploaded file is invalid. Please check the file and try again.'
-            )
-          } else if (error.type === 'storage_device_not_found') {
-            showAlert(
-              'FAILED',
-              'The requested storage device could not be found.'
-            )
+          if (error && typeof error === "object" && "type" in error) {
+            const storageError = error as StorageError
+            switch (storageError.type) {
+              case "storage_file_empty":
+                showAlert("FAILED", "Missing file.")
+                break
+              case "storage_invalid_file_size":
+                showAlert(
+                  "FAILED",
+                  "The file size is either not valid or exceeds the maximum allowed size."
+                )
+                break
+              case "storage_file_type_unsupported":
+                showAlert(
+                  "FAILED",
+                  "The given file extension is not supported."
+                )
+                break
+              case "storage_invalid_file":
+                showAlert(
+                  "FAILED",
+                  "The uploaded file is invalid. Please check the file and try again."
+                )
+                break
+              case "storage_device_not_found":
+                showAlert(
+                  "FAILED",
+                  "The requested storage device could not be found."
+                )
+                break
+              default:
+                showAlert("FAILED", "Error uploading image.")
+                captureException(error)
+            }
           } else {
-            showAlert('FAILED', 'Error uploading image.')
+            showAlert("FAILED", "Error uploading image.")
             captureException(error)
           }
         }
       )
     } catch (error) {
       //console.log(error)
-      showAlert('FAILED', 'Error picking image.')
+      showAlert("FAILED", "Error picking image.")
       captureException(error)
     }
   }
@@ -188,23 +197,23 @@ export default function BannerAdd() {
   return (
     <>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View className={'mx-8 flex-1'}>
-          <View className={'flex-1'}>
-            <View className={'mt-8'}>
+        <View className={"mx-8 flex-1"}>
+          <View className={"flex-1"}>
+            <View className={"mt-8"}>
               <H2>Want to upload a banner?</H2>
               <Muted>
                 You can select an image from your camera roll to upload as your
                 banner.
               </Muted>
             </View>
-            <View className={'items-center justify-center py-8'}>
-              <Button onPress={pickImage}>
+            <View className={"items-center justify-center py-8"}>
+              <Button onPress={() => void pickImage()}>
                 <Text>Pick an image from camera roll</Text>
               </Button>
             </View>
           </View>
-          <View style={{ marginBottom: 40 }} className={'gap-4'}>
-            <Button variant={'outline'} onPress={handleClose}>
+          <View style={{ marginBottom: 40 }} className={"gap-4"}>
+            <Button variant={"outline"} onPress={handleClose}>
               <Text>Cancel</Text>
             </Button>
           </View>

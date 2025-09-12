@@ -1,23 +1,26 @@
-import { useState, useEffect } from 'react'
-import { Config } from '~/lib/types/collections'
-import { databases } from '~/lib/appwrite-client'
+import { useEffect, useState } from "react"
+import { databases } from "~/lib/appwrite-client"
+import { ConfigFeaturesDocumentsType } from "~/lib/types/collections"
 
 export const useFeatureStatus = (feature: string) => {
   const [featureStatus, setFeatureStatus] =
-    useState<Config.ConfigFeaturesDocumentsType>(null)
+    useState<ConfigFeaturesDocumentsType | null>(null)
 
   useEffect(() => {
     const fetchFeatureStatus = async () => {
       try {
-        const data: Config.ConfigFeaturesDocumentsType =
-          await databases.getDocument('config', 'features', feature)
+        const data: ConfigFeaturesDocumentsType = await databases.getRow({
+          databaseId: "config",
+          tableId: "features",
+          rowId: feature,
+        })
         setFeatureStatus(data)
       } catch (error) {
-        console.error('Error fetching feature status', error)
+        console.error("Error fetching feature status", error)
       }
     }
 
-    fetchFeatureStatus().then()
+    void fetchFeatureStatus()
   }, [feature])
 
   return featureStatus

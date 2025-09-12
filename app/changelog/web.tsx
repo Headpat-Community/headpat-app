@@ -1,14 +1,14 @@
-import React, { useState } from 'react'
-import { Changelog } from '~/lib/types/collections'
-import { FlatList, View } from 'react-native'
-import { Text } from '~/components/ui/text'
-import { H1 } from '~/components/ui/typography'
-import { databases } from '~/lib/appwrite-client'
-import { captureException } from '@sentry/react-native'
-import { Query } from 'react-native-appwrite'
-import ChangelogItem from '~/components/FlatlistItems/ChangelogItem'
-import { i18n } from '~/components/system/i18n'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import React, { useState } from "react"
+import { ChangelogType } from "~/lib/types/collections"
+import { FlatList, View } from "react-native"
+import { Text } from "~/components/ui/text"
+import { H1 } from "~/components/ui/typography"
+import { databases } from "~/lib/appwrite-client"
+import { captureException } from "@sentry/react-native"
+import { Query } from "react-native-appwrite"
+import ChangelogItem from "~/components/FlatlistItems/ChangelogItem"
+import { i18n } from "~/components/system/i18n"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 
 export default function WebChangelog() {
   const [openVersions, setOpenVersions] = useState<string[]>([])
@@ -17,23 +17,23 @@ export default function WebChangelog() {
   const {
     data: changelogData,
     isLoading,
-    isRefetching
+    isRefetching,
   } = useQuery({
-    queryKey: ['changelog', 'web'],
+    queryKey: ["changelog", "web"],
     queryFn: async () => {
       try {
-        const changelogData: Changelog.ChangelogType =
-          await databases.listDocuments('hp_db', 'changelog', [
-            Query.orderDesc('version'),
-            Query.equal('type', 'web')
-          ])
-        return changelogData.documents
+        const changelogData: ChangelogType = await databases.listRows({
+          databaseId: "hp_db",
+          tableId: "changelog",
+          queries: [Query.orderDesc("version"), Query.equal("type", "web")],
+        })
+        return changelogData.rows
       } catch (error) {
         captureException(error)
         throw error
       }
     },
-    staleTime: 1000 * 60 * 5 // 5 minutes
+    staleTime: 1000 * 60 * 5, // 5 minutes
   })
 
   const toggleVersion = (version: string) => {
@@ -46,10 +46,10 @@ export default function WebChangelog() {
 
   if (isLoading) {
     return (
-      <View className={'flex flex-1 justify-center items-center h-full'}>
-        <View className={'p-4 gap-6 text-center'}>
-          <H1 className={'text-2xl font-semibold'}>{i18n.t('main.loading')}</H1>
-          <Text className={'text-muted-foreground'}>
+      <View className={"flex h-full flex-1 items-center justify-center"}>
+        <View className={"gap-6 p-4 text-center"}>
+          <H1 className={"text-2xl font-semibold"}>{i18n.t("main.loading")}</H1>
+          <Text className={"text-muted-foreground"}>
             Please wait while we fetch the latest updates.
           </Text>
         </View>
@@ -57,12 +57,12 @@ export default function WebChangelog() {
     )
   }
 
-  if (!isLoading && (!changelogData || changelogData.length === 0)) {
+  if (!changelogData || changelogData.length === 0) {
     return (
-      <View className={'flex flex-1 justify-center items-center h-full'}>
-        <View className={'p-4 gap-6 text-center'}>
-          <H1 className={'text-2xl font-semibold'}>Oh no!</H1>
-          <Text className={'text-muted-foreground'}>
+      <View className={"flex h-full flex-1 items-center justify-center"}>
+        <View className={"gap-6 p-4 text-center"}>
+          <H1 className={"text-2xl font-semibold"}>Oh no!</H1>
+          <Text className={"text-muted-foreground"}>
             Sorry, there are no web updates available at the moment.
           </Text>
         </View>
@@ -75,11 +75,11 @@ export default function WebChangelog() {
       data={changelogData}
       keyExtractor={(item) => item.$id}
       onRefresh={() => {
-        queryClient.invalidateQueries({ queryKey: ['changelog', 'web'] })
+        void queryClient.invalidateQueries({ queryKey: ["changelog", "web"] })
       }}
       refreshing={isRefetching}
       contentContainerStyle={{ padding: 8 }}
-      contentInsetAdjustmentBehavior={'automatic'}
+      contentInsetAdjustmentBehavior={"automatic"}
       renderItem={({ item }) => (
         <ChangelogItem
           changelog={item}

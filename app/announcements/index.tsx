@@ -1,29 +1,32 @@
-import { RefreshControl, View } from 'react-native'
-import { H1 } from '~/components/ui/typography'
-import React, { useCallback, useMemo } from 'react'
-import { Announcements } from '~/lib/types/collections'
-import { databases } from '~/lib/appwrite-client'
-import { Query } from 'react-native-appwrite'
-import { useAlertModal } from '~/components/contexts/AlertModalProvider'
-import { captureException } from '@sentry/react-native'
-import SlowInternet from '~/components/views/SlowInternet'
-import { ScrollView } from 'react-native-gesture-handler'
-import { Text } from '~/components/ui/text'
-import AnnouncementItem from '~/components/FlatlistItems/AnnouncementItem'
-import { useFocusEffect } from '@react-navigation/core'
-import { i18n } from '~/components/system/i18n'
-import { FlashList } from '@shopify/flash-list'
+import { useFocusEffect } from "@react-navigation/core"
+import { captureException } from "@sentry/react-native"
+import { FlashList } from "@shopify/flash-list"
 import {
+  InfiniteData,
   useInfiniteQuery,
   useQueryClient,
-  InfiniteData
-} from '@tanstack/react-query'
+} from "@tanstack/react-query"
+import React, { useCallback, useMemo } from "react"
+import { RefreshControl, View } from "react-native"
+import { Query } from "react-native-appwrite"
+import { ScrollView } from "react-native-gesture-handler"
+import { useAlertModal } from "~/components/contexts/AlertModalProvider"
+import AnnouncementItem from "~/components/FlatlistItems/AnnouncementItem"
+import { i18n } from "~/components/system/i18n"
+import { Text } from "~/components/ui/text"
+import { H1 } from "~/components/ui/typography"
+import SlowInternet from "~/components/views/SlowInternet"
+import { databases } from "~/lib/appwrite-client"
+import {
+  AnnouncementDataType,
+  AnnouncementDocumentsType,
+} from "~/lib/types/collections"
 
 const PAGE_SIZE = 50
 
-type AnnouncementPage = {
+interface AnnouncementPage {
   total: number
-  documents: Announcements.AnnouncementDocumentsType[]
+  rows: AnnouncementDocumentsType[]
 }
 
 export default function AnnouncementsPage() {
@@ -38,56 +41,51 @@ export default function AnnouncementsPage() {
       string[],
       number
     >({
-      queryKey: ['announcements'],
+      queryKey: ["announcements"],
       queryFn: async ({ pageParam = 0 }) => {
         try {
           const currentDate = new Date()
           const queries = [
-            Query.orderAsc('validUntil'),
-            Query.greaterThanEqual('validUntil', currentDate.toISOString()),
+            Query.orderAsc("validUntil"),
+            Query.greaterThanEqual("validUntil", currentDate.toISOString()),
             Query.limit(PAGE_SIZE),
-            Query.offset(pageParam)
+            Query.offset(pageParam),
           ]
 
-          const data =
-            await databases.listDocuments<Announcements.AnnouncementDocumentsType>(
-              'hp_db',
-              'announcements',
-              queries
-            )
-
-          if (!data || !data.documents) {
-            throw new Error('Invalid response from server')
-          }
+          const data: AnnouncementDataType = await databases.listRows({
+            databaseId: "hp_db",
+            tableId: "announcements",
+            queries: queries,
+          })
 
           return {
             total: data.total,
-            documents: data.documents
+            rows: data.rows,
           }
         } catch (error) {
-          console.error('Error fetching announcements:', error)
+          console.error("Error fetching announcements:", error)
           showAlert(
-            'FAILED',
-            'Failed to fetch announcements. Please try again later.'
+            "FAILED",
+            "Failed to fetch announcements. Please try again later."
           )
           captureException(error)
           return {
             total: 0,
-            documents: []
+            rows: [],
           }
         }
       },
       getNextPageParam: (lastPage, allPages) => {
-        return lastPage.documents.length === PAGE_SIZE
+        return lastPage.rows.length === PAGE_SIZE
           ? allPages.length * PAGE_SIZE
           : undefined
       },
       initialPageParam: 0,
-      staleTime: 1000 * 60 * 5 // 5 minutes
+      staleTime: 1000 * 60 * 5, // 5 minutes
     })
 
   const onRefresh = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: ['announcements'] })
+    void queryClient.invalidateQueries({ queryKey: ["announcements"] })
   }, [queryClient])
 
   useFocusEffect(
@@ -97,21 +95,21 @@ export default function AnnouncementsPage() {
   )
 
   const renderItem = useCallback(
-    ({ item }: { item: Announcements.AnnouncementDocumentsType }) => (
+    ({ item }: { item: AnnouncementDocumentsType }) => (
       <AnnouncementItem announcement={item} />
     ),
     []
   )
 
   const keyExtractor = useCallback(
-    (item: Announcements.AnnouncementDocumentsType) => item.$id,
+    (item: AnnouncementDocumentsType) => item.$id,
     []
   )
 
   const estimatedItemSize = useMemo(() => 200, []) // Adjust based on your average item height
 
   const announcements = data?.pages[0]
-  const allDocuments = data?.pages.flatMap((page) => page.documents) ?? []
+  const allDocuments = data?.pages.flatMap((page) => page.rows) ?? []
 
   if (isRefetching && !announcements) {
     return <SlowInternet />
@@ -123,12 +121,12 @@ export default function AnnouncementsPage() {
         refreshControl={
           <RefreshControl refreshing={isRefetching} onRefresh={onRefresh} />
         }
-        contentInsetAdjustmentBehavior={'automatic'}
+        contentInsetAdjustmentBehavior={"automatic"}
       >
-        <View className={'flex flex-1 justify-center items-center h-full'}>
-          <View className={'p-4 gap-6 text-center'}>
-            <H1 className={'text-2xl font-semibold'}>Empty here..</H1>
-            <Text className={'text-muted-foreground'}>
+        <View className={"flex h-full flex-1 items-center justify-center"}>
+          <View className={"gap-6 p-4 text-center"}>
+            <H1 className={"text-2xl font-semibold"}>Empty here..</H1>
+            <Text className={"text-muted-foreground"}>
               Sorry, there are no announcements available at the moment.
             </Text>
           </View>
@@ -149,13 +147,13 @@ export default function AnnouncementsPage() {
         contentContainerStyle={{ padding: 8 }}
         onEndReached={() => {
           if (hasNextPage && !isFetchingNextPage) {
-            fetchNextPage()
+            void fetchNextPage()
           }
         }}
         onEndReachedThreshold={0.5}
-        contentInsetAdjustmentBehavior={'automatic'}
+        contentInsetAdjustmentBehavior={"automatic"}
         ListFooterComponent={
-          isFetchingNextPage ? <Text>{i18n.t('main.loading')}</Text> : null
+          isFetchingNextPage ? <Text>{i18n.t("main.loading")}</Text> : null
         }
       />
     </View>

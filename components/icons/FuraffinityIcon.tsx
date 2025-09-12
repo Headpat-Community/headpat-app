@@ -1,10 +1,10 @@
-import * as React from 'react'
+import * as React from "react"
 
-import { IconType } from '~/lib/types/IconTypes'
-import Svg, { Path } from 'react-native-svg'
-import { LegacyRef } from 'react'
+import { Ref } from "react"
+import Svg, { Path } from "react-native-svg"
+import { IconType } from "~/lib/types/IconTypes"
 
-type SiFuraffinityProps = React.ComponentPropsWithoutRef<'svg'> & {
+type SiFuraffinityProps = React.ComponentPropsWithoutRef<"svg"> & {
   /**
    * The title provides an accessible short text description to the SVG
    */
@@ -19,16 +19,16 @@ type SiFuraffinityProps = React.ComponentPropsWithoutRef<'svg'> & {
   size?: string | number
 }
 
-const defaultColor = '#5865F2'
+const defaultColor = "#5865F2"
 
 const FuraffinityIcon: IconType = React.forwardRef<
   SVGSVGElement,
   SiFuraffinityProps
 >(function FuraffinityIcon(
-  { color = 'currentColor', size = 24 },
-  ref: LegacyRef<any>
+  { color = "currentColor", size = 24 },
+  ref: Ref<any>
 ) {
-  if (color === 'default') {
+  if (color === "default") {
     color = defaultColor
   }
 

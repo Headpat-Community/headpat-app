@@ -5,13 +5,19 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle
-} from '~/components/ui/alert-dialog'
-import { Text } from '~/components/ui/text'
-import React from 'react'
-import * as Location from 'expo-location'
+  AlertDialogTitle,
+} from "~/components/ui/alert-dialog"
+import { Text } from "~/components/ui/text"
+import React from "react"
+import * as Location from "expo-location"
 
-export function LocationFrontPermissionModal({ openModal, setOpenModal }) {
+export function LocationFrontPermissionModal({
+  openModal,
+  setOpenModal,
+}: {
+  openModal: boolean
+  setOpenModal: (open: boolean) => void
+}) {
   return (
     <AlertDialog onOpenChange={setOpenModal} open={openModal}>
       <AlertDialogContent>
@@ -24,9 +30,11 @@ export function LocationFrontPermissionModal({ openModal, setOpenModal }) {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogAction
-            onPress={async () => {
-              await Location.requestForegroundPermissionsAsync()
-              setOpenModal(false)
+            onPress={() => {
+              void (async () => {
+                await Location.requestForegroundPermissionsAsync()
+                setOpenModal(false)
+              })()
             }}
           >
             <Text>Continue</Text>
@@ -37,7 +45,13 @@ export function LocationFrontPermissionModal({ openModal, setOpenModal }) {
   )
 }
 
-export function LocationBackgroundPermissionModal({ openModal, setOpenModal }) {
+export function LocationBackgroundPermissionModal({
+  openModal,
+  setOpenModal,
+}: {
+  openModal: boolean
+  setOpenModal: (open: boolean) => void
+}) {
   return (
     <AlertDialog onOpenChange={setOpenModal} open={openModal}>
       <AlertDialogContent>
@@ -50,9 +64,11 @@ export function LocationBackgroundPermissionModal({ openModal, setOpenModal }) {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogAction
-            onPress={async () => {
-              await Location.requestForegroundPermissionsAsync()
-              setOpenModal(false)
+            onPress={() => {
+              void (async () => {
+                await Location.requestForegroundPermissionsAsync()
+                setOpenModal(false)
+              })()
             }}
           >
             <Text>Continue</Text>

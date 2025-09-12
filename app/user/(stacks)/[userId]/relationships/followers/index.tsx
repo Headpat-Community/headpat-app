@@ -1,16 +1,16 @@
-import { functions } from '~/lib/appwrite-client'
-import { ExecutionMethod } from 'react-native-appwrite'
-import React from 'react'
-import { UserData } from '~/lib/types/collections'
-import * as Sentry from '@sentry/react-native'
-import UserItem from '~/components/user/UserItem'
-import { FlatList, RefreshControl, ScrollView, Text, View } from 'react-native'
-import { H1, Muted } from '~/components/ui/typography'
-import { router, useLocalSearchParams } from 'expo-router'
-import { Skeleton } from '~/components/ui/skeleton'
-import { useAlertModal } from '~/components/contexts/AlertModalProvider'
-import { i18n } from '~/components/system/i18n'
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { functions } from "~/lib/appwrite-client"
+import { ExecutionMethod } from "react-native-appwrite"
+import React from "react"
+import { UserDataDocumentsType } from "~/lib/types/collections"
+import * as Sentry from "@sentry/react-native"
+import UserItem from "~/components/user/UserItem"
+import { FlatList, RefreshControl, ScrollView, Text, View } from "react-native"
+import { H1, Muted } from "~/components/ui/typography"
+import { useLocalSearchParams } from "expo-router"
+import { Skeleton } from "~/components/ui/skeleton"
+import { useAlertModal } from "~/components/contexts/AlertModalProvider"
+import { i18n } from "~/components/system/i18n"
+import { useInfiniteQuery } from "@tanstack/react-query"
 
 const PAGE_SIZE = 20
 
@@ -25,32 +25,29 @@ export default function FollowingPage() {
     isFetchingNextPage,
     isRefetching,
     refetch,
-    isLoading
+    isLoading,
   } = useInfiniteQuery({
-    queryKey: ['followers', local?.userId],
+    queryKey: ["followers", local.userId],
     queryFn: async ({ pageParam = 0 }) => {
-      if (!local?.userId) {
-        throw new Error('User ID is required')
+      if (!local.userId) {
+        throw new Error("User ID is required")
       }
 
-      showAlert('LOADING', 'Fetching users...')
+      showAlert("LOADING", "Fetching users...")
       try {
-        const data = await functions.createExecution(
-          'user-endpoints',
-          '',
-          false,
-          `/user/followers?userId=${local.userId}&limit=${PAGE_SIZE}&offset=${pageParam * PAGE_SIZE}`,
-          ExecutionMethod.GET
-        )
-        const response: UserData.UserDataDocumentsType[] = JSON.parse(
-          data.responseBody
-        )
+        const data = await functions.createExecution({
+          functionId: "user-endpoints",
+          async: false,
+          xpath: `/user/followers?userId=${local.userId as string}&limit=${PAGE_SIZE}&offset=${pageParam * PAGE_SIZE}`,
+          method: ExecutionMethod.GET,
+        })
+        const response: UserDataDocumentsType[] = JSON.parse(data.responseBody)
         hideAlert()
         return response
       } catch (error) {
         hideAlert()
         Sentry.captureException(error)
-        showAlert('FAILED', 'Failed to fetch users. Please try again later.')
+        showAlert("FAILED", "Failed to fetch users. Please try again later.")
         throw error
       }
     },
@@ -58,30 +55,30 @@ export default function FollowingPage() {
       return lastPage.length === PAGE_SIZE ? allPages.length : undefined
     },
     initialPageParam: 0,
-    enabled: !!local?.userId
+    enabled: !!local.userId,
   })
 
   const users = data?.pages.flat() ?? []
 
   const onRefresh = () => {
-    refetch()
+    void refetch()
   }
 
   const loadMore = () => {
     if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage()
+      void fetchNextPage()
     }
   }
 
-  if (!local?.userId)
+  if (!local.userId)
     return (
       <ScrollView
-        contentContainerClassName={'flex-1 justify-center items-center h-full'}
+        contentContainerClassName={"flex-1 justify-center items-center h-full"}
       >
-        <View className={'p-4 native:pb-24 max-w-md gap-6'}>
-          <View className={'gap-1'}>
-            <H1 className={'text-foreground text-center'}>Followers</H1>
-            <Muted className={'text-base text-center'}>
+        <View className={"native:pb-24 max-w-md gap-6 p-4"}>
+          <View className={"gap-1"}>
+            <H1 className={"text-center text-foreground"}>Followers</H1>
+            <Muted className={"text-center text-base"}>
               This user does not exist.
             </Muted>
           </View>
@@ -96,9 +93,9 @@ export default function FollowingPage() {
           <View
             key={index}
             style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              margin: 10
+              flexDirection: "row",
+              justifyContent: "space-between",
+              margin: 10,
             }}
           >
             {[...Array(3)].map((_, i) => (
@@ -106,10 +103,10 @@ export default function FollowingPage() {
                 key={i}
                 style={{
                   width: 100,
-                  height: 100
+                  height: 100,
                 }}
               >
-                <Skeleton className={'w-full h-full rounded-3xl'} />
+                <Skeleton className={"h-full w-full rounded-3xl"} />
               </View>
             ))}
           </View>
@@ -125,11 +122,11 @@ export default function FollowingPage() {
           <RefreshControl refreshing={isRefetching} onRefresh={onRefresh} />
         }
       >
-        <View className={'flex-1 justify-center items-center'}>
-          <View className={'p-4 native:pb-24 max-w-md gap-6'}>
-            <View className={'gap-1'}>
-              <H1 className={'text-foreground text-center'}>Followers</H1>
-              <Muted className={'text-base text-center'}>
+        <View className={"flex-1 items-center justify-center"}>
+          <View className={"native:pb-24 max-w-md gap-6 p-4"}>
+            <View className={"gap-1"}>
+              <H1 className={"text-center text-foreground"}>Followers</H1>
+              <Muted className={"text-center text-base"}>
                 This user does not have any followers.
               </Muted>
             </View>
@@ -138,7 +135,7 @@ export default function FollowingPage() {
       </ScrollView>
     )
 
-  const renderItem = ({ item }: { item: UserData.UserDataDocumentsType }) => (
+  const renderItem = ({ item }: { item: UserDataDocumentsType }) => (
     <UserItem user={item} />
   )
 
@@ -150,12 +147,12 @@ export default function FollowingPage() {
       onRefresh={onRefresh}
       refreshing={isRefetching}
       numColumns={3}
-      contentContainerStyle={{ justifyContent: 'space-between' }}
+      contentContainerStyle={{ justifyContent: "space-between" }}
       onEndReached={loadMore}
       onEndReachedThreshold={0.5}
       ListFooterComponent={
         isFetchingNextPage && hasNextPage ? (
-          <Text>{i18n.t('main.loading')}</Text>
+          <Text>{i18n.t("main.loading")}</Text>
         ) : null
       }
     />

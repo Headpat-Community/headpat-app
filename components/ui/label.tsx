@@ -1,9 +1,9 @@
-import * as LabelPrimitive from '~/components/primitives/label'
-import * as React from 'react'
-import { cn } from '~/lib/utils'
+import * as LabelPrimitive from "~/components/primitives/label"
+import * as React from "react"
+import { cn } from "~/lib/utils"
 
 const Label = React.forwardRef<
-  React.ElementRef<typeof LabelPrimitive.Text>,
+  React.ComponentRef<typeof LabelPrimitive.Text>,
   React.ComponentPropsWithoutRef<typeof LabelPrimitive.Text>
 >(
   (
@@ -20,7 +20,7 @@ const Label = React.forwardRef<
       <LabelPrimitive.Text
         ref={ref}
         className={cn(
-          'text-sm text-foreground native:text-base font-medium leading-none web:peer-disabled:cursor-not-allowed web:peer-disabled:opacity-70',
+          "native:text-base text-sm font-medium leading-none text-foreground web:peer-disabled:cursor-not-allowed web:peer-disabled:opacity-70",
           className
         )}
         {...props}

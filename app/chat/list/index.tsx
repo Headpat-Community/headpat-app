@@ -1,24 +1,28 @@
-import { FlatList, View } from 'react-native'
-import React, { useMemo, useCallback } from 'react'
-import { databases } from '~/lib/appwrite-client'
-import { Query } from 'react-native-appwrite'
-import { Community, Messaging, UserData } from '~/lib/types/collections'
-import ConversationItem from '~/components/FlatlistItems/ConversationItem'
-import { useRealtimeChat } from '~/lib/hooks/useRealtimeChat'
-import { useUser } from '~/components/contexts/UserContext'
-import { Input } from '~/components/ui/input'
-import { useDebounce } from '~/lib/hooks/useDebounce'
-import { Text } from '~/components/ui/text'
-import ConversationSearchItem from '~/components/FlatlistItems/ConversationSearchItem'
-import { useFocusEffect } from '@react-navigation/core'
-import FeatureAccess from '~/components/FeatureAccess'
-import { captureException } from '@sentry/react-native'
-import { i18n } from '~/components/system/i18n'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useFocusEffect } from "@react-navigation/core"
+import { captureException } from "@sentry/react-native"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
+import React, { useCallback, useMemo } from "react"
+import { FlatList, View } from "react-native"
+import { Query } from "react-native-appwrite"
+import { useUser } from "~/components/contexts/UserContext"
+import FeatureAccess from "~/components/FeatureAccess"
+import ConversationItem from "~/components/FlatlistItems/ConversationItem"
+import ConversationSearchItem from "~/components/FlatlistItems/ConversationSearchItem"
+import { i18n } from "~/components/system/i18n"
+import { Input } from "~/components/ui/input"
+import { Text } from "~/components/ui/text"
+import { databases } from "~/lib/appwrite-client"
+import { useDebounce } from "~/lib/hooks/useDebounce"
+import { useRealtimeChat } from "~/lib/hooks/useRealtimeChat"
+import {
+  CommunityDocumentsType,
+  MessageConversationsDocumentsType,
+  UserDataDocumentsType,
+} from "~/lib/types/collections"
 
 export default function ConversationsView() {
   const [refreshing, setRefreshing] = React.useState(false)
-  const [searchTerm, setSearchTerm] = React.useState('')
+  const [searchTerm, setSearchTerm] = React.useState("")
   const debouncedSearchTerm = useDebounce(searchTerm, 500)
   const { conversations, fetchInitialData } = useRealtimeChat()
   const { current } = useUser()
@@ -31,49 +35,44 @@ export default function ConversationsView() {
   )
 
   const { data: displayData, isLoading } = useQuery({
-    queryKey: ['conversation-display-data', conversationIds],
+    queryKey: ["conversation-display-data", conversationIds],
     queryFn: async () => {
-      const newDisplayUsers = {}
+      const newDisplayUsers: Record<string, any> = {}
       const promises = conversations.map(async (conversation) => {
         if (conversation.communityId) {
           const communityData = await queryClient.fetchQuery({
-            queryKey: ['community', conversation.communityId],
+            queryKey: ["community", conversation.communityId],
             queryFn: async () => {
-              const response = await databases.getDocument(
-                'hp_db',
-                'community',
-                conversation.communityId
-              )
-              return response as Community.CommunityDocumentsType
+              const response = await databases.getRow({
+                databaseId: "hp_db",
+                tableId: "community",
+                rowId: conversation.communityId,
+              })
+              return response as unknown as CommunityDocumentsType
             },
-            staleTime: 1000 * 60 * 5 // 5 minutes
+            staleTime: 1000 * 60 * 5, // 5 minutes
           })
-          if (communityData) {
-            newDisplayUsers[conversation.$id] = {
-              isCommunity: true,
-              ...communityData
-            }
+          newDisplayUsers[conversation.$id] = {
+            isCommunity: true,
+            ...communityData,
           }
-        } else if (conversation.participants) {
           const otherParticipantId = conversation.participants.find(
-            (participant) => participant !== current.$id
+            (participant: string) => participant !== current?.$id
           )
           if (otherParticipantId) {
             const userData = await queryClient.fetchQuery({
-              queryKey: ['user', otherParticipantId],
+              queryKey: ["user", otherParticipantId],
               queryFn: async () => {
-                const response = await databases.getDocument(
-                  'hp_db',
-                  'userdata',
-                  otherParticipantId
-                )
-                return response as UserData.UserDataDocumentsType
+                const response = await databases.getRow({
+                  databaseId: "hp_db",
+                  tableId: "userdata",
+                  rowId: otherParticipantId,
+                })
+                return response as unknown as UserDataDocumentsType
               },
-              staleTime: 1000 * 60 * 5 // 5 minutes
+              staleTime: 1000 * 60 * 5, // 5 minutes
             })
-            if (userData) {
-              newDisplayUsers[conversation.$id] = userData
-            }
+            newDisplayUsers[conversation.$id] = userData
           }
         }
       })
@@ -82,30 +81,36 @@ export default function ConversationsView() {
       return newDisplayUsers
     },
     enabled: conversations.length > 0,
-    staleTime: 1000 * 60 * 5 // 5 minutes
+    staleTime: 1000 * 60 * 5, // 5 minutes
   })
 
   const { data: searchResults, isLoading: isSearching } = useQuery({
-    queryKey: ['user-search', debouncedSearchTerm],
+    queryKey: ["user-search", debouncedSearchTerm],
     queryFn: async () => {
       if (!debouncedSearchTerm) return []
       try {
-        const results = await databases.listDocuments('hp_db', 'userdata', [
-          Query.contains('profileUrl', debouncedSearchTerm)
-        ])
+        const results = await databases.listRows({
+          databaseId: "hp_db",
+          tableId: "userdata",
+          queries: [Query.contains("profileUrl", debouncedSearchTerm)],
+        })
         const userDataResults = await Promise.all(
-          results.documents.map(async (user) => {
-            return await databases.getDocument('hp_db', 'userdata', user.$id)
+          results.rows.map(async (user) => {
+            return await databases.getRow({
+              databaseId: "hp_db",
+              tableId: "userdata",
+              rowId: user.$id,
+            })
           })
         )
-        return userDataResults as UserData.UserDataDocumentsType[]
+        return userDataResults as unknown as UserDataDocumentsType[]
       } catch (error) {
         captureException(error)
-        console.error('Error searching users', error)
+        console.error("Error searching users", error)
         throw error
       }
     },
-    enabled: !!debouncedSearchTerm
+    enabled: !!debouncedSearchTerm,
   })
 
   const refreshData = useCallback(async () => {
@@ -113,7 +118,7 @@ export default function ConversationsView() {
       setRefreshing(true)
       await fetchInitialData()
       await queryClient.invalidateQueries({
-        queryKey: ['conversation-display-data']
+        queryKey: ["conversation-display-data"],
       })
     } finally {
       setRefreshing(false)
@@ -121,19 +126,19 @@ export default function ConversationsView() {
   }, [fetchInitialData, queryClient])
 
   const onRefresh = useCallback(() => {
-    refreshData()
+    void refreshData()
   }, [refreshData])
 
   // Reset search and refresh data when screen comes into focus
   useFocusEffect(
     useCallback(() => {
-      setSearchTerm('')
-      refreshData()
+      setSearchTerm("")
+      void refreshData()
     }, [refreshData])
   )
 
   const renderConversationItem = useCallback(
-    ({ item }: { item: Messaging.MessageConversationsDocumentsType }) => (
+    ({ item }: { item: MessageConversationsDocumentsType }) => (
       <ConversationItem
         item={item}
         displayData={displayData?.[item.$id]}
@@ -144,25 +149,25 @@ export default function ConversationsView() {
   )
 
   const renderSearchItem = useCallback(
-    ({ item }: { item: UserData.UserDataDocumentsType }) => (
+    ({ item }: { item: UserDataDocumentsType }) => (
       <ConversationSearchItem item={item} />
     ),
     []
   )
 
   return (
-    <FeatureAccess featureName={'messaging'}>
+    <FeatureAccess featureName={"messaging"}>
       <Input
         value={searchTerm}
         onChangeText={setSearchTerm}
         placeholder="Search users..."
-        className={'rounded-none'}
+        className={"rounded-none"}
       />
       {searchTerm ? (
         <View>
           {isSearching ? (
             <View>
-              <Text>{i18n.t('main.loading')}</Text>
+              <Text>{i18n.t("main.loading")}</Text>
             </View>
           ) : (
             <FlatList
@@ -180,7 +185,7 @@ export default function ConversationsView() {
           onRefresh={onRefresh}
           refreshing={refreshing}
           numColumns={1}
-          contentContainerStyle={{ justifyContent: 'space-between' }}
+          contentContainerStyle={{ justifyContent: "space-between" }}
         />
       )}
     </FeatureAccess>

@@ -1,9 +1,9 @@
-import React, { ReactNode, useEffect, useState } from 'react'
-import { router } from 'expo-router'
-import { useUser } from './contexts/UserContext'
-import { useFeatureStatus } from '~/lib/hooks/useFeatureStatus'
-import Maintenance from '~/components/views/Maintenance'
-import NoAccess from './views/NoAccess'
+import { router } from "expo-router"
+import React, { ReactNode, useEffect, useState } from "react"
+import { useUser } from "~/components/contexts/UserContext"
+import Maintenance from "~/components/views/Maintenance"
+import NoAccess from "~/components/views/NoAccess"
+import { useFeatureStatus } from "~/lib/hooks/useFeatureStatus"
 
 interface FeatureAccessProps {
   featureName: string
@@ -11,9 +11,9 @@ interface FeatureAccessProps {
 }
 
 const FeatureAccess = ({ featureName, children }: FeatureAccessProps) => {
-  const [cachedFeatureStatuses, setCachedFeatureStatuses] = useState<{
-    [key: string]: any
-  }>({})
+  const [cachedFeatureStatuses, setCachedFeatureStatuses] = useState<
+    Record<string, any>
+  >({})
   const [isLoading, setIsLoading] = useState(true)
   const featureStatus = useFeatureStatus(featureName)
   const { current } = useUser()
@@ -22,7 +22,7 @@ const FeatureAccess = ({ featureName, children }: FeatureAccessProps) => {
     if (featureStatus) {
       setCachedFeatureStatuses((prevStatuses) => ({
         ...prevStatuses,
-        [featureName]: featureStatus
+        [featureName]: featureStatus,
       }))
       setIsLoading(false)
     }
@@ -31,8 +31,8 @@ const FeatureAccess = ({ featureName, children }: FeatureAccessProps) => {
   const cachedFeatureStatus = cachedFeatureStatuses[featureName]
 
   useEffect(() => {
-    if (!isLoading && !current && cachedFeatureStatus?.type !== 'public') {
-      router.push('/login')
+    if (!isLoading && !current && cachedFeatureStatus?.type !== "public") {
+      router.push("/login")
     }
   }, [current, cachedFeatureStatus, isLoading])
 
@@ -40,28 +40,28 @@ const FeatureAccess = ({ featureName, children }: FeatureAccessProps) => {
     return null
   }
 
-  if (cachedFeatureStatus?.type === 'public') {
+  if (cachedFeatureStatus?.type === "public") {
     return children
   }
 
-  if (!cachedFeatureStatus?.isEnabled && !current.labels?.includes('dev')) {
+  if (!cachedFeatureStatus?.isEnabled && !current?.labels.includes("dev")) {
     return <Maintenance />
   } else if (
-    cachedFeatureStatus?.type === 'earlyaccess' &&
+    cachedFeatureStatus?.type === "earlyaccess" &&
     !(
-      current.labels?.includes(`${featureName}Beta`) ||
-      current.labels?.includes('dev')
+      current?.labels.includes(`${featureName}Beta`) ||
+      current?.labels.includes("dev")
     )
   ) {
     return <NoAccess />
   } else if (
-    cachedFeatureStatus?.type === 'staff' &&
-    !(current.labels?.includes('staff') || current.labels?.includes('dev'))
+    cachedFeatureStatus?.type === "staff" &&
+    !(current?.labels.includes("staff") || current?.labels.includes("dev"))
   ) {
     return <NoAccess />
   } else if (
-    cachedFeatureStatus?.type === 'dev' &&
-    !current.labels?.includes('dev')
+    cachedFeatureStatus?.type === "dev" &&
+    !current?.labels.includes("dev")
   ) {
     return <NoAccess />
   }

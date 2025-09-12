@@ -1,10 +1,10 @@
-import * as React from 'react'
+import * as React from "react"
 
-import { IconType } from '~/lib/types/IconTypes'
-import Svg, { Path } from 'react-native-svg'
-import { LegacyRef } from 'react'
+import { Ref } from "react"
+import Svg, { Path } from "react-native-svg"
+import { IconType } from "~/lib/types/IconTypes"
 
-type SiDiscordProps = React.ComponentPropsWithoutRef<'svg'> & {
+type SiDiscordProps = React.ComponentPropsWithoutRef<"svg"> & {
   /**
    * The title provides an accessible short text description to the SVG
    */
@@ -19,14 +19,11 @@ type SiDiscordProps = React.ComponentPropsWithoutRef<'svg'> & {
   size?: string | number
 }
 
-const defaultColor = '#5865F2'
+const defaultColor = "#5865F2"
 
 const DiscordIcon: IconType = React.forwardRef<SVGSVGElement, SiDiscordProps>(
-  function DiscordIcon(
-    { color = 'currentColor', size = 24 },
-    ref: LegacyRef<any>
-  ) {
-    if (color === 'default') {
+  function DiscordIcon({ color = "currentColor", size = 24 }, ref: Ref<any>) {
+    if (color === "default") {
       color = defaultColor
     }
 

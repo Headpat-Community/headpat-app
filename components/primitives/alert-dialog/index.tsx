@@ -1,29 +1,29 @@
-import { useControllableState } from '~/components/primitives/hooks'
-import { Portal as RNPPortal } from '~/components/primitives/portal'
-import * as Slot from '~/components/primitives/slot'
+import { useControllableState } from "~/components/primitives/hooks"
+import { Portal as RNPPortal } from "~/components/primitives/portal"
+import * as Slot from "~/components/primitives/slot"
 import type {
   PressableRef,
   SlottablePressableProps,
   SlottableTextProps,
   SlottableViewProps,
   TextRef,
-  ViewRef
-} from '~/components/primitives/types'
-import * as React from 'react'
+  ViewRef,
+} from "~/components/primitives/types"
+import * as React from "react"
 import {
   BackHandler,
   Pressable,
   Text,
   View,
-  type GestureResponderEvent
-} from 'react-native'
+  type GestureResponderEvent,
+} from "react-native"
 import type {
   AlertDialogContentProps,
   AlertDialogOverlayProps,
   AlertDialogPortalProps,
   AlertDialogRootProps,
-  RootContext
-} from './types'
+  RootContext,
+} from "./types"
 
 const AlertDialogContext = React.createContext<
   (RootContext & { nativeID: string }) | null
@@ -47,7 +47,7 @@ const Root = React.forwardRef<
     const [open = false, onOpenChange] = useControllableState({
       prop: openProp,
       defaultProp: defaultOpen,
-      onChange: onOpenChangeProp
+      onChange: onOpenChangeProp,
     })
     const Component = asChild ? Slot.View : View
     return (
@@ -55,7 +55,7 @@ const Root = React.forwardRef<
         value={{
           open,
           onOpenChange,
-          nativeID
+          nativeID,
         }}
       >
         <Component ref={ref} {...viewProps} />
@@ -64,13 +64,13 @@ const Root = React.forwardRef<
   }
 )
 
-Root.displayName = 'RootNativeAlertDialog'
+Root.displayName = "RootNativeAlertDialog"
 
 function useRootContext() {
   const context = React.useContext(AlertDialogContext)
   if (!context) {
     throw new Error(
-      'AlertDialog compound components cannot be rendered outside the AlertDialog component'
+      "AlertDialog compound components cannot be rendered outside the AlertDialog component"
     )
   }
   return context
@@ -99,7 +99,7 @@ const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
   }
 )
 
-Trigger.displayName = 'TriggerNativeAlertDialog'
+Trigger.displayName = "TriggerNativeAlertDialog"
 
 /**
  * @warning when using a custom `<PortalHost />`, you might have to adjust the Content's sideOffset to account for nav elements like headers.
@@ -138,7 +138,7 @@ const Overlay = React.forwardRef<
   return <Component ref={ref} {...props} />
 })
 
-Overlay.displayName = 'OverlayNativeAlertDialog'
+Overlay.displayName = "OverlayNativeAlertDialog"
 
 const Content = React.forwardRef<
   ViewRef,
@@ -148,7 +148,7 @@ const Content = React.forwardRef<
 
   React.useEffect(() => {
     const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
+      "hardwareBackPress",
       () => {
         onOpenChange(false)
         return true
@@ -158,7 +158,6 @@ const Content = React.forwardRef<
     return () => {
       backHandler.remove()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   if (!forceMount) {
@@ -181,7 +180,7 @@ const Content = React.forwardRef<
   )
 })
 
-Content.displayName = 'ContentNativeAlertDialog'
+Content.displayName = "ContentNativeAlertDialog"
 
 const Cancel = React.forwardRef<PressableRef, SlottablePressableProps>(
   ({ asChild, onPress: onPressProp, disabled = false, ...props }, ref) => {
@@ -207,7 +206,7 @@ const Cancel = React.forwardRef<PressableRef, SlottablePressableProps>(
   }
 )
 
-Cancel.displayName = 'CloseNativeAlertDialog'
+Cancel.displayName = "CloseNativeAlertDialog"
 
 const Action = React.forwardRef<PressableRef, SlottablePressableProps>(
   ({ asChild, onPress: onPressProp, disabled = false, ...props }, ref) => {
@@ -233,7 +232,7 @@ const Action = React.forwardRef<PressableRef, SlottablePressableProps>(
   }
 )
 
-Action.displayName = 'ActionNativeAlertDialog'
+Action.displayName = "ActionNativeAlertDialog"
 
 const Title = React.forwardRef<TextRef, SlottableTextProps>(
   ({ asChild, ...props }, ref) => {
@@ -250,7 +249,7 @@ const Title = React.forwardRef<TextRef, SlottableTextProps>(
   }
 )
 
-Title.displayName = 'TitleNativeAlertDialog'
+Title.displayName = "TitleNativeAlertDialog"
 
 const Description = React.forwardRef<TextRef, SlottableTextProps>(
   ({ asChild, ...props }, ref) => {
@@ -260,7 +259,7 @@ const Description = React.forwardRef<TextRef, SlottableTextProps>(
   }
 )
 
-Description.displayName = 'DescriptionNativeAlertDialog'
+Description.displayName = "DescriptionNativeAlertDialog"
 
 export {
   Action,
@@ -272,5 +271,5 @@ export {
   Root,
   Title,
   Trigger,
-  useRootContext
+  useRootContext,
 }

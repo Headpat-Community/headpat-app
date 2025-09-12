@@ -1,40 +1,45 @@
-import React, { useCallback, useRef, useState } from 'react'
-import { FlatList, View, Platform, KeyboardAvoidingView } from 'react-native'
-import { Stack, useLocalSearchParams } from 'expo-router'
-import { Text } from '~/components/ui/text'
-import { useFocusEffect } from '@react-navigation/core'
-import { useUser } from '~/components/contexts/UserContext'
-import { useRealtimeChat } from '~/lib/hooks/useRealtimeChat'
-import { useAlertModal } from '~/components/contexts/AlertModalProvider'
-import { databases, functions } from '~/lib/appwrite-client'
-import { Community, Messaging, UserData } from '~/lib/types/collections'
-import { ExecutionMethod, Query } from 'react-native-appwrite'
-import MessageItem from '~/components/FlatlistItems/MessageItem'
-import { Input } from '~/components/ui/input'
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
-import {
-  getAvatarImageUrlPreview,
-  getCommunityAvatarUrlPreview
-} from '~/components/api/getStorageItem'
-import { z } from 'zod'
-import { Button } from '~/components/ui/button'
-import { SendIcon } from 'lucide-react-native'
-import { useColorScheme } from '~/lib/useColorScheme'
-import { captureException } from '@sentry/react-native'
+import { useFocusEffect } from "@react-navigation/core"
+import { captureException } from "@sentry/react-native"
 import {
   useInfiniteQuery,
   useMutation,
   useQuery,
-  useQueryClient
-} from '@tanstack/react-query'
+  useQueryClient,
+} from "@tanstack/react-query"
+import { Stack, useLocalSearchParams } from "expo-router"
+import { SendIcon } from "lucide-react-native"
+import React, { useCallback, useRef, useState } from "react"
+import { FlatList, KeyboardAvoidingView, Platform, View } from "react-native"
+import { ExecutionMethod, Query } from "react-native-appwrite"
+import { z } from "zod"
+import {
+  getAvatarImageUrlPreview,
+  getCommunityAvatarUrlPreview,
+} from "~/components/api/getStorageItem"
+import { useAlertModal } from "~/components/contexts/AlertModalProvider"
+import { useUser } from "~/components/contexts/UserContext"
+import MessageItem from "~/components/FlatlistItems/MessageItem"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { Button } from "~/components/ui/button"
+import { Input } from "~/components/ui/input"
+import { Text } from "~/components/ui/text"
+import { databases, functions } from "~/lib/appwrite-client"
+import { useRealtimeChat } from "~/lib/hooks/useRealtimeChat"
+import {
+  CommunityDocumentsType,
+  MessageConversationsDocumentsType,
+  MessagesDocumentsType,
+  UserDataDocumentsType,
+} from "~/lib/types/collections"
+import { useColorScheme } from "~/lib/useColorScheme"
 
 const schema = z.object({
   message: z
     .string()
     .trim()
-    .max(2048, 'Message: Max length is 2048')
-    .min(1, 'Message: Min length is 1'),
-  attachments: z.array(z.instanceof(File)).optional()
+    .max(2048, "Message: Max length is 2048")
+    .min(1, "Message: Min length is 1"),
+  attachments: z.array(z.instanceof(File)).optional(),
 })
 
 const MESSAGES_PER_PAGE = 1000
@@ -44,7 +49,7 @@ export default function ChatView() {
   const { current } = useUser()
   const { messages, setMessages } = useRealtimeChat()
   const { showAlert } = useAlertModal()
-  const [messageText, setMessageText] = useState('')
+  const [messageText, setMessageText] = useState("")
   const [attachments, setAttachments] = useState<File[]>([])
   const [initialScrollDone, setInitialScrollDone] = useState(false)
   const [scrollTimeout, setScrollTimeout] = useState<NodeJS.Timeout | null>(
@@ -52,40 +57,41 @@ export default function ChatView() {
   )
   const flatListRef = useRef<FlatList>(null)
   const { isDarkColorScheme } = useColorScheme()
-  const theme = isDarkColorScheme ? 'white' : 'black'
+  const theme = isDarkColorScheme ? "white" : "black"
   const queryClient = useQueryClient()
 
-  const { data: conversationData, isLoading: isLoadingConversation } = useQuery(
-    {
-      queryKey: ['conversation', local?.conversationId],
-      queryFn: async () => {
-        const data: Messaging.MessageConversationsDocumentsType =
-          await databases.getDocument(
-            'hp_db',
-            'messages-conversations',
-            `${local?.conversationId}`
-          )
-        return data
-      },
-      enabled: !!local?.conversationId
-    }
-  )
+  const { data: conversationData } = useQuery({
+    queryKey: ["conversation", local.conversationId],
+    queryFn: async () => {
+      const data: MessageConversationsDocumentsType = await databases.getRow({
+        databaseId: "hp_db",
+        tableId: "messages-conversations",
+        rowId: local.conversationId as string,
+      })
+      return data
+    },
+    enabled: !!local.conversationId,
+  })
 
   const {
     data: messagesData,
     fetchNextPage,
     hasNextPage,
-    isFetchingNextPage
+    isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ['messages', local?.conversationId],
+    queryKey: ["messages", local.conversationId],
     queryFn: async ({ pageParam = 0 }) => {
-      const result = await databases.listDocuments('hp_db', 'messages', [
-        Query.equal('conversationId', `${local?.conversationId}`),
-        Query.orderAsc('$createdAt'),
-        Query.limit(MESSAGES_PER_PAGE),
-        Query.offset(pageParam * MESSAGES_PER_PAGE)
-      ])
-      return result.documents as unknown as Messaging.MessagesDocumentsType[]
+      const result = await databases.listRows({
+        databaseId: "hp_db",
+        tableId: "messages",
+        queries: [
+          Query.equal("conversationId", local.conversationId as string),
+          Query.orderAsc("$createdAt"),
+          Query.limit(MESSAGES_PER_PAGE),
+          Query.offset(pageParam * MESSAGES_PER_PAGE),
+        ],
+      })
+      return result.rows as unknown as MessagesDocumentsType[]
     },
     getNextPageParam: (lastPage, allPages) => {
       return lastPage.length === MESSAGES_PER_PAGE
@@ -93,41 +99,41 @@ export default function ChatView() {
         : undefined
     },
     initialPageParam: 0,
-    enabled: !!local?.conversationId
+    enabled: !!local.conversationId,
   })
 
   const { data: communityData } = useQuery({
-    queryKey: ['community', conversationData?.communityId],
+    queryKey: ["community", conversationData?.communityId],
     queryFn: async () => {
       if (!conversationData?.communityId) return null
-      const data = await databases.getDocument(
-        'hp_db',
-        'community',
-        conversationData.communityId
-      )
-      return data as unknown as Community.CommunityDocumentsType
+      const data = await databases.getRow({
+        databaseId: "hp_db",
+        tableId: "community",
+        rowId: conversationData.communityId,
+      })
+      return data as unknown as CommunityDocumentsType
     },
-    enabled: !!conversationData?.communityId
+    enabled: !!conversationData?.communityId,
   })
 
   const { data: otherUserData } = useQuery({
     queryKey: [
-      'user',
-      conversationData?.participants?.find((id) => id !== current.$id)
+      "user",
+      conversationData?.participants.find((id) => id !== current?.$id),
     ],
     queryFn: async () => {
-      const otherUserId = conversationData?.participants?.find(
-        (id) => id !== current.$id
+      const otherUserId = conversationData?.participants.find(
+        (id) => id !== current?.$id
       )
       if (!otherUserId) return null
-      const data: UserData.UserDataDocumentsType = await databases.getDocument(
-        'hp_db',
-        'userdata',
-        otherUserId
-      )
+      const data: UserDataDocumentsType = await databases.getRow({
+        databaseId: "hp_db",
+        tableId: "userdata",
+        rowId: otherUserId,
+      })
       return data
     },
-    enabled: !!conversationData?.participants?.find((id) => id !== current.$id)
+    enabled: !!conversationData?.participants.find((id) => id !== current?.$id),
   })
 
   const sendMessageMutation = useMutation({
@@ -136,65 +142,81 @@ export default function ChatView() {
       attachments: File[]
       messageType: string
     }) => {
-      let endpointUrl = `/user/chat/message?conversationId=${local?.conversationId}`
+      let endpointUrl = `/user/chat/message?conversationId=${local.conversationId as string}`
       if (!conversationData?.communityId) {
-        const recipientId = conversationData?.participants?.find(
-          (id) => id !== current.$id
+        const recipientId = conversationData?.participants.find(
+          (id) => id !== current?.$id
         )
         if (recipientId) {
           endpointUrl += `&recipientId=${recipientId}`
         }
       }
 
-      const data = await functions.createExecution(
-        'user-endpoints',
-        JSON.stringify(messageData),
-        false,
-        endpointUrl,
-        ExecutionMethod.POST
-      )
+      const data = await functions.createExecution({
+        functionId: "user-endpoints",
+        body: JSON.stringify(messageData),
+        async: false,
+        xpath: endpointUrl,
+        method: ExecutionMethod.POST,
+      })
       return JSON.parse(data.responseBody)
     },
     onSuccess: (response) => {
       if (response.code === 500) {
-        showAlert('FAILED', 'An error occurred while sending the message')
-      } else if (response.type === 'userchat_user_not_in_conversation') {
-        showAlert('FAILED', 'You are not in this conversation')
-      } else if (response.type === 'userchat_message_sent') {
-        setMessageText('')
+        showAlert("FAILED", "An error occurred while sending the message")
+      } else if (response.type === "userchat_user_not_in_conversation") {
+        showAlert("FAILED", "You are not in this conversation")
+      } else if (response.type === "userchat_message_sent") {
+        setMessageText("")
         setAttachments([])
-        queryClient.invalidateQueries({
-          queryKey: ['messages', local?.conversationId]
-        })
+        queryClient
+          .invalidateQueries({
+            queryKey: ["messages", local.conversationId],
+          })
+          .catch(() => {
+            console.error("Error invalidating messages query")
+          })
       }
     },
     onError: (error) => {
       captureException(error)
-      showAlert('FAILED', 'An error occurred while sending the message')
-    }
+      showAlert("FAILED", "An error occurred while sending the message")
+    },
   })
 
   useFocusEffect(
     useCallback(() => {
-      queryClient.invalidateQueries({
-        queryKey: ['conversation', local?.conversationId]
-      })
-      queryClient.invalidateQueries({
-        queryKey: ['messages', local?.conversationId]
-      })
-    }, [local?.conversationId, queryClient])
+      queryClient
+        .invalidateQueries({
+          queryKey: ["conversation", local.conversationId],
+        })
+        .catch(() => {
+          console.error("Error invalidating conversation query")
+        })
+      queryClient
+        .invalidateQueries({
+          queryKey: ["messages", local.conversationId],
+        })
+        .catch(() => {
+          console.error("Error invalidating messages query")
+        })
+    }, [local.conversationId, queryClient])
   )
 
   const getConversationAvatar = () => {
     if (conversationData?.communityId) {
+      if (!communityData) return null
       return getCommunityAvatarUrlPreview(
-        communityData?.avatarId,
-        'width=100&height=100'
+        communityData.avatarId,
+        "width=100&height=100"
       )
     }
+    if (!otherUserData?.avatarId) {
+      return null
+    }
     return getAvatarImageUrlPreview(
-      otherUserData?.avatarId,
-      'width=100&height=100'
+      otherUserData.avatarId,
+      "width=100&height=100"
     )
   }
 
@@ -214,7 +236,7 @@ export default function ChatView() {
       setScrollTimeout(
         setTimeout(() => {
           if (hasNextPage && !isFetchingNextPage) {
-            fetchNextPage()
+            void fetchNextPage()
           }
         }, 100)
       )
@@ -226,26 +248,26 @@ export default function ChatView() {
       schema.parse({ message: messageText, attachments })
 
       // Create a pending message
-      const pendingMessage: Messaging.MessagesDocumentsType = {
+      const pendingMessage: MessagesDocumentsType = {
         $id: `pending_${Date.now()}`,
         body: messageText,
-        senderId: current.$id || '',
-        conversationId: `${local?.conversationId}`,
-        messageType: 'text',
+        senderId: current?.$id ?? "",
+        conversationId: local.conversationId as string,
+        messageType: "text",
         attachments: [],
-        $collectionId: 'messages',
-        $databaseId: 'hp_db',
+        $tableId: "messages",
+        $databaseId: "hp_db",
         $permissions: [],
         $createdAt: new Date().toISOString(),
         $updatedAt: new Date().toISOString(),
-        $sequence: 0
+        $sequence: 0,
       }
       setMessages((prev) => [...prev, pendingMessage])
 
       await sendMessageMutation.mutateAsync({
         message: messageText,
         attachments: [],
-        messageType: 'text'
+        messageType: "text",
       })
 
       // Remove the pending message
@@ -254,31 +276,30 @@ export default function ChatView() {
       )
     } catch (error) {
       if (error instanceof z.ZodError) {
-        showAlert('FAILED', error.errors[0].message)
+        showAlert("FAILED", error.errors[0].message)
       } else {
         captureException(error)
-        showAlert('FAILED', 'An error occurred while sending the message')
+        showAlert("FAILED", "An error occurred while sending the message")
       }
     }
   }
 
-  const renderItem = ({ item }) => {
-    if (!item) return null
+  const renderItem = ({ item }: { item: MessagesDocumentsType }) => {
     return <MessageItem message={item} />
   }
 
-  const allMessages = messagesData?.pages.flat() || []
+  const allMessages = messagesData?.pages.flat() ?? []
 
   return (
-    <View className={'flex-1'}>
+    <View className={"flex-1"}>
       <Stack.Screen
         options={{
           headerTitle: () => (
-            <View className={'flex flex-row items-center'}>
-              <Avatar alt={'Avatar'}>
+            <View className={"flex flex-row items-center"}>
+              <Avatar alt={"Avatar"}>
                 <AvatarImage
                   source={{
-                    uri: getConversationAvatar()
+                    uri: getConversationAvatar() ?? undefined,
                   }}
                   style={{ width: 32, height: 32, borderRadius: 50 }}
                 />
@@ -290,13 +311,13 @@ export default function ChatView() {
                 {getConversationName()}
               </Text>
             </View>
-          )
+          ),
         }}
       />
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
       >
         <FlatList
           ref={flatListRef}
@@ -317,20 +338,20 @@ export default function ChatView() {
             }
           }}
         />
-        <View className={'flex-row p-4 items-center mb-2'}>
-          <View className={'flex-1 flex-row items-center px-2'}>
+        <View className={"mb-2 flex-row items-center p-4"}>
+          <View className={"flex-1 flex-row items-center px-2"}>
             <Input
-              className={'flex-1 mr-2.5'}
+              className={"mr-2.5 flex-1"}
               value={messageText}
               onChangeText={setMessageText}
               placeholder="Type a message"
             />
             <Button
-              variant={'ghost'}
-              size={'icon'}
-              onPress={sendMessage}
+              variant={"ghost"}
+              size={"icon"}
+              onPress={() => void sendMessage()}
               disabled={sendMessageMutation.isPending}
-              className={'active:bg-transparent'}
+              className={"active:bg-transparent"}
             >
               <SendIcon color={theme} />
             </Button>

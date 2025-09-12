@@ -1,12 +1,12 @@
 import type { ForceMountable } from '~/components/primitives/types'
 import React from 'react'
 
-type RootContext = {
+interface RootContext {
   open: boolean
   onOpenChange: (value: boolean) => void
 }
 
-type DialogRootProps = {
+interface DialogRootProps {
   open?: boolean
   defaultOpen?: boolean
   onOpenChange?: (value: boolean) => void

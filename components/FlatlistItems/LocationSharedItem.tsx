@@ -1,64 +1,68 @@
-import React from 'react'
-import { TouchableOpacity, View } from 'react-native'
-import { UsersIcon } from 'lucide-react-native'
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
+import React from "react"
+import { TouchableOpacity, View } from "react-native"
+import { UsersIcon } from "lucide-react-native"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import {
   getAvatarImageUrlPreview,
-  getCommunityAvatarUrlPreview
-} from '~/components/api/getStorageItem'
-import { Muted } from '../ui/typography'
-import { Text } from '~/components/ui/text'
-import { Card, CardContent } from '~/components/ui/card'
-import { useTimeLeft } from '../calculateTimeLeft'
+  getCommunityAvatarUrlPreview,
+} from "~/components/api/getStorageItem"
+import { Muted } from "../ui/typography"
+import { Text } from "~/components/ui/text"
+import { Card, CardContent } from "~/components/ui/card"
+import { useTimeLeft } from "../calculateTimeLeft"
 import {
   AlertDialog,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
-  AlertDialogTitle
-} from '~/components/ui/alert-dialog'
-import { Button } from '~/components/ui/button'
-import { databases } from '~/lib/appwrite-client'
-import { useAlertModal } from '~/components/contexts/AlertModalProvider'
-import * as Sentry from '@sentry/react-native'
-import { Community, UserData } from '~/lib/types/collections'
+  AlertDialogTitle,
+} from "~/components/ui/alert-dialog"
+import { Button } from "~/components/ui/button"
+import { databases } from "~/lib/appwrite-client"
+import { useAlertModal } from "~/components/contexts/AlertModalProvider"
+import * as Sentry from "@sentry/react-native"
+import {
+  CommunityDocumentsType,
+  UserDataDocumentsType,
+} from "~/lib/types/collections"
 
 const LocationSharedItem = React.memo(
   ({
     documentId,
     timeUntil,
     item,
-    onRemove
+    onRemove,
   }: {
     documentId: string
     timeUntil: string
-    item: UserData.UserDataDocumentsType | Community.CommunityDocumentsType
+    item: UserDataDocumentsType | CommunityDocumentsType
     onRemove: (documentId: string) => void
   }) => {
-    const isCommunity = !!item?.name
+    const isCommunity = !!(item as CommunityDocumentsType).name
     const timeLeft = useTimeLeft(timeUntil)
     const [openModal, setOpenModal] = React.useState(false)
     const { showAlert } = useAlertModal()
 
     const stopSharing = async () => {
       try {
-        await databases.deleteDocument(
-          'hp_db',
-          'locations-permissions',
-          documentId
-        )
+        await databases.deleteRow({
+          databaseId: "hp_db",
+          tableId: "locations-permissions",
+          rowId: documentId,
+        })
         showAlert(
-          'SUCCESS',
-          'Removed location sharing with ' + isCommunity
-            ? item?.name
-            : item?.displayName
+          "SUCCESS",
+          "Removed location sharing with " +
+            (isCommunity
+              ? (item as CommunityDocumentsType).name
+              : (item as UserDataDocumentsType).displayName)
         )
         onRemove(documentId)
       } catch (e) {
         console.log(e)
         Sentry.captureException(e)
-        showAlert('FAILED', 'An error occurred while deleting the conversation')
+        showAlert("FAILED", "An error occurred while deleting the conversation")
       } finally {
         setOpenModal(false)
       }
@@ -71,19 +75,25 @@ const LocationSharedItem = React.memo(
     return (
       <>
         <AlertDialog open={openModal} onOpenChange={setOpenModal}>
-          <AlertDialogContent className={'w-96'}>
+          <AlertDialogContent className={"w-96"}>
             <AlertDialogTitle>Moderation</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to stop sharing your location with{' '}
-              {isCommunity ? item?.name : item?.displayName}?
+              Are you sure you want to stop sharing your location with{" "}
+              {isCommunity
+                ? (item as CommunityDocumentsType).name
+                : (item as UserDataDocumentsType).displayName}
+              ?
             </AlertDialogDescription>
             <View>
               <TouchableOpacity
                 style={{
-                  gap: 12
+                  gap: 12,
                 }}
               >
-                <Button variant={'destructive'} onPress={stopSharing}>
+                <Button
+                  variant={"destructive"}
+                  onPress={() => void stopSharing()}
+                >
                   <Text>Stop sharing</Text>
                 </Button>
               </TouchableOpacity>
@@ -96,53 +106,63 @@ const LocationSharedItem = React.memo(
           </AlertDialogContent>
         </AlertDialog>
         <TouchableOpacity onLongPress={handleLongPress}>
-          <Card className={'rounded-none'}>
-            <CardContent className={'pt-4 pb-4'}>
-              <View className={'flex flex-row items-center'}>
+          <Card className={"rounded-none"}>
+            <CardContent className={"pb-4 pt-4"}>
+              <View className={"flex flex-row items-center"}>
                 <View>
                   <Avatar
                     style={{ width: 64, height: 64 }}
-                    alt={isCommunity ? item?.name : item?.displayName}
+                    alt={
+                      isCommunity
+                        ? (item as CommunityDocumentsType).name
+                        : (item as UserDataDocumentsType).displayName
+                    }
                   >
                     <AvatarImage
                       src={
                         isCommunity
                           ? getCommunityAvatarUrlPreview(
-                              item?.avatarId,
-                              'width=100&height=100'
+                              (item as CommunityDocumentsType).avatarId,
+                              "width=100&height=100"
                             )
                           : getAvatarImageUrlPreview(
-                              item?.avatarId,
-                              'width=100&height=100'
-                            ) || null
+                              (item as UserDataDocumentsType).avatarId ?? "",
+                              "width=100&height=100"
+                            ) || undefined
                       }
                     />
                     <AvatarFallback>
                       <Text>
                         {isCommunity
-                          ? item?.name?.charAt(0)
-                          : item?.displayName?.charAt(0)}
+                          ? (item as CommunityDocumentsType).name.charAt(0)
+                          : (item as UserDataDocumentsType).displayName.charAt(
+                              0
+                            )}
                       </Text>
                     </AvatarFallback>
                   </Avatar>
                   {isCommunity && (
-                    <View className="absolute bottom-0.5 -right-0.5 bg-primary text-primary-foreground rounded-full p-0.5">
-                      <UsersIcon size={16} color={'white'} />
+                    <View className="absolute -right-0.5 bottom-0.5 rounded-full bg-primary p-0.5 text-primary-foreground">
+                      <UsersIcon size={16} color={"white"} />
                     </View>
                   )}
                 </View>
-                <View className={'flex-row justify-between'}>
+                <View className={"flex-row justify-between"}>
                   <View className="ml-4 flex-1">
                     <View>
                       <Text className="font-semibold">
-                        {isCommunity ? item?.name : item?.displayName}
+                        {isCommunity
+                          ? (item as CommunityDocumentsType).name
+                          : (item as UserDataDocumentsType).displayName}
                       </Text>
                     </View>
-                    <Muted className="text-sm">{item?.lastMessage}</Muted>
+                    <Muted className="text-sm">
+                      {(item as UserDataDocumentsType).status}
+                    </Muted>
                   </View>
                   <View
                     style={{
-                      marginRight: 48
+                      marginRight: 48,
                     }}
                   >
                     <Text className="font-semibold">{timeLeft}</Text>
@@ -157,6 +177,6 @@ const LocationSharedItem = React.memo(
   }
 )
 
-LocationSharedItem.displayName = 'LocationSharedItem'
+LocationSharedItem.displayName = "LocationSharedItem"
 
 export default LocationSharedItem

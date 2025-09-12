@@ -1,8 +1,8 @@
-import { Image, TouchableOpacity, View } from 'react-native'
-import { useCallback, useMemo, useRef } from 'react'
-import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet'
-import { useColorScheme } from '~/lib/useColorScheme'
-import { Button } from '~/components/ui/button'
+import { Image, TouchableOpacity, View } from "react-native"
+import { useCallback, useMemo, useRef } from "react"
+import { BottomSheetModal, BottomSheetScrollView } from "@gorhom/bottom-sheet"
+import { useColorScheme } from "~/lib/useColorScheme"
+import { Button } from "~/components/ui/button"
 import {
   BadgeHelpIcon,
   BellIcon,
@@ -23,28 +23,28 @@ import {
   UserIcon,
   UserSearchIcon,
   UsersIcon,
-  XIcon
-} from 'lucide-react-native'
-import { useUser } from '~/components/contexts/UserContext'
-import { Text } from '~/components/ui/text'
-import { Link, router } from 'expo-router'
-import { Separator } from '~/components/ui/separator'
-import DiscordIcon from '~/components/icons/DiscordIcon'
-import { Muted } from '~/components/ui/typography'
-import * as React from 'react'
-import { i18n } from '~/components/system/i18n'
+  XIcon,
+} from "lucide-react-native"
+import { useUser } from "~/components/contexts/UserContext"
+import { Text } from "~/components/ui/text"
+import { Link, router } from "expo-router"
+import { Separator } from "~/components/ui/separator"
+import DiscordIcon from "~/components/icons/DiscordIcon"
+import { Muted } from "~/components/ui/typography"
+import * as React from "react"
+import { i18n } from "~/components/system/i18n"
 
 export function HeaderMenuSidebar() {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null)
-  const snapPoints = useMemo(() => ['100%'], [])
+  const snapPoints = useMemo(() => ["100%"], [])
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present()
   }, [])
   const { isDarkColorScheme } = useColorScheme()
-  const theme = isDarkColorScheme ? 'white' : 'black'
+  const theme = isDarkColorScheme ? "white" : "black"
 
   return (
-    <View className={'flex-row items-center'}>
+    <View className={"flex-row items-center"}>
       <TouchableOpacity
         // Just to make sure the icon is clickable
         style={{ paddingRight: 10, paddingVertical: 10 }}
@@ -56,14 +56,14 @@ export function HeaderMenuSidebar() {
         ref={bottomSheetModalRef}
         index={0}
         snapPoints={snapPoints}
-        stackBehavior={'replace'}
+        stackBehavior={"replace"}
         detached={true}
         enableOverDrag={false}
         enableHandlePanningGesture={false}
         enableDynamicSizing={false}
-        handleStyle={{ display: 'none' }}
+        handleStyle={{ display: "none" }}
         backgroundStyle={{
-          backgroundColor: isDarkColorScheme ? 'hsl(0 0% 7%)' : '#fff'
+          backgroundColor: isDarkColorScheme ? "hsl(0 0% 7%)" : "#fff",
         }}
       >
         <CustomDrawerContent bottomSheetModalRef={bottomSheetModalRef} />
@@ -72,9 +72,13 @@ export function HeaderMenuSidebar() {
   )
 }
 
-function CustomDrawerContent({ bottomSheetModalRef }) {
+function CustomDrawerContent({
+  bottomSheetModalRef,
+}: {
+  bottomSheetModalRef: React.RefObject<BottomSheetModal | null>
+}) {
   const { isDarkColorScheme, setColorScheme } = useColorScheme()
-  const theme = isDarkColorScheme ? 'white' : 'black'
+  const theme = isDarkColorScheme ? "white" : "black"
   const { current } = useUser()
 
   return (
@@ -82,14 +86,14 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
       <View
         style={{
           marginTop: 60,
-          justifyContent: 'center',
-          alignItems: 'center',
-          borderBottomColor: '#aaa',
-          borderBottomWidth: 1
+          justifyContent: "center",
+          alignItems: "center",
+          borderBottomColor: "#aaa",
+          borderBottomWidth: 1,
         }}
       >
         <TouchableOpacity
-          style={{ position: 'absolute', top: 20, right: 30, zIndex: 1 }}
+          style={{ position: "absolute", top: 20, right: 30, zIndex: 1 }}
           onPress={() => bottomSheetModalRef.current?.dismiss()}
         >
           <XIcon size={20} color={theme} />
@@ -97,8 +101,8 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
         <Image
           source={
             isDarkColorScheme
-              ? require('~/assets/logos/place_dark_x250.webp')
-              : require('~/assets/logos/place_light_x250.webp')
+              ? require("~/assets/logos/place_dark_x250.webp")
+              : require("~/assets/logos/place_light_x250.webp")
           }
           style={{ height: 90, width: 250, marginBottom: 10 }}
         />
@@ -107,84 +111,84 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
       <BottomSheetScrollView>
         <DrawerLabel
           icon={HomeIcon}
-          text={i18n.t('screens.home')}
+          text={i18n.t("screens.home")}
           theme={theme}
-          route={'/'}
+          route={"/"}
           bottomSheetModalRef={bottomSheetModalRef}
         />
         <DrawerLabel
           icon={LayoutPanelLeftIcon}
-          text={i18n.t('screens.gallery')}
+          text={i18n.t("screens.gallery")}
           theme={theme}
-          route={'/gallery/(stacks)/(list)/newest'}
+          route={"/gallery/(stacks)/(list)/newest"}
           bottomSheetModalRef={bottomSheetModalRef}
         />
         <DrawerLabel
           icon={MapPinnedIcon}
-          text={i18n.t('screens.locations')}
+          text={i18n.t("screens.locations")}
           theme={theme}
-          route={'/locations'}
+          route={"/locations"}
           bottomSheetModalRef={bottomSheetModalRef}
         />
         <DrawerLabel
           icon={CalendarIcon}
-          text={i18n.t('screens.events')}
+          text={i18n.t("screens.events")}
           theme={theme}
-          route={'/events/(tabs)'}
+          route={"/events/(tabs)"}
           bottomSheetModalRef={bottomSheetModalRef}
         />
         <DrawerLabel
           icon={MegaphoneIcon}
-          text={i18n.t('screens.announcements')}
+          text={i18n.t("screens.announcements")}
           theme={theme}
-          route={'/announcements'}
+          route={"/announcements"}
           bottomSheetModalRef={bottomSheetModalRef}
         />
         <DrawerLabel
           icon={UserSearchIcon}
-          text={i18n.t('screens.users')}
+          text={i18n.t("screens.users")}
           theme={theme}
-          route={'/user/(stacks)'}
+          route={"/user/(stacks)"}
           bottomSheetModalRef={bottomSheetModalRef}
         />
         <DrawerLabel
           icon={BoxesIcon}
-          text={i18n.t('screens.communities')}
+          text={i18n.t("screens.communities")}
           theme={theme}
-          route={'/community'}
+          route={"/community"}
           bottomSheetModalRef={bottomSheetModalRef}
         />
         <Separator />
         {current && (
           <>
-            {current.labels.includes('staff') && (
+            {current.labels.includes("staff") && (
               <DrawerLabel
                 icon={MessagesSquareIcon}
-                text={i18n.t('screens.chat')}
+                text={i18n.t("screens.chat")}
                 theme={theme}
-                route={'/chat/list'}
+                route={"/chat/list"}
                 bottomSheetModalRef={bottomSheetModalRef}
               />
             )}
             <DrawerLabel
               icon={BellIcon}
-              text={i18n.t('screens.notifications')}
+              text={i18n.t("screens.notifications")}
               theme={theme}
-              route={'/notifications'}
+              route={"/notifications"}
               bottomSheetModalRef={bottomSheetModalRef}
             />
             <DrawerLabel
               icon={UserIcon}
-              text={i18n.t('screens.myProfile')}
+              text={i18n.t("screens.myProfile")}
               theme={theme}
               route={`/user/(stacks)/${current.$id}`}
               bottomSheetModalRef={bottomSheetModalRef}
             />
             <DrawerLabel
               icon={UsersIcon}
-              text={i18n.t('screens.mutuals')}
+              text={i18n.t("screens.mutuals")}
               theme={theme}
-              route={'/relationships/mutuals'}
+              route={"/relationships/mutuals"}
               bottomSheetModalRef={bottomSheetModalRef}
             />
           </>
@@ -192,15 +196,15 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
         <Separator />
         <TouchableOpacity
           style={{
-            flexDirection: 'row',
-            alignItems: 'center',
+            flexDirection: "row",
+            alignItems: "center",
             gap: 12,
             padding: 12,
-            paddingLeft: 20
+            paddingLeft: 20,
           }}
           onPress={() => {
-            const newTheme = isDarkColorScheme ? 'light' : 'dark'
-            setColorScheme(newTheme)
+            const newTheme = isDarkColorScheme ? "light" : "dark"
+            void setColorScheme(newTheme)
           }}
         >
           {isDarkColorScheme ? (
@@ -208,67 +212,67 @@ function CustomDrawerContent({ bottomSheetModalRef }) {
           ) : (
             <SunIcon size={20} color={theme} />
           )}
-          <Text style={{ color: theme }}>{i18n.t('drawer.switchTheme')}</Text>
+          <Text style={{ color: theme }}>{i18n.t("drawer.switchTheme")}</Text>
         </TouchableOpacity>
         <DrawerLabel
           icon={LogInIcon}
-          text={current ? i18n.t('screens.account') : i18n.t('screens.login')}
+          text={current ? i18n.t("screens.account") : i18n.t("screens.login")}
           theme={theme}
-          route={current ? '/account' : '/login'}
+          route={current ? "/account" : "/login"}
           bottomSheetModalRef={bottomSheetModalRef}
         />
         <DrawerLabel
           icon={LanguagesIcon}
-          text={i18n.t('screens.changeLanguage')}
+          text={i18n.t("screens.changeLanguage")}
           theme={theme}
-          route={'/languages'}
+          route={"/languages"}
           bottomSheetModalRef={bottomSheetModalRef}
         />
         <Separator />
         <DrawerLabel
           icon={FileCheckIcon}
-          text={i18n.t('screens.legal')}
+          text={i18n.t("screens.legal")}
           theme={theme}
-          route={'https://headpat.place/legal'}
+          route={"https://headpat.place/legal"}
           bottomSheetModalRef={bottomSheetModalRef}
         />
         <DrawerLabel
           icon={BadgeHelpIcon}
-          text={i18n.t('screens.support')}
+          text={i18n.t("screens.support")}
           theme={theme}
-          route={'https://headpat.place/support'}
+          route={"https://headpat.place/support"}
           bottomSheetModalRef={bottomSheetModalRef}
         />
         <DrawerLabel
           icon={PencilIcon}
-          text={i18n.t('screens.changelog')}
+          text={i18n.t("screens.changelog")}
           theme={theme}
-          route={'/changelog'}
+          route={"/changelog"}
           bottomSheetModalRef={bottomSheetModalRef}
         />
         <Separator />
         <Link
-          href={'https://discord.com/invite/EaQTEKRg2A'}
-          target={'_blank'}
+          href={"https://discord.com/invite/EaQTEKRg2A"}
+          target={"_blank"}
           asChild
         >
           <Button
             style={{
-              backgroundColor: 'transparent',
-              flexDirection: 'row',
-              alignItems: 'center'
+              backgroundColor: "transparent",
+              flexDirection: "row",
+              alignItems: "center",
             }}
-            variant={'ghost'}
+            variant={"ghost"}
           >
             <DiscordIcon size={20} color={theme} />
             <Text style={{ color: theme, marginLeft: 8 }}>Discord</Text>
           </Button>
         </Link>
         <Separator />
-        <Text style={{ color: theme, padding: 10, textAlign: 'center' }}>
+        <Text style={{ color: theme, padding: 10, textAlign: "center" }}>
           Headpat Place v0.8.13
         </Text>
-        <Muted style={{ textAlign: 'center', paddingBottom: 16 }}>BETA</Muted>
+        <Muted style={{ textAlign: "center", paddingBottom: 16 }}>BETA</Muted>
       </BottomSheetScrollView>
     </>
   )
@@ -279,10 +283,16 @@ const DrawerLabel = ({
   text,
   theme,
   route,
-  bottomSheetModalRef
+  bottomSheetModalRef,
+}: {
+  icon: React.ComponentType<any>
+  text: string
+  theme: string
+  route: string
+  bottomSheetModalRef: React.RefObject<BottomSheetModal | null>
 }) => {
   const handleNavigation = useCallback(
-    ({ route, params = {} }) => {
+    ({ route, params = {} }: { route: string; params?: any }) => {
       router.navigate({ pathname: route, params })
       bottomSheetModalRef.current?.dismiss()
     },
@@ -292,11 +302,11 @@ const DrawerLabel = ({
   return (
     <TouchableOpacity
       style={{
-        flexDirection: 'row',
-        alignItems: 'center',
+        flexDirection: "row",
+        alignItems: "center",
         gap: 12,
         padding: 12,
-        paddingLeft: 20
+        paddingLeft: 20,
       }}
       onPress={() => handleNavigation({ route })}
     >

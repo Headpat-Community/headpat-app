@@ -1,13 +1,13 @@
-import { ID } from 'react-native-appwrite'
-import React, { createContext, useContext, useEffect, useState } from 'react'
-import { account } from '~/lib/appwrite-client'
-import { Account } from '~/lib/types/collections'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { captureException } from '@sentry/react-native'
+import { ID } from "react-native-appwrite"
+import React, { createContext, useContext, useEffect, useState } from "react"
+import { account } from "~/lib/appwrite-client"
+import { AccountPrefs, AccountType } from "~/lib/types/collections"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import { captureException } from "@sentry/react-native"
 
 interface UserContextValue {
-  current: Account.AccountPrefs | null
-  setUser: React.Dispatch<React.SetStateAction<Account.AccountType | null>>
+  current: AccountPrefs | null
+  setUser: React.Dispatch<React.SetStateAction<AccountType | null>>
   isLoadingUser: boolean
   login: (email: string, password: string) => Promise<void>
   loginOAuth: (userId: string, secret: string) => Promise<void>
@@ -20,24 +20,30 @@ const UserContext = createContext<UserContextValue | undefined>(undefined)
 export function useUser(): UserContextValue {
   const context = useContext(UserContext)
   if (!context) {
-    throw new Error('useUser must be used within a UserProvider')
+    throw new Error("useUser must be used within a UserProvider")
   }
   return context
 }
 
 export function UserProvider(props: any) {
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState<AccountType | null>(null)
   const [isLoadingUser, setIsLoadingUser] = useState(false)
 
   async function login(email: string, password: string) {
-    await account.createEmailPasswordSession(email, password)
+    await account.createEmailPasswordSession({
+      email,
+      password,
+    })
     const accountData = await account.get()
     setUser(accountData)
     await loggedInPushNotifications()
   }
 
   async function loginOAuth(userId: string, secret: string) {
-    await account.createSession(userId, secret)
+    await account.createSession({
+      userId,
+      secret,
+    })
     const accountData = await account.get()
     setUser(accountData)
     await loggedInPushNotifications()
@@ -45,7 +51,9 @@ export function UserProvider(props: any) {
 
   async function logout() {
     try {
-      await account.deleteSession('current')
+      await account.deleteSession({
+        sessionId: "current",
+      })
       setUser(null)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
@@ -54,7 +62,12 @@ export function UserProvider(props: any) {
   }
 
   async function register(email: string, password: string, username: string) {
-    await account.create(ID.unique(), email, password, username)
+    await account.create({
+      userId: ID.unique(),
+      email,
+      password,
+      name: username,
+    })
     await login(email, password)
   }
 
@@ -63,7 +76,7 @@ export function UserProvider(props: any) {
       setIsLoadingUser(true)
       const loggedIn = await account.get()
       setUser(loggedIn)
-      await AsyncStorage.setItem('userId', loggedIn.$id)
+      await AsyncStorage.setItem("userId", loggedIn.$id)
       setIsLoadingUser(false)
       await loggedInPushNotifications()
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -74,19 +87,19 @@ export function UserProvider(props: any) {
   }
 
   useEffect(() => {
-    init().then()
+    void init()
   }, [])
 
   return (
     <UserContext.Provider
       value={{
-        current: user,
+        current: user as AccountPrefs | null,
         setUser,
         isLoadingUser,
         login,
         loginOAuth,
         logout,
-        register
+        register,
       }}
     >
       {props.children}
@@ -95,7 +108,7 @@ export function UserProvider(props: any) {
 }
 
 const loggedInPushNotifications = async () => {
-  const fcmToken = await AsyncStorage.getItem('fcmToken')
+  const fcmToken = await AsyncStorage.getItem("fcmToken")
   if (!fcmToken) return
   await updatePushTargetWithAppwrite(fcmToken)
 }
@@ -103,8 +116,8 @@ const loggedInPushNotifications = async () => {
 export const updatePushTargetWithAppwrite = async (fcmToken: string) => {
   // If is simulator, don't update push target
   if (!fcmToken) return
-  const targetId = await AsyncStorage.getItem('targetId')
-  let session: Account.AccountPrefs
+  const targetId = await AsyncStorage.getItem("targetId")
+  let session: AccountPrefs
   try {
     session = await account.get()
     if (!session.$id) return // User is not logged in
@@ -118,14 +131,14 @@ export const updatePushTargetWithAppwrite = async (fcmToken: string) => {
 
   try {
     // Create a new push target
-    const target = await account.createPushTarget(
-      ID.unique(),
-      fcmToken,
-      '66bcfc3b0028d9fb7a68' // FCM Appwrite Provider ID
-    )
-    await AsyncStorage.setItem('targetId', target.$id)
+    const target = await account.createPushTarget({
+      targetId: ID.unique(),
+      identifier: fcmToken,
+      providerId: "66bcfc3b0028d9fb7a68", // FCM Appwrite Provider ID
+    })
+    await AsyncStorage.setItem("targetId", target.$id)
   } catch (error) {
-    console.error('Failed to create push target in Appwrite:', error)
+    console.error("Failed to create push target in Appwrite:", error)
     captureException(error)
   }
 }

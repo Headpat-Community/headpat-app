@@ -1,4 +1,4 @@
-import * as React from 'react'
+import * as React from "react"
 import {
   BackHandler,
   Pressable,
@@ -6,14 +6,14 @@ import {
   View,
   type GestureResponderEvent,
   type LayoutChangeEvent,
-  type LayoutRectangle
-} from 'react-native'
+  type LayoutRectangle,
+} from "react-native"
 import {
   useRelativePosition,
-  type LayoutPosition
-} from '~/components/primitives/hooks'
-import { Portal as RNPPortal } from '~/components/primitives/portal'
-import * as Slot from '~/components/primitives/slot'
+  type LayoutPosition,
+} from "~/components/primitives/hooks"
+import { Portal as RNPPortal } from "~/components/primitives/portal"
+import * as Slot from "~/components/primitives/slot"
 import type {
   ForceMountable,
   PositionedContentProps,
@@ -22,8 +22,8 @@ import type {
   SlottableTextProps,
   SlottableViewProps,
   TextRef,
-  ViewRef
-} from '~/components/primitives/types'
+  ViewRef,
+} from "~/components/primitives/types"
 import type {
   DropdownMenuCheckboxItemProps,
   DropdownMenuItemProps,
@@ -34,8 +34,8 @@ import type {
   DropdownMenuRootProps,
   DropdownMenuSeparatorProps,
   DropdownMenuSubProps,
-  DropdownMenuSubTriggerProps
-} from './types'
+  DropdownMenuSubTriggerProps,
+} from "./types"
 
 interface IRootContext extends DropdownMenuRootProps {
   triggerPosition: LayoutPosition | null
@@ -67,7 +67,7 @@ const Root = React.forwardRef<
         setContentLayout,
         nativeID,
         setTriggerPosition,
-        triggerPosition
+        triggerPosition,
       }}
     >
       <Component ref={ref} {...viewProps} />
@@ -75,13 +75,13 @@ const Root = React.forwardRef<
   )
 })
 
-Root.displayName = 'RootNativeDropdownMenu'
+Root.displayName = "RootNativeDropdownMenu"
 
 function useRootContext() {
   const context = React.useContext(RootContext)
   if (!context) {
     throw new Error(
-      'DropdownMenu compound components cannot be rendered outside the DropdownMenu component'
+      "DropdownMenu compound components cannot be rendered outside the DropdownMenu component"
     )
   }
   return context
@@ -92,17 +92,12 @@ const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
     const triggerRef = React.useRef<View>(null)
     const { open, onOpenChange, setTriggerPosition } = useRootContext()
 
-    React.useImperativeHandle(
-      ref,
-      () => {
-        if (!triggerRef.current) {
-          return new View({})
-        }
-        return triggerRef.current
-      },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [triggerRef.current]
-    )
+    React.useImperativeHandle(ref, () => {
+      if (!triggerRef.current) {
+        return new View({})
+      }
+      return triggerRef.current
+    }, [triggerRef.current])
 
     function onPress(ev: GestureResponderEvent) {
       if (disabled) return
@@ -129,7 +124,7 @@ const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
   }
 )
 
-Trigger.displayName = 'TriggerNativeDropdownMenu'
+Trigger.displayName = "TriggerNativeDropdownMenu"
 
 /**
  * @warning when using a custom `<PortalHost />`, you might have to adjust the Content's sideOffset to account for nav elements like headers.
@@ -191,7 +186,7 @@ const Overlay = React.forwardRef<
   }
 )
 
-Overlay.displayName = 'OverlayNativeDropdownMenu'
+Overlay.displayName = "OverlayNativeDropdownMenu"
 
 /**
  * @info `position`, `top`, `left`, and `maxWidth` style properties are controlled internally. Opt out of this behavior by setting `disablePositioningStyle` to `true`.
@@ -204,8 +199,8 @@ const Content = React.forwardRef<
     {
       asChild = false,
       forceMount,
-      align = 'start',
-      side = 'bottom',
+      align = "start",
+      side = "bottom",
       sideOffset = 0,
       alignOffset = 0,
       avoidCollisions = true,
@@ -224,12 +219,12 @@ const Content = React.forwardRef<
       triggerPosition,
       setTriggerPosition,
       contentLayout,
-      setContentLayout
+      setContentLayout,
     } = useRootContext()
 
     React.useEffect(() => {
       const backHandler = BackHandler.addEventListener(
-        'hardwareBackPress',
+        "hardwareBackPress",
         () => {
           setTriggerPosition(null)
           setContentLayout(null)
@@ -242,7 +237,6 @@ const Content = React.forwardRef<
         setContentLayout(null)
         backHandler.remove()
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const positionStyle = useRelativePosition({
@@ -254,7 +248,7 @@ const Content = React.forwardRef<
       insets,
       sideOffset,
       side,
-      disablePositioningStyle
+      disablePositioningStyle,
     })
 
     function onLayout(event: LayoutChangeEvent) {
@@ -283,7 +277,7 @@ const Content = React.forwardRef<
   }
 )
 
-Content.displayName = 'ContentNativeDropdownMenu'
+Content.displayName = "ContentNativeDropdownMenu"
 
 const Item = React.forwardRef<
   PressableRef,
@@ -328,7 +322,7 @@ const Item = React.forwardRef<
   }
 )
 
-Item.displayName = 'ItemNativeDropdownMenu'
+Item.displayName = "ItemNativeDropdownMenu"
 
 const Group = React.forwardRef<ViewRef, SlottableViewProps>(
   ({ asChild, ...props }, ref) => {
@@ -337,7 +331,7 @@ const Group = React.forwardRef<ViewRef, SlottableViewProps>(
   }
 )
 
-Group.displayName = 'GroupNativeDropdownMenu'
+Group.displayName = "GroupNativeDropdownMenu"
 
 const Label = React.forwardRef<TextRef, SlottableTextProps>(
   ({ asChild, ...props }, ref) => {
@@ -346,7 +340,7 @@ const Label = React.forwardRef<TextRef, SlottableTextProps>(
   }
 )
 
-Label.displayName = 'LabelNativeDropdownMenu'
+Label.displayName = "LabelNativeDropdownMenu"
 
 type FormItemContext =
   | { checked: boolean }
@@ -355,7 +349,6 @@ type FormItemContext =
       onValueChange: (value: string) => void
     }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
 const FormItemContext = React.createContext<FormItemContext | null>(null)
 
 const CheckboxItem = React.forwardRef<
@@ -408,13 +401,13 @@ const CheckboxItem = React.forwardRef<
   }
 )
 
-CheckboxItem.displayName = 'CheckboxItemNativeDropdownMenu'
+CheckboxItem.displayName = "CheckboxItemNativeDropdownMenu"
 
 function useFormItemContext() {
   const context = React.useContext(FormItemContext)
   if (!context) {
     throw new Error(
-      'CheckboxItem or RadioItem compound components cannot be rendered outside of a CheckboxItem or RadioItem component'
+      "CheckboxItem or RadioItem compound components cannot be rendered outside of a CheckboxItem or RadioItem component"
     )
   }
   return context
@@ -432,7 +425,7 @@ const RadioGroup = React.forwardRef<
   )
 })
 
-RadioGroup.displayName = 'RadioGroupNativeDropdownMenu'
+RadioGroup.displayName = "RadioGroupNativeDropdownMenu"
 
 type BothFormItemContext = Exclude<FormItemContext, { checked: boolean }> & {
   checked: boolean
@@ -481,7 +474,7 @@ const RadioItem = React.forwardRef<
           disabled={disabled ?? false}
           accessibilityState={{
             disabled: disabled ?? false,
-            checked: value === itemValue
+            checked: value === itemValue,
           }}
           aria-valuetext={textValue}
           {...props}
@@ -491,7 +484,7 @@ const RadioItem = React.forwardRef<
   }
 )
 
-RadioItem.displayName = 'RadioItemNativeDropdownMenu'
+RadioItem.displayName = "RadioItemNativeDropdownMenu"
 
 function useItemIndicatorContext() {
   return React.useContext(RadioItemContext)
@@ -505,7 +498,7 @@ const ItemIndicator = React.forwardRef<
   const { checked, value } = useFormItemContext() as BothFormItemContext
 
   if (!forceMount) {
-    if (itemValue == null && !checked) {
+    if (!itemValue && !checked) {
       return null
     }
     if (value !== itemValue) {
@@ -516,7 +509,7 @@ const ItemIndicator = React.forwardRef<
   return <Component ref={ref} role="presentation" {...props} />
 })
 
-ItemIndicator.displayName = 'ItemIndicatorNativeDropdownMenu'
+ItemIndicator.displayName = "ItemIndicatorNativeDropdownMenu"
 
 const Separator = React.forwardRef<
   ViewRef,
@@ -525,14 +518,14 @@ const Separator = React.forwardRef<
   const Component = asChild ? Slot.View : View
   return (
     <Component
-      role={decorative ? 'presentation' : 'separator'}
+      role={decorative ? "presentation" : "separator"}
       ref={ref}
       {...props}
     />
   )
 })
 
-Separator.displayName = 'SeparatorNativeDropdownMenu'
+Separator.displayName = "SeparatorNativeDropdownMenu"
 
 const SubContext = React.createContext<{
   nativeID: string
@@ -552,7 +545,7 @@ const Sub = React.forwardRef<
       value={{
         nativeID,
         open,
-        onOpenChange
+        onOpenChange,
       }}
     >
       <Component ref={ref} {...props} />
@@ -560,13 +553,13 @@ const Sub = React.forwardRef<
   )
 })
 
-Sub.displayName = 'SubNativeDropdownMenu'
+Sub.displayName = "SubNativeDropdownMenu"
 
 function useSubContext() {
   const context = React.useContext(SubContext)
   if (!context) {
     throw new Error(
-      'Sub compound components cannot be rendered outside of a Sub component'
+      "Sub compound components cannot be rendered outside of a Sub component"
     )
   }
   return context
@@ -605,9 +598,8 @@ const SubTrigger = React.forwardRef<
   }
 )
 
-SubTrigger.displayName = 'SubTriggerNativeDropdownMenu'
+SubTrigger.displayName = "SubTriggerNativeDropdownMenu"
 
-// eslint-disable-next-line react/display-name
 const SubContent = React.forwardRef<
   PressableRef,
   SlottablePressableProps & ForceMountable
@@ -626,7 +618,7 @@ const SubContent = React.forwardRef<
   )
 })
 
-Content.displayName = 'ContentNativeDropdownMenu'
+Content.displayName = "ContentNativeDropdownMenu"
 
 export {
   CheckboxItem,
@@ -646,5 +638,5 @@ export {
   SubTrigger,
   Trigger,
   useRootContext,
-  useSubContext
+  useSubContext,
 }

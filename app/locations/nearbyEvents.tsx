@@ -1,23 +1,24 @@
-import React, { useMemo, useState, useEffect } from 'react'
-import { FlatList, View, TouchableOpacity, ScrollView } from 'react-native'
-import { router, useLocalSearchParams } from 'expo-router'
-import { MapPinIcon } from 'lucide-react-native'
-import { Text } from '~/components/ui/text'
-import { Muted } from '~/components/ui/typography'
-import { Card, CardContent } from '~/components/ui/card'
-import { Button } from '~/components/ui/button'
-import * as Location from 'expo-location'
-import { Events } from '~/lib/types/collections'
-import { calculateDistance, getEventCenterCoordinates } from '~/lib/utils'
-import { i18n } from '~/components/system/i18n'
-import { formatDateLocale } from '~/components/calculateTimeLeft'
-import { useQuery } from '@tanstack/react-query'
-import { databases } from '~/lib/appwrite-client'
-import { Query } from 'react-native-appwrite'
-import { useAlertModal } from '~/components/contexts/AlertModalProvider'
-import { captureException } from '@sentry/react-native'
+import { captureException } from "@sentry/react-native"
+import { useQuery } from "@tanstack/react-query"
+import * as Location from "expo-location"
+import { LocationObjectCoords } from "expo-location"
+import { router, useLocalSearchParams } from "expo-router"
+import { MapPinIcon } from "lucide-react-native"
+import React, { useMemo, useState } from "react"
+import { FlatList, ScrollView, TouchableOpacity, View } from "react-native"
+import { Query } from "react-native-appwrite"
+import { formatDateLocale } from "~/components/calculateTimeLeft"
+import { useAlertModal } from "~/components/contexts/AlertModalProvider"
+import { i18n } from "~/components/system/i18n"
+import { Button } from "~/components/ui/button"
+import { Card, CardContent } from "~/components/ui/card"
+import { Text } from "~/components/ui/text"
+import { Muted } from "~/components/ui/typography"
+import { databases } from "~/lib/appwrite-client"
+import { EventsDocumentsType, EventsType } from "~/lib/types/collections"
+import { calculateDistance, getEventCenterCoordinates } from "~/lib/utils"
 
-interface EventWithDistance extends Events.EventsDocumentsType {
+interface EventWithDistance extends EventsDocumentsType {
   distance: number
 }
 
@@ -25,14 +26,15 @@ export default function NearbyEventsPage() {
   const { showAlert } = useAlertModal()
   const params = useLocalSearchParams()
   const [requestingLocation, setRequestingLocation] = useState(false)
-  const [localUserLocation, setLocalUserLocation] = useState(null)
+  const [localUserLocation, setLocalUserLocation] =
+    useState<LocationObjectCoords | null>(null)
 
   // Parse user location from params
   const userLocation = useMemo(() => {
     if (params.latitude && params.longitude) {
       return {
         latitude: parseFloat(params.latitude as string),
-        longitude: parseFloat(params.longitude as string)
+        longitude: parseFloat(params.longitude as string),
       }
     }
     return localUserLocation
@@ -43,55 +45,55 @@ export default function NearbyEventsPage() {
       setRequestingLocation(true)
       const { status } = await Location.requestForegroundPermissionsAsync()
 
-      if (status === 'granted') {
+      if (status === Location.PermissionStatus.GRANTED) {
         // Get current location
         const location = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.Balanced
+          accuracy: Location.Accuracy.Balanced,
         })
         setLocalUserLocation(location.coords)
-        showAlert('SUCCESS', i18n.t('location.nearbyEvents.locationGranted'))
+        showAlert("SUCCESS", i18n.t("location.nearbyEvents.locationGranted"))
       } else {
-        showAlert('FAILED', i18n.t('location.nearbyEvents.locationDenied'))
+        showAlert("FAILED", i18n.t("location.nearbyEvents.locationDenied"))
       }
     } catch (error) {
       captureException(error)
-      showAlert('FAILED', i18n.t('location.nearbyEvents.locationFailed'))
+      showAlert("FAILED", i18n.t("location.nearbyEvents.locationFailed"))
     } finally {
       setRequestingLocation(false)
     }
   }
 
-  const { data: events, isLoading } = useQuery<Events.EventsType>({
-    queryKey: ['events'],
+  const { data: events, isLoading } = useQuery<EventsType>({
+    queryKey: ["events"],
     queryFn: async () => {
       try {
         const currentDate = new Date()
-        const data: Events.EventsType = await databases.listDocuments(
-          'hp_db',
-          'events',
-          [
+        const data: EventsType = await databases.listRows({
+          databaseId: "hp_db",
+          tableId: "events",
+          queries: [
             Query.limit(1000),
-            Query.orderAsc('date'),
-            Query.greaterThanEqual('dateUntil', currentDate.toISOString()),
+            Query.orderAsc("date"),
+            Query.greaterThanEqual("dateUntil", currentDate.toISOString()),
             Query.or([
-              Query.equal('locationZoneMethod', 'circle'),
-              Query.equal('locationZoneMethod', 'polygon')
-            ])
-          ]
-        )
+              Query.equal("locationZoneMethod", "circle"),
+              Query.equal("locationZoneMethod", "polygon"),
+            ]),
+          ],
+        })
         return data
       } catch (error) {
-        showAlert('FAILED', i18n.t('location.map.failedToFetchEvents'))
+        showAlert("FAILED", i18n.t("location.map.failedToFetchEvents"))
         captureException(error)
         throw error
       }
-    }
+    },
   })
 
   const eventsWithDistance = useMemo(() => {
-    if (!userLocation || !events?.documents?.length) return []
+    if (!userLocation || !events?.rows.length) return []
 
-    const eventsWithDistances: EventWithDistance[] = events.documents
+    const eventsWithDistances: EventWithDistance[] = events.rows
       .map((event) => {
         const eventCenter = getEventCenterCoordinates(event)
         if (!eventCenter) return null // Skip virtual events
@@ -105,7 +107,7 @@ export default function NearbyEventsPage() {
 
         return {
           ...event,
-          distance
+          distance,
         }
       })
       .filter((event): event is EventWithDistance => event !== null)
@@ -126,12 +128,12 @@ export default function NearbyEventsPage() {
     if (eventCenter) {
       // Navigate back to map with event location
       router.push({
-        pathname: '/locations',
+        pathname: "/locations",
         params: {
           focusLatitude: eventCenter.latitude.toString(),
           focusLongitude: eventCenter.longitude.toString(),
-          focusEventId: event.$id
-        }
+          focusEventId: event.$id,
+        },
       })
     }
   }
@@ -140,12 +142,12 @@ export default function NearbyEventsPage() {
     <TouchableOpacity onPress={() => handleEventPress(item)} className="mb-3">
       <Card className="mx-4">
         <CardContent className="p-4">
-          <View className="flex-row justify-between items-start">
-            <View className="flex-1 mr-3">
-              <Text className="text-lg font-semibold mb-1">{item.title}</Text>
-              <Text className="text-sm text-gray-600 mb-2">{item.label}</Text>
+          <View className="flex-row items-start justify-between">
+            <View className="mr-3 flex-1">
+              <Text className="mb-1 text-lg font-semibold">{item.title}</Text>
+              <Text className="mb-2 text-sm text-gray-600">{item.label}</Text>
               <Text className="text-xs text-gray-500">
-                {formatDateLocale(new Date(item.date))} -{' '}
+                {formatDateLocale(new Date(item.date))} -{" "}
                 {formatDateLocale(new Date(item.dateUntil))}
               </Text>
             </View>
@@ -156,8 +158,8 @@ export default function NearbyEventsPage() {
             </View>
           </View>
           {item.description && (
-            <Text className="text-sm text-gray-700 mt-2" numberOfLines={2}>
-              {item.description.replace(/<[^>]*>/g, '')}
+            <Text className="mt-2 text-sm text-gray-700" numberOfLines={2}>
+              {item.description.replace(/<[^>]*>/g, "")}
             </Text>
           )}
         </CardContent>
@@ -167,25 +169,25 @@ export default function NearbyEventsPage() {
 
   const renderEmptyState = () => (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-      <View className="flex-1 justify-center items-center px-4">
+      <View className="flex-1 items-center justify-center px-4">
         <View className="items-center space-y-4">
           <MapPinIcon size={64} color="#9CA3AF" />
           <Muted className="text-center text-lg">
             {userLocation
-              ? i18n.t('location.nearbyEvents.noEvents')
-              : i18n.t('location.nearbyEvents.noLocation')}
+              ? i18n.t("location.nearbyEvents.noEvents")
+              : i18n.t("location.nearbyEvents.noLocation")}
           </Muted>
           {!userLocation && (
             <View className="mt-6">
               <Button
-                onPress={requestLocationPermission}
+                onPress={() => void requestLocationPermission()}
                 disabled={requestingLocation}
                 className="px-6"
               >
-                <Text className="text-white font-semibold">
+                <Text className="font-semibold text-white">
                   {requestingLocation
-                    ? i18n.t('location.nearbyEvents.requesting')
-                    : i18n.t('location.nearbyEvents.enableLocation')}
+                    ? i18n.t("location.nearbyEvents.requesting")
+                    : i18n.t("location.nearbyEvents.enableLocation")}
                 </Text>
               </Button>
             </View>
@@ -199,8 +201,8 @@ export default function NearbyEventsPage() {
     <View className="flex-1 bg-gray-50">
       {/* Content */}
       {isLoading ? (
-        <View className="flex-1 justify-center items-center">
-          <Text>{i18n.t('main.loading')}</Text>
+        <View className="flex-1 items-center justify-center">
+          <Text>{i18n.t("main.loading")}</Text>
         </View>
       ) : eventsWithDistance.length === 0 ? (
         renderEmptyState()
@@ -210,7 +212,7 @@ export default function NearbyEventsPage() {
           renderItem={renderEventItem}
           keyExtractor={(item) => item.$id}
           contentContainerStyle={{
-            paddingVertical: 16
+            paddingVertical: 16,
           }}
           showsVerticalScrollIndicator={true}
         />

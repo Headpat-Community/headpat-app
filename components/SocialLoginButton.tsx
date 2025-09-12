@@ -2,13 +2,13 @@ import React from 'react'
 import { View, Text } from 'react-native'
 import { Button } from '~/components/ui/button'
 import { IconType } from '~/lib/types/IconTypes'
-import { Image as ExpoImage } from 'expo-image'
+import { Image as ExpoImage, ImageSource } from 'expo-image'
 
-type SocialLoginButtonProps = {
+interface SocialLoginButtonProps {
   color: string
   onPress: () => void
   Icon?: IconType
-  Image?: React.ReactNode
+  Image?: ImageSource
   title: string
 }
 

@@ -1,18 +1,18 @@
-import * as React from 'react'
-import { Pressable, View, type GestureResponderEvent } from 'react-native'
-import * as Slot from '~/components/primitives/slot'
+import * as React from "react"
+import { Pressable, View, type GestureResponderEvent } from "react-native"
+import * as Slot from "~/components/primitives/slot"
 import type {
   PressableRef,
   SlottablePressableProps,
   SlottableViewProps,
-  ViewRef
-} from '~/components/primitives/types'
-import { ToggleGroupUtils } from '~/components/primitives/utils'
+  ViewRef,
+} from "~/components/primitives/types"
+import { ToggleGroupUtils } from "~/components/primitives/utils"
 import type {
   ToolbarRootProps,
   ToolbarToggleGroupProps,
-  ToolbarToggleItem
-} from './types'
+  ToolbarToggleItem,
+} from "./types"
 
 const Root = React.forwardRef<ViewRef, SlottableViewProps & ToolbarRootProps>(
   (
@@ -24,7 +24,7 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & ToolbarRootProps>(
   }
 )
 
-Root.displayName = 'RootNativeToolbar'
+Root.displayName = "RootNativeToolbar"
 
 const ToggleGroupContext = React.createContext<ToolbarToggleGroupProps | null>(
   null
@@ -46,7 +46,7 @@ const ToggleGroup = React.forwardRef<
             type,
             value,
             disabled,
-            onValueChange
+            onValueChange,
           } as ToolbarToggleGroupProps
         }
       >
@@ -56,13 +56,13 @@ const ToggleGroup = React.forwardRef<
   }
 )
 
-ToggleGroup.displayName = 'ToggleGroupNativeToolbar'
+ToggleGroup.displayName = "ToggleGroupNativeToolbar"
 
 function useToggleGroupContext() {
   const context = React.useContext(ToggleGroupContext)
   if (!context) {
     throw new Error(
-      'ToggleGroup compound components cannot be rendered outside the ToggleGroup component'
+      "ToggleGroup compound components cannot be rendered outside the ToggleGroup component"
     )
   }
   return context
@@ -86,21 +86,21 @@ const ToggleItem = React.forwardRef<
 
     function onPress(ev: GestureResponderEvent) {
       if (disabled || disabledProp) return
-      if (type === 'single') {
+      if (type === "single") {
         onValueChange(ToggleGroupUtils.getNewSingleValue(value, itemValue))
       }
-      if (type === 'multiple') {
+      if (type === "multiple") {
         onValueChange(ToggleGroupUtils.getNewMultipleValue(value, itemValue))
       }
       onPressProp?.(ev)
     }
 
     const isChecked =
-      type === 'single'
+      type === "single"
         ? ToggleGroupUtils.getIsSelected(value, itemValue)
         : undefined
     const isSelected =
-      type === 'multiple'
+      type === "multiple"
         ? ToggleGroupUtils.getIsSelected(value, itemValue)
         : undefined
 
@@ -109,15 +109,15 @@ const ToggleItem = React.forwardRef<
       <Component
         ref={ref}
         aria-disabled={disabled}
-        role={type === 'single' ? 'radio' : 'checkbox'}
+        role={type === "single" ? "radio" : "checkbox"}
         onPress={onPress}
         aria-checked={isChecked}
         aria-selected={isSelected}
-        disabled={(disabled || disabledProp) ?? false}
+        disabled={disabled ?? disabledProp ?? false}
         accessibilityState={{
-          disabled: (disabled || disabledProp) ?? false,
+          disabled: disabled ?? disabledProp ?? false,
           checked: isChecked,
-          selected: isSelected
+          selected: isSelected,
         }}
         {...props}
       />
@@ -125,16 +125,16 @@ const ToggleItem = React.forwardRef<
   }
 )
 
-ToggleItem.displayName = 'ToggleItemNativeToolbar'
+ToggleItem.displayName = "ToggleItemNativeToolbar"
 
 const Separator = React.forwardRef<ViewRef, SlottableViewProps>(
   ({ asChild, ...props }, ref) => {
     const Component = asChild ? Slot.View : View
-    return <Component role={'separator'} ref={ref} {...props} />
+    return <Component role={"separator"} ref={ref} {...props} />
   }
 )
 
-Separator.displayName = 'SeparatorNativeToolbar'
+Separator.displayName = "SeparatorNativeToolbar"
 
 const Link = React.forwardRef<PressableRef, SlottablePressableProps>(
   ({ asChild, ...props }, ref) => {
@@ -143,9 +143,8 @@ const Link = React.forwardRef<PressableRef, SlottablePressableProps>(
   }
 )
 
-Link.displayName = 'LinkNativeToolbar'
+Link.displayName = "LinkNativeToolbar"
 
-// eslint-disable-next-line react/display-name
 const Button = React.forwardRef<PressableRef, SlottablePressableProps>(
   ({ asChild, ...props }, ref) => {
     const Component = asChild ? Slot.Pressable : Pressable

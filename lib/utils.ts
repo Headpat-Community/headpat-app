@@ -1,5 +1,5 @@
-import { clsx, type ClassValue } from 'clsx'
-import { twMerge } from 'tailwind-merge'
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -39,39 +39,35 @@ export function calculateDistance(
  * @returns Center coordinates {latitude, longitude} or null if virtual event
  */
 export function getEventCenterCoordinates(event: {
-  locationZoneMethod: 'polygon' | 'circle' | 'virtual'
+  locationZoneMethod: "polygon" | "circle" | "virtual"
   coordinates: string[]
 }): { latitude: number; longitude: number } | null {
-  if (event.locationZoneMethod === 'virtual') {
+  if (event.locationZoneMethod === "virtual") {
     return null
   }
 
-  if (event.locationZoneMethod === 'circle') {
+  if (event.locationZoneMethod === "circle") {
     // For circles, the first coordinate is the center
-    const [latitude, longitude] = event.coordinates[0].split(',').map(Number)
+    const [latitude, longitude] = event.coordinates[0].split(",").map(Number)
     return { latitude, longitude }
   }
 
-  if (event.locationZoneMethod === 'polygon') {
-    // For polygons, calculate the centroid
-    const coordinates = event.coordinates.map((coord) => {
-      const [lat, lng] = coord.split(',').map(Number)
-      return { latitude: lat, longitude: lng }
-    })
+  // For polygons, calculate the centroid
+  const coordinates = event.coordinates.map((coord) => {
+    const [lat, lng] = coord.split(",").map(Number)
+    return { latitude: lat, longitude: lng }
+  })
 
-    const centroid = coordinates.reduce(
-      (acc, coord) => ({
-        latitude: acc.latitude + coord.latitude,
-        longitude: acc.longitude + coord.longitude
-      }),
-      { latitude: 0, longitude: 0 }
-    )
+  const centroid = coordinates.reduce(
+    (acc, coord) => ({
+      latitude: acc.latitude + coord.latitude,
+      longitude: acc.longitude + coord.longitude,
+    }),
+    { latitude: 0, longitude: 0 }
+  )
 
-    return {
-      latitude: centroid.latitude / coordinates.length,
-      longitude: centroid.longitude / coordinates.length
-    }
+  return {
+    latitude: centroid.latitude / coordinates.length,
+    longitude: centroid.longitude / coordinates.length,
   }
-
-  return null
 }

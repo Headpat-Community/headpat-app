@@ -1,10 +1,10 @@
-import * as React from 'react'
+import * as React from "react"
 
-import { IconType } from '~/lib/types/IconTypes'
-import Svg, { Path } from 'react-native-svg'
-import { LegacyRef } from 'react'
+import { Ref } from "react"
+import Svg, { Path } from "react-native-svg"
+import { IconType } from "~/lib/types/IconTypes"
 
-type SiAppleProps = React.ComponentPropsWithoutRef<'svg'> & {
+type SiAppleProps = React.ComponentPropsWithoutRef<"svg"> & {
   /**
    * The title provides an accessible short text description to the SVG
    */
@@ -19,14 +19,11 @@ type SiAppleProps = React.ComponentPropsWithoutRef<'svg'> & {
   size?: string | number
 }
 
-const defaultColor = '#000000'
+const defaultColor = "#000000"
 
 const AppleIcon: IconType = React.forwardRef<SVGSVGElement, SiAppleProps>(
-  function AppleIcon(
-    { color = 'currentColor', size = 24 },
-    ref: LegacyRef<any>
-  ) {
-    if (color === 'default') {
+  function AppleIcon({ color = "currentColor", size = 24 }, ref: Ref<any>) {
+    if (color === "default") {
       color = defaultColor
     }
 

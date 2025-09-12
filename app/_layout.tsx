@@ -1,65 +1,65 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { ThemeProvider } from '@react-navigation/native'
-import { PortalHost } from '~/components/primitives/portal'
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import { ThemeProvider } from "@react-navigation/native"
+import { PortalHost } from "~/components/primitives/portal"
 import {
   router,
   SplashScreen,
   Stack,
   useRouter,
-  useSegments
-} from 'expo-router'
-import { StatusBar } from 'expo-status-bar'
-import React from 'react'
-import { useEffect, useState, useMemo } from 'react'
-import { BackHandler, Platform } from 'react-native'
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
-import { ProfileThemeToggle } from '~/components/ThemeToggle'
-import { setAndroidNavigationBar } from '~/lib/android-navigation-bar'
-import { NAV_THEME } from '~/lib/constants'
-import { useColorScheme } from '~/lib/useColorScheme'
+  useSegments,
+} from "expo-router"
+import { StatusBar } from "expo-status-bar"
+import React from "react"
+import { useEffect, useState, useMemo } from "react"
+import { BackHandler, Platform } from "react-native"
+import { GestureHandlerRootView } from "react-native-gesture-handler"
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context"
+import { ProfileThemeToggle } from "~/components/ThemeToggle"
+import { setAndroidNavigationBar } from "~/lib/android-navigation-bar"
+import { NAV_THEME } from "~/lib/constants"
+import { useColorScheme } from "~/lib/useColorScheme"
 import {
   updatePushTargetWithAppwrite,
-  UserProvider
-} from '~/components/contexts/UserContext'
-import { DrawerScreensData } from '~/components/data/DrawerScreensData'
-import { databases } from '~/lib/appwrite-client'
-import { toast } from '~/lib/toast'
+  UserProvider,
+} from "~/components/contexts/UserContext"
+import { DrawerScreensData } from "~/components/data/DrawerScreensData"
+import { databases } from "~/lib/appwrite-client"
+import { toast } from "~/lib/toast"
 import {
   getInitialNotification,
   getMessaging,
   onMessage,
   onNotificationOpenedApp,
-  onTokenRefresh
-} from '@react-native-firebase/messaging'
-import { requestUserPermission } from '~/components/system/pushNotifications'
-import { AlertModalProvider } from '~/components/contexts/AlertModalProvider'
-import { captureException } from '@sentry/react-native'
-import EulaModal from '~/components/system/EulaModal'
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
-import { HeaderMenuSidebar } from '~/components/data/DrawerData'
-import { LocationProvider } from '~/components/contexts/SharingContext'
-import { LanguageProvider } from '~/components/contexts/LanguageProvider'
-import CacheProvider from '~/components/contexts/cacheProvider'
-import { NotifierWrapper } from 'react-native-notifier'
-import '../components/system/backgroundTasks'
-import '../globals.css'
-import '../components/init/sentryInit'
+  onTokenRefresh,
+} from "@react-native-firebase/messaging"
+import { FirebaseMessagingTypes } from "@react-native-firebase/messaging"
+import { requestUserPermission } from "~/components/system/pushNotifications"
+import { AlertModalProvider } from "~/components/contexts/AlertModalProvider"
+import { captureException } from "@sentry/react-native"
+import EulaModal from "~/components/system/EulaModal"
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet"
+import { HeaderMenuSidebar } from "~/components/data/DrawerData"
+import { LocationProvider } from "~/components/contexts/SharingContext"
+import { LanguageProvider } from "~/components/contexts/LanguageProvider"
+import CacheProvider from "~/components/contexts/cacheProvider"
+import "../components/system/backgroundTasks"
+import "../globals.css"
+import "../components/init/sentryInit"
 
-export { ErrorBoundary } from 'expo-router'
+export { ErrorBoundary } from "expo-router"
 
 export const unstable_settings = {
-  initialRouteName: 'index'
+  initialRouteName: "index",
 }
 
-SplashScreen.preventAutoHideAsync()
+void SplashScreen.preventAutoHideAsync()
 
 export default function RootLayout() {
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme()
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = useState(false)
   const [lastBackPressed, setLastBackPressed] = useState(0)
   const [openEulaModal, setOpenEulaModal] = useState(false)
-  const [versionData, setVersionData] = useState(null)
+  const [versionData, setVersionData] = useState<any>(null)
   const [isMounted, setIsMounted] = useState(false)
   const messaging = getMessaging()
 
@@ -67,41 +67,41 @@ export default function RootLayout() {
     () => ({
       fonts: {
         regular: {
-          fontFamily: 'Inter_400Regular',
-          fontWeight: '400' as const
+          fontFamily: "Inter_400Regular",
+          fontWeight: "400" as const,
         },
         medium: {
-          fontFamily: 'Inter_500Medium',
-          fontWeight: '500' as const
+          fontFamily: "Inter_500Medium",
+          fontWeight: "500" as const,
         },
         bold: {
-          fontFamily: 'Inter_700Bold',
-          fontWeight: '700' as const
+          fontFamily: "Inter_700Bold",
+          fontWeight: "700" as const,
         },
         heavy: {
-          fontFamily: 'Inter_800Heavy',
-          fontWeight: '800' as const
-        }
+          fontFamily: "Inter_800Heavy",
+          fontWeight: "800" as const,
+        },
       },
       dark: isDarkColorScheme,
-      colors: isDarkColorScheme ? NAV_THEME.dark : NAV_THEME.light
+      colors: isDarkColorScheme ? NAV_THEME.dark : NAV_THEME.light,
     }),
     [isDarkColorScheme]
   )
 
   useEffect(() => {
     const initialize = async () => {
-      const theme = await AsyncStorage.getItem('theme')
-      const colorTheme = theme === 'dark' ? 'dark' : 'light'
+      const theme = await AsyncStorage.getItem("theme")
+      const colorTheme = theme === "dark" ? "dark" : "light"
       await setAndroidNavigationBar(colorTheme)
       if (colorTheme !== colorScheme) {
-        setColorScheme(colorTheme)
+        void setColorScheme(colorTheme)
       }
       setIsColorSchemeLoaded(true)
       await SplashScreen.hideAsync()
       setIsMounted(true)
     }
-    initialize().then()
+    void initialize()
   }, [colorScheme, setColorScheme])
 
   const router = useRouter()
@@ -109,13 +109,13 @@ export default function RootLayout() {
   useEffect(() => {
     const backAction = () => {
       const now = Date.now()
-      if (segments.length > 0) {
+      if (segments[0] !== "index") {
         router.back()
       } else {
         if (now - lastBackPressed < 2000) {
           BackHandler.exitApp()
         } else {
-          toast('Press back again to exit')
+          toast("Press back again to exit")
           setLastBackPressed(now)
         }
       }
@@ -123,42 +123,48 @@ export default function RootLayout() {
     }
 
     const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
+      "hardwareBackPress",
       backAction
     )
     return () => backHandler.remove()
   }, [router, segments, lastBackPressed])
 
   useEffect(() => {
-    const handleMessaging = async () => {
-      onMessage(messaging, async (remoteMessage) => {
+    const handleMessaging = () => {
+      onMessage(messaging, (remoteMessage) => {
         console.log(remoteMessage)
       })
-      onNotificationOpenedApp(messaging, async (remoteMessage) => {
-        if (remoteMessage?.data?.type === 'newFollower') {
-          router.navigate(`/user/(stacks)/${remoteMessage.data.userId}`)
-        } else if (remoteMessage?.data?.type === 'newMessage') {
-          router.navigate(`/chat/${remoteMessage.data.userId}`)
+      onNotificationOpenedApp(messaging, (remoteMessage) => {
+        if (remoteMessage.data?.type === "newFollower") {
+          router.navigate(
+            `/user/(stacks)/${remoteMessage.data.userId as string}`
+          )
+        } else if (remoteMessage.data?.type === "newMessage") {
+          router.navigate(`/chat/${remoteMessage.data.userId as string}`)
         }
       })
-      requestUserPermission().then()
-      onTokenRefresh(messaging, async (newFcmToken) => {
+      void requestUserPermission()
+      onTokenRefresh(messaging, (newFcmToken) => {
         if (!newFcmToken) return
-        await AsyncStorage.setItem('fcmToken', newFcmToken)
-        await updatePushTargetWithAppwrite(newFcmToken)
+        void AsyncStorage.setItem("fcmToken", newFcmToken)
+        void updatePushTargetWithAppwrite(newFcmToken)
       })
     }
-    handleMessaging().then()
+    handleMessaging()
   }, [router])
 
   useEffect(() => {
     const getEulaVersion = async () => {
       try {
-        const data = await databases.getDocument('config', 'legal', 'eula')
-        const eula = await AsyncStorage.getItem('eula')
+        const data = await databases.getRow({
+          databaseId: "config",
+          tableId: "legal",
+          rowId: "eula",
+        })
+        const eula = await AsyncStorage.getItem("eula")
         if (eula !== data.version) {
           const allKeys = await AsyncStorage.getAllKeys()
-          const eulaKeys = allKeys.filter((key) => key.startsWith('eula'))
+          const eulaKeys = allKeys.filter((key) => key.startsWith("eula"))
           await AsyncStorage.multiRemove(eulaKeys)
           setVersionData(data)
           setOpenEulaModal(true)
@@ -168,8 +174,8 @@ export default function RootLayout() {
       }
     }
     if (isMounted) {
-      getEulaVersion().then()
-      bootstrap(messaging).then()
+      void getEulaVersion()
+      void bootstrap(messaging)
     }
   }, [isMounted])
 
@@ -192,26 +198,26 @@ export default function RootLayout() {
                   />
                   <LocationProvider>
                     <BottomSheetModalProvider>
-                      {Platform.OS === 'android' && (
-                        <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+                      {Platform.OS === "android" && (
+                        <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
                           <StatusBar
-                            style={colorScheme === 'dark' ? 'light' : 'dark'}
+                            style={colorScheme === "dark" ? "light" : "dark"}
                             backgroundColor={
-                              colorScheme === 'dark' ? '#000000' : '#ffffff'
+                              colorScheme === "dark" ? "#000000" : "#ffffff"
                             }
                           />
                           <Stack
                             screenOptions={{
                               headerStyle: {
                                 backgroundColor:
-                                  colorScheme === 'dark' ? '#000' : '#fff'
+                                  colorScheme === "dark" ? "#000" : "#fff",
                               },
                               headerTintColor:
-                                colorScheme === 'dark' ? '#fff' : '#000',
+                                colorScheme === "dark" ? "#fff" : "#000",
                               contentStyle: {
                                 backgroundColor:
-                                  colorScheme === 'dark' ? '#000' : '#fff'
-                              }
+                                  colorScheme === "dark" ? "#000" : "#fff",
+                              },
                             }}
                           >
                             {DrawerScreensData.map((screen: DrawerProps) => (
@@ -220,17 +226,17 @@ export default function RootLayout() {
                                 name={screen.location}
                                 options={{
                                   keyboardHandlingEnabled: true,
-                                  headerTitleAlign: 'left',
+                                  headerTitleAlign: "left",
                                   headerShown: screen.headerShown,
                                   headerTitle: screen.title,
                                   headerLargeTitle: screen.headerLargeTitle,
                                   headerLeft: () =>
-                                    screen.headerLeft || <HeaderMenuSidebar />,
+                                    screen.headerLeft ?? <HeaderMenuSidebar />,
                                   headerRight: () =>
-                                    screen.headerRight || (
+                                    screen.headerRight ?? (
                                       <ProfileThemeToggle />
                                     ),
-                                  gestureEnabled: screen.swipeEnabled
+                                  gestureEnabled: screen.swipeEnabled,
                                 }}
                               />
                             ))}
@@ -238,23 +244,23 @@ export default function RootLayout() {
                         </SafeAreaView>
                       )}
 
-                      {Platform.OS === 'ios' && (
+                      {Platform.OS === "ios" && (
                         <>
                           <StatusBar
-                            style={colorScheme === 'dark' ? 'light' : 'dark'}
+                            style={colorScheme === "dark" ? "light" : "dark"}
                           />
                           <Stack
                             screenOptions={{
                               headerStyle: {
                                 backgroundColor:
-                                  colorScheme === 'dark' ? '#000' : '#fff'
+                                  colorScheme === "dark" ? "#000" : "#fff",
                               },
                               headerTintColor:
-                                colorScheme === 'dark' ? '#fff' : '#000',
+                                colorScheme === "dark" ? "#fff" : "#000",
                               contentStyle: {
                                 backgroundColor:
-                                  colorScheme === 'dark' ? '#000' : '#fff'
-                              }
+                                  colorScheme === "dark" ? "#000" : "#fff",
+                              },
                             }}
                           >
                             {DrawerScreensData.map((screen: DrawerProps) => (
@@ -263,17 +269,17 @@ export default function RootLayout() {
                                 name={screen.location}
                                 options={{
                                   keyboardHandlingEnabled: true,
-                                  headerTitleAlign: 'left',
+                                  headerTitleAlign: "left",
                                   headerShown: screen.headerShown,
                                   headerTitle: screen.title,
                                   headerLargeTitle: screen.headerLargeTitle,
                                   headerLeft: () =>
-                                    screen.headerLeft || <HeaderMenuSidebar />,
+                                    screen.headerLeft ?? <HeaderMenuSidebar />,
                                   headerRight: () =>
-                                    screen.headerRight || (
+                                    screen.headerRight ?? (
                                       <ProfileThemeToggle />
                                     ),
-                                  gestureEnabled: screen.swipeEnabled
+                                  gestureEnabled: screen.swipeEnabled,
                                 }}
                               />
                             ))}
@@ -293,10 +299,12 @@ export default function RootLayout() {
   )
 }
 
-async function bootstrap(messaging) {
+async function bootstrap(messaging: FirebaseMessagingTypes.Module) {
   const initialNotification = await getInitialNotification(messaging)
-  if (initialNotification?.data?.type === 'newFollower') {
-    router.navigate(`/user/(stacks)/${initialNotification.data.userId}`)
+  if (initialNotification?.data?.type === "newFollower") {
+    router.navigate(
+      `/user/(stacks)/${initialNotification.data.userId as string}`
+    )
   }
 }
 

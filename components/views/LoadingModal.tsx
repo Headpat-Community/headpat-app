@@ -1,7 +1,7 @@
-import React from 'react'
-import { View, Text, StyleSheet, Modal, PanResponder } from 'react-native'
-import LottieView from 'lottie-react-native'
-import { useColorScheme } from '~/lib/useColorScheme'
+import React from "react"
+import { View, Text, StyleSheet, Modal, PanResponder } from "react-native"
+import LottieView from "lottie-react-native"
+import { useColorScheme } from "~/lib/useColorScheme"
 
 interface SuccessModalProps {
   isVisible: boolean
@@ -11,21 +11,21 @@ interface SuccessModalProps {
 
 export default function LoadingModal({
   isVisible,
-  onClose
+  onClose,
 }: SuccessModalProps) {
   const { isDarkColorScheme } = useColorScheme()
-  const themeInverted = isDarkColorScheme ? 'black' : 'white'
+  const themeInverted = isDarkColorScheme ? "black" : "white"
 
   const panResponder = React.useRef(
     PanResponder.create({
-      onMoveShouldSetPanResponder: (evt, gestureState) => {
+      onMoveShouldSetPanResponder: (_evt, gestureState) => {
         return gestureState.dy > 20
       },
-      onPanResponderMove: (evt, gestureState) => {
+      onPanResponderMove: (_evt, gestureState) => {
         if (gestureState.dy > 100) {
           onClose()
         }
-      }
+      },
     })
   ).current
 
@@ -35,14 +35,14 @@ export default function LoadingModal({
         <View
           style={[
             styles.container,
-            { backgroundColor: isDarkColorScheme ? '#CCCCCC' : '#333333' }
+            { backgroundColor: isDarkColorScheme ? "#CCCCCC" : "#333333" },
           ]}
         >
           <LottieView
             autoPlay
             loop={true}
             style={styles.lottie}
-            source={require('~/assets/json/loading.json')}
+            source={require("~/assets/json/loading.json")}
             speed={0.6}
           />
           <Text style={[styles.text, { color: themeInverted }]}>
@@ -57,24 +57,24 @@ export default function LoadingModal({
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end'
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "flex-end",
   },
   container: {
-    alignItems: 'center',
+    alignItems: "center",
     padding: 20,
     margin: 20,
-    borderRadius: 30
+    borderRadius: 30,
   },
   lottie: {
     width: 100,
-    height: 100
+    height: 100,
   },
   text: {
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 10,
     marginBottom: 20,
     fontSize: 18,
-    fontWeight: 'bold'
-  }
+    fontWeight: "bold",
+  },
 })

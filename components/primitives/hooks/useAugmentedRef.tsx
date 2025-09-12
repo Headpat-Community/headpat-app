@@ -1,4 +1,4 @@
-import * as React from 'react'
+import * as React from "react"
 
 interface AugmentRefProps<T> {
   ref: React.Ref<T>
@@ -9,21 +9,20 @@ interface AugmentRefProps<T> {
 export function useAugmentedRef<T>({
   ref,
   methods,
-  deps = []
+  deps = [],
 }: AugmentRefProps<T>) {
   const augmentedRef = React.useRef<T>(null)
   React.useImperativeHandle(
     ref,
     () => {
-      if (typeof augmentedRef === 'function' || !augmentedRef?.current) {
+      if (typeof augmentedRef === "function" || !augmentedRef.current) {
         return {} as T
       }
       return {
         ...augmentedRef.current,
-        ...methods
+        ...methods,
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     deps
   )
   return augmentedRef

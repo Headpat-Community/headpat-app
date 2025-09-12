@@ -1,7 +1,7 @@
 import {
   Client,
   Account,
-  Databases,
+  TablesDB,
   Functions,
   Storage,
   Locale
@@ -15,7 +15,7 @@ client
   .setPlatform('com.headpat.app') // Your application ID or bundle ID.
 
 export const account = new Account(client)
-export const databases = new Databases(client)
+export const databases = new TablesDB(client)
 export const functions = new Functions(client)
 export const storage = new Storage(client)
 export const locale = new Locale(client)

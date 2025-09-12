@@ -1,23 +1,23 @@
-import { VariantProps } from 'class-variance-authority'
-import type { LucideIcon } from 'lucide-react-native'
-import * as React from 'react'
-import { toggleTextVariants, toggleVariants } from '~/components/ui/toggle'
-import { TextClassContext } from '~/components/ui/text'
-import * as ToggleGroupPrimitive from '~/components/primitives/toggle-group'
-import { cn } from '~/lib/utils'
+import { VariantProps } from "class-variance-authority"
+import type { LucideIcon } from "lucide-react-native"
+import * as React from "react"
+import { toggleTextVariants, toggleVariants } from "~/components/ui/toggle"
+import { TextClassContext } from "~/components/ui/text"
+import * as ToggleGroupPrimitive from "~/components/primitives/toggle-group"
+import { cn } from "~/lib/utils"
 
 const ToggleGroupContext = React.createContext<VariantProps<
   typeof toggleVariants
 > | null>(null)
 
 const ToggleGroup = React.forwardRef<
-  React.ElementRef<typeof ToggleGroupPrimitive.Root>,
+  React.ComponentRef<typeof ToggleGroupPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Root> &
     VariantProps<typeof toggleVariants>
 >(({ className, variant, size, children, ...props }, ref) => (
   <ToggleGroupPrimitive.Root
     ref={ref}
-    className={cn('flex flex-row items-center justify-center gap-1', className)}
+    className={cn("flex flex-row items-center justify-center gap-1", className)}
     {...props}
   >
     <ToggleGroupContext.Provider value={{ variant, size }}>
@@ -32,14 +32,14 @@ function useToggleGroupContext() {
   const context = React.useContext(ToggleGroupContext)
   if (context === null) {
     throw new Error(
-      'ToggleGroup compound components cannot be rendered outside the ToggleGroup component'
+      "ToggleGroup compound components cannot be rendered outside the ToggleGroup component"
     )
   }
   return context
 }
 
 const ToggleGroupItem = React.forwardRef<
-  React.ElementRef<typeof ToggleGroupPrimitive.Item>,
+  React.ComponentRef<typeof ToggleGroupPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Item> &
     VariantProps<typeof toggleVariants>
 >(({ className, children, variant, size, ...props }, ref) => {
@@ -51,20 +51,20 @@ const ToggleGroupItem = React.forwardRef<
       value={cn(
         toggleTextVariants({ variant, size }),
         ToggleGroupPrimitive.utils.getIsSelected(value, props.value)
-          ? 'text-accent-foreground'
-          : 'web:group-hover:text-muted-foreground'
+          ? "text-accent-foreground"
+          : "web:group-hover:text-muted-foreground"
       )}
     >
       <ToggleGroupPrimitive.Item
         ref={ref}
         className={cn(
           toggleVariants({
-            variant: context.variant || variant,
-            size: context.size || size
+            variant: context.variant ?? variant,
+            size: context.size ?? size,
           }),
-          props.disabled && 'web:pointer-events-none opacity-50',
+          props.disabled && "opacity-50 web:pointer-events-none",
           ToggleGroupPrimitive.utils.getIsSelected(value, props.value) &&
-            'bg-accent',
+            "bg-accent",
           className
         )}
         {...props}

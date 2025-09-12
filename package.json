@@ -78,18 +78,14 @@
     "@types/react": "~19.0.14",
     "@types/react-native-htmlview": "^0.16.6",
     "@types/sanitize-html": "^2.16.0",
+    "@typescript-eslint/eslint-plugin": "^8.43.0",
     "eslint": "^9.35.0",
+    "prettier-plugin-tailwindcss": "^0.6.14",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.8.3"
   },
   "main": "expo-router/entry",
   "name": "headpat-app",
-  "prettier": {
-    "semi": false,
-    "singleQuote": true,
-    "tabWidth": 2,
-    "trailingComma": "none"
-  },
   "private": true,
   "scripts": {
     "android": "expo run:android",

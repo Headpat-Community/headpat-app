@@ -1,6 +1,6 @@
-import * as AccordionPrimitive from '~/components/primitives/accordion'
-import * as React from 'react'
-import { Platform, Pressable, View } from 'react-native'
+import * as AccordionPrimitive from "~/components/primitives/accordion"
+import * as React from "react"
+import { Platform, Pressable, View } from "react-native"
 import Animated, {
   Extrapolation,
   FadeIn,
@@ -10,14 +10,14 @@ import Animated, {
   interpolate,
   useAnimatedStyle,
   useDerivedValue,
-  withTiming
-} from 'react-native-reanimated'
-import { cn } from '~/lib/utils'
-import { ChevronDown } from '~/components/Icons'
-import { TextClassContext } from '~/components/ui/text'
+  withTiming,
+} from "react-native-reanimated"
+import { cn } from "~/lib/utils"
+import { ChevronDown } from "~/components/Icons"
+import { TextClassContext } from "~/components/ui/text"
 
 const Accordion = React.forwardRef<
-  React.ElementRef<typeof AccordionPrimitive.Root>,
+  React.ComponentRef<typeof AccordionPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Root>
 >(({ children, ...props }, ref) => {
   return (
@@ -25,7 +25,7 @@ const Accordion = React.forwardRef<
       <AccordionPrimitive.Root
         ref={ref}
         {...props}
-        asChild={Platform.OS !== 'web'}
+        asChild={Platform.OS !== "web"}
       >
         <Animated.View layout={LinearTransition.duration(200)}>
           {children}
@@ -38,17 +38,17 @@ const Accordion = React.forwardRef<
 Accordion.displayName = AccordionPrimitive.Root.displayName
 
 const AccordionItem = React.forwardRef<
-  React.ElementRef<typeof AccordionPrimitive.Item>,
+  React.ComponentRef<typeof AccordionPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item>
 >(({ className, value, ...props }, ref) => {
   return (
     <Animated.View
-      className={'overflow-hidden'}
+      className={"overflow-hidden"}
       layout={LinearTransition.duration(200)}
     >
       <AccordionPrimitive.Item
         ref={ref}
-        className={cn('border-b border-border', className)}
+        className={cn("border-b border-border", className)}
         value={value}
         {...props}
       />
@@ -57,10 +57,10 @@ const AccordionItem = React.forwardRef<
 })
 AccordionItem.displayName = AccordionPrimitive.Item.displayName
 
-const Trigger = Platform.OS === 'web' ? View : Pressable
+const Trigger = Platform.OS === "web" ? View : Pressable
 
 const AccordionTrigger = React.forwardRef<
-  React.ElementRef<typeof Pressable>,
+  React.ComponentRef<typeof Pressable>,
   React.ComponentPropsWithoutRef<typeof Pressable>
 >(({ className, children, ...props }, ref) => {
   const { isExpanded } = AccordionPrimitive.useItemContext()
@@ -72,7 +72,7 @@ const AccordionTrigger = React.forwardRef<
   )
   const chevronStyle = useAnimatedStyle(() => ({
     transform: [{ rotate: `${progress.value * 180}deg` }],
-    opacity: interpolate(progress.value, [0, 1], [1, 0.8], Extrapolation.CLAMP)
+    opacity: interpolate(progress.value, [0, 1], [1, 0.8], Extrapolation.CLAMP),
   }))
 
   return (
@@ -81,14 +81,13 @@ const AccordionTrigger = React.forwardRef<
         <AccordionPrimitive.Trigger ref={ref} {...props} asChild>
           <Trigger
             className={cn(
-              'flex flex-row web:flex-1 items-center justify-between py-4 web:transition-all group web:focus-visible:outline-none web:focus-visible:ring-1 web:focus-visible:ring-muted-foreground',
+              "group flex flex-row items-center justify-between py-4 web:flex-1 web:transition-all web:focus-visible:outline-none web:focus-visible:ring-1 web:focus-visible:ring-muted-foreground",
               className
             )}
           >
-            {/* @ts-ignore */}
             <>{children}</>
             <Animated.View style={chevronStyle}>
-              <ChevronDown size={18} className={'text-foreground shrink-0'} />
+              <ChevronDown size={18} className={"shrink-0 text-foreground"} />
             </Animated.View>
           </Trigger>
         </AccordionPrimitive.Trigger>
@@ -99,7 +98,7 @@ const AccordionTrigger = React.forwardRef<
 AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName
 
 const AccordionContent = React.forwardRef<
-  React.ElementRef<typeof AccordionPrimitive.Content>,
+  React.ComponentRef<typeof AccordionPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>
 >(({ className, children, ...props }, ref) => {
   const { isExpanded } = AccordionPrimitive.useItemContext()
@@ -107,13 +106,13 @@ const AccordionContent = React.forwardRef<
     <TextClassContext.Provider value="native:text-lg">
       <AccordionPrimitive.Content
         className={cn(
-          'overflow-hidden text-sm web:transition-all',
-          isExpanded ? 'web:animate-accordion-down' : 'web:animate-accordion-up'
+          "overflow-hidden text-sm web:transition-all",
+          isExpanded ? "web:animate-accordion-down" : "web:animate-accordion-up"
         )}
         ref={ref}
         {...props}
       >
-        <InnerContent className={cn('pb-4', className)}>
+        <InnerContent className={cn("pb-4", className)}>
           {children}
         </InnerContent>
       </AccordionPrimitive.Content>
@@ -123,19 +122,19 @@ const AccordionContent = React.forwardRef<
 
 function InnerContent({
   children,
-  className
+  className,
 }: {
   children: React.ReactNode
   className?: string
 }) {
-  if (Platform.OS === 'web') {
-    return <View className={cn('pb-4', className)}>{children}</View>
+  if (Platform.OS === "web") {
+    return <View className={cn("pb-4", className)}>{children}</View>
   }
   return (
     <Animated.View
       entering={FadeIn}
       exiting={FadeOutUp.duration(200)}
-      className={cn('pb-4', className)}
+      className={cn("pb-4", className)}
     >
       {children}
     </Animated.View>

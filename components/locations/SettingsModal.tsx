@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -6,25 +6,31 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle
-} from '~/components/ui/alert-dialog'
-import { View } from 'react-native'
-import { Label } from '~/components/ui/label'
-import { Text } from '~/components/ui/text'
-import { Input } from '~/components/ui/input'
-import { databases } from '~/lib/appwrite-client'
-import { Switch } from '~/components/ui/switch'
-import { Separator } from '~/components/ui/separator'
-import { i18n } from '~/components/system/i18n'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useAlertModal } from '~/components/contexts/AlertModalProvider'
-import * as Sentry from '@sentry/react-native'
+  AlertDialogTitle,
+} from "~/components/ui/alert-dialog"
+import { View } from "react-native"
+import { Label } from "~/components/ui/label"
+import { Text } from "~/components/ui/text"
+import { Input } from "~/components/ui/input"
+import { databases } from "~/lib/appwrite-client"
+import { Switch } from "~/components/ui/switch"
+import { Separator } from "~/components/ui/separator"
+import { i18n } from "~/components/system/i18n"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useAlertModal } from "~/components/contexts/AlertModalProvider"
+import * as Sentry from "@sentry/react-native"
+import { AccountType, LocationDocumentsType } from "~/lib/types/collections"
 
 export default function SettingsModal({
   openModal,
   setOpenModal,
   userStatus,
-  current
+  current,
+}: {
+  openModal: boolean
+  setOpenModal: (openModal: boolean) => void
+  userStatus: LocationDocumentsType
+  current: AccountType
 }) {
   const queryClient = useQueryClient()
   const { showAlert } = useAlertModal()
@@ -40,25 +46,30 @@ export default function SettingsModal({
 
   const updateMutation = useMutation({
     mutationFn: async (data: { status: string; statusColor: string }) => {
-      if (!current?.$id) throw new Error('No user ID')
-      await databases.updateDocument('hp_db', 'locations', current.$id, data)
+      if (!current.$id) throw new Error("No user ID")
+      await databases.updateRow({
+        databaseId: "hp_db",
+        tableId: "locations",
+        rowId: current.$id,
+        data: data,
+      })
       return data
     },
     onSuccess: () => {
-      showAlert('SUCCESS', 'Status updated successfully')
-      queryClient.invalidateQueries({ queryKey: ['locations'] })
+      showAlert("SUCCESS", "Status updated successfully")
+      void queryClient.invalidateQueries({ queryKey: ["locations"] })
     },
     onError: (error) => {
-      showAlert('FAILED', 'Failed to update status')
+      showAlert("FAILED", "Failed to update status")
       Sentry.captureException(error)
-    }
+    },
   })
 
   const saveStatus = async () => {
     try {
       await updateMutation.mutateAsync({
-        status: currentStatus.status,
-        statusColor: currentStatus.statusColor
+        status: currentStatus.status ?? "",
+        statusColor: currentStatus.statusColor ?? "",
       })
       setOpenModal(false)
     } catch (e) {
@@ -71,22 +82,22 @@ export default function SettingsModal({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            {i18n.t('location.map.status.title')}
+            {i18n.t("location.map.status.title")}
           </AlertDialogTitle>
           <AlertDialogDescription>
-            {i18n.t('location.map.status.description')}
+            {i18n.t("location.map.status.description")}
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <View className={'gap-4'}>
+        <View className={"gap-4"}>
           <View className="gap-2">
-            <Label nativeID={'status'}>Status</Label>
+            <Label nativeID={"status"}>Status</Label>
             <Input
-              nativeID={'status'}
-              value={currentStatus?.status}
+              nativeID={"status"}
+              value={currentStatus.status ?? ""}
               onChangeText={(text) =>
                 setCurrentStatus({
                   ...currentStatus,
-                  status: text
+                  status: text,
                 })
               }
               maxLength={40}
@@ -95,34 +106,34 @@ export default function SettingsModal({
           <Separator />
           <View className="flex-row items-center gap-2">
             <Switch
-              nativeID={'doNotDisturb'}
-              checked={currentStatus?.statusColor === 'red'}
+              nativeID={"doNotDisturb"}
+              checked={currentStatus.statusColor === "red"}
               onCheckedChange={() =>
                 setCurrentStatus((prev) => ({
                   ...prev,
-                  statusColor: prev.statusColor === 'red' ? 'green' : 'red'
+                  statusColor: prev.statusColor === "red" ? "green" : "red",
                 }))
               }
             />
             <Label
-              nativeID={'doNotDisturb'}
+              nativeID={"doNotDisturb"}
               onPress={() => {
                 setCurrentStatus((prev) => ({
                   ...prev,
-                  statusColor: prev.statusColor === 'red' ? 'green' : 'red'
+                  statusColor: prev.statusColor === "red" ? "green" : "red",
                 }))
               }}
             >
-              {i18n.t('location.map.status.doNotDisturb')}
+              {i18n.t("location.map.status.doNotDisturb")}
             </Label>
           </View>
         </View>
         <AlertDialogFooter>
           <AlertDialogAction
-            onPress={saveStatus}
+            onPress={() => void saveStatus()}
             disabled={updateMutation.isPending}
           >
-            <Text>{i18n.t('location.map.status.apply')}</Text>
+            <Text>{i18n.t("location.map.status.apply")}</Text>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -1,17 +1,17 @@
-import React, { useState } from 'react'
-import { View, TouchableOpacity } from 'react-native'
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
-import { Text } from '~/components/ui/text'
-import { Account, UserData } from '~/lib/types/collections'
-import { i18n } from '~/components/system/i18n'
-import AttendeesModal from '~/components/events/AttendeesModal'
+import React, { useState } from "react"
+import { View, TouchableOpacity } from "react-native"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { Text } from "~/components/ui/text"
+import { AccountPrefs, UserDataDocumentsType } from "~/lib/types/collections"
+import { i18n } from "~/components/system/i18n"
+import AttendeesModal from "~/components/events/AttendeesModal"
 
 interface AttendeesAvatarsProps {
-  attendees: UserData.UserDataDocumentsType[]
+  attendees: UserDataDocumentsType[]
   showFriendsOnly?: boolean
   maxVisible?: number
   fallbackCount?: number
-  current?: Account.AccountPrefs
+  current?: AccountPrefs
 }
 
 const AttendeesAvatars: React.FC<AttendeesAvatarsProps> = ({
@@ -19,23 +19,25 @@ const AttendeesAvatars: React.FC<AttendeesAvatarsProps> = ({
   showFriendsOnly = true,
   maxVisible = 10,
   fallbackCount,
-  current
+  current,
 }) => {
   const [modalOpen, setModalOpen] = useState(false)
 
   const getUserAvatar = (avatarId: string | null) => {
     // For mock data or null, return null to use fallback
-    if (!avatarId || avatarId === 'mock-avatar') {
+    if (!avatarId || avatarId === "mock-avatar") {
       return null
     }
     return `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/avatars/files/${avatarId}/preview?project=hp-main&width=100&height=100`
   }
 
   // If no attendees data but we have a fallback count, show just the count
-  if (!attendees?.length && !fallbackCount) return null
+  if (!attendees.length && !fallbackCount) return null
 
-  const hasAttendeesData = attendees?.length > 0
-  const displayCount = hasAttendeesData ? attendees.length : fallbackCount || 0
+  const hasAttendeesData = attendees.length > 0
+  const displayCount = hasAttendeesData
+    ? attendees.length
+    : (fallbackCount ?? 0)
 
   const visibleAttendees = attendees.slice(0, maxVisible)
   const remainingCount = Math.max(0, attendees.length - maxVisible)
@@ -56,21 +58,21 @@ const AttendeesAvatars: React.FC<AttendeesAvatarsProps> = ({
                   className="rounded-full border-2 border-white"
                   style={{
                     marginLeft: index > 0 ? -12 : 0,
-                    zIndex: visibleAttendees.length - index
+                    zIndex: visibleAttendees.length - index,
                   }}
                 >
                   <Avatar
-                    alt={attendee.displayName || 'User'}
-                    className="w-8 h-8"
+                    alt={attendee.displayName || "User"}
+                    className="h-8 w-8"
                   >
                     <AvatarImage
                       source={{
-                        uri: getUserAvatar(attendee.avatarId) || 'invalid-uri'
+                        uri: getUserAvatar(attendee.avatarId) ?? "invalid-uri",
                       }}
                     />
                     <AvatarFallback>
                       <Text className="text-xs">
-                        {attendee.displayName?.charAt(0) || 'U'}
+                        {attendee.displayName.charAt(0) || "U"}
                       </Text>
                     </AvatarFallback>
                   </Avatar>
@@ -79,10 +81,10 @@ const AttendeesAvatars: React.FC<AttendeesAvatarsProps> = ({
 
               {remainingCount > 0 && (
                 <View
-                  className="rounded-full bg-gray-200 border-2 border-white flex items-center justify-center w-8 h-8"
+                  className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-gray-200"
                   style={{
                     marginLeft: -12,
-                    zIndex: 0
+                    zIndex: 0,
                   }}
                 >
                   <Text className="text-xs font-semibold text-gray-600">
@@ -97,7 +99,7 @@ const AttendeesAvatars: React.FC<AttendeesAvatarsProps> = ({
         <View className="ml-3">
           <Text className="text-sm text-gray-500">
             {current?.$id
-              ? `${displayCount} ${displayCount === 1 ? i18n.t('events.attendees.friendAttending') : i18n.t('events.attendees.friendsAttending')}`
+              ? `${displayCount} ${displayCount === 1 ? i18n.t("events.attendees.friendAttending") : i18n.t("events.attendees.friendsAttending")}`
               : null}
           </Text>
         </View>

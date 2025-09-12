@@ -1,5 +1,5 @@
-import { RefreshControl, ScrollView, View } from 'react-native'
-import { CardDescription, CardFooter } from '~/components/ui/card'
+import { RefreshControl, ScrollView, View } from "react-native"
+import { CardDescription, CardFooter } from "~/components/ui/card"
 import {
   CalendarClockIcon,
   ClockIcon,
@@ -8,28 +8,28 @@ import {
   MapPinnedIcon,
   MegaphoneIcon,
   UserIcon,
-  BellIcon
-} from 'lucide-react-native'
-import { useColorScheme } from '~/lib/useColorScheme'
-import { useUser } from '~/components/contexts/UserContext'
-import { Events, UserData } from '~/lib/types/collections'
-import { databases, functions } from '~/lib/appwrite-client'
-import { H4 } from '~/components/ui/typography'
-import { ExecutionMethod } from 'react-native-appwrite'
-import { calculateTimeLeftEvent } from '~/components/calculateTimeLeft'
-import { Image } from 'expo-image'
-import { useFocusEffect } from '@react-navigation/core'
-import { captureException } from '@sentry/react-native'
-import { Skeleton } from '~/components/ui/skeleton'
-import { i18n } from '~/components/system/i18n'
-import React from 'react'
-import { HomeCard } from '~/components/home/home-card'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+  BellIcon,
+} from "lucide-react-native"
+import { useColorScheme } from "~/lib/useColorScheme"
+import { useUser } from "~/components/contexts/UserContext"
+import { EventsDocumentsType } from "~/lib/types/collections"
+import { databases, functions } from "~/lib/appwrite-client"
+import { H4 } from "~/components/ui/typography"
+import { ExecutionMethod } from "react-native-appwrite"
+import { calculateTimeLeftEvent } from "~/components/calculateTimeLeft"
+import { Image } from "expo-image"
+import { useFocusEffect } from "@react-navigation/core"
+import { captureException } from "@sentry/react-native"
+import { Skeleton } from "~/components/ui/skeleton"
+import { i18n } from "~/components/system/i18n"
+import React from "react"
+import { HomeCard } from "~/components/home/home-card"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 
 export default function HomeView() {
   const [refreshing, setRefreshing] = React.useState<boolean>(false)
   const { isDarkColorScheme } = useColorScheme()
-  const theme = isDarkColorScheme ? 'white' : 'black'
+  const theme = isDarkColorScheme ? "white" : "black"
   const { current, isLoadingUser } = useUser()
   const queryClient = useQueryClient()
 
@@ -39,20 +39,17 @@ export default function HomeView() {
   }
 
   const { data: nextEvent } = useQuery({
-    queryKey: ['nextEvent'],
+    queryKey: ["nextEvent"],
     queryFn: async () => {
       try {
-        const data = await functions.createExecution(
-          'event-endpoints',
-          '',
-          false,
-          '/event/next',
-          ExecutionMethod.GET
-        )
-        const response: Events.EventsDocumentsType = JSON.parse(
-          data.responseBody
-        )
-        return response?.title ? response : null
+        const data = await functions.createExecution({
+          functionId: "event-endpoints",
+          async: false,
+          xpath: "/event/next",
+          method: ExecutionMethod.GET,
+        })
+        const response: EventsDocumentsType = JSON.parse(data.responseBody)
+        return response.title ? response : null
       } catch (error) {
         console.error(error)
         captureException(error)
@@ -60,26 +57,26 @@ export default function HomeView() {
       }
     },
     enabled: true,
-    staleTime: 1000 * 60 * 5 // 2 minutes
+    staleTime: 1000 * 60 * 5, // 2 minutes
   })
 
   const { data: userData } = useQuery({
-    queryKey: ['userData', current?.$id],
+    queryKey: ["userData", current?.$id],
     queryFn: async () => {
       if (!current?.$id) return null
       try {
-        return await databases.getDocument(
-          'hp_db',
-          'userdata',
-          `${current.$id}`
-        )
+        return await databases.getRow({
+          databaseId: "hp_db",
+          tableId: "userdata",
+          rowId: current.$id,
+        })
       } catch (error) {
         captureException(error)
         return null
       }
     },
     enabled: !!current?.$id,
-    staleTime: 1000 * 60 * 2 // 2 minutes
+    staleTime: 1000 * 60 * 2, // 2 minutes
   })
 
   const onRefresh = React.useCallback(async () => {
@@ -87,8 +84,8 @@ export default function HomeView() {
     try {
       // Invalidate and refetch both queries
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['nextEvent'] }),
-        queryClient.invalidateQueries({ queryKey: ['userData', current?.$id] })
+        queryClient.invalidateQueries({ queryKey: ["nextEvent"] }),
+        queryClient.invalidateQueries({ queryKey: ["userData", current?.$id] }),
       ])
     } finally {
       setRefreshing(false)
@@ -97,119 +94,122 @@ export default function HomeView() {
 
   useFocusEffect(
     React.useCallback(() => {
-      queryClient.invalidateQueries({ queryKey: ['nextEvent'] })
+      void queryClient.invalidateQueries({ queryKey: ["nextEvent"] })
     }, [queryClient])
   )
 
   return (
     <ScrollView
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={() => void onRefresh()}
+        />
       }
     >
-      <View className="justify-center items-center mb-4">
+      <View className="mb-4 items-center justify-center">
         {isLoadingUser ? (
-          <View className={'px-4 m-4 w-full flex flex-col items-center'}>
-            <Skeleton className="w-[100px] h-[100px] rounded-3xl mt-4" />
-            <Skeleton className="w-[150px] h-[20px] rounded mt-2" />
+          <View className={"m-4 flex w-full flex-col items-center px-4"}>
+            <Skeleton className="mt-4 h-[100px] w-[100px] rounded-3xl" />
+            <Skeleton className="mt-2 h-[20px] w-[150px] rounded" />
           </View>
         ) : current ? (
           <>
             <Image
               source={
-                getAvatarUrl(userData?.avatarId) ||
-                require('~/assets/pfp-placeholder.png')
+                getAvatarUrl(userData?.avatarId as string) ??
+                require("~/assets/pfp-placeholder.png")
               }
               style={{
                 width: 100,
                 height: 100,
                 borderRadius: 25,
-                marginTop: 20
+                marginTop: 20,
               }}
             />
             {userData?.displayName ? (
-              <H4 className={'mt-2'}>
-                {i18n.t('home.welcomeback')}, {userData?.displayName}
+              <H4 className={"mt-2"}>
+                {i18n.t("home.welcomeback")}, {userData.displayName}
               </H4>
             ) : (
-              <H4 className={'mt-2'}>{i18n.t('home.welcomeback')}</H4>
+              <H4 className={"mt-2"}>{i18n.t("home.welcomeback")}</H4>
             )}
           </>
         ) : (
-          <H4 className={'mt-10'}>{i18n.t('home.welcomenew')}</H4>
+          <H4 className={"mt-10"}>{i18n.t("home.welcomenew")}</H4>
         )}
 
         {current && (
           <HomeCard
-            title={i18n.t('screens.profile')}
-            description={i18n.t('home.profiledescription')}
+            title={i18n.t("screens.profile")}
+            description={i18n.t("home.profiledescription")}
             icon={UserIcon}
-            route={current ? `/user/${current.$id}` : '/login'}
+            route={`/user/${current.$id}`}
             theme={theme}
           />
         )}
 
         <HomeCard
-          title={i18n.t('screens.notifications')}
-          description={i18n.t('home.notificationsdescription')}
+          title={i18n.t("screens.notifications")}
+          description={i18n.t("home.notificationsdescription")}
           icon={BellIcon}
-          route={current ? '/notifications' : '/login'}
+          route={current ? "/notifications" : "/login"}
           theme={theme}
         />
 
         <HomeCard
-          title={i18n.t('screens.gallery')}
-          description={i18n.t('home.gallerydescription')}
+          title={i18n.t("screens.gallery")}
+          description={i18n.t("home.gallerydescription")}
           icon={LayoutDashboardIcon}
           route="/gallery/(stacks)/(list)/newest"
           theme={theme}
         />
 
         <HomeCard
-          title={i18n.t('screens.locations')}
-          description={i18n.t('home.locationsdescription')}
+          title={i18n.t("screens.locations")}
+          description={i18n.t("home.locationsdescription")}
           icon={MapPinnedIcon}
           route="/locations"
           theme={theme}
         />
 
         <HomeCard
-          title={i18n.t('screens.announcements')}
-          description={i18n.t('home.announcementsdescription')}
+          title={i18n.t("screens.announcements")}
+          description={i18n.t("home.announcementsdescription")}
           icon={MegaphoneIcon}
           route="/announcements"
           theme={theme}
         />
 
         <HomeCard
-          title={i18n.t('screens.events')}
-          description={i18n.t('home.eventsDescription')}
+          title={i18n.t("screens.events")}
+          description={i18n.t("home.eventsDescription")}
           icon={CalendarClockIcon}
           route="/events/(tabs)"
           theme={theme}
           showSeparator={!!nextEvent}
           additionalContent={
-            nextEvent && (
+            nextEvent ? (
               <>
-                <CardFooter className={'p-0 flex flex-wrap ml-7 mb-2'}>
+                <CardFooter className={"mb-2 ml-7 flex flex-wrap p-0"}>
                   <CardDescription>
-                    <ClockIcon size={12} color={theme} /> {nextEvent?.title} -{' '}
+                    <ClockIcon size={12} color={theme} /> {nextEvent.title} -{" "}
                     {calculateTimeLeftEvent(
-                      nextEvent?.date,
-                      nextEvent?.dateUntil
+                      nextEvent.date,
+                      nextEvent.dateUntil
                     )}
                   </CardDescription>
                 </CardFooter>
-                {nextEvent?.locationZoneMethod === 'virtual' && (
-                  <CardFooter className={'p-0 flex flex-wrap ml-7 mt-1 pb-2'}>
+                {nextEvent.locationZoneMethod === "virtual" && (
+                  <CardFooter className={"ml-7 mt-1 flex flex-wrap p-0 pb-2"}>
                     <CardDescription>
-                      <MapPinIcon size={12} color={theme} />{' '}
-                      {nextEvent?.location}
+                      <MapPinIcon size={12} color={theme} />{" "}
+                      {nextEvent.location}
                     </CardDescription>
                   </CardFooter>
                 )}
               </>
-            )
+            ) : null
           }
         />
       </View>

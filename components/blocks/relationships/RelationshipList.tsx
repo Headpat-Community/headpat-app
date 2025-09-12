@@ -1,22 +1,22 @@
-import { functions } from '~/lib/appwrite-client'
-import { ExecutionMethod } from 'react-native-appwrite'
-import { useUser } from '~/components/contexts/UserContext'
-import React, { useCallback, useMemo } from 'react'
-import { UserData } from '~/lib/types/collections'
-import * as Sentry from '@sentry/react-native'
-import UserItem from '~/components/user/UserItem'
-import { ScrollView, Text, View, RefreshControl } from 'react-native'
-import { H1, Muted } from '~/components/ui/typography'
-import { useAlertModal } from '~/components/contexts/AlertModalProvider'
-import { router } from 'expo-router'
-import { Skeleton } from '~/components/ui/skeleton'
-import { i18n } from '~/components/system/i18n'
-import { FlashList } from '@shopify/flash-list'
-import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
+import { functions } from "~/lib/appwrite-client"
+import { ExecutionMethod } from "react-native-appwrite"
+import { useUser } from "~/components/contexts/UserContext"
+import React, { useCallback, useMemo } from "react"
+import { UserDataDocumentsType } from "~/lib/types/collections"
+import * as Sentry from "@sentry/react-native"
+import UserItem from "~/components/user/UserItem"
+import { ScrollView, Text, View, RefreshControl } from "react-native"
+import { H1, Muted } from "~/components/ui/typography"
+import { useAlertModal } from "~/components/contexts/AlertModalProvider"
+import { router } from "expo-router"
+import { Skeleton } from "~/components/ui/skeleton"
+import { i18n } from "~/components/system/i18n"
+import { FlashList } from "@shopify/flash-list"
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query"
 
 const PAGE_SIZE = 100
 
-type RelationshipType = 'mutuals' | 'following' | 'followers'
+type RelationshipType = "mutuals" | "following" | "followers"
 
 interface RelationshipListProps {
   type: RelationshipType
@@ -27,7 +27,7 @@ interface RelationshipListProps {
 export default function RelationshipList({
   type,
   title,
-  emptyMessage
+  emptyMessage,
 }: RelationshipListProps) {
   const { showAlert } = useAlertModal()
   const { current } = useUser()
@@ -40,32 +40,30 @@ export default function RelationshipList({
     isFetchingNextPage,
     isRefetching,
     isLoading,
-    refetch
   } = useInfiniteQuery({
     queryKey: [type, current?.$id],
     queryFn: async ({ pageParam = 0 }) => {
       if (!current?.$id) {
-        showAlert('FAILED', 'You are not logged in.')
+        showAlert("FAILED", "You are not logged in.")
         router.back()
         return []
       }
 
       try {
         const endpoint =
-          type === 'mutuals'
+          type === "mutuals"
             ? `/user/mutuals?limit=${PAGE_SIZE}&offset=${pageParam}`
-            : `/user/${type}?userId=${current?.$id}&limit=${PAGE_SIZE}&offset=${pageParam}`
+            : `/user/${type}?userId=${current.$id}&limit=${PAGE_SIZE}&offset=${pageParam}`
 
-        const data = await functions.createExecution(
-          'user-endpoints',
-          '',
-          false,
-          endpoint,
-          ExecutionMethod.GET
-        )
-        return JSON.parse(data.responseBody) as UserData.UserDataDocumentsType[]
+        const data = await functions.createExecution({
+          functionId: "user-endpoints",
+          async: false,
+          xpath: endpoint,
+          method: ExecutionMethod.GET,
+        })
+        return JSON.parse(data.responseBody) as UserDataDocumentsType[]
       } catch (error) {
-        showAlert('FAILED', 'Failed to fetch users. Please try again later.')
+        showAlert("FAILED", "Failed to fetch users. Please try again later.")
         Sentry.captureException(error)
         return []
       }
@@ -77,20 +75,18 @@ export default function RelationshipList({
     },
     initialPageParam: 0,
     enabled: !!current?.$id,
-    staleTime: 1000 * 60 * 5 // 5 minutes
+    staleTime: 1000 * 60 * 5, // 5 minutes
   })
 
   const users = data?.pages.flat() ?? []
 
   const renderItem = useCallback(
-    ({ item }: { item: UserData.UserDataDocumentsType }) => (
-      <UserItem user={item} />
-    ),
+    ({ item }: { item: UserDataDocumentsType }) => <UserItem user={item} />,
     []
   )
 
   const keyExtractor = useCallback(
-    (item: UserData.UserDataDocumentsType) => item.$id,
+    (item: UserDataDocumentsType) => item.$id,
     []
   )
 
@@ -103,9 +99,9 @@ export default function RelationshipList({
           <View
             key={index}
             style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              margin: 10
+              flexDirection: "row",
+              justifyContent: "space-between",
+              margin: 10,
             }}
           >
             {[...Array(3)].map((_, i) => (
@@ -113,10 +109,10 @@ export default function RelationshipList({
                 key={i}
                 style={{
                   width: 100,
-                  height: 100
+                  height: 100,
                 }}
               >
-                <Skeleton className={'w-full h-full rounded-3xl'} />
+                <Skeleton className={"h-full w-full rounded-3xl"} />
               </View>
             ))}
           </View>
@@ -125,25 +121,25 @@ export default function RelationshipList({
     )
   }
 
-  if (!isLoading && users.length === 0) {
+  if (users.length === 0) {
     return (
       <ScrollView
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
             onRefresh={() => {
-              queryClient.invalidateQueries({
-                queryKey: [type, current?.$id]
+              void queryClient.invalidateQueries({
+                queryKey: [type, current?.$id],
               })
             }}
           />
         }
       >
-        <View className={'flex-1 justify-center items-center'}>
-          <View className={'p-4 native:pb-24 max-w-md gap-6'}>
-            <View className={'gap-1'}>
-              <H1 className={'text-foreground text-center'}>{title}</H1>
-              <Muted className={'text-base text-center'}>{emptyMessage}</Muted>
+        <View className={"flex-1 items-center justify-center"}>
+          <View className={"native:pb-24 max-w-md gap-6 p-4"}>
+            <View className={"gap-1"}>
+              <H1 className={"text-center text-foreground"}>{title}</H1>
+              <Muted className={"text-center text-base"}>{emptyMessage}</Muted>
             </View>
           </View>
         </View>
@@ -158,14 +154,14 @@ export default function RelationshipList({
         <RefreshControl
           refreshing={isRefetching}
           onRefresh={() => {
-            queryClient.invalidateQueries({
-              queryKey: [type, current?.$id]
+            void queryClient.invalidateQueries({
+              queryKey: [type, current?.$id],
             })
           }}
         />
       }
     >
-      <View style={{ flex: 1, minHeight: '100%' }}>
+      <View style={{ flex: 1, minHeight: "100%" }}>
         <FlashList
           data={users}
           renderItem={renderItem}
@@ -175,13 +171,13 @@ export default function RelationshipList({
           contentContainerStyle={{ padding: 8 }}
           onEndReached={() => {
             if (hasNextPage && !isFetchingNextPage) {
-              fetchNextPage()
+              void fetchNextPage()
             }
           }}
           onEndReachedThreshold={0.5}
           ListFooterComponent={
             isFetchingNextPage && hasNextPage ? (
-              <Text>{i18n.t('main.loading')}</Text>
+              <Text>{i18n.t("main.loading")}</Text>
             ) : null
           }
         />

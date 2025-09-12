@@ -1,32 +1,32 @@
-import * as React from 'react'
+import * as React from "react"
 import {
   BackHandler,
   Pressable,
   View,
   type GestureResponderEvent,
   type LayoutChangeEvent,
-  type LayoutRectangle
-} from 'react-native'
+  type LayoutRectangle,
+} from "react-native"
 import {
   useControllableState,
   useRelativePosition,
-  type LayoutPosition
-} from '~/components/primitives/hooks'
-import { Portal as RNPPortal } from '~/components/primitives/portal'
-import * as Slot from '~/components/primitives/slot'
+  type LayoutPosition,
+} from "~/components/primitives/hooks"
+import { Portal as RNPPortal } from "~/components/primitives/portal"
+import * as Slot from "~/components/primitives/slot"
 import type {
   PositionedContentProps,
   PressableRef,
   SlottablePressableProps,
   SlottableViewProps,
-  ViewRef
-} from '~/components/primitives/types'
+  ViewRef,
+} from "~/components/primitives/types"
 import type {
   RootContext,
   TooltipOverlayProps,
   TooltipPortalProps,
-  TooltipRootProps
-} from './types'
+  TooltipRootProps,
+} from "./types"
 
 interface IRootContext extends RootContext {
   triggerPosition: LayoutPosition | null
@@ -36,7 +36,6 @@ interface IRootContext extends RootContext {
   nativeID: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
 const RootContext = React.createContext<IRootContext | null>(null)
 
 const Root = React.forwardRef<ViewRef, SlottableViewProps & TooltipRootProps>(
@@ -62,7 +61,7 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & TooltipRootProps>(
     const [open = false, onOpenChange] = useControllableState({
       prop: openProp,
       defaultProp: defaultOpen,
-      onChange: onOpenChangeProp
+      onChange: onOpenChangeProp,
     })
 
     const Component = asChild ? Slot.View : View
@@ -75,7 +74,7 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & TooltipRootProps>(
           nativeID,
           setContentLayout,
           setTriggerPosition,
-          triggerPosition
+          triggerPosition,
         }}
       >
         <Component ref={ref} {...viewProps} />
@@ -84,13 +83,13 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & TooltipRootProps>(
   }
 )
 
-Root.displayName = 'RootNativeTooltip'
+Root.displayName = "RootNativeTooltip"
 
 function useTooltipContext() {
   const context = React.useContext(RootContext)
   if (!context) {
     throw new Error(
-      'Tooltip compound components cannot be rendered outside the Tooltip component'
+      "Tooltip compound components cannot be rendered outside the Tooltip component"
     )
   }
   return context
@@ -101,17 +100,12 @@ const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
     const triggerRef = React.useRef<View>(null)
     const { open, onOpenChange, setTriggerPosition } = useTooltipContext()
 
-    React.useImperativeHandle(
-      ref,
-      () => {
-        if (!triggerRef.current) {
-          return new View({})
-        }
-        return triggerRef.current
-      },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [triggerRef.current]
-    )
+    React.useImperativeHandle(ref, () => {
+      if (!triggerRef.current) {
+        return new View({})
+      }
+      return triggerRef.current
+    }, [triggerRef.current])
 
     function onPress(ev: GestureResponderEvent) {
       if (disabled) return
@@ -137,7 +131,7 @@ const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
   }
 )
 
-Trigger.displayName = 'TriggerNativeTooltip'
+Trigger.displayName = "TriggerNativeTooltip"
 
 /**
  * @warning when using a custom `<PortalHost />`, you might have to adjust the Content's sideOffset to account for nav elements like headers.
@@ -199,7 +193,7 @@ const Overlay = React.forwardRef<
   }
 )
 
-Overlay.displayName = 'OverlayNativeTooltip'
+Overlay.displayName = "OverlayNativeTooltip"
 
 /**
  * @info `position`, `top`, `left`, and `maxWidth` style properties are controlled internally. Opt out of this behavior on native by setting `disablePositioningStyle` to `true`.
@@ -212,8 +206,8 @@ const Content = React.forwardRef<
     {
       asChild = false,
       forceMount,
-      align = 'center',
-      side = 'top',
+      align = "center",
+      side = "top",
       sideOffset = 0,
       alignOffset = 0,
       avoidCollisions = true,
@@ -232,12 +226,12 @@ const Content = React.forwardRef<
       contentLayout,
       setContentLayout,
       setTriggerPosition,
-      triggerPosition
+      triggerPosition,
     } = useTooltipContext()
 
     React.useEffect(() => {
       const backHandler = BackHandler.addEventListener(
-        'hardwareBackPress',
+        "hardwareBackPress",
         () => {
           setTriggerPosition(null)
           setContentLayout(null)
@@ -250,7 +244,6 @@ const Content = React.forwardRef<
         setContentLayout(null)
         backHandler.remove()
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const positionStyle = useRelativePosition({
@@ -262,7 +255,7 @@ const Content = React.forwardRef<
       insets,
       sideOffset,
       side,
-      disablePositioningStyle
+      disablePositioningStyle,
     })
 
     function onLayout(event: LayoutChangeEvent) {
@@ -292,7 +285,7 @@ const Content = React.forwardRef<
   }
 )
 
-Content.displayName = 'ContentNativeTooltip'
+Content.displayName = "ContentNativeTooltip"
 
 export { Content, Overlay, Portal, Root, Trigger }
 

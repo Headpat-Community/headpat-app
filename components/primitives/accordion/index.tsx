@@ -1,19 +1,19 @@
-import * as React from 'react'
-import { Pressable, View, type GestureResponderEvent } from 'react-native'
-import * as Slot from '~/components/primitives/slot'
+import * as React from "react"
+import { Pressable, View, type GestureResponderEvent } from "react-native"
+import * as Slot from "~/components/primitives/slot"
 import type {
   PressableRef,
   SlottablePressableProps,
   SlottableViewProps,
-  ViewRef
-} from '~/components/primitives/types'
+  ViewRef,
+} from "~/components/primitives/types"
 import type {
   AccordionContentProps,
   AccordionItemProps,
   AccordionRootProps,
-  RootContext
-} from './types'
-import { useControllableState } from '~/components/primitives/hooks'
+  RootContext,
+} from "./types"
+import { useControllableState } from "~/components/primitives/hooks"
 
 const AccordionContext = React.createContext<RootContext | null>(null)
 
@@ -31,13 +31,13 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & AccordionRootProps>(
     },
     ref
   ) => {
-    const [value = type === 'multiple' ? [] : undefined, onValueChange] =
+    const [value = type === "multiple" ? [] : undefined, onValueChange] =
       useControllableState<(string | undefined) | string[]>({
         prop: valueProp,
         defaultProp: defaultValue,
         onChange: onValueChangeProps as (
           state: string | string[] | undefined
-        ) => void
+        ) => void,
       })
 
     const Component = asChild ? Slot.View : View
@@ -48,7 +48,7 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & AccordionRootProps>(
           disabled,
           collapsible,
           value,
-          onValueChange
+          onValueChange,
         }}
       >
         <Component ref={ref} {...viewProps} />
@@ -57,13 +57,13 @@ const Root = React.forwardRef<ViewRef, SlottableViewProps & AccordionRootProps>(
   }
 )
 
-Root.displayName = 'RootNativeAccordion'
+Root.displayName = "RootNativeAccordion"
 
 function useRootContext() {
   const context = React.useContext(AccordionContext)
   if (!context) {
     throw new Error(
-      'Accordion compound components cannot be rendered outside the Accordion component'
+      "Accordion compound components cannot be rendered outside the Accordion component"
     )
   }
   return context
@@ -89,7 +89,7 @@ const Item = React.forwardRef<ViewRef, SlottableViewProps & AccordionItemProps>(
           value,
           disabled,
           nativeID,
-          isExpanded: isItemExpanded(rootValue, value)
+          isExpanded: isItemExpanded(rootValue, value),
         }}
       >
         <Component ref={ref} {...viewProps} />
@@ -98,13 +98,13 @@ const Item = React.forwardRef<ViewRef, SlottableViewProps & AccordionItemProps>(
   }
 )
 
-Item.displayName = 'ItemNativeAccordion'
+Item.displayName = "ItemNativeAccordion"
 
 function useItemContext() {
   const context = React.useContext(AccordionItemContext)
   if (!context) {
     throw new Error(
-      'AccordionItem compound components cannot be rendered outside the AccordionItem component'
+      "AccordionItem compound components cannot be rendered outside the AccordionItem component"
     )
   }
   return context
@@ -128,7 +128,7 @@ const Header = React.forwardRef<ViewRef, SlottableViewProps>(
   }
 )
 
-Header.displayName = 'HeaderNativeAccordion'
+Header.displayName = "HeaderNativeAccordion"
 
 const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
   (
@@ -140,18 +140,18 @@ const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
       type,
       onValueChange,
       value: rootValue,
-      collapsible
+      collapsible,
     } = useRootContext()
     const {
       nativeID,
       disabled: itemDisabled,
       value,
-      isExpanded
+      isExpanded,
     } = useItemContext()
 
     function onPress(ev: GestureResponderEvent) {
       if (rootDisabled || itemDisabled) return
-      if (type === 'single') {
+      if (type === "single") {
         const newValue = collapsible
           ? value === rootValue
             ? undefined
@@ -159,20 +159,19 @@ const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
           : value
         onValueChange(newValue)
       }
-      if (type === 'multiple') {
+      if (type === "multiple") {
         const rootToArray = toStringArray(rootValue)
         const newValue = collapsible
           ? rootToArray.includes(value)
             ? rootToArray.filter((val) => val !== value)
             : rootToArray.concat(value)
           : [...new Set(rootToArray.concat(value))]
-        // @ts-ignore - `newValue` is of type `string[]` which is OK
-        onValueChange(newValue)
+        onValueChange(newValue as unknown as string)
       }
       onPressProp?.(ev)
     }
 
-    const isDisabled = disabledProp || rootDisabled || itemDisabled
+    const isDisabled = disabledProp ?? rootDisabled ?? itemDisabled
     const Component = asChild ? Slot.Pressable : Pressable
     return (
       <Component
@@ -184,7 +183,7 @@ const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
         onPress={onPress}
         accessibilityState={{
           expanded: isExpanded,
-          disabled: isDisabled
+          disabled: isDisabled,
         }}
         disabled={isDisabled}
         {...props}
@@ -193,7 +192,7 @@ const Trigger = React.forwardRef<PressableRef, SlottablePressableProps>(
   }
 )
 
-Trigger.displayName = 'TriggerNativeAccordion'
+Trigger.displayName = "TriggerNativeAccordion"
 
 const Content = React.forwardRef<
   ViewRef,
@@ -212,15 +211,15 @@ const Content = React.forwardRef<
   return (
     <Component
       ref={ref}
-      aria-hidden={!(forceMount || isExpanded)}
+      aria-hidden={!(forceMount ?? isExpanded)}
       aria-labelledby={nativeID}
-      role={type === 'single' ? 'region' : 'summary'}
+      role={type === "single" ? "region" : "summary"}
       {...props}
     />
   )
 })
 
-Content.displayName = 'ContentNativeAccordion'
+Content.displayName = "ContentNativeAccordion"
 
 export { Content, Header, Item, Root, Trigger, useRootContext, useItemContext }
 

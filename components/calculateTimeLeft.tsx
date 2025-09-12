@@ -4,7 +4,7 @@ import { i18n } from '~/components/system/i18n'
 export const calculateTimeLeftEvent = (
   eventDate: string,
   eventEndDate: string,
-  upcoming: boolean = false
+  upcoming = false
 ) => {
   const now = new Date()
   const eventStart = new Date(eventDate)

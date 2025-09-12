@@ -1,21 +1,21 @@
-import React from 'react'
-import { FlatList, View, TouchableOpacity } from 'react-native'
+import React from "react"
+import { FlatList, View, TouchableOpacity } from "react-native"
 import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle
-} from '~/components/ui/dialog'
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
-import { Text } from '~/components/ui/text'
-import { UserData } from '~/lib/types/collections'
-import { router } from 'expo-router'
-import { i18n } from '~/components/system/i18n'
+  DialogTitle,
+} from "~/components/ui/dialog"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { Text } from "~/components/ui/text"
+import { UserDataDocumentsType } from "~/lib/types/collections"
+import { router } from "expo-router"
+import { i18n } from "~/components/system/i18n"
 
 interface AttendeesModalProps {
   isOpen: boolean
   onClose: () => void
-  attendees: UserData.UserDataDocumentsType[]
+  attendees: UserDataDocumentsType[]
   showFriendsOnly?: boolean
 }
 
@@ -23,11 +23,11 @@ const AttendeesModal: React.FC<AttendeesModalProps> = ({
   isOpen,
   onClose,
   attendees,
-  showFriendsOnly = true
+  showFriendsOnly = true,
 }) => {
   const getUserAvatar = (avatarId: string | null) => {
     // For mock data or null, return null to use fallback
-    if (!avatarId || avatarId === 'mock-avatar') {
+    if (!avatarId || avatarId === "mock-avatar") {
       return null
     }
     return `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/avatars/files/${avatarId}/preview?project=hp-main&width=100&height=100`
@@ -38,29 +38,25 @@ const AttendeesModal: React.FC<AttendeesModalProps> = ({
     router.push(`/user/(stacks)/${userId}`)
   }
 
-  const renderAttendee = ({
-    item
-  }: {
-    item: UserData.UserDataDocumentsType
-  }) => (
+  const renderAttendee = ({ item }: { item: UserDataDocumentsType }) => (
     <TouchableOpacity
       onPress={() => handleUserPress(item.$id)}
-      className="flex-row items-center p-3 border-b border-gray-100"
+      className="flex-row items-center border-b border-gray-100 p-3"
     >
-      <Avatar className="w-12 h-12 mr-3" alt={item.displayName || 'User'}>
+      <Avatar className="mr-3 h-12 w-12" alt={item.displayName || "User"}>
         <AvatarImage
           source={{
-            uri: getUserAvatar(item.avatarId) || 'invalid-uri'
+            uri: getUserAvatar(item.avatarId) ?? "invalid-uri",
           }}
         />
         <AvatarFallback>
-          <Text className="text-sm">{item.displayName?.charAt(0) || 'U'}</Text>
+          <Text className="text-sm">{item.displayName.charAt(0) || "U"}</Text>
         </AvatarFallback>
       </Avatar>
 
       <View className="flex-1">
-        <Text className="font-semibold text-base">
-          {item.displayName || 'Unknown User'}
+        <Text className="text-base font-semibold">
+          {item.displayName || "Unknown User"}
         </Text>
         {item.status && (
           <Text className="text-sm text-gray-500" numberOfLines={1}>
@@ -72,23 +68,23 @@ const AttendeesModal: React.FC<AttendeesModalProps> = ({
   )
 
   const title = showFriendsOnly
-    ? `${attendees.length} ${attendees.length === 1 ? 'Friend' : 'Friends'} Attending`
-    : `${attendees.length} ${attendees.length === 1 ? 'Attendee' : 'Attendees'}`
+    ? `${attendees.length} ${attendees.length === 1 ? "Friend" : "Friends"} Attending`
+    : `${attendees.length} ${attendees.length === 1 ? "Attendee" : "Attendees"}`
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="w-[90%] max-w-md max-h-[80%]">
+      <DialogContent className="max-h-[80%] w-[90%] max-w-md">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
 
-        <View className="flex-1 min-h-[200px]">
+        <View className="min-h-[200px] flex-1">
           {attendees.length === 0 ? (
-            <View className="flex-1 justify-center items-center py-8">
-              <Text className="text-gray-500 text-center">
+            <View className="flex-1 items-center justify-center py-8">
+              <Text className="text-center text-gray-500">
                 {showFriendsOnly
-                  ? i18n.t('events.attendees.noFriendsAttending')
-                  : i18n.t('events.attendees.noAttendeesYet')}
+                  ? i18n.t("events.attendees.noFriendsAttending")
+                  : i18n.t("events.attendees.noAttendeesYet")}
               </Text>
             </View>
           ) : (
@@ -98,7 +94,7 @@ const AttendeesModal: React.FC<AttendeesModalProps> = ({
               keyExtractor={(item) => item.$id}
               showsVerticalScrollIndicator={true}
               contentContainerStyle={{
-                paddingBottom: 8
+                paddingBottom: 8,
               }}
             />
           )}

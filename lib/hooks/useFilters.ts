@@ -1,7 +1,7 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 
-const FILTERS_KEY = '@headpat/filters'
+const FILTERS_KEY = "@headpat/filters"
 
 interface Filters {
   showEvents: boolean
@@ -10,18 +10,18 @@ interface Filters {
 
 const defaultFilters: Filters = {
   showEvents: true,
-  showUsers: true
+  showUsers: true,
 }
 
 export function useFilters() {
   const queryClient = useQueryClient()
 
   const { data: filters = defaultFilters } = useQuery({
-    queryKey: ['filters'],
+    queryKey: ["filters"],
     queryFn: async () => {
       const stored = await AsyncStorage.getItem(FILTERS_KEY)
       return stored ? JSON.parse(stored) : defaultFilters
-    }
+    },
   })
 
   const updateMutation = useMutation({
@@ -30,18 +30,20 @@ export function useFilters() {
       return newFilters
     },
     onSuccess: (newFilters) => {
-      queryClient.setQueryData(['filters'], newFilters)
-    }
+      queryClient.setQueryData(["filters"], newFilters)
+    },
   })
 
   const setFilters = (newFilters: Filters | ((prev: Filters) => Filters)) => {
     const updatedFilters =
-      typeof newFilters === 'function' ? newFilters(filters) : newFilters
+      typeof newFilters === "function"
+        ? newFilters(filters as Filters)
+        : newFilters
     updateMutation.mutate(updatedFilters)
   }
 
   return {
     filters,
-    setFilters
+    setFilters,
   }
 }
