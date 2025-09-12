@@ -536,7 +536,7 @@ export interface CommunityDocumentsType extends Models.Row {
   /**
    * The community preferences.
    */
-  prefs: CommunityPrefsDocumentsType
+  prefs?: CommunityPrefsDocumentsType
   /**
    * The roles of the community.
    */
