@@ -36,12 +36,12 @@ export default function UserPage() {
       try {
         const data = await functions.createExecution({
           functionId: "community-endpoints",
-          body: "",
           async: false,
           xpath: `/community?communityId=${local.communityId as string}`,
           method: ExecutionMethod.GET,
         })
         const dataCommunityJson = JSON.parse(data.responseBody)
+        console.log(dataCommunityJson)
         return dataCommunityJson as CommunityDocumentsType
       } catch (error) {
         captureException(error)
@@ -149,7 +149,7 @@ export default function UserPage() {
         />
       }
     >
-      {communityData.prefs.isBlocked && (
+      {communityData.prefs && communityData.prefs.isBlocked && (
         <Badge variant={"destructive"}>
           <Text>Community is blocked</Text>
         </Badge>
