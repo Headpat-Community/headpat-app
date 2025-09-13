@@ -34,7 +34,8 @@ export default function SettingsModal({
 }) {
   const queryClient = useQueryClient()
   const { showAlert } = useAlertModal()
-  const [currentStatus, setCurrentStatus] = React.useState(userStatus)
+  const [currentStatus, setCurrentStatus] =
+    React.useState<LocationDocumentsType>(userStatus)
   const prevOpenModal = React.useRef(openModal)
 
   React.useEffect(() => {

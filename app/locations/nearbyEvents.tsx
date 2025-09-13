@@ -198,7 +198,7 @@ export default function NearbyEventsPage() {
   )
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1">
       {/* Content */}
       {isLoading ? (
         <View className="flex-1 items-center justify-center">

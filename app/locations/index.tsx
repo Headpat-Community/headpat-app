@@ -233,12 +233,14 @@ export default function MutualLocationsPage() {
         setOpenModal={setModalOpen}
       />
       <FiltersModal openModal={filtersOpen} setOpenModal={setFiltersOpen} />
-      <SettingsModal
-        openModal={settingsOpen}
-        setOpenModal={setSettingsOpen}
-        userStatus={userStatus as LocationDocumentsType}
-        current={current as AccountType}
-      />
+      {current && userStatus && (
+        <SettingsModal
+          openModal={settingsOpen}
+          setOpenModal={setSettingsOpen}
+          userStatus={userStatus as LocationDocumentsType}
+          current={current as AccountType}
+        />
+      )}
 
       <Dialog>
         <DialogContent className={"sm:w-[1500px]"}>
