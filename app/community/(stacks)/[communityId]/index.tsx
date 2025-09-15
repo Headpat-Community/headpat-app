@@ -41,7 +41,6 @@ export default function UserPage() {
           method: ExecutionMethod.GET,
         })
         const dataCommunityJson = JSON.parse(data.responseBody)
-        console.log(dataCommunityJson)
         return dataCommunityJson as CommunityDocumentsType
       } catch (error) {
         captureException(error)

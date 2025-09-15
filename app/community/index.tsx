@@ -73,7 +73,7 @@ export default function CommunitiesPage() {
   if (isLoading) {
     return (
       <ScrollView contentInsetAdjustmentBehavior={"automatic"}>
-        {Array.from({ length: 8 }).map((_, index) => (
+        {Array.from({ length: 10 }).map((_, index) => (
           <View key={index} className="px-4 py-2">
             <View className="flex flex-row items-center">
               <Skeleton className="h-20 w-20 rounded-2xl" />

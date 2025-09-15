@@ -127,10 +127,12 @@ export default ({ config }: { config: any }) => ({
       {
         ios: {
           useFrameworks: "static",
+          buildReactNativeFromSource: true,
           deploymentTarget: "15.1",
         },
       },
     ],
+    "expo-maps",
     "expo-video",
     "expo-router",
     "expo-secure-store",

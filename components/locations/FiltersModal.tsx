@@ -1,3 +1,6 @@
+import React from "react"
+import { View } from "react-native"
+import { i18n } from "~/components/system/i18n"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -5,17 +8,20 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle
-} from '~/components/ui/alert-dialog'
-import { View } from 'react-native'
-import { Switch } from '~/components/ui/switch'
-import { Label } from '~/components/ui/label'
-import { Text } from '~/components/ui/text'
-import React from 'react'
-import { i18n } from '~/components/system/i18n'
-import { useFilters } from '../../lib/hooks/useFilters'
+  AlertDialogTitle,
+} from "~/components/ui/alert-dialog"
+import { Label } from "~/components/ui/label"
+import { Switch } from "~/components/ui/switch"
+import { Text } from "~/components/ui/text"
+import { useFilters } from "~/lib/hooks/useFilters"
 
-export default function FiltersModal({ openModal, setOpenModal }) {
+export default function FiltersModal({
+  openModal,
+  setOpenModal,
+}: {
+  openModal: boolean
+  setOpenModal: (open: boolean) => void
+}) {
   const { filters, setFilters } = useFilters()
 
   return (
@@ -23,57 +29,57 @@ export default function FiltersModal({ openModal, setOpenModal }) {
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            {i18n.t('location.map.filters.title')}
+            {i18n.t("location.map.filters.title")}
           </AlertDialogTitle>
           <AlertDialogDescription>
-            {i18n.t('location.map.filters.description')}
+            {i18n.t("location.map.filters.description")}
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <View className={'gap-4'}>
+        <View className={"gap-4"}>
           <View className="flex-row items-center gap-2">
             <Switch
-              nativeID={'showEvents'}
+              nativeID={"showEvents"}
               checked={filters.showEvents}
               onCheckedChange={() =>
                 setFilters((prev) => ({
                   ...prev,
-                  showEvents: !prev.showEvents
+                  showEvents: !prev.showEvents,
                 }))
               }
             />
             <Label
-              nativeID={'showEvents'}
+              nativeID={"showEvents"}
               onPress={() => {
                 setFilters((prev) => ({
                   ...prev,
-                  showEvents: !prev.showEvents
+                  showEvents: !prev.showEvents,
                 }))
               }}
             >
-              {i18n.t('location.map.filters.showEvents')}
+              {i18n.t("location.map.filters.showEvents")}
             </Label>
           </View>
           <View className="flex-row items-center gap-2">
             <Switch
-              nativeID={'showMutuals'}
+              nativeID={"showMutuals"}
               checked={filters.showUsers}
               onCheckedChange={() =>
                 setFilters((prev) => ({
                   ...prev,
-                  showUsers: !prev.showUsers
+                  showUsers: !prev.showUsers,
                 }))
               }
             />
             <Label
-              nativeID={'showMutuals'}
+              nativeID={"showMutuals"}
               onPress={() =>
                 setFilters((prev) => ({
                   ...prev,
-                  showUsers: !prev.showUsers
+                  showUsers: !prev.showUsers,
                 }))
               }
             >
-              {i18n.t('location.map.filters.showUsers')}
+              {i18n.t("location.map.filters.showUsers")}
             </Label>
           </View>
         </View>

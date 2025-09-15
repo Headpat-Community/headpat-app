@@ -1,13 +1,8 @@
 import LottieView from "lottie-react-native"
 import React, { createContext, useContext, useState } from "react"
-import {
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native"
+import { StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native"
 import { Notifier } from "react-native-notifier"
+import { SafeAreaView } from "react-native-safe-area-context"
 
 interface AlertModalContextProps {
   showAlert: (

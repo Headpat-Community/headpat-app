@@ -1,0 +1,7 @@
+packages:
+  - "."
+onlyBuiltDependencies:
+  - "@firebase/util"
+  - "@sentry/cli"
+  - protobufjs
+  - sharp

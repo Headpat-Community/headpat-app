@@ -3,9 +3,7 @@ import { ForceMountable } from "~/components/primitives/types"
 interface RootContext {
   type: "single" | "multiple"
   value: (string | undefined) | string[]
-  onValueChange: (
-    value: string | undefined
-  ) => ((value: string[]) => void) | undefined
+  onValueChange: (value: string | string[] | undefined) => void
   collapsible: boolean
   disabled?: boolean
 }

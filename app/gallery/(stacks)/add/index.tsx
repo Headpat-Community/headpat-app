@@ -160,7 +160,6 @@ export default function GalleryAdd() {
       ) {
         showAlert("FAILED", "Unsupported file type.")
       } else {
-        console.log((error as any)?.type)
         Sentry.captureException(error)
         showAlert("FAILED", "Error uploading image.")
       }

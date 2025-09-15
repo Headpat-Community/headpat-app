@@ -1,6 +1,15 @@
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet"
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import {
+  FirebaseMessagingTypes,
+  getInitialNotification,
+  getMessaging,
+  onMessage,
+  onNotificationOpenedApp,
+  onTokenRefresh,
+} from "@react-native-firebase/messaging"
 import { ThemeProvider } from "@react-navigation/native"
-import { PortalHost } from "~/components/primitives/portal"
+import { captureException } from "@sentry/react-native"
 import {
   router,
   SplashScreen,
@@ -9,42 +18,32 @@ import {
   useSegments,
 } from "expo-router"
 import { StatusBar } from "expo-status-bar"
-import React from "react"
-import { useEffect, useState, useMemo } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { BackHandler, Platform } from "react-native"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context"
 import { ProfileThemeToggle } from "~/components/ThemeToggle"
-import { setAndroidNavigationBar } from "~/lib/android-navigation-bar"
-import { NAV_THEME } from "~/lib/constants"
-import { useColorScheme } from "~/lib/useColorScheme"
+import { AlertModalProvider } from "~/components/contexts/AlertModalProvider"
+import { LanguageProvider } from "~/components/contexts/LanguageProvider"
+import { LocationProvider } from "~/components/contexts/SharingContext"
 import {
   updatePushTargetWithAppwrite,
   UserProvider,
 } from "~/components/contexts/UserContext"
-import { DrawerScreensData } from "~/components/data/DrawerScreensData"
-import { databases } from "~/lib/appwrite-client"
-import { toast } from "~/lib/toast"
-import {
-  getInitialNotification,
-  getMessaging,
-  onMessage,
-  onNotificationOpenedApp,
-  onTokenRefresh,
-} from "@react-native-firebase/messaging"
-import { FirebaseMessagingTypes } from "@react-native-firebase/messaging"
-import { requestUserPermission } from "~/components/system/pushNotifications"
-import { AlertModalProvider } from "~/components/contexts/AlertModalProvider"
-import { captureException } from "@sentry/react-native"
-import EulaModal from "~/components/system/EulaModal"
-import { BottomSheetModalProvider } from "@gorhom/bottom-sheet"
-import { HeaderMenuSidebar } from "~/components/data/DrawerData"
-import { LocationProvider } from "~/components/contexts/SharingContext"
-import { LanguageProvider } from "~/components/contexts/LanguageProvider"
 import CacheProvider from "~/components/contexts/cacheProvider"
+import { HeaderMenuSidebar } from "~/components/data/DrawerData"
+import { DrawerScreensData } from "~/components/data/DrawerScreensData"
+import { PortalHost } from "~/components/primitives/portal"
+import EulaModal from "~/components/system/EulaModal"
+import { requestUserPermission } from "~/components/system/pushNotifications"
+import { setAndroidNavigationBar } from "~/lib/android-navigation-bar"
+import { databases } from "~/lib/appwrite-client"
+import { NAV_THEME } from "~/lib/constants"
+import { toast } from "~/lib/toast"
+import { useColorScheme } from "~/lib/useColorScheme"
+import "../components/init/sentryInit"
 import "../components/system/backgroundTasks"
 import "../globals.css"
-import "../components/init/sentryInit"
 
 export { ErrorBoundary } from "expo-router"
 
