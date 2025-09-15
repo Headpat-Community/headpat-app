@@ -252,7 +252,7 @@ const BottomSheetFlatList = React.forwardRef<
     <GBottomSheetFlatList
       ref={ref}
       contentContainerStyle={[{ paddingBottom: insets.bottom }]}
-      className={cn("py-4", className)}
+      className={cn("py-4", className as string)}
       keyboardShouldPersistTaps="handled"
       {...props}
     />

@@ -1,8 +1,7 @@
 import * as React from "react"
 import {
-  ImageErrorEventData,
-  ImageLoadEventData,
-  NativeSyntheticEvent,
+  ImageErrorEvent,
+  ImageLoadEvent,
   Image as RNImage,
   View,
 } from "react-native"
@@ -64,7 +63,7 @@ const Image = React.forwardRef<
     const { alt, setStatus, status } = useRootContext()
 
     const onLoad = React.useCallback(
-      (e: NativeSyntheticEvent<ImageLoadEventData>) => {
+      (e: ImageLoadEvent) => {
         setStatus("loaded")
         onLoadingStatusChange?.("loaded")
         onLoadProps?.(e)
@@ -73,7 +72,7 @@ const Image = React.forwardRef<
     )
 
     const onError = React.useCallback(
-      (e: NativeSyntheticEvent<ImageErrorEventData>) => {
+      (e: ImageErrorEvent) => {
         setStatus("error")
         onLoadingStatusChange?.("error")
         onErrorProps?.(e)
