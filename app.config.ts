@@ -2,7 +2,7 @@ export default ({ config }: { config: any }) => ({
   ...config,
   name: "Headpat",
   slug: "headpat-app",
-  version: "0.8.13",
+  version: "0.8.14",
   orientation: "portrait",
   icon: "./assets/images/icon.png",
   scheme: "appwrite-callback-hp-main",
