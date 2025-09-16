@@ -128,7 +128,8 @@
     "confirm": "Confirm",
     "loading": "Loading...",
     "next": "Next",
-    "refreshing": "Refreshing..."
+    "refreshing": "Refreshing...",
+    "doesNotExist": "This page does not exist."
   },
   "screens": {
     "account": "Account",

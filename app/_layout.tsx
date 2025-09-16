@@ -9,6 +9,7 @@ import {
   onTokenRefresh,
 } from "@react-native-firebase/messaging"
 import { ThemeProvider } from "@react-navigation/native"
+import { NotifierWrapper } from "react-native-notifier"
 import { captureException } from "@sentry/react-native"
 import {
   router,
@@ -190,104 +191,110 @@ export default function RootLayout() {
             <CacheProvider>
               <LanguageProvider>
                 <AlertModalProvider>
-                  <EulaModal
-                    isOpen={openEulaModal}
-                    setOpen={setOpenEulaModal}
-                    versionData={versionData}
-                  />
-                  <LocationProvider>
-                    <BottomSheetModalProvider>
-                      {Platform.OS === "android" && (
-                        <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
-                          <StatusBar
-                            style={colorScheme === "dark" ? "light" : "dark"}
-                            backgroundColor={
-                              colorScheme === "dark" ? "#000000" : "#ffffff"
-                            }
-                          />
-                          <Stack
-                            screenOptions={{
-                              headerStyle: {
-                                backgroundColor:
-                                  colorScheme === "dark" ? "#000" : "#fff",
-                              },
-                              headerTintColor:
-                                colorScheme === "dark" ? "#fff" : "#000",
-                              contentStyle: {
-                                backgroundColor:
-                                  colorScheme === "dark" ? "#000" : "#fff",
-                              },
-                            }}
-                          >
-                            {DrawerScreensData.map((screen: DrawerProps) => (
-                              <Stack.Screen
-                                key={screen.location}
-                                name={screen.location}
-                                options={{
-                                  keyboardHandlingEnabled: true,
-                                  headerTitleAlign: "left",
-                                  headerShown: screen.headerShown,
-                                  headerTitle: screen.title,
-                                  headerLargeTitle: screen.headerLargeTitle,
-                                  headerLeft: () =>
-                                    screen.headerLeft ?? <HeaderMenuSidebar />,
-                                  headerRight: () =>
-                                    screen.headerRight ?? (
-                                      <ProfileThemeToggle />
-                                    ),
-                                  gestureEnabled: screen.swipeEnabled,
-                                }}
-                              />
-                            ))}
-                          </Stack>
-                        </SafeAreaView>
-                      )}
+                  <NotifierWrapper>
+                    <EulaModal
+                      isOpen={openEulaModal}
+                      setOpen={setOpenEulaModal}
+                      versionData={versionData}
+                    />
+                    <LocationProvider>
+                      <BottomSheetModalProvider>
+                        {Platform.OS === "android" && (
+                          <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
+                            <StatusBar
+                              style={colorScheme === "dark" ? "light" : "dark"}
+                              backgroundColor={
+                                colorScheme === "dark" ? "#000000" : "#ffffff"
+                              }
+                            />
+                            <Stack
+                              screenOptions={{
+                                headerStyle: {
+                                  backgroundColor:
+                                    colorScheme === "dark" ? "#000" : "#fff",
+                                },
+                                headerTintColor:
+                                  colorScheme === "dark" ? "#fff" : "#000",
+                                contentStyle: {
+                                  backgroundColor:
+                                    colorScheme === "dark" ? "#000" : "#fff",
+                                },
+                              }}
+                            >
+                              {DrawerScreensData.map((screen: DrawerProps) => (
+                                <Stack.Screen
+                                  key={screen.location}
+                                  name={screen.location}
+                                  options={{
+                                    keyboardHandlingEnabled: true,
+                                    headerTitleAlign: "left",
+                                    headerShown: screen.headerShown,
+                                    headerTitle: screen.title,
+                                    headerLargeTitle: screen.headerLargeTitle,
+                                    headerLeft: () =>
+                                      screen.headerLeft ?? (
+                                        <HeaderMenuSidebar />
+                                      ),
+                                    headerRight: () =>
+                                      screen.headerRight ?? (
+                                        <ProfileThemeToggle />
+                                      ),
+                                    gestureEnabled: screen.swipeEnabled,
+                                  }}
+                                />
+                              ))}
+                            </Stack>
+                          </SafeAreaView>
+                        )}
 
-                      {Platform.OS === "ios" && (
-                        <>
-                          <StatusBar
-                            style={colorScheme === "dark" ? "light" : "dark"}
-                          />
-                          <Stack
-                            screenOptions={{
-                              headerStyle: {
-                                backgroundColor:
-                                  colorScheme === "dark" ? "#000" : "#fff",
-                              },
-                              headerTintColor:
-                                colorScheme === "dark" ? "#fff" : "#000",
-                              contentStyle: {
-                                backgroundColor:
-                                  colorScheme === "dark" ? "#000" : "#fff",
-                              },
-                            }}
-                          >
-                            {DrawerScreensData.map((screen: DrawerProps) => (
-                              <Stack.Screen
-                                key={screen.location}
-                                name={screen.location}
-                                options={{
-                                  keyboardHandlingEnabled: true,
-                                  headerTitleAlign: "left",
-                                  headerShown: screen.headerShown,
-                                  headerTitle: screen.title,
-                                  headerLargeTitle: screen.headerLargeTitle,
-                                  headerLeft: () =>
-                                    screen.headerLeft ?? <HeaderMenuSidebar />,
-                                  headerRight: () =>
-                                    screen.headerRight ?? (
-                                      <ProfileThemeToggle />
-                                    ),
-                                  gestureEnabled: screen.swipeEnabled,
-                                }}
-                              />
-                            ))}
-                          </Stack>
-                        </>
-                      )}
-                      <PortalHost />
-                    </BottomSheetModalProvider>
-                  </LocationProvider>
+                        {Platform.OS === "ios" && (
+                          <>
+                            <StatusBar
+                              style={colorScheme === "dark" ? "light" : "dark"}
+                            />
+                            <Stack
+                              screenOptions={{
+                                headerStyle: {
+                                  backgroundColor:
+                                    colorScheme === "dark" ? "#000" : "#fff",
+                                },
+                                headerTintColor:
+                                  colorScheme === "dark" ? "#fff" : "#000",
+                                contentStyle: {
+                                  backgroundColor:
+                                    colorScheme === "dark" ? "#000" : "#fff",
+                                },
+                              }}
+                            >
+                              {DrawerScreensData.map((screen: DrawerProps) => (
+                                <Stack.Screen
+                                  key={screen.location}
+                                  name={screen.location}
+                                  options={{
+                                    keyboardHandlingEnabled: true,
+                                    headerTitleAlign: "left",
+                                    headerShown: screen.headerShown,
+                                    headerTitle: screen.title,
+                                    headerLargeTitle: screen.headerLargeTitle,
+                                    headerLeft: () =>
+                                      screen.headerLeft ?? (
+                                        <HeaderMenuSidebar />
+                                      ),
+                                    headerRight: () =>
+                                      screen.headerRight ?? (
+                                        <ProfileThemeToggle />
+                                      ),
+                                    gestureEnabled: screen.swipeEnabled,
+                                  }}
+                                />
+                              ))}
+                            </Stack>
+                          </>
+                        )}
+                        <PortalHost />
+                      </BottomSheetModalProvider>
+                    </LocationProvider>
+                  </NotifierWrapper>
                 </AlertModalProvider>
               </LanguageProvider>
             </CacheProvider>

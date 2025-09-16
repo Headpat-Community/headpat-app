@@ -300,7 +300,6 @@ export default function AddSharing() {
                       keyExtractor={(item) => item.$id}
                       renderItem={renderSearchItem}
                       className={"mb-24"}
-                      estimatedItemSize={100}
                       extraData={selectedItems}
                     />
                   </View>

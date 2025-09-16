@@ -1,3 +1,10 @@
+import { useFocusEffect } from "@react-navigation/core"
+import * as Sentry from "@sentry/react-native"
+import { Image } from "expo-image"
+import { Link, useLocalSearchParams } from "expo-router"
+import { useVideoPlayer, VideoView } from "expo-video"
+import { ShieldAlertIcon } from "lucide-react-native"
+import { useCallback, useEffect, useRef, useState } from "react"
 import {
   Dimensions,
   Modal,
@@ -6,25 +13,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native"
-import { databases, functions } from "~/lib/appwrite-client"
+import { ExecutionMethod } from "react-native-appwrite"
 import Gallery from "react-native-awesome-gallery"
+import { Blurhash } from "react-native-blurhash"
 import { ScrollView } from "react-native-gesture-handler"
-import { Link, useLocalSearchParams } from "expo-router"
-import { useCallback, useEffect, useRef, useState } from "react"
-import {
-  GalleryDocumentsType,
-  GalleryPrefsDocumentsType,
-  UserDataDocumentsType,
-} from "~/lib/types/collections"
-import { Image } from "expo-image"
-import { Text } from "~/components/ui/text"
-import { H4, Muted } from "~/components/ui/typography"
 import { timeSince } from "~/components/calculateTimeLeft"
-import { useVideoPlayer, VideoView } from "expo-video"
-import { useFocusEffect } from "@react-navigation/core"
-import { Skeleton } from "~/components/ui/skeleton"
+import { useAlertModal } from "~/components/contexts/AlertModalProvider"
 import { useUser } from "~/components/contexts/UserContext"
-import { Button } from "~/components/ui/button"
 import ReportGalleryModal from "~/components/gallery/moderation/ReportGalleryModal"
 import {
   AlertDialog,
@@ -36,18 +31,21 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog"
-import { ShieldAlertIcon } from "lucide-react-native"
-import { ExecutionMethod } from "react-native-appwrite"
-import * as Sentry from "@sentry/react-native"
 import { Badge } from "~/components/ui/badge"
-import { useAlertModal } from "~/components/contexts/AlertModalProvider"
-import { Blurhash } from "react-native-blurhash"
+import { Button } from "~/components/ui/button"
+import { Skeleton } from "~/components/ui/skeleton"
+import { Text } from "~/components/ui/text"
+import { H4, Muted } from "~/components/ui/typography"
+import { databases, functions } from "~/lib/appwrite-client"
+import {
+  GalleryDocumentsType,
+  GalleryPrefsDocumentsType,
+  UserDataDocumentsType,
+} from "~/lib/types/collections"
 
 export default function HomeView() {
   const local = useLocalSearchParams()
-  const [image, setImage] = useState<GalleryDocumentsType>(
-    null as unknown as GalleryDocumentsType
-  )
+  const [image, setImage] = useState<GalleryDocumentsType | null>(null)
   const [imagePrefs, setImagePrefs] =
     useState<GalleryPrefsDocumentsType | null>(null)
   const [userData, setUserData] = useState<UserDataDocumentsType | null>(null)
@@ -113,12 +111,12 @@ export default function HomeView() {
     void fetchGallery()
   }, [local.galleryId])
 
-  const getGalleryUrl = (galleryId: string) => {
+  const getGalleryUrl = (galleryId: string | undefined) => {
     if (!galleryId) return
     return `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/gallery/files/${galleryId}/view?project=hp-main`
   }
 
-  const handleModalImage = (galleryId: string) => {
+  const handleModalImage = (galleryId: string | undefined) => {
     if (!galleryId) return
     return [
       `${process.env.EXPO_PUBLIC_BACKEND_URL}/v1/storage/buckets/gallery/files/${galleryId}/view?project=hp-main`,
@@ -158,7 +156,7 @@ export default function HomeView() {
       const data = await functions.createExecution({
         functionId: "gallery-endpoints",
         body: JSON.stringify({
-          galleryId: image.$id,
+          galleryId: image?.$id,
           isHidden: !imagePrefs?.isHidden,
         }),
         async: false,
@@ -217,6 +215,32 @@ export default function HomeView() {
     )
   }
 
+  if (!image) {
+    return (
+      <View className={"mt-4"}>
+        <View className={"mx-6 items-center justify-center gap-y-4"}>
+          <Skeleton className={"h-96 w-full"} />
+          <Skeleton className={"h-8 w-[200px]"} />
+        </View>
+        <View className={"mx-6 mt-4"}>
+          <Skeleton className={"h-24 w-full"} />
+        </View>
+        <View className={"mt-8 px-8"}>
+          <Muted className={"pb-4"}>Uploaded by</Muted>
+          <View className={"flex-row flex-wrap items-center justify-between"}>
+            <View className={"flex-row items-center gap-4"}>
+              <Skeleton className={"h-10 w-10 rounded-[10px]"} />
+              <Skeleton className={"h-4 w-24"} />
+            </View>
+            <View>
+              <Skeleton className={"h-4 w-24"} />
+            </View>
+          </View>
+        </View>
+      </View>
+    )
+  }
+
   return (
     <ScrollView
       refreshControl={
@@ -239,7 +263,7 @@ export default function HomeView() {
           ) : (
             <Skeleton className={"h-72"} />
           )
-        ) : image.mimeType.includes("video") ? (
+        ) : image.mimeType?.includes("video") ? (
           <VideoView
             ref={ref}
             style={styles.video}

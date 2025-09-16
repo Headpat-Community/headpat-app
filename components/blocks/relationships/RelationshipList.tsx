@@ -1,18 +1,18 @@
-import { functions } from "~/lib/appwrite-client"
-import { ExecutionMethod } from "react-native-appwrite"
-import { useUser } from "~/components/contexts/UserContext"
-import React, { useCallback, useMemo } from "react"
-import { UserDataDocumentsType } from "~/lib/types/collections"
 import * as Sentry from "@sentry/react-native"
-import UserItem from "~/components/user/UserItem"
-import { ScrollView, Text, View, RefreshControl } from "react-native"
-import { H1, Muted } from "~/components/ui/typography"
-import { useAlertModal } from "~/components/contexts/AlertModalProvider"
-import { router } from "expo-router"
-import { Skeleton } from "~/components/ui/skeleton"
-import { i18n } from "~/components/system/i18n"
 import { FlashList } from "@shopify/flash-list"
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query"
+import { router } from "expo-router"
+import React, { useCallback } from "react"
+import { RefreshControl, ScrollView, Text, View } from "react-native"
+import { ExecutionMethod } from "react-native-appwrite"
+import { useAlertModal } from "~/components/contexts/AlertModalProvider"
+import { useUser } from "~/components/contexts/UserContext"
+import { i18n } from "~/components/system/i18n"
+import { Skeleton } from "~/components/ui/skeleton"
+import { H1, Muted } from "~/components/ui/typography"
+import UserItem from "~/components/user/UserItem"
+import { functions } from "~/lib/appwrite-client"
+import { UserDataDocumentsType } from "~/lib/types/collections"
 
 const PAGE_SIZE = 100
 
@@ -90,8 +90,6 @@ export default function RelationshipList({
     []
   )
 
-  const estimatedItemSize = useMemo(() => 100, [])
-
   if (isLoading) {
     return (
       <View style={{ flex: 1 }}>
@@ -166,7 +164,6 @@ export default function RelationshipList({
           data={users}
           renderItem={renderItem}
           keyExtractor={keyExtractor}
-          estimatedItemSize={estimatedItemSize}
           numColumns={3}
           contentContainerStyle={{ padding: 8 }}
           onEndReached={() => {

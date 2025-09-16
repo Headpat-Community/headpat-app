@@ -1,15 +1,15 @@
-import React from "react"
-import { FlashList } from "@shopify/flash-list"
-import { databases } from "~/lib/appwrite-client"
 import * as Sentry from "@sentry/react-native"
-import { UserDataDocumentsType, UserDataType } from "~/lib/types/collections"
-import { Query } from "react-native-appwrite"
-import UserItem from "~/components/user/UserItem"
-import { i18n } from "~/components/system/i18n"
-import { useAlertModal } from "~/components/contexts/AlertModalProvider"
-import { Text } from "~/components/ui/text"
-import { View } from "react-native"
+import { FlashList } from "@shopify/flash-list"
 import { useInfiniteQuery } from "@tanstack/react-query"
+import React from "react"
+import { View } from "react-native"
+import { Query } from "react-native-appwrite"
+import { useAlertModal } from "~/components/contexts/AlertModalProvider"
+import { i18n } from "~/components/system/i18n"
+import { Text } from "~/components/ui/text"
+import UserItem from "~/components/user/UserItem"
+import { databases } from "~/lib/appwrite-client"
+import { UserDataDocumentsType, UserDataType } from "~/lib/types/collections"
 
 const PAGE_SIZE = 50
 
@@ -77,7 +77,6 @@ export default function UserListPage() {
           onRefresh={onRefresh}
           refreshing={isRefetching}
           numColumns={3}
-          estimatedItemSize={150}
           onEndReached={loadMore}
           onEndReachedThreshold={0.5}
           ListFooterComponent={

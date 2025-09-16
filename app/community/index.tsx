@@ -1,16 +1,16 @@
-import React, { useCallback, useMemo } from "react"
-import { ScrollView, View } from "react-native"
-import { functions } from "~/lib/appwrite-client"
 import { captureException } from "@sentry/react-native"
-import { CommunityDocumentsType } from "~/lib/types/collections"
+import { FlashList } from "@shopify/flash-list"
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query"
+import React, { useCallback } from "react"
+import { ScrollView, View } from "react-native"
 import { ExecutionMethod } from "react-native-appwrite"
 import CommunityItem from "~/components/community/CommunityItem"
-import { Skeleton } from "~/components/ui/skeleton"
 import { useAlertModal } from "~/components/contexts/AlertModalProvider"
 import { i18n } from "~/components/system/i18n"
-import { FlashList } from "@shopify/flash-list"
+import { Skeleton } from "~/components/ui/skeleton"
 import { Text } from "~/components/ui/text"
-import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query"
+import { functions } from "~/lib/appwrite-client"
+import { CommunityDocumentsType } from "~/lib/types/collections"
 
 const PAGE_SIZE = 20
 
@@ -68,8 +68,6 @@ export default function CommunitiesPage() {
     []
   )
 
-  const estimatedItemSize = useMemo(() => 100, [])
-
   if (isLoading) {
     return (
       <ScrollView contentInsetAdjustmentBehavior={"automatic"}>
@@ -104,7 +102,6 @@ export default function CommunitiesPage() {
           })
         }}
         refreshing={isRefetching}
-        estimatedItemSize={estimatedItemSize}
         onEndReached={() => {
           if (hasNextPage && !isFetchingNextPage) {
             void fetchNextPage()

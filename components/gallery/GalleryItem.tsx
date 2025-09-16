@@ -1,11 +1,11 @@
-import React from "react"
-import { Dimensions, TouchableWithoutFeedback, View } from "react-native"
 import { Image } from "expo-image"
 import { router } from "expo-router"
-import { Badge } from "~/components/ui/badge"
-import { Text } from "~/components/ui/text"
+import React from "react"
+import { Dimensions, TouchableWithoutFeedback, View } from "react-native"
 import { ImageFormat } from "react-native-appwrite"
+import { Badge } from "~/components/ui/badge"
 import { Skeleton } from "~/components/ui/skeleton"
+import { Text } from "~/components/ui/text"
 import {
   GalleryDocumentsType,
   GalleryPrefsDocumentsType,
@@ -15,12 +15,12 @@ interface GalleryItemProps {
   image: GalleryDocumentsType
   thumbnail: string
   getGalleryUrl: (id: string, format?: ImageFormat) => string
-  imagePrefs: Record<string, GalleryPrefsDocumentsType>
+  imagePrefs?: Record<string, GalleryPrefsDocumentsType>
 }
 
 const GalleryItem = React.memo(
   ({ image, thumbnail, getGalleryUrl, imagePrefs }: GalleryItemProps) => {
-    const format = image.mimeType.split("/").pop()
+    const format = image.mimeType?.split("/").pop()
     let imageFormat: ImageFormat | undefined
     if (format) {
       // ImageFormat is an enum where values are lowercase strings (e.g., ImageFormat.Jpeg = "jpeg").
@@ -36,9 +36,9 @@ const GalleryItem = React.memo(
 
     // Define height based on device size
     const widthColumns = width > 600 ? "50%" : "100%"
-    const isHidden: boolean = imagePrefs[image.$id].isHidden
+    const isHidden: boolean = imagePrefs?.[image.$id]?.isHidden ?? false
 
-    const imageUrl = image.mimeType.includes("video")
+    const imageUrl = image.mimeType?.includes("video")
       ? thumbnail
       : getGalleryUrl(image.galleryId, imageFormat)
 
@@ -71,7 +71,7 @@ const GalleryItem = React.memo(
             <>
               <Image
                 source={
-                  image.mimeType.includes("video")
+                  image.mimeType?.includes("video")
                     ? { uri: thumbnail }
                     : { uri: imageUrl }
                 }
@@ -88,14 +88,14 @@ const GalleryItem = React.memo(
                   )
                 }}
               />
-              {image.mimeType.includes("gif") && (
+              {image.mimeType?.includes("gif") && (
                 <Badge
                   className={"absolute border-2 border-primary bg-secondary"}
                 >
                   <Text className={"text-primary"}>GIF</Text>
                 </Badge>
               )}
-              {image.mimeType.includes("video") && (
+              {image.mimeType?.includes("video") && (
                 <Badge
                   className={"absolute border-2 border-primary bg-secondary"}
                 >

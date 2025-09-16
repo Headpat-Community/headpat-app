@@ -116,7 +116,6 @@ export default function NotificationsPage() {
         }
       }}
       onEndReachedThreshold={0.5}
-      estimatedItemSize={100}
       contentContainerClassName="mt-2 pb-8"
       ListFooterComponent={
         isFetchingNextPage && hasNextPage ? (

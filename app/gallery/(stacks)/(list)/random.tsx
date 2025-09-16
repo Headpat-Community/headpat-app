@@ -1,20 +1,20 @@
+import * as Sentry from "@sentry/react-native"
+import { FlashList } from "@shopify/flash-list"
+import * as VideoThumbnails from "expo-video-thumbnails"
 import React from "react"
 import { Dimensions, Text, View } from "react-native"
-import { FlashList } from "@shopify/flash-list"
+import { ImageFormat, Query } from "react-native-appwrite"
+import { useAlertModal } from "~/components/contexts/AlertModalProvider"
+import { useUser } from "~/components/contexts/UserContext"
+import FeatureAccess from "~/components/FeatureAccess"
+import GalleryItem from "~/components/gallery/GalleryItem"
+import { i18n } from "~/components/system/i18n"
+import { Skeleton } from "~/components/ui/skeleton"
 import { databases } from "~/lib/appwrite-client"
-import * as Sentry from "@sentry/react-native"
 import {
   GalleryDocumentsType,
   GalleryPrefsDocumentsType,
 } from "~/lib/types/collections"
-import { ImageFormat, Query } from "react-native-appwrite"
-import * as VideoThumbnails from "expo-video-thumbnails"
-import { useUser } from "~/components/contexts/UserContext"
-import GalleryItem from "~/components/gallery/GalleryItem"
-import { useAlertModal } from "~/components/contexts/AlertModalProvider"
-import { Skeleton } from "~/components/ui/skeleton"
-import FeatureAccess from "~/components/FeatureAccess"
-import { i18n } from "~/components/system/i18n"
 
 export default function GalleryPage() {
   const { current } = useUser()
@@ -94,7 +94,7 @@ export default function GalleryPage() {
 
           // Generate thumbnails for videos
           firstPage.forEach((image) => {
-            if (image.mimeType.includes("video")) {
+            if (image.mimeType?.includes("video")) {
               void generateThumbnail(image.$id)
             }
           })
@@ -155,7 +155,7 @@ export default function GalleryPage() {
 
           // Generate thumbnails for videos
           pageItems.forEach((image) => {
-            if (image.mimeType.includes("video")) {
+            if (image.mimeType?.includes("video")) {
               void generateThumbnail(image.$id)
             }
           })
@@ -194,7 +194,7 @@ export default function GalleryPage() {
 
         // Generate thumbnails for videos
         pageItems.forEach((image) => {
-          if (image.mimeType.includes("video")) {
+          if (image.mimeType?.includes("video")) {
             void generateThumbnail(image.$id)
           }
         })
@@ -343,7 +343,6 @@ export default function GalleryPage() {
           )}
           onRefresh={() => onRefresh()}
           refreshing={refreshing}
-          estimatedItemSize={200}
           numColumns={maxColumns}
           onEndReached={() => loadMore()}
           onEndReachedThreshold={0.5}

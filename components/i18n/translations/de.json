@@ -116,7 +116,8 @@
     "confirm": "Bestätigen",
     "loading": "Laden...",
     "next": "Weiter",
-    "refreshing": "Aktualisieren..."
+    "refreshing": "Aktualisieren...",
+    "doesNotExist": "Diese Seite existiert nicht."
   },
   "nearbyEvents": {
     "enableLocation": "Standort freigeben",

@@ -74,14 +74,12 @@ export const AlertModalProvider = ({
         hideAlert,
       }}
     >
-      <View style={{ flex: 1 }}>
-        {alertType === "LOADING" && (
-          <TouchableWithoutFeedback>
-            <View style={styles.overlay} />
-          </TouchableWithoutFeedback>
-        )}
-        {children}
-      </View>
+      {alertType === "LOADING" && (
+        <TouchableWithoutFeedback>
+          <View style={styles.overlay} />
+        </TouchableWithoutFeedback>
+      )}
+      {children}
     </AlertModalContext.Provider>
   )
 }
@@ -124,7 +122,6 @@ const CustomComponent = ({
     <SafeAreaView
       style={{
         backgroundColor: color,
-        flex: 1,
         alignItems: "center",
       }}
     >
@@ -151,6 +148,8 @@ const styles = StyleSheet.create({
     padding: 10,
     flexDirection: "row",
     alignItems: "center",
+    marginBottom: 0,
+    paddingBottom: 0,
   },
   lottie: {
     width: 50,

@@ -222,19 +222,19 @@ export interface UserPrefsDocumentsType extends Models.Row {
   /**
    * The user's favorite status.
    */
-  isFavorited: boolean
+  isFavorited: boolean | null
   /**
    * The user's blocked status.
    */
-  isBlocked: boolean
+  isBlocked: boolean | null
   /**
    * The user's muted status.
    */
-  isMuted: boolean
+  isMuted: boolean | null
   /**
    * The user's nickname.
    */
-  nickName: string
+  nickName: string | null
 }
 
 /**
@@ -245,7 +245,7 @@ export interface UserProfileDocumentsType extends UserDataDocumentsType {
   /**
    * The user ID of the user.
    */
-  prefs: UserPrefsDocumentsType
+  prefs?: UserPrefsDocumentsType
   isFollowing: boolean
 }
 
@@ -383,7 +383,7 @@ export interface GalleryDocumentsType extends Models.Row {
   /**
    * The file extension/mimetype of the gallery item.
    */
-  mimeType: string
+  mimeType?: string | null
   /**
    * The blurhash of the gallery item.
    */
@@ -413,7 +413,7 @@ export interface GalleryPrefsDocumentsType extends Models.Row {
   /**
    * If user has hidden the gallery item.
    */
-  isHidden: boolean
+  isHidden?: boolean
 }
 
 /**
@@ -500,7 +500,7 @@ export interface CommunityDocumentsType extends Models.Row {
   /**
    * The name of the community.
    */
-  name: string
+  name?: string | null
   /**
    * The description of the community.
    */
@@ -556,11 +556,11 @@ export interface CommunityPrefsDocumentsType extends Models.Row {
   /**
    * If the community is blocked.
    */
-  isBlocked?: boolean
+  isBlocked: boolean | null
   /**
    * If the community is muted.
    */
-  isMuted?: boolean
+  isMuted: boolean | null
 }
 
 export interface CommunitySettingsType {

@@ -6,7 +6,7 @@ import {
   useInfiniteQuery,
   useQueryClient,
 } from "@tanstack/react-query"
-import React, { useCallback, useMemo } from "react"
+import React, { useCallback } from "react"
 import { RefreshControl, View } from "react-native"
 import { Query } from "react-native-appwrite"
 import { ScrollView } from "react-native-gesture-handler"
@@ -106,8 +106,6 @@ export default function AnnouncementsPage() {
     []
   )
 
-  const estimatedItemSize = useMemo(() => 200, []) // Adjust based on your average item height
-
   const announcements = data?.pages[0]
   const allDocuments = data?.pages.flatMap((page) => page.rows) ?? []
 
@@ -141,7 +139,6 @@ export default function AnnouncementsPage() {
         data={!isRefetching ? allDocuments : []}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
-        estimatedItemSize={estimatedItemSize}
         onRefresh={onRefresh}
         refreshing={isRefetching}
         contentContainerStyle={{ padding: 8 }}

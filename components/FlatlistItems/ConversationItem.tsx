@@ -40,7 +40,7 @@ const ConversationItem = React.memo(
     displayData: UserDataDocumentsType | CommunityDocumentsType
     isLoading: boolean
   }) => {
-    const isCommunity = !!(displayData as CommunityDocumentsType).name
+    const isCommunity = !!(displayData as CommunityDocumentsType).name || false
     const timeSince = useTimeSince(item.$updatedAt)
     const [openModal, setOpenModal] = React.useState(false)
     const { showAlert } = useAlertModal()
@@ -120,7 +120,7 @@ const ConversationItem = React.memo(
                       style={{ width: 64, height: 64 }}
                       alt={
                         isCommunity
-                          ? (displayData as CommunityDocumentsType).name
+                          ? ((displayData as CommunityDocumentsType).name ?? "")
                           : (displayData as UserDataDocumentsType).displayName
                       }
                     >
@@ -145,7 +145,7 @@ const ConversationItem = React.memo(
                           {isCommunity
                             ? (
                                 displayData as CommunityDocumentsType
-                              ).name.charAt(0)
+                              ).name?.charAt(0)
                             : (
                                 displayData as UserDataDocumentsType
                               ).displayName.charAt(0)}

@@ -1,5 +1,6 @@
-import { functions } from "~/lib/appwrite-client"
+import { captureException } from "@sentry/react-native"
 import { ExecutionMethod } from "react-native-appwrite"
+import { functions } from "~/lib/appwrite-client"
 
 export async function blockUser(body: any) {
   try {
@@ -12,6 +13,7 @@ export async function blockUser(body: any) {
     })
     return JSON.parse(data.responseBody)
   } catch (e) {
+    captureException(e)
     console.error(e)
   }
 }

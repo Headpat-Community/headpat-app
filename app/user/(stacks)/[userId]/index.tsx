@@ -1,17 +1,9 @@
-import {
-  RefreshControl,
-  ScrollView,
-  TouchableOpacity,
-  View,
-  Dimensions,
-} from "react-native"
-import { H3, Muted } from "~/components/ui/typography"
-import { Link, useLocalSearchParams } from "expo-router"
-import React, { Suspense } from "react"
-import { UserProfileDocumentsType } from "~/lib/types/collections"
-import { databases } from "~/lib/appwrite-client"
+import * as Sentry from "@sentry/react-native"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
+import * as Clipboard from "expo-clipboard"
 import { Image } from "expo-image"
-import { Text } from "~/components/ui/text"
+import { Link, useLocalSearchParams } from "expo-router"
+import * as WebBrowser from "expo-web-browser"
 import {
   CakeIcon,
   EyeIcon,
@@ -19,26 +11,37 @@ import {
   ScanEyeIcon,
   TagIcon,
 } from "lucide-react-native"
-import { useColorScheme } from "~/lib/useColorScheme"
-import { calculateBirthday } from "~/components/calculateTimeLeft"
-import TelegramIcon from "~/components/icons/TelegramIcon"
-import DiscordIcon from "~/components/icons/DiscordIcon"
-import XIcon from "~/components/icons/XIcon"
-import TwitchIcon from "~/components/icons/TwitchIcon"
-import FuraffinityIcon from "~/components/icons/FuraffinityIcon"
-import * as WebBrowser from "expo-web-browser"
-import * as Sentry from "@sentry/react-native"
-import * as Clipboard from "expo-clipboard"
-import { useUser } from "~/components/contexts/UserContext"
+import React, { Suspense } from "react"
+import {
+  Dimensions,
+  RefreshControl,
+  ScrollView,
+  TouchableOpacity,
+  View,
+} from "react-native"
 import { Query } from "react-native-appwrite"
-import sanitizeHtml from "sanitize-html"
 import HTMLView from "react-native-htmlview"
+import sanitizeHtml from "sanitize-html"
+import { calculateBirthday } from "~/components/calculateTimeLeft"
+import { useAlertModal } from "~/components/contexts/AlertModalProvider"
+import { useUser } from "~/components/contexts/UserContext"
+import BlueskyIcon from "~/components/icons/BlueskyIcon"
+import DiscordIcon from "~/components/icons/DiscordIcon"
+import FuraffinityIcon from "~/components/icons/FuraffinityIcon"
+import TelegramIcon from "~/components/icons/TelegramIcon"
+import TwitchIcon from "~/components/icons/TwitchIcon"
+import XIcon from "~/components/icons/XIcon"
 import { Badge } from "~/components/ui/badge"
 import { Skeleton } from "~/components/ui/skeleton"
-import { useAlertModal } from "~/components/contexts/AlertModalProvider"
-import { useQuery } from "@tanstack/react-query"
+import { Text } from "~/components/ui/text"
+import { H3, Muted } from "~/components/ui/typography"
 import UserActions from "~/components/user/UserActions"
-import BlueskyIcon from "~/components/icons/BlueskyIcon"
+import { databases } from "~/lib/appwrite-client"
+import {
+  UserPrefsDocumentsType,
+  UserProfileDocumentsType,
+} from "~/lib/types/collections"
+import { useColorScheme } from "~/lib/useColorScheme"
 
 export default function UserPage() {
   const { isDarkColorScheme } = useColorScheme()
@@ -46,6 +49,7 @@ export default function UserPage() {
   const local = useLocalSearchParams()
   const { current } = useUser()
   const { showAlert } = useAlertModal()
+  const qc = useQueryClient()
 
   const {
     data: userData,
@@ -100,6 +104,31 @@ export default function UserPage() {
           isFollowing: isFollowing.total > 0,
           followersCount: followers.total,
           followingCount: following.total,
+        }
+
+        if (!current) {
+          // Merge any local override for blocking (set while signed out)
+          try {
+            const userIdStr =
+              typeof local.userId === "string"
+                ? local.userId
+                : Array.isArray(local.userId)
+                  ? local.userId[0]
+                  : ""
+            const localPrefs = qc.getQueryData<{ isBlocked?: boolean }>([
+              "user",
+              userIdStr,
+              "localPrefs",
+            ])
+            if (localPrefs?.isBlocked !== undefined) {
+              combinedData.prefs = {
+                ...(combinedData.prefs ?? {}),
+                isBlocked: localPrefs.isBlocked,
+              } as unknown as UserPrefsDocumentsType
+            }
+          } catch (_e) {
+            // ignore errors
+          }
         }
 
         return combinedData
@@ -186,7 +215,7 @@ export default function UserPage() {
         />
       }
     >
-      {userData.prefs.isBlocked && (
+      {userData.prefs?.isBlocked && (
         <Badge variant={"destructive"}>
           <Text>User is blocked</Text>
         </Badge>

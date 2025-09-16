@@ -32,7 +32,6 @@ export function ProfileThemeToggle() {
           const newTheme = isDarkColorScheme ? "light" : "dark"
           void setColorScheme(newTheme)
         }}
-        className="pl-4"
       >
         <View className={"flex aspect-square items-end justify-center pt-0.5"}>
           {isDarkColorScheme ? (
