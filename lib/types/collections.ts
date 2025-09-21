@@ -618,7 +618,7 @@ export interface NotificationsDocumentsType extends Models.Row {
   /**
    * The user data of the user
    */
-  userData: UserDataDocumentsType
+  userData?: UserDataDocumentsType
 }
 
 export interface ConfigFeaturesType {

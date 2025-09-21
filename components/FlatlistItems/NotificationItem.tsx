@@ -20,7 +20,7 @@ const NotificationItem = React.memo(
         onPress={() => {
           router.push({
             pathname: "/user/(stacks)/[userId]",
-            params: { userId: notification.userData.$id },
+            params: { userId: notification.userData?.$id },
           })
         }}
       >
@@ -31,23 +31,23 @@ const NotificationItem = React.memo(
                 <Avatar alt={"User Avatar"}>
                   <AvatarImage
                     src={
-                      getUserAvatar(notification.userData.avatarId ?? "") ??
+                      getUserAvatar(notification.userData?.avatarId ?? "") ??
                       null
                     }
                   />
                   <AvatarFallback>
                     <Text>
-                      {notification.userData.displayName
+                      {notification.userData?.displayName
                         .charAt(0)
-                        .toUpperCase() || "U"}
+                        .toUpperCase() ?? "U"}
                     </Text>
                   </AvatarFallback>
                 </Avatar>
               </View>
               <View className={"ml-4"}>
                 <Text>
-                  {notification.userData.displayName || "Someone"} followed you!
-                  🎉
+                  {notification.userData?.displayName ?? "Someone"} followed
+                  you! 🎉
                 </Text>
                 <Muted>{formatDate(new Date(notification.$createdAt))}</Muted>
               </View>
