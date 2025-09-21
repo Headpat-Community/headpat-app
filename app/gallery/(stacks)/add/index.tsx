@@ -5,7 +5,7 @@ import * as WebBrowser from "expo-web-browser"
 import { useState } from "react"
 import { Keyboard, TouchableWithoutFeedback, View } from "react-native"
 import { ID } from "react-native-appwrite"
-import { Blurhash } from "react-native-blurhash"
+//import { Blurhash } from "react-native-blurhash"
 import { z } from "zod"
 import { useAlertModal } from "~/components/contexts/AlertModalProvider"
 import { useUser } from "~/components/contexts/UserContext"
@@ -113,7 +113,7 @@ export default function GalleryAdd() {
 
     try {
       // Generate Blurhash from the image
-      const blurhash = await Blurhash.encode(image.uri, 4, 3)
+      //const blurhash = await Blurhash.encode(image.uri, 4, 3)
 
       // name is galleryFile + mimeType
       const name =
@@ -146,7 +146,7 @@ export default function GalleryAdd() {
           userId: current?.$id,
           mimeType: fileData.type,
           galleryId: storageData.$id,
-          blurHash: blurhash,
+          blurHash: "", // TODO: Add blurhash later
         },
       })
 

@@ -15,7 +15,6 @@ import {
 } from "react-native"
 import { ExecutionMethod } from "react-native-appwrite"
 import Gallery from "react-native-awesome-gallery"
-import { Blurhash } from "react-native-blurhash"
 import { ScrollView } from "react-native-gesture-handler"
 import { timeSince } from "~/components/calculateTimeLeft"
 import { useAlertModal } from "~/components/contexts/AlertModalProvider"
@@ -254,15 +253,7 @@ export default function HomeView() {
       )}
       <View style={{ flex: 1 }}>
         {imagePrefs?.isHidden ? (
-          image.blurHash ? (
-            <Blurhash
-              blurhash={image.blurHash}
-              style={{ height: imageHeight, width: "100%" }}
-              resizeMode="cover"
-            />
-          ) : (
-            <Skeleton className={"h-72"} />
-          )
+          <Skeleton className={"h-72"} />
         ) : image.mimeType?.includes("video") ? (
           <VideoView
             ref={ref}
@@ -272,25 +263,19 @@ export default function HomeView() {
             allowsPictureInPicture
           />
         ) : image.nsfw && !current?.prefs.nsfw ? (
-          image.blurHash ? (
-            <Blurhash
-              blurhash={image.blurHash}
-              style={{ height: imageHeight, width: "100%" }}
-              resizeMode="cover"
+          <TouchableOpacity onPress={() => setModalVisible(true)}>
+            <Image
+              source={{ uri: getGalleryUrl(image.galleryId) }}
+              placeholder={{ blurhash: image.blurHash ?? "" }}
+              style={{ height: imageHeight }}
+              contentFit={"contain"}
             />
-          ) : (
-            <TouchableOpacity onPress={() => setModalVisible(true)}>
-              <Image
-                source={{ uri: getGalleryUrl(image.galleryId) }}
-                style={{ height: imageHeight }}
-                contentFit={"contain"}
-              />
-            </TouchableOpacity>
-          )
+          </TouchableOpacity>
         ) : (
           <TouchableOpacity onPress={() => setModalVisible(true)}>
             <Image
               source={{ uri: getGalleryUrl(image.galleryId) }}
+              placeholder={{ blurhash: image.blurHash ?? "" }}
               style={{ height: imageHeight }}
               contentFit={"contain"}
             />

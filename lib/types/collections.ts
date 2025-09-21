@@ -387,7 +387,7 @@ export interface GalleryDocumentsType extends Models.Row {
   /**
    * The blurhash of the gallery item.
    */
-  blurHash: string
+  blurHash?: string | null
 }
 
 /**

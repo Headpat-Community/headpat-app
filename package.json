@@ -53,7 +53,6 @@
     "react-native": "0.81.4",
     "react-native-appwrite": "^0.13.0",
     "react-native-awesome-gallery": "^0.4.3",
-    "react-native-blurhash": "2.1.1",
     "react-native-bootsplash": "^6.3.11",
     "react-native-country-flag": "^2.0.2",
     "react-native-gesture-handler": "~2.28.0",
