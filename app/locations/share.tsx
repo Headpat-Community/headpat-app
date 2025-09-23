@@ -50,7 +50,7 @@ export default function ShareLocationView() {
       })
 
       const items = await Promise.all(
-        result.rows.map(async (item) => {
+        result.rows.map(async (item: any) => {
           if (item.isCommunity) {
             const communityData = await queryClient.fetchQuery({
               queryKey: ["community", item.requesterId],

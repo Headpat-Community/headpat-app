@@ -77,6 +77,8 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
   }
 
   const requestPermissions = async () => {
+    // Ensure the app shows a prominent disclosure before requesting permissions
+    // The UI (LocationFrontPermissionModal) will call this request after user agrees.
     const { granted: fgGranted } = await requestForegroundPermissionsAsync()
     if (!fgGranted) {
       Alert.alert(

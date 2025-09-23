@@ -51,7 +51,7 @@
     "react-dom": "19.1.0",
     "react-hook-form": "^7.62.0",
     "react-native": "0.81.4",
-    "react-native-appwrite": "^0.13.0",
+    "react-native-appwrite": "^0.14.0",
     "react-native-awesome-gallery": "^0.4.3",
     "react-native-bootsplash": "^6.3.11",
     "react-native-country-flag": "^2.0.2",

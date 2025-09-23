@@ -143,29 +143,32 @@ export default function MutualLocationsPage() {
     return () => clearInterval(intervalId)
   }, [onRefresh])
 
-  useEffect(() => {
-    let watcher: Location.LocationSubscription =
-      undefined as unknown as Location.LocationSubscription
-    const startWatching = async () => {
-      const { status } = await Location.getForegroundPermissionsAsync()
-      if (status !== Location.PermissionStatus.GRANTED) {
-        return
-      } else {
-        watcher = await Location.watchPositionAsync(
-          {
-            accuracy: Location.Accuracy.Balanced,
-            timeInterval: 10000,
-            distanceInterval: 10,
-          },
-          (location) => {
-            setUserLocation(location.coords)
-          }
-        )
-      }
+  const watcherRef = useRef<Location.LocationSubscription | null>(null)
+
+  const startWatching = async () => {
+    const { status } = await Location.getForegroundPermissionsAsync()
+    if (status !== Location.PermissionStatus.GRANTED) {
+      // Show prominent disclosure modal — controlled by modalOpen state
+      setModalOpen(true)
+      return
     }
+
+    watcherRef.current = await Location.watchPositionAsync(
+      {
+        accuracy: Location.Accuracy.Balanced,
+        timeInterval: 10000,
+        distanceInterval: 10,
+      },
+      (location) => {
+        setUserLocation(location.coords)
+      }
+    )
+  }
+
+  useEffect(() => {
     void startWatching()
     return () => {
-      watcher.remove()
+      watcherRef.current?.remove()
     }
   }, [])
 

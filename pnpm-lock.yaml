@@ -162,14 +162,11 @@ importers:
         specifier: 0.81.4
         version: 0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0)
       react-native-appwrite:
-        specifier: ^0.13.0
-        version: 0.13.0(expo@54.0.9)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))
+        specifier: ^0.14.0
+        version: 0.14.0(expo@54.0.9)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))
       react-native-awesome-gallery:
         specifier: ^0.4.3
         version: 0.4.3(react-native-gesture-handler@2.28.0(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))(react@19.1.0))(react-native-reanimated@4.1.0(@babel/core@7.28.4)(react-native-worklets@0.5.1(@babel/core@7.28.4)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))(react@19.1.0)
-      react-native-blurhash:
-        specifier: 2.1.1
-        version: 2.1.1(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))(react@19.1.0)
       react-native-bootsplash:
         specifier: ^6.3.11
         version: 6.3.11(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))(react@19.1.0)
@@ -4328,8 +4325,8 @@ packages:
   react-is@19.1.1:
     resolution: {integrity: sha512-tr41fA15Vn8p4X9ntI+yCyeGSf1TlYaY5vlTZfQmeLBrFo3psOPX6HhTDnFNL9uj3EhP0KAQ80cugCl4b4BERA==}
 
-  react-native-appwrite@0.13.0:
-    resolution: {integrity: sha512-azglur0tFgtar4x14ZJPMVZ8nyygWdzYEYQRnHE/4xvq3TsvH7D4gJeq5HQXQ6ANg896TSDihdkUo6u3yLenCw==}
+  react-native-appwrite@0.14.0:
+    resolution: {integrity: sha512-2nMr0qo53H9KQq+JWht+eF/d4NcuuLJEQIjqOGuHLOCBYK3KqoojpmaJ3hsRyQ/6q8prL7vGwqEQOfplraJjMg==}
     peerDependencies:
       expo: '*'
       react-native: '*'
@@ -4341,12 +4338,6 @@ packages:
       react-native: '*'
       react-native-gesture-handler: ^2.0.0
       react-native-reanimated: ^3.2.0
-
-  react-native-blurhash@2.1.1:
-    resolution: {integrity: sha512-b1aA5Tn31pPbqmaWnhJv7zSuN6o9M1t4yHciPunfP89LDkH2dvDIynvkE00Hen4Vmt6SnyXViSYH34MyvTvRiA==}
-    peerDependencies:
-      react: '>=16.8.1'
-      react-native: '>=0.60.0-rc.0 <1.0.x'
 
   react-native-bootsplash@6.3.11:
     resolution: {integrity: sha512-VA102LDBPyqMJzRtIb5H6MWsKSSpjzW49e34E2kpOivmkYllLlOpkpB/Q6Yvrt4u3EbkgOxB5gerJERhvcO4Tg==}
@@ -10082,7 +10073,7 @@ snapshots:
 
   react-is@19.1.1: {}
 
-  react-native-appwrite@0.13.0(expo@54.0.9)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0)):
+  react-native-appwrite@0.14.0(expo@54.0.9)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0)):
     dependencies:
       expo: 54.0.9(@babel/core@7.28.4)(@expo/metro-runtime@6.1.2)(expo-router@6.0.7)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))(react@19.1.0)
       expo-file-system: 18.1.11(expo@54.0.9)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))
@@ -10094,11 +10085,6 @@ snapshots:
       react-native: 0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0)
       react-native-gesture-handler: 2.28.0(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))(react@19.1.0)
       react-native-reanimated: 4.1.0(@babel/core@7.28.4)(react-native-worklets@0.5.1(@babel/core@7.28.4)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))(react@19.1.0)
-
-  react-native-blurhash@2.1.1(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))(react@19.1.0):
-    dependencies:
-      react: 19.1.0
-      react-native: 0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0)
 
   react-native-bootsplash@6.3.11(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))(react@19.1.0):
     dependencies:

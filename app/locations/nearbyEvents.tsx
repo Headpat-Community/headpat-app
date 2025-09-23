@@ -9,6 +9,7 @@ import { FlatList, ScrollView, TouchableOpacity, View } from "react-native"
 import { Query } from "react-native-appwrite"
 import { formatDateLocale } from "~/components/calculateTimeLeft"
 import { useAlertModal } from "~/components/contexts/AlertModalProvider"
+import { LocationFrontPermissionModal } from "~/components/locations/LocationPermissionModal"
 import { i18n } from "~/components/system/i18n"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent } from "~/components/ui/card"
@@ -43,24 +44,27 @@ export default function NearbyEventsPage() {
   const requestLocationPermission = async () => {
     try {
       setRequestingLocation(true)
-      const { status } = await Location.requestForegroundPermissionsAsync()
-
-      if (status === Location.PermissionStatus.GRANTED) {
-        // Get current location
-        const location = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.Balanced,
-        })
-        setLocalUserLocation(location.coords)
-        showAlert("SUCCESS", i18n.t("location.nearbyEvents.locationGranted"))
-      } else {
-        showAlert("FAILED", i18n.t("location.nearbyEvents.locationDenied"))
-      }
+      // At this point permissions should already have been requested by the
+      // prominent disclosure modal. Just attempt to read current position.
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced,
+      })
+      setLocalUserLocation(location.coords)
+      showAlert("SUCCESS", i18n.t("location.nearbyEvents.locationGranted"))
     } catch (error) {
       captureException(error)
       showAlert("FAILED", i18n.t("location.nearbyEvents.locationFailed"))
     } finally {
       setRequestingLocation(false)
     }
+  }
+
+  const [modalOpen, setModalOpen] = useState(false)
+
+  const handleAfterConsent = () => {
+    // Called after user agrees in the prominent disclosure modal. Attempt to
+    // read location (modal already requests permissions).
+    void requestLocationPermission()
   }
 
   const { data: events, isLoading } = useQuery<EventsType>({
@@ -180,7 +184,7 @@ export default function NearbyEventsPage() {
           {!userLocation && (
             <View className="mt-6">
               <Button
-                onPress={() => void requestLocationPermission()}
+                onPress={() => setModalOpen(true)}
                 disabled={requestingLocation}
                 className="px-6"
               >
@@ -190,6 +194,11 @@ export default function NearbyEventsPage() {
                     : i18n.t("location.nearbyEvents.enableLocation")}
                 </Text>
               </Button>
+              <LocationFrontPermissionModal
+                openModal={modalOpen}
+                setOpenModal={setModalOpen}
+                onAgree={handleAfterConsent}
+              />
             </View>
           )}
         </View>

@@ -14,9 +14,13 @@ import * as Location from "expo-location"
 export function LocationFrontPermissionModal({
   openModal,
   setOpenModal,
+  onAgree,
+  onDecline,
 }: {
   openModal: boolean
   setOpenModal: (open: boolean) => void
+  onAgree?: () => void
+  onDecline?: () => void
 }) {
   return (
     <AlertDialog onOpenChange={setOpenModal} open={openModal}>
@@ -24,8 +28,12 @@ export function LocationFrontPermissionModal({
         <AlertDialogHeader>
           <AlertDialogTitle>Headpat needs permission</AlertDialogTitle>
           <AlertDialogDescription>
-            Headpat requires your location to show you on the map. You can
-            always change this later in your settings.
+            Headpat requires access to your precise device location to show
+            you on the map and to provide location-based features. When you
+            agree we will collect and store your location on our servers to
+            display your approximate position to other users. Your location
+            data may be stored until you stop sharing or delete your account.
+            Do you agree to share your location for these purposes?
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -34,10 +42,19 @@ export function LocationFrontPermissionModal({
               void (async () => {
                 await Location.requestForegroundPermissionsAsync()
                 setOpenModal(false)
+                if (onAgree) onAgree()
               })()
             }}
           >
-            <Text>Continue</Text>
+            <Text>I Agree</Text>
+          </AlertDialogAction>
+          <AlertDialogAction
+            onPress={() => {
+              setOpenModal(false)
+              if (onDecline) onDecline()
+            }}
+          >
+            <Text>Decline</Text>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -48,9 +65,13 @@ export function LocationFrontPermissionModal({
 export function LocationBackgroundPermissionModal({
   openModal,
   setOpenModal,
+  onAgree,
+  onDecline,
 }: {
   openModal: boolean
   setOpenModal: (open: boolean) => void
+  onAgree?: () => void
+  onDecline?: () => void
 }) {
   return (
     <AlertDialog onOpenChange={setOpenModal} open={openModal}>
@@ -58,20 +79,33 @@ export function LocationBackgroundPermissionModal({
         <AlertDialogHeader>
           <AlertDialogTitle>Headpat needs permission</AlertDialogTitle>
           <AlertDialogDescription>
-            In order to share your location with users, we need your permission
-            to access your location in the foreground and background.
+            To continuously share your location with other users we need
+            background location access. This allows Headpat to collect and
+            update your location while the app is not in the foreground. We
+            store and transmit this location data to our backend so other
+            users can see your approximate position while sharing is active.
+            Do you agree to enable background location sharing?
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogAction
             onPress={() => {
               void (async () => {
-                await Location.requestForegroundPermissionsAsync()
+                await Location.requestBackgroundPermissionsAsync()
                 setOpenModal(false)
+                if (onAgree) onAgree()
               })()
             }}
           >
-            <Text>Continue</Text>
+            <Text>I Agree</Text>
+          </AlertDialogAction>
+          <AlertDialogAction
+            onPress={() => {
+              setOpenModal(false)
+              if (onDecline) onDecline()
+            }}
+          >
+            <Text>Decline</Text>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
