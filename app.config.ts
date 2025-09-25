@@ -37,11 +37,11 @@ export default ({ config }: { config: any }) => ({
     infoPlist: {
       UIBackgroundModes: ["fetch", "remote-notification", "processing"],
       NSLocationWhenInUseUsageDescription:
-        "This app requires access to your location to show you on the map.",
+        "This app requires access to your location to show you on the map and see nearby events.",
       NSLocationAlwaysAndWhenInUseUsageDescription:
-        "This app requires access to your location to show you on the map.",
+        "This app requires access to your location to show you on the map and see nearby events.",
       NSLocationAlwaysUsageDescription:
-        "This app requires access to your location to show you on the map.",
+        "This app requires access to your location to show you on the map and see nearby events.",
       BGTaskSchedulerPermittedIdentifiers: [
         "com.headpat.app.location",
         "com.headpat.app.fetch",
@@ -106,11 +106,11 @@ export default ({ config }: { config: any }) => ({
       "expo-location",
       {
         locationAlwaysAndWhenInUsePermission:
-          "Allow Headpat to share your location with other users so they can see you on the map.",
+          "Allow Headpat to share your location with other users so they can see you on the map and see nearby events.",
         locationAlwaysPermission:
-          "Allow Headpat to share your location with other users so they can see you on the map.",
+          "Allow Headpat to share your location with other users so they can see you on the map and see nearby events.",
         locationWhenInUsePermission:
-          "Allow Headpat to use your location to see yourself on the map.",
+          "Allow Headpat to use your location to see yourself on the map and see nearby events.",
         isIosBackgroundLocationEnabled: true,
         isAndroidBackgroundLocationEnabled: true,
       },
