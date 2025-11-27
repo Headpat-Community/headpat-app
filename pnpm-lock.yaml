@@ -83,6 +83,9 @@ importers:
       expo-device:
         specifier: ~8.0.8
         version: 8.0.8(expo@54.0.9)
+      expo-glass-effect:
+        specifier: ^0.1.7
+        version: 0.1.7(expo@54.0.9)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))(react@19.1.0)
       expo-haptics:
         specifier: ~15.0.7
         version: 15.0.7(expo@54.0.9)
@@ -2810,6 +2813,13 @@ packages:
 
   expo-font@14.0.8:
     resolution: {integrity: sha512-bTUHaJWRZ7ywP8dg3f+wfOwv6RwMV3mWT2CDUIhsK70GjNGlCtiWOCoHsA5Od/esPaVxqc37cCBvQGQRFStRlA==}
+    peerDependencies:
+      expo: '*'
+      react: '*'
+      react-native: '*'
+
+  expo-glass-effect@0.1.7:
+    resolution: {integrity: sha512-DxminueyL6TWoC9A3omka57XzpxUXLEGpDi/tnlvYwPSihB6lvGp2my+0k97lUKsBHbJg29weMCEQxNa/AyRHA==}
     peerDependencies:
       expo: '*'
       react: '*'
@@ -8393,6 +8403,12 @@ snapshots:
     dependencies:
       expo: 54.0.9(@babel/core@7.28.4)(@expo/metro-runtime@6.1.2)(expo-router@6.0.7)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))(react@19.1.0)
       fontfaceobserver: 2.3.0
+      react: 19.1.0
+      react-native: 0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0)
+
+  expo-glass-effect@0.1.7(expo@54.0.9)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))(react@19.1.0):
+    dependencies:
+      expo: 54.0.9(@babel/core@7.28.4)(@expo/metro-runtime@6.1.2)(expo-router@6.0.7)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))(react@19.1.0)
       react: 19.1.0
       react-native: 0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0)
 
