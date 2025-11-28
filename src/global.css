@@ -1,0 +1,85 @@
+/*
+* biome-ignore-all lint/suspicious/noDuplicateCustomProperties: not needed
+*/
+@import "tailwindcss";
+@import "uniwind";
+
+@layer base {
+  :root {
+    --radius: 50px;
+  }
+}
+
+@layer theme {
+  :root {
+    @variant light {
+      --color-primary: #00a8ff;
+      --color-gray: #f0f0f0;
+      --color-typography: #000;
+      --color-background: hsl(0 0% 100%);
+      --foreground: hsl(0 0% 0%);
+      --muted: hsl(0 0% 90%);
+      --muted-foreground: hsl(0 0% 50%);
+      --popover: hsl(0 0% 100%);
+      --popover-foreground: 0 0% 0%;
+      --card: hsl(0 0% 98%);
+      --card-foreground: hsl(0 0% 0%);
+      --border: hsl(0 0% 90%);
+      --border-primary: hsl(153 60% 53% / 0.7);
+      --border-secondary: hsl(0 0% 79%);
+      --border-destructive: hsl(0 100% 60%);
+      --input: hsl(0 0% 85%);
+      --primary: hsl(160 100% 25%);
+      --primary-foreground: hsl(0 0% 100%);
+      --secondary: hsl(0 0% 14%);
+      --secondary-foreground: hsl(0 0% 100%);
+      --accent: hsl(160 100% 25%);
+      --accent-foreground: hsl(0 0% 100%);
+      --destructive: hsl(0 100% 30%);
+      --destructive-foreground: hsl(0 0% 100%);
+      --ring: hsl(160 100% 45%);
+      --chart-1: hsl(160 100% 45%);
+      --chart-2: hsl(160 100% 35%);
+      --chart-3: hsl(160 100% 25%);
+      --chart-4: hsl(160 100% 15%);
+      --chart-5: hsl(160 100% 5%);
+      --code-block: hsl(160 100% 15%);
+      --link: hsl(155 100% 25%);
+    }
+
+    @variant dark {
+      --color-primary: #273c75;
+      --color-gray: #353b48;
+      --color-typography: #fff;
+      --color-background: hsl(0 0% 7%);
+      --foreground: hsl(0 0% 100%);
+      --muted: hsl(0 0% 20%);
+      --muted-foreground: hsl(0 0% 70%);
+      --popover: hsl(0 0% 15%);
+      --popover-foreground: hsl(0 0% 100%);
+      --card: hsl(0 0% 15%);
+      --card-foreground: hsl(0 0% 100%);
+      --border: hsl(0 0% 20%);
+      --border-primary: hsl(153 60% 53% / 0.3);
+      --border-secondary: hsl(0 0% 21%);
+      --border-destructive: hsl(0 100% 40%);
+      --input: hsl(0 0% 25%);
+      --primary: hsl(155 100% 19%);
+      --primary-foreground: hsl(0 0% 100%);
+      --secondary: hsl(0 0% 14%);
+      --secondary-foreground: hsl(0 0% 100%);
+      --accent: hsl(160 100% 25%);
+      --accent-foreground: hsl(0 0% 100%);
+      --destructive: hsl(0 100% 30%);
+      --destructive-foreground: hsl(0 0% 100%);
+      --ring: 160 100% 45%;
+      --chart-1: hsl(160 100% 45%);
+      --chart-2: hsl(160 100% 35%);
+      --chart-3: hsl(160 100% 25%);
+      --chart-4: hsl(160 100% 15%);
+      --chart-5: hsl(160 100% 5%);
+      --code-block: hsl(160 100% 15%);
+      --link: hsl(155 100% 35%);
+    }
+  }
+}
