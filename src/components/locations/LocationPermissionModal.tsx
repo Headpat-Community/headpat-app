@@ -1,3 +1,4 @@
+import * as Location from 'expo-location'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -6,10 +7,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "~/components/ui/alert-dialog"
-import { Text } from "~/components/ui/text"
-import React from "react"
-import * as Location from "expo-location"
+} from '~/components/ui/alert-dialog'
+import { Text } from '~/components/ui/text'
 
 export function LocationFrontPermissionModal({
   openModal,
@@ -28,12 +27,11 @@ export function LocationFrontPermissionModal({
         <AlertDialogHeader>
           <AlertDialogTitle>Headpat needs permission</AlertDialogTitle>
           <AlertDialogDescription>
-            Headpat requires access to your precise device location to show
-            you on the map and to provide location-based features. When you
-            agree we will collect and store your location on our servers to
-            display your approximate position to other users. Your location
-            data may be stored until you stop sharing or delete your account.
-            Do you agree to share your location for these purposes?
+            Headpat requires access to your precise device location to show you on the map and to
+            provide location-based features. When you agree we will collect and store your location
+            on our servers to display your approximate position to other users. Your location data
+            may be stored until you stop sharing or delete your account. Do you agree to share your
+            location for these purposes?
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -79,12 +77,11 @@ export function LocationBackgroundPermissionModal({
         <AlertDialogHeader>
           <AlertDialogTitle>Headpat needs permission</AlertDialogTitle>
           <AlertDialogDescription>
-            To continuously share your location with other users we need
-            background location access. This allows Headpat to collect and
-            update your location while the app is not in the foreground. We
-            store and transmit this location data to our backend so other
-            users can see your approximate position while sharing is active.
-            Do you agree to enable background location sharing?
+            To continuously share your location with other users we need background location access.
+            This allows Headpat to collect and update your location while the app is not in the
+            foreground. We store and transmit this location data to our backend so other users can
+            see your approximate position while sharing is active. Do you agree to enable background
+            location sharing?
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

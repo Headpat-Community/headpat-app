@@ -3,6 +3,7 @@ import * as Sentry from '@sentry/react-native'
 import { Image } from 'expo-image'
 import { Link, useLocalSearchParams } from 'expo-router'
 import { useVideoPlayer, VideoView } from 'expo-video'
+import { useTranslations } from 'gt-react-native'
 import { ShieldAlertIcon } from 'lucide-react-native'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Dimensions, Modal, RefreshControl, StyleSheet, TouchableOpacity, View } from 'react-native'
@@ -47,6 +48,7 @@ export default function HomeView() {
   const ref = useRef(null)
   const { showAlert, hideAlert } = useAlertModal()
   const { current } = useUser()
+  const t = useTranslations()
 
   // Get device dimensions
   const { width } = Dimensions.get('window')
@@ -82,7 +84,6 @@ export default function HomeView() {
       })
       setUserData(userData)
       setRefreshing(false)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch {
       setRefreshing(false)
     }
@@ -347,7 +348,7 @@ export default function HomeView() {
             </Link>
 
             <View>
-              <Text>{timeSince(image.$createdAt)}</Text>
+              <Text>{timeSince(t, image.$createdAt)}</Text>
             </View>
           </View>
         </View>

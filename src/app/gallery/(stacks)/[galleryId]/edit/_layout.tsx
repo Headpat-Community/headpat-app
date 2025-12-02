@@ -1,5 +1,4 @@
 import { Stack } from 'expo-router'
-import React from 'react'
 import FeatureAccess from '~/components/FeatureAccess'
 
 function Layout() {

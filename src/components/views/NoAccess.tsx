@@ -1,7 +1,6 @@
-import React from 'react'
-import { View, StyleSheet } from 'react-native'
-import { Button } from '~/components/ui/button'
 import { router } from 'expo-router'
+import { StyleSheet, View } from 'react-native'
+import { Button } from '~/components/ui/button'
 import { Text } from '~/components/ui/text'
 import { H1, H3, P } from '~/components/ui/typography'
 
@@ -13,11 +12,7 @@ export default function NoAccess() {
       <P className="text-center text-muted-foreground mt-2">
         You don&apos;t have the required permissions to access this page.
       </P>
-      <Button
-        variant="outline"
-        onPress={() => router.back()}
-        className={'mt-4'}
-      >
+      <Button variant="outline" onPress={() => router.back()} className={'mt-4'}>
         <Text>Go back</Text>
       </Button>
     </View>
@@ -29,6 +24,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16
-  }
+    padding: 16,
+  },
 })

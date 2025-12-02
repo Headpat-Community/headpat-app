@@ -65,7 +65,7 @@ const BottomSheetContent = React.forwardRef<BottomSheetContentRef, BottomSheetCo
     {
       enablePanDownToClose = true,
       enableDynamicSizing = true,
-      index = 0, // eslint-disable-line
+      index = 0,
       backdropProps,
       backgroundStyle,
       android_keyboardInputMode = 'adjustResize',

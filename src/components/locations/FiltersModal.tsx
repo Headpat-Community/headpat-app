@@ -1,6 +1,5 @@
-import React from "react"
-import { View } from "react-native"
-import { i18n } from "~/components/system/i18n"
+import { useTranslations } from 'gt-react-native'
+import { View } from 'react-native'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -9,11 +8,11 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "~/components/ui/alert-dialog"
-import { Label } from "~/components/ui/label"
-import { Switch } from "~/components/ui/switch"
-import { Text } from "~/components/ui/text"
-import { useFilters } from "~/lib/hooks/useFilters"
+} from '~/components/ui/alert-dialog'
+import { Label } from '~/components/ui/label'
+import { Switch } from '~/components/ui/switch'
+import { Text } from '~/components/ui/text'
+import { useFilters } from '~/lib/hooks/useFilters'
 
 export default function FiltersModal({
   openModal,
@@ -23,22 +22,18 @@ export default function FiltersModal({
   setOpenModal: (open: boolean) => void
 }) {
   const { filters, setFilters } = useFilters()
-
+  const t = useTranslations()
   return (
     <AlertDialog onOpenChange={setOpenModal} open={openModal}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>
-            {i18n.t("location.map.filters.title")}
-          </AlertDialogTitle>
-          <AlertDialogDescription>
-            {i18n.t("location.map.filters.description")}
-          </AlertDialogDescription>
+          <AlertDialogTitle>{t('location.map.filters.title')}</AlertDialogTitle>
+          <AlertDialogDescription>{t('location.map.filters.description')}</AlertDialogDescription>
         </AlertDialogHeader>
-        <View className={"gap-4"}>
+        <View className={'gap-4'}>
           <View className="flex-row items-center gap-2">
             <Switch
-              nativeID={"showEvents"}
+              nativeID={'showEvents'}
               checked={filters.showEvents}
               onCheckedChange={() =>
                 setFilters((prev) => ({
@@ -48,7 +43,7 @@ export default function FiltersModal({
               }
             />
             <Label
-              nativeID={"showEvents"}
+              nativeID={'showEvents'}
               onPress={() => {
                 setFilters((prev) => ({
                   ...prev,
@@ -56,12 +51,12 @@ export default function FiltersModal({
                 }))
               }}
             >
-              {i18n.t("location.map.filters.showEvents")}
+              {t('location.map.filters.showEvents')}
             </Label>
           </View>
           <View className="flex-row items-center gap-2">
             <Switch
-              nativeID={"showMutuals"}
+              nativeID={'showMutuals'}
               checked={filters.showUsers}
               onCheckedChange={() =>
                 setFilters((prev) => ({
@@ -71,7 +66,7 @@ export default function FiltersModal({
               }
             />
             <Label
-              nativeID={"showMutuals"}
+              nativeID={'showMutuals'}
               onPress={() =>
                 setFilters((prev) => ({
                   ...prev,
@@ -79,7 +74,7 @@ export default function FiltersModal({
                 }))
               }
             >
-              {i18n.t("location.map.filters.showUsers")}
+              {t('location.map.filters.showUsers')}
             </Label>
           </View>
         </View>

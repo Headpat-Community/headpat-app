@@ -1,10 +1,4 @@
 {
   "$schema": "https://assets.gtx.dev/config-schema.json",
-  "defaultLocale": "en",
-  "locales": ["en", "de", "nl"],
-  "loadDictionary": {
-    "en": "~/components/i18n/translations/en.json",
-    "de": "~/components/i18n/translations/de.json",
-    "nl": "~/components/i18n/translations/nl.json"
-  }
+  "defaultLocale": "en"
 }

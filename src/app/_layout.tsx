@@ -12,7 +12,7 @@ import { ThemeProvider } from '@react-navigation/native'
 import { captureException } from '@sentry/react-native'
 import { router, SplashScreen, Stack, useRouter, useSegments } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
-import { GTProvider } from 'gt-react-native'
+import { GTProvider, useTranslations } from 'gt-react-native'
 import type React from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import { BackHandler, Platform, View } from 'react-native'
@@ -35,6 +35,7 @@ import { databases } from '~/lib/appwrite-client'
 import { NAV_THEME } from '~/lib/constants'
 import { toast } from '~/lib/toast'
 import { useColorScheme } from '~/lib/useColorScheme'
+import loadDictionary from '~/loadDictionary'
 import '../components/init/sentryInit'
 import '../components/system/backgroundTasks'
 import '../global.css'
@@ -48,6 +49,18 @@ export const unstable_settings = {
 void SplashScreen.preventAutoHideAsync()
 
 export default function RootLayout() {
+  return (
+    <GTProvider
+      runtimeUrl={undefined}
+      locales={['en', 'de', 'nl']}
+      loadDictionaryPath={loadDictionary}
+    >
+      <RootLayoutNav />
+    </GTProvider>
+  )
+}
+
+export function RootLayoutNav() {
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme()
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = useState(false)
   const [lastBackPressed, setLastBackPressed] = useState(0)
@@ -56,7 +69,7 @@ export default function RootLayout() {
   const [isMounted, setIsMounted] = useState(false)
   const messaging = getMessaging()
   const insets = useSafeAreaInsets()
-
+  const t = useTranslations()
   const theme = useMemo(
     () => ({
       fonts: {
@@ -176,100 +189,96 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <ThemeProvider value={theme}>
-          <GTProvider>
-            <UserProvider>
-              <CacheProvider>
-                <LanguageProvider>
-                  <AlertModalProvider>
-                    <NotifierWrapper>
-                      <EulaModal
-                        isOpen={openEulaModal}
-                        setOpen={setOpenEulaModal}
-                        versionData={versionData}
-                      />
-                      <LocationProvider>
-                        <BottomSheetModalProvider>
-                          {Platform.OS === 'android' && (
-                            <View style={{ flex: 1, paddingTop: insets.top }}>
-                              <StatusBar
-                                style={colorScheme === 'dark' ? 'light' : 'dark'}
-                                backgroundColor={colorScheme === 'dark' ? '#000000' : '#ffffff'}
-                              />
-                              <Stack
-                                screenOptions={{
-                                  headerStyle: {
-                                    backgroundColor: colorScheme === 'dark' ? '#000' : '#fff',
-                                  },
-                                  headerTintColor: colorScheme === 'dark' ? '#fff' : '#000',
-                                  contentStyle: {
-                                    backgroundColor: colorScheme === 'dark' ? '#000' : '#fff',
-                                  },
-                                }}
-                              >
-                                {DrawerScreensData.map((screen: DrawerProps) => (
-                                  <Stack.Screen
-                                    key={screen.location}
-                                    name={screen.location}
-                                    options={{
-                                      keyboardHandlingEnabled: true,
-                                      headerTitleAlign: 'left',
-                                      headerShown: screen.headerShown,
-                                      headerTitle: screen.title,
-                                      headerLargeTitle: screen.headerLargeTitle,
-                                      headerLeft: () => screen.headerLeft ?? <HeaderMenuSidebar />,
-                                      headerRight: () =>
-                                        screen.headerRight ?? <ProfileThemeToggle />,
-                                      gestureEnabled: screen.swipeEnabled,
-                                    }}
-                                  />
-                                ))}
-                              </Stack>
-                            </View>
-                          )}
+          <UserProvider>
+            <CacheProvider>
+              <LanguageProvider>
+                <AlertModalProvider>
+                  <NotifierWrapper>
+                    <EulaModal
+                      isOpen={openEulaModal}
+                      setOpen={setOpenEulaModal}
+                      versionData={versionData}
+                    />
+                    <LocationProvider>
+                      <BottomSheetModalProvider>
+                        {Platform.OS === 'android' && (
+                          <View style={{ flex: 1, paddingTop: insets.top }}>
+                            <StatusBar
+                              style={colorScheme === 'dark' ? 'light' : 'dark'}
+                              backgroundColor={colorScheme === 'dark' ? '#000000' : '#ffffff'}
+                            />
+                            <Stack
+                              screenOptions={{
+                                headerStyle: {
+                                  backgroundColor: colorScheme === 'dark' ? '#000' : '#fff',
+                                },
+                                headerTintColor: colorScheme === 'dark' ? '#fff' : '#000',
+                                contentStyle: {
+                                  backgroundColor: colorScheme === 'dark' ? '#000' : '#fff',
+                                },
+                              }}
+                            >
+                              {DrawerScreensData(t).map((screen: DrawerProps) => (
+                                <Stack.Screen
+                                  key={screen.location}
+                                  name={screen.location}
+                                  options={{
+                                    keyboardHandlingEnabled: true,
+                                    headerTitleAlign: 'left',
+                                    headerShown: screen.headerShown,
+                                    headerTitle: screen.title,
+                                    headerLargeTitle: screen.headerLargeTitle,
+                                    headerLeft: () => screen.headerLeft ?? <HeaderMenuSidebar />,
+                                    headerRight: () => screen.headerRight ?? <ProfileThemeToggle />,
+                                    gestureEnabled: screen.swipeEnabled,
+                                  }}
+                                />
+                              ))}
+                            </Stack>
+                          </View>
+                        )}
 
-                          {Platform.OS === 'ios' && (
-                            <>
-                              <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-                              <Stack
-                                screenOptions={{
-                                  headerStyle: {
-                                    backgroundColor: colorScheme === 'dark' ? '#000' : '#fff',
-                                  },
-                                  headerTintColor: colorScheme === 'dark' ? '#fff' : '#000',
-                                  contentStyle: {
-                                    backgroundColor: colorScheme === 'dark' ? '#000' : '#fff',
-                                  },
-                                }}
-                              >
-                                {DrawerScreensData.map((screen: DrawerProps) => (
-                                  <Stack.Screen
-                                    key={screen.location}
-                                    name={screen.location}
-                                    options={{
-                                      keyboardHandlingEnabled: true,
-                                      headerTitleAlign: 'left',
-                                      headerShown: screen.headerShown,
-                                      headerTitle: screen.title,
-                                      headerLargeTitle: screen.headerLargeTitle,
-                                      headerLeft: () => screen.headerLeft ?? <HeaderMenuSidebar />,
-                                      headerRight: () =>
-                                        screen.headerRight ?? <ProfileThemeToggle />,
-                                      gestureEnabled: screen.swipeEnabled,
-                                    }}
-                                  />
-                                ))}
-                              </Stack>
-                            </>
-                          )}
-                          <PortalHost />
-                        </BottomSheetModalProvider>
-                      </LocationProvider>
-                    </NotifierWrapper>
-                  </AlertModalProvider>
-                </LanguageProvider>
-              </CacheProvider>
-            </UserProvider>
-          </GTProvider>
+                        {Platform.OS === 'ios' && (
+                          <>
+                            <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+                            <Stack
+                              screenOptions={{
+                                headerStyle: {
+                                  backgroundColor: colorScheme === 'dark' ? '#000' : '#fff',
+                                },
+                                headerTintColor: colorScheme === 'dark' ? '#fff' : '#000',
+                                contentStyle: {
+                                  backgroundColor: colorScheme === 'dark' ? '#000' : '#fff',
+                                },
+                              }}
+                            >
+                              {DrawerScreensData(t).map((screen: DrawerProps) => (
+                                <Stack.Screen
+                                  key={screen.location}
+                                  name={screen.location}
+                                  options={{
+                                    keyboardHandlingEnabled: true,
+                                    headerTitleAlign: 'left',
+                                    headerShown: screen.headerShown,
+                                    headerTitle: screen.title,
+                                    headerLargeTitle: screen.headerLargeTitle,
+                                    headerLeft: () => screen.headerLeft ?? <HeaderMenuSidebar />,
+                                    headerRight: () => screen.headerRight ?? <ProfileThemeToggle />,
+                                    gestureEnabled: screen.swipeEnabled,
+                                  }}
+                                />
+                              ))}
+                            </Stack>
+                          </>
+                        )}
+                        <PortalHost />
+                      </BottomSheetModalProvider>
+                    </LocationProvider>
+                  </NotifierWrapper>
+                </AlertModalProvider>
+              </LanguageProvider>
+            </CacheProvider>
+          </UserProvider>
         </ThemeProvider>
       </GestureHandlerRootView>
     </SafeAreaProvider>

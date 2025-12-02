@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'expo-router'
+import { useTranslations } from 'gt-react-native'
 import { useCallback, useState } from 'react'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 import { getAvatarImageUrlPreview } from '~/components/api/getStorageItem'
@@ -27,6 +28,7 @@ const MessageItem = ({ message }: { message: MessagesDocumentsType }) => {
   const { showAlert } = useAlertModal()
   const [openModal, setOpenModal] = useState(false)
   const [openReportModal, setOpenReportModal] = useState(false)
+  const t = useTranslations()
 
   const { data: userData } = useQuery<UserDataDocumentsType>({
     queryKey: ['user', message.senderId],
@@ -119,7 +121,7 @@ const MessageItem = ({ message }: { message: MessagesDocumentsType }) => {
           <View style={styles.messageContent}>
             <View style={styles.header}>
               <Text style={styles.senderName}>{userData?.displayName}</Text>
-              <Muted style={styles.timestamp}>{timeSince(message.$createdAt)}</Muted>
+              <Muted style={styles.timestamp}>{timeSince(t, message.$createdAt)}</Muted>
             </View>
             <Text style={styles.messageText}>{message.body}</Text>
           </View>

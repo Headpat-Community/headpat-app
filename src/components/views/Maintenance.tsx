@@ -1,9 +1,8 @@
-import React from 'react'
-import { View, StyleSheet } from 'react-native'
-import { Button } from '~/components/ui/button'
-import { H1, H3, P } from '~/components/ui/typography'
 import { router } from 'expo-router'
+import { StyleSheet, View } from 'react-native'
+import { Button } from '~/components/ui/button'
 import { Text } from '~/components/ui/text'
+import { H1, H3, P } from '~/components/ui/typography'
 
 export default function Maintenance() {
   return (
@@ -14,11 +13,7 @@ export default function Maintenance() {
         This page is not available at the moment. {'\n'}
         We&apos;ll be back online shortly.
       </P>
-      <Button
-        variant="outline"
-        onPress={() => router.back()}
-        className={'mt-4'}
-      >
+      <Button variant="outline" onPress={() => router.back()} className={'mt-4'}>
         <Text>Go back</Text>
       </Button>
     </View>
@@ -30,6 +25,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16
-  }
+    padding: 16,
+  },
 })

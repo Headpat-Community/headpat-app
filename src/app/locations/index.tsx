@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { LocationObjectCoords } from 'expo-location'
 import * as Location from 'expo-location'
 import { router, useLocalSearchParams } from 'expo-router'
+import { useTranslations } from 'gt-react-native'
 import { CalendarIcon, FilterIcon, LocateIcon, SettingsIcon } from 'lucide-react-native'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native'
@@ -18,7 +19,6 @@ import FiltersModal from '~/components/locations/FiltersModal'
 import { generatePolygonCoords } from '~/components/locations/generatePolygonCoords'
 import { LocationFrontPermissionModal } from '~/components/locations/LocationPermissionModal'
 import SettingsModal from '~/components/locations/SettingsModal'
-import { i18n } from '~/components/system/i18n'
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
 import {
   Dialog,
@@ -48,7 +48,7 @@ export default function MutualLocationsPage() {
   const queryClient = useQueryClient()
   const { filters } = useFilters()
   const params = useLocalSearchParams()
-
+  const t = useTranslations()
   const mapRef = useRef(null)
   const [userLocation, setUserLocation] = useState<LocationObjectCoords | null>(null)
   const [modalOpen, setModalOpen] = useState<boolean>(false)
@@ -76,7 +76,7 @@ export default function MutualLocationsPage() {
         })
         return data
       } catch (error) {
-        showAlert('FAILED', i18n.t('location.map.failedToFetchEvents'))
+        showAlert('FAILED', t('location.map.failedToFetchEvents'))
         Sentry.captureException(error)
         throw error
       }
@@ -106,7 +106,7 @@ export default function MutualLocationsPage() {
         })
         return await Promise.all(promises)
       } catch (error) {
-        showAlert('FAILED', i18n.t('location.map.failedToFetchLocations'))
+        showAlert('FAILED', t('location.map.failedToFetchLocations'))
         Sentry.captureException(error)
         throw error
       }
