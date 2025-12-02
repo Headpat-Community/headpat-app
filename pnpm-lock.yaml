@@ -135,8 +135,8 @@ importers:
         specifier: ~15.0.7
         version: 15.0.9(expo@54.0.25)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))
       gt-react-native:
-        specifier: ^0.0.8
-        version: 0.0.8(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))(react@19.1.0)
+        specifier: ^0.0.9
+        version: 0.0.9(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))(react@19.1.0)
       i18n-js:
         specifier: ^4.5.1
         version: 4.5.1
@@ -1203,13 +1203,13 @@ packages:
   '@formatjs/intl-relativetimeformat@11.4.13':
     resolution: {integrity: sha512-fNs6cpz9zIUEgTlE3kPSEyRfslxeMG19dT7sLz2C6U7Jxkx8xK/IH1ImZzCeqd6JlqE81O7uNW4oZTb1pz8lUw==}
 
-  '@generaltranslation/react-core@1.2.3':
-    resolution: {integrity: sha512-3ugsldC//kIdUOEMgGjHax2leDcaakA9rX/spmqMnumN2+PCMF5ENbWuXq1afOnn5hIr0jgY0yo1v+SscRKMFg==}
+  '@generaltranslation/react-core@1.2.5':
+    resolution: {integrity: sha512-o7JkvLmVS5Q9V/OElLRlhX6ymN6OQj4xbjcWggVYEooLEnGmd1+3z5qjE0wAi4yr0VnsruvVKKbMGP2Pkn1IHg==}
     peerDependencies:
       react: '>=16.8.0'
 
-  '@generaltranslation/supported-locales@2.0.27':
-    resolution: {integrity: sha512-52Sns/qbnZoC49pCUiEszu0TylAs/PMKN3AjfRu6Cl9AL4g3n1rlRzpCbHDoWYc4+gFm60DfAbdQ/vTZymXD/A==}
+  '@generaltranslation/supported-locales@2.0.28':
+    resolution: {integrity: sha512-20zISxpGaFbOrzwdO9wBt7CF8xJ3h4ztVu2QqSjsBlVdEYNWUULY699EAlRj/wgw8kuD8rJf/6E4zWMYUwuIKg==}
 
   '@gorhom/bottom-sheet@5.2.6':
     resolution: {integrity: sha512-vmruJxdiUGDg+ZYcDmS30XDhq/h/+QkINOI5LY/uGjx8cPGwgJW0H6AB902gNTKtccbiKe/rr94EwdmIEz+LAQ==}
@@ -3171,8 +3171,8 @@ packages:
   function-bind@1.1.2:
     resolution: {integrity: sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==}
 
-  generaltranslation@8.0.4:
-    resolution: {integrity: sha512-IcL8IrGm9FEkIO9L/c73VksHS6DTGdCtNBLwl4NpoesunZ8ADUotvCIzQaYLRyAttjVVvLpHwkC6OTSQcyN+gg==}
+  generaltranslation@8.0.5:
+    resolution: {integrity: sha512-az2vEV3SnQBJHUuLNdwePhpypFXI2EUkzRB8jywvFJ2SkFd74/VqUTe0mJkh8sdh91BBKf7ZZe2lznIdfUzO9w==}
 
   gensync@1.0.0-beta.2:
     resolution: {integrity: sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg==}
@@ -3231,11 +3231,11 @@ packages:
   graphemer@1.4.0:
     resolution: {integrity: sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==}
 
-  gt-i18n@0.1.0:
-    resolution: {integrity: sha512-8gB8EepGASUU0TYo0mMqBYtFdxH76USv8I2RcXZkPt1Z5i4DmGo+/RxMN9geRLMWVzBwkwpYPD84XMAjhS/KxQ==}
+  gt-i18n@0.1.1:
+    resolution: {integrity: sha512-Md/WGna5+cHKclm39hn+CTDQeRjpXpDRXWemKn7BYqQ3RZAJFk2IM05syVnT593RrLpxd7P0eAhKMhshZp70Kw==}
 
-  gt-react-native@0.0.8:
-    resolution: {integrity: sha512-3Nh9L0bld+swtK4Dv3yo9pHfkK/FJuqkOkaxyRPnu9WoaK9kVWwi3uK53kDQnPDDDQoJacJLpGgsnGDnEqs1pw==}
+  gt-react-native@0.0.9:
+    resolution: {integrity: sha512-BX/D+xNlokuEXdpa7Au8POMEduuh0NbDeFoxgDSO6zYERZlCEhMFtMH0KAHyIZTt1DEObcYi5No2E8MGeworKw==}
     peerDependencies:
       react: '*'
       react-native: '*'
@@ -6628,16 +6628,16 @@ snapshots:
       '@formatjs/intl-localematcher': 0.6.2
       tslib: 2.8.1
 
-  '@generaltranslation/react-core@1.2.3(react@19.1.0)':
+  '@generaltranslation/react-core@1.2.5(react@19.1.0)':
     dependencies:
-      '@generaltranslation/supported-locales': 2.0.27
-      generaltranslation: 8.0.4
-      gt-i18n: 0.1.0
+      '@generaltranslation/supported-locales': 2.0.28
+      generaltranslation: 8.0.5
+      gt-i18n: 0.1.1
       react: 19.1.0
 
-  '@generaltranslation/supported-locales@2.0.27':
+  '@generaltranslation/supported-locales@2.0.28':
     dependencies:
-      generaltranslation: 8.0.4
+      generaltranslation: 8.0.5
 
   '@gorhom/bottom-sheet@5.2.6(@types/react@19.1.13)(react-native-gesture-handler@2.28.0(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))(react@19.1.0))(react-native-reanimated@4.1.5(@babel/core@7.28.4)(react-native-worklets@0.5.1(@babel/core@7.28.4)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))(react@19.1.0)':
     dependencies:
@@ -8860,7 +8860,7 @@ snapshots:
 
   function-bind@1.1.2: {}
 
-  generaltranslation@8.0.4:
+  generaltranslation@8.0.5:
     dependencies:
       crypto-js: 4.2.0
       fast-json-stable-stringify: 2.1.0
@@ -8916,12 +8916,12 @@ snapshots:
 
   graphemer@1.4.0: {}
 
-  gt-i18n@0.1.0:
+  gt-i18n@0.1.1:
     dependencies:
-      '@generaltranslation/supported-locales': 2.0.27
-      generaltranslation: 8.0.4
+      '@generaltranslation/supported-locales': 2.0.28
+      generaltranslation: 8.0.5
 
-  gt-react-native@0.0.8(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))(react@19.1.0):
+  gt-react-native@0.0.9(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0))(react@19.1.0):
     dependencies:
       '@formatjs/intl-datetimeformat': 6.18.2
       '@formatjs/intl-displaynames': 6.8.13
@@ -8931,9 +8931,9 @@ snapshots:
       '@formatjs/intl-numberformat': 8.15.6
       '@formatjs/intl-pluralrules': 5.4.6
       '@formatjs/intl-relativetimeformat': 11.4.13
-      '@generaltranslation/react-core': 1.2.3(react@19.1.0)
-      '@generaltranslation/supported-locales': 2.0.27
-      generaltranslation: 8.0.4
+      '@generaltranslation/react-core': 1.2.5(react@19.1.0)
+      '@generaltranslation/supported-locales': 2.0.28
+      generaltranslation: 8.0.5
       react: 19.1.0
       react-native: 0.81.4(@babel/core@7.28.4)(@types/react@19.1.13)(react@19.1.0)
 

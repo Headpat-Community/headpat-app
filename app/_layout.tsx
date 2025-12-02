@@ -193,6 +193,8 @@ export default function RootLayout() {
 					<GTProvider
 					  config={gtConfig}
 					  loadDictionary={loadDictionary}
+						runtimeUrl={null}
+						cacheUrl={null}
 					>
 						<UserProvider>
 							<CacheProvider>
