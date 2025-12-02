@@ -5,7 +5,7 @@ How to get started:
 First of all, you need to install the dependencies. You can do this by running the following command:
 
 ```bash
-pnpm install
+bun install
 ```
 
 Make sure to have an android emulator installed on your machine, like Android Studio or XCode installed on your macOS.
@@ -13,18 +13,18 @@ Make sure to have an android emulator installed on your machine, like Android St
 After that, you can start the app, this will run the app in development mode using an android emulator:
 
 ```bash
-pnpm run dev
+bun android
 ```
 
 If you want to use iOS (this will only work on macOS), you can run the following command:
 
 ```bash
-pnpm run ios
+bun ios
 ```
 
-## Using the API:
+## Using the API
 
-### Using functions:
+### Using functions
 
 ```ts
 const fetchUsers = async () => {
