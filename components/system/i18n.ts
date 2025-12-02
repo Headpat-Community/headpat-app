@@ -14,3 +14,13 @@ export const i18n = new I18n(
     defaultLocale: 'en'
   }
 )
+
+const dictionaries = {
+  en,
+  de,
+  nl,
+} as const
+
+export async function loadDictionary(locale: string) {
+  return Promise.resolve(dictionaries[locale as keyof typeof dictionaries])
+}
