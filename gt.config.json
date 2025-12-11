@@ -1,4 +1,7 @@
 {
   "$schema": "https://assets.gtx.dev/config-schema.json",
-  "defaultLocale": "en"
+  "projectId": "undefined",
+  "runtimeUrl": "undefined",
+  "defaultLocale": "en",
+  "locales": ["en", "de", "nl"]
 }

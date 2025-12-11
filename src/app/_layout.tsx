@@ -50,11 +50,7 @@ void SplashScreen.preventAutoHideAsync()
 
 export default function RootLayout() {
   return (
-    <GTProvider
-      runtimeUrl={undefined}
-      locales={['en', 'de', 'nl']}
-      loadDictionaryPath={loadDictionary}
-    >
+    <GTProvider runtimeUrl={undefined} projectId={undefined} loadDictionaryPath={loadDictionary}>
       <RootLayoutNav />
     </GTProvider>
   )
